@@ -5,10 +5,10 @@
       <div class="columns is-vcentered">
         <div class="column is-7">
           <h1 class="title is-1 has-text-white mb-5" style="line-height: 1.2;">
-            <?= h($site['tagline'] ?: 'Leading Manufacturer of High-Quality Solutions') ?>
+            <?= h($site['tagline'] ?: h(t('home_ready_title'))) ?>
           </h1>
           <p class="subtitle is-4 has-text-grey-light mb-6">
-            <?= h($site['about'] ?: 'We provide professional manufacturing services for global B2B clients with strict quality control and fast delivery.') ?>
+            <?= h($site['about'] ?: h(t('home_ready_desc'))) ?>
           </p>
           <div class="buttons">
             <a class="button is-link is-large px-6" href="/products"><?= h(t('nav_products')) ?></a>
@@ -64,7 +64,7 @@
       <div class="level-left">
         <div>
           <h2 class="title is-3 mb-2"><?= h(t('section_featured_products')) ?></h2>
-          <p class="has-text-grey">Explore our latest high-performance products designed for global industrial standards.</p>
+          <p class="has-text-grey"><?= h(t('home_highlights')) ?></p>
         </div>
       </div>
       <div class="level-right">
@@ -103,20 +103,20 @@
   <div class="container">
     <div class="columns is-vcentered">
       <div class="column is-6">
-        <h2 class="title is-3 mb-5">Professional Manufacturing & Global Reach</h2>
+        <h2 class="title is-3 mb-5"><?= h(t('home_why_us')) ?></h2>
         <div class="content has-text-grey is-medium">
-          <p>With over 15 years of industry experience, we have established ourselves as a reliable partner for global wholesalers and distributors. Our factory is equipped with state-of-the-art production lines and follows strict international quality standards.</p>
+          <p><?= h($site['company_bio'] ?? '') ?></p>
           <ul style="list-style-type: none; margin-left: 0;">
-            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> ISO 9001 Certified Factory</li>
-            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> Customized OEM/ODM Services</li>
-            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> Professional R&D Team</li>
+            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_iso')) ?></li>
+            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_oem')) ?></li>
+            <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_rd')) ?></li>
           </ul>
         </div>
-        <a href="/contact" class="button is-link is-outlined">Learn More About Us</a>
+        <a href="/about" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
       </div>
       <div class="column is-6">
         <figure class="image is-16by9 box p-0 overflow-hidden soft-card">
-          <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" alt="Factory" style="object-fit: cover;">
+          <img src="<?= h($site['og_image'] ?? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80') ?>" alt="Factory" style="object-fit: cover;">
         </figure>
       </div>
     </div>
@@ -128,7 +128,7 @@
   <div class="container">
     <div class="has-text-centered mb-6">
       <h2 class="title is-3"><?= h(t('section_success_cases')) ?></h2>
-      <p class="subtitle is-6 has-text-grey">Proven solutions delivered to clients across 50+ countries.</p>
+      <p class="subtitle is-6 has-text-grey"><?= h(t('home_global')) ?></p>
     </div>
     <div class="columns is-multiline">
       <?php foreach ($cases as $c): ?>
@@ -155,10 +155,10 @@
 <section class="section pb-6">
   <div class="container">
     <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card">
-      <h2 class="title is-3 has-text-white mb-4">Ready to Start Your Next Project?</h2>
-      <p class="subtitle is-5 has-text-grey-light mb-6">Contact our sales team today for a customized quote and expert advice.</p>
+      <h2 class="title is-3 has-text-white mb-4"><?= h(t('home_ready_title')) ?></h2>
+      <p class="subtitle is-5 has-text-grey-light mb-6"><?= h(t('home_ready_desc')) ?></p>
       <div class="buttons is-centered">
-        <a href="/contact" class="button is-white is-large px-6">Get a Free Quote</a>
+        <a href="/contact" class="button is-white is-large px-6"><?= h(t('cta_quote')) ?></a>
         <?php
           $wa = $site['whatsapp'] ?? '';
           $waDigits = preg_replace('/\D+/', '', $wa);
@@ -166,7 +166,7 @@
         ?>
           <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" class="button is-success is-large px-6">
             <span class="icon"><i class="fab fa-whatsapp"></i></span>
-            <span>WhatsApp Us</span>
+            <span><?= h(t('chat_now')) ?></span>
           </a>
         <?php endif; ?>
       </div>

@@ -26,18 +26,18 @@
       <div class="column is-7">
         <div class="columns">
           <div class="column">
-            <p class="has-text-weight-semibold">Company</p>
+            <p class="has-text-weight-semibold"><?= h(t('footer_company')) ?></p>
             <p class="is-size-7"><?= h($site['address']) ?></p>
           </div>
           <div class="column">
-            <p class="has-text-weight-semibold">Contact</p>
+            <p class="has-text-weight-semibold"><?= h(t('footer_contact')) ?></p>
             <p class="is-size-7"><?= h($site['email']) ?></p>
             <p class="is-size-7"><?= h($site['phone']) ?></p>
           </div>
         </div>
       </div>
     </div>
-    <p class="has-text-grey is-size-7">© <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.</p>
+    <p class="has-text-grey is-size-7">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
   </div>
 </footer>
 <script>

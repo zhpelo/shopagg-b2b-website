@@ -44,11 +44,10 @@
       <div class="navbar-end">
         <a class="navbar-item" href="/"><?= h(t('nav_home')) ?></a>
         <a class="navbar-item" href="/products"><?= h(t('nav_products')) ?></a>
-       
+        <a class="navbar-item" href="/about"><?= h(t('nav_about')) ?></a>
         <a class="navbar-item" href="/cases"><?= h(t('nav_cases')) ?></a>
         <a class="navbar-item" href="/blog"><?= h(t('nav_blog')) ?></a>
         <a class="navbar-item" href="/contact"><?= h(t('nav_contact')) ?></a>
-        <a class="navbar-item" href="/about">About Us</a>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"><?= h($languages[$lang] ?? $lang) ?></a>
           <div class="navbar-dropdown">

@@ -29,46 +29,46 @@ $tabs = [
     <input type="hidden" name="tab" value="<?= h($tab) ?>">
 
     <?php if ($tab === 'general'): ?>
-        <div class="box admin-card">
+    <div class="box admin-card">
             <h2 class="title is-5">网站基础设置</h2>
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label">网站名称</label>
-                        <div class="control"><input class="input" name="site_name" value="<?= h($settings['site_name'] ?? '') ?>"></div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label">标语</label>
-                        <div class="control"><input class="input" name="site_tagline" value="<?= h($settings['site_tagline'] ?? '') ?>"></div>
-                    </div>
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">网站名称</label>
+                    <div class="control"><input class="input" name="site_name" value="<?= h($settings['site_name'] ?? '') ?>"></div>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label">主题</label>
-                        <div class="control"><input class="input" name="theme" value="<?= h($settings['theme'] ?? 'default') ?>"></div>
-                    </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">标语</label>
+                    <div class="control"><input class="input" name="site_tagline" value="<?= h($settings['site_tagline'] ?? '') ?>"></div>
                 </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label">默认语言</label>
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select name="default_lang">
-                                    <option value="en" <?= ($settings['default_lang'] ?? '') === 'en' ? 'selected' : '' ?>>English</option>
-                                    <option value="zh" <?= ($settings['default_lang'] ?? '') === 'zh' ? 'selected' : '' ?>>中文</option>
-                                </select>
-                            </div>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">主题</label>
+                    <div class="control"><input class="input" name="theme" value="<?= h($settings['theme'] ?? 'default') ?>"></div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">默认语言</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="default_lang">
+                                <option value="en" <?= ($settings['default_lang'] ?? '') === 'en' ? 'selected' : '' ?>>English</option>
+                                <option value="zh" <?= ($settings['default_lang'] ?? '') === 'zh' ? 'selected' : '' ?>>中文</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="box admin-card">
+    <div class="box admin-card">
             <h2 class="title is-5">SEO 设置</h2>
             <div class="field">
                 <label class="label">SEO 标题 (Title)</label>
@@ -82,7 +82,7 @@ $tabs = [
                 <label class="label">SEO 描述 (Description)</label>
                 <div class="control"><textarea class="textarea" name="seo_description" rows="3"><?= h($settings['seo_description'] ?? '') ?></textarea></div>
             </div>
-            <div class="field">
+        <div class="field">
                 <label class="label">OG Image</label>
                 <div class="field has-addons">
                     <div class="control is-expanded"><input class="input" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>"></div>
@@ -214,7 +214,7 @@ $tabs = [
             </div>
             <hr>
             <h2 class="title is-5">研发能力 (R&D)</h2>
-            <div class="field">
+        <div class="field">
                 <label class="label">研发工程师人数</label>
                 <div class="control"><input class="input" name="company_rd_engineers" value="<?= h($settings['company_rd_engineers'] ?? '') ?>"></div>
             </div>
@@ -250,9 +250,9 @@ $tabs = [
                 <?php endforeach; ?>
             </div>
             <button type="button" class="button is-link is-light is-small" onclick="addMediaRow('company-show-container', 'show_img', 'show_title')">新增项目</button>
-        </div>
+    </div>
 
-        <div class="box admin-card">
+    <div class="box admin-card">
             <h2 class="title is-5">资质证书 (Certificates)</h2>
             <div id="certificates-container">
                 <?php 
@@ -321,42 +321,42 @@ $tabs = [
     <?php elseif ($tab === 'contact'): ?>
         <div class="box admin-card">
             <h2 class="title is-5">联系信息</h2>
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label">邮箱</label>
-                        <div class="control"><input class="input" name="company_email" value="<?= h($settings['company_email'] ?? '') ?>"></div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label">电话</label>
-                        <div class="control"><input class="input" name="company_phone" value="<?= h($settings['company_phone'] ?? '') ?>"></div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label">WhatsApp</label>
-                        <div class="control"><input class="input" name="whatsapp" value="<?= h($settings['whatsapp'] ?? '') ?>"></div>
-                    </div>
+        <div class="columns">
+            <div class="column">
+                <div class="field">
+                    <label class="label">邮箱</label>
+                    <div class="control"><input class="input" name="company_email" value="<?= h($settings['company_email'] ?? '') ?>"></div>
                 </div>
             </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">电话</label>
+                    <div class="control"><input class="input" name="company_phone" value="<?= h($settings['company_phone'] ?? '') ?>"></div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label">WhatsApp</label>
+                    <div class="control"><input class="input" name="whatsapp" value="<?= h($settings['whatsapp'] ?? '') ?>"></div>
+                </div>
+            </div>
+        </div>
             <div class="field">
                 <label class="label">公司地址</label>
                 <div class="control"><input class="input" name="company_address" value="<?= h($settings['company_address'] ?? '') ?>"></div>
             </div>
-        </div>
+    </div>
 
-        <div class="box admin-card">
+    <div class="box admin-card">
             <h2 class="title is-5">社交媒体</h2>
             <div class="columns is-multiline">
                 <?php foreach (['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'] as $sm): ?>
                     <div class="column is-4">
-                        <div class="field">
+                <div class="field">
                             <label class="label is-capitalized"><?= $sm ?></label>
                             <div class="control"><input class="input" name="<?= $sm ?>" value="<?= h($settings[$sm] ?? '') ?>"></div>
                         </div>
-                    </div>
+                </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -403,8 +403,8 @@ $tabs = [
         <footer class="modal-card-head" style="justify-content: flex-end;">
             <button type="button" class="button close-modal">取消</button>
         </footer>
-    </div>
-</div>
+                </div>
+            </div>
 
 <script>
 let currentTargetInputId = '';
@@ -431,8 +431,8 @@ async function fetchMediaLibrary() {
                         <figure class="image is-1by1">
                             <img src="${file}" style="object-fit: cover;">
                         </figure>
-                    </div>
-                </div>
+        </div>
+    </div>
             `;
             col.querySelector('.media-select-item').addEventListener('click', function() {
                 document.getElementById(currentTargetInputId).value = file;

@@ -5,27 +5,27 @@
 </div>
 
 <form method="post" action="<?= h($action) ?>" enctype="multipart/form-data" id="product-form">
-    <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+        <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
-    <div class="columns">
+        <div class="columns">
         <!-- 左侧栏 -->
         <div class="column is-8">
             <!-- 标题和描述 -->
             <div class="card mb-5 admin-card">
                 <div class="card-content">
-                    <div class="field">
-                        <label class="label">标题</label>
+                <div class="field">
+                    <label class="label">标题</label>
                         <div class="control">
                             <input class="input" name="title" value="<?= h($product['title'] ?? '') ?>" placeholder="短袖 T 恤" required>
-                        </div>
-                    </div>
-                    <div class="field">
+            </div>
+        </div>
+        <div class="field">
                         <label class="label">描述</label>
-                        <div class="control">
+            <div class="control">
                             <textarea id="content-input" name="content" style="display:none"><?= h($product['content'] ?? '') ?></textarea>
                             <div id="quill-editor" style="height:300px; background:#fff"></div>
-                        </div>
-                    </div>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -50,9 +50,9 @@
                             <!-- 网格末尾的添加按钮 -->
                             <div class="media-add-btn open-media-library-btn" id="grid-add-btn">
                                 <span class="is-size-4 has-text-grey-light">+</span>
-                            </div>
-                        </div>
-                    </div>
+        </div>
+            </div>
+        </div>
 
                     <!-- 状态 2：空占位区域 (图片 1 UI) -->
                     <div id="media-empty-placeholder" class="media-placeholder <?= !empty($images) ? 'is-hidden' : '' ?>">
@@ -70,28 +70,28 @@
                         <p class="is-size-7 has-text-grey mt-2">支持图片、视频或 3D 模型</p>
                     </div>
                 </div>
-            </div>
+        </div>
 
           
             <!-- 价格 -->
             <div class="card mb-5 admin-card">
                 <div class="card-header"><p class="card-header-title">价格 (阶梯价格)</p></div>
                 <div class="card-content">
-                    <input type="hidden" name="price_tiers_enabled" value="1">
-                    <div id="price-tier-wrap">
-                        <?php 
-                        $tierData = !empty($prices) ? $prices : [['min_qty'=>'', 'max_qty'=>'', 'price'=>'', 'currency'=>'USD']];
-                        foreach ($tierData as $tier): 
-                        ?>
-                        <div class="columns price-tier-row">
-                            <div class="column"><div class="field"><label class="label is-size-7">最小数量</label><div class="control"><input class="input" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required></div></div></div>
-                            <div class="column"><div class="field"><label class="label is-size-7">最大数量</label><div class="control"><input class="input" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>"></div></div></div>
-                            <div class="column"><div class="field"><label class="label is-size-7">单价</label><div class="control"><input class="input" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required></div></div></div>
-                            <div class="column"><div class="field"><label class="label is-size-7">货币</label><div class="control"><input class="input" name="price_currency[]" value="<?= h($tier['currency'] ?? 'USD') ?>" required></div></div></div>
-                            <div class="column is-narrow"><div class="field"><label class="label is-size-7">操作</label><div class="control"><button type="button" class="button is-light remove-price-tier">删除</button></div></div></div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
+            <input type="hidden" name="price_tiers_enabled" value="1">
+            <div id="price-tier-wrap">
+                <?php 
+                $tierData = !empty($prices) ? $prices : [['min_qty'=>'', 'max_qty'=>'', 'price'=>'', 'currency'=>'USD']];
+                foreach ($tierData as $tier): 
+                ?>
+                <div class="columns price-tier-row">
+                    <div class="column"><div class="field"><label class="label is-size-7">最小数量</label><div class="control"><input class="input" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required></div></div></div>
+                    <div class="column"><div class="field"><label class="label is-size-7">最大数量</label><div class="control"><input class="input" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>"></div></div></div>
+                    <div class="column"><div class="field"><label class="label is-size-7">单价</label><div class="control"><input class="input" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required></div></div></div>
+                    <div class="column"><div class="field"><label class="label is-size-7">货币</label><div class="control"><input class="input" name="price_currency[]" value="<?= h($tier['currency'] ?? 'USD') ?>" required></div></div></div>
+                    <div class="column is-narrow"><div class="field"><label class="label is-size-7">操作</label><div class="control"><button type="button" class="button is-light remove-price-tier">删除</button></div></div></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
                     <button type="button" class="button is-link is-light is-small" id="add-price-tier">新增阶梯价格</button>
                 </div>
             </div>
@@ -180,7 +180,7 @@
             </div>
         </div>
     </div>
-</form>
+    </form>
 
 <!-- 媒体库模态框 -->
 <div class="modal" id="media-library-modal">
