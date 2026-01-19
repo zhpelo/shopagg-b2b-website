@@ -83,16 +83,28 @@ class AdminController extends Controller {
     public function settings(): void {
         $tab = $_GET['tab'] ?? 'general';
         $settings = $this->settingModel->getAll();
+        $theme = $settings['theme'] ?? 'default';
         
+        // Scan for available languages in current theme
+        $langDir = __DIR__ . "/../../themes/{$theme}/lang";
+        $availableLangs = [];
+        if (is_dir($langDir)) {
+            $files = glob("{$langDir}/*.php");
+            foreach ($files as $f) {
+                $availableLangs[] = basename($f, '.php');
+            }
+        }
+        if (empty($availableLangs)) $availableLangs = ['en'];
+
         $data = [
             'settings' => $settings,
-            'tab' => $tab
+            'tab' => $tab,
+            'available_langs' => $availableLangs
         ];
 
         if ($tab === 'translations') {
-            $lang = $_GET['lang'] ?? 'en';
-            $theme = $settings['theme'] ?? 'default';
-            $file = __DIR__ . "/../../themes/{$theme}/lang/{$lang}.php";
+            $lang = $_GET['lang'] ?? ($availableLangs[0] ?? 'en');
+            $file = "{$langDir}/{$lang}.php";
             $translations = [];
             if (file_exists($file)) {
                 $translations = include $file;

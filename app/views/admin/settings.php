@@ -59,8 +59,11 @@ $tabs = [
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select name="default_lang">
-                                <option value="en" <?= ($settings['default_lang'] ?? '') === 'en' ? 'selected' : '' ?>>English</option>
-                                <option value="zh" <?= ($settings['default_lang'] ?? '') === 'zh' ? 'selected' : '' ?>>中文</option>
+                                <?php foreach ($available_langs as $l): ?>
+                                    <option value="<?= h($l) ?>" <?= ($settings['default_lang'] ?? 'en') === $l ? 'selected' : '' ?>>
+                                        <?= $l === 'zh' ? '中文 (zh)' : ($l === 'en' ? 'English (en)' : strtoupper($l)) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -369,8 +372,12 @@ $tabs = [
                 </div>
                 <div class="level-right">
                     <div class="buttons has-addons">
-                        <a href="/admin/settings?tab=translations&lang=en" class="button is-small <?= $current_edit_lang === 'en' ? 'is-link' : '' ?>">English (en)</a>
-                        <a href="/admin/settings?tab=translations&lang=zh" class="button is-small <?= $current_edit_lang === 'zh' ? 'is-link' : '' ?>">中文 (zh)</a>
+                        <?php foreach ($available_langs as $l): ?>
+                            <a href="/admin/settings?tab=translations&lang=<?= h($l) ?>" 
+                               class="button is-small <?= $current_edit_lang === $l ? 'is-link' : '' ?>">
+                                <?= $l === 'zh' ? '中文 (zh)' : ($l === 'en' ? 'English (en)' : strtoupper($l)) ?>
+                            </a>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
