@@ -153,6 +153,46 @@
     </section>
 </div>
 
+<!-- 统一媒体库模态框 -->
+<div class="modal" id="media-library-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card" style="width: 90%; max-width: 1000px;">
+        <header class="modal-card-head">
+            <p class="modal-card-title">选择媒体文件</p>
+            <div class="field mb-0 mr-3">
+                <div class="control">
+                    <div class="file is-info is-small">
+                        <label class="file-label">
+                            <input class="file-input" type="file" id="media-upload-input" multiple accept="image/*">
+                            <span class="file-cta">
+                                <span class="file-icon"><i class="fas fa-upload"></i></span>
+                                <span class="file-label">上传图片</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="delete close-modal" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            <div id="upload-progress-container" class="mb-4 is-hidden">
+                <div class="is-size-7 mb-1 is-flex is-justify-content-between">
+                    <span id="upload-status-text">正在上传...</span>
+                    <span id="upload-progress-percent">0%</span>
+                </div>
+                <progress id="overall-progress" class="progress is-info is-small" value="0" max="100">0%</progress>
+            </div>
+            <div id="media-library-list" class="columns is-multiline is-mobile">
+                <!-- 动态加载图片列表 -->
+            </div>
+        </section>
+        <footer class="modal-card-head" style="justify-content: flex-end;">
+            <button type="button" class="button is-link" id="confirm-media-selection" style="display:none">确认选择</button>
+            <button type="button" class="button close-modal ml-2">取消</button>
+        </footer>
+    </div>
+</div>
+
 <footer class="footer has-background-white border-top py-5">
     <div class="container has-text-centered">
         <p class="is-size-7 has-text-grey">
@@ -163,6 +203,55 @@
 
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script>
+// 全局媒体库逻辑
+let mediaLibraryCallback = null;
+let isMultiSelect = false;
+
+function openMediaLibrary(callback, multi = false) {
+    mediaLibraryCallback = callback;
+    isMultiSelect = multi;
+    const modal = document.getElementById('media-library-modal');
+    const confirmBtn = document.getElementById('confirm-media-selection');
+    
+    confirmBtn.style.display = multi ? 'inline-flex' : 'none';
+    modal.classList.add('is-active');
+    fetchMediaLibrary();
+}
+
+async function fetchMediaLibrary() {
+    const container = document.getElementById('media-library-list');
+    container.innerHTML = '<div class="column is-12 has-text-centered p-6"><p>正在加载...</p></div>';
+    try {
+        const res = await fetch('/admin/media-library');
+        const files = await res.json();
+        container.innerHTML = '';
+        files.forEach(file => {
+            const col = document.createElement('div');
+            col.className = 'column is-2-desktop is-3-tablet is-4-mobile';
+            col.innerHTML = `
+                <div class="card media-select-item" data-url="${file}" style="cursor: pointer; border: 2px solid transparent; border-radius: 6px; overflow:hidden;">
+                    <div class="card-image">
+                        <figure class="image is-1by1">
+                            <img src="${file}" style="object-fit: cover;">
+                        </figure>
+                    </div>
+                </div>
+            `;
+            col.querySelector('.media-select-item').addEventListener('click', function() {
+                if (isMultiSelect) {
+                    this.classList.toggle('is-selected');
+                } else {
+                    if (mediaLibraryCallback) mediaLibraryCallback(this.dataset.url);
+                    document.getElementById('media-library-modal').classList.remove('is-active');
+                }
+            });
+            container.appendChild(col);
+        });
+    } catch (err) {
+        container.innerHTML = '<div class="column is-12 has-text-centered p-6"><p class="has-text-danger">加载失败</p></div>';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     // 手机端导航切换
     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
@@ -174,6 +263,67 @@ document.addEventListener("DOMContentLoaded", function () {
             $target.classList.toggle('is-active');
         });
     });
+
+    // 媒体库通用事件
+    const modal = document.getElementById('media-library-modal');
+    const closeBtns = document.querySelectorAll('.close-modal, .modal-background');
+    closeBtns.forEach(btn => btn.addEventListener('click', () => modal.classList.remove('is-active')));
+
+    const confirmBtn = document.getElementById('confirm-media-selection');
+    confirmBtn.addEventListener('click', () => {
+        const selected = Array.from(document.querySelectorAll('.media-select-item.is-selected')).map(el => el.dataset.url);
+        if (mediaLibraryCallback) mediaLibraryCallback(selected);
+        modal.classList.remove('is-active');
+    });
+
+    const uploadInput = document.getElementById('media-upload-input');
+    if (uploadInput) {
+        uploadInput.addEventListener('change', async function() {
+            const files = Array.from(this.files);
+            if (files.length === 0) return;
+            const progressContainer = document.getElementById('upload-progress-container');
+            const overallProgress = document.getElementById('overall-progress');
+            const progressPercent = document.getElementById('upload-progress-percent');
+            const statusText = document.getElementById('upload-status-text');
+
+            progressContainer.classList.remove('is-hidden');
+            overallProgress.value = 0;
+            progressPercent.innerText = '0%';
+            
+            const fileProgresses = new Array(files.length).fill(0);
+            const uploadTasks = files.map((file, index) => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/admin/upload-image', true);
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) {
+                            fileProgresses[index] = e.loaded / e.total;
+                            const totalProgress = fileProgresses.reduce((a, b) => a + b, 0) / files.length;
+                            const percent = Math.round(totalProgress * 100);
+                            overallProgress.value = percent;
+                            progressPercent.innerText = percent + '%';
+                        }
+                    };
+                    xhr.onload = () => resolve();
+                    xhr.onerror = () => reject();
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('csrf', '<?= csrf_token() ?>');
+                    xhr.send(formData);
+                });
+            });
+
+            try {
+                await Promise.all(uploadTasks);
+                setTimeout(() => {
+                    progressContainer.classList.add('is-hidden');
+                    fetchMediaLibrary();
+                }, 1000);
+            } catch (err) { alert('上传失败'); }
+            this.value = '';
+        });
+    }
+
     // 1. Quill Editor
     const editor = document.getElementById("quill-editor");
     const input = document.getElementById("content-input");
@@ -196,29 +346,12 @@ document.addEventListener("DOMContentLoaded", function () {
             input.value = quill.root.innerHTML;
         });
 
-        // AJAX Image for Quill
+        // 调用统一媒体库
         const toolbar = quill.getModule("toolbar");
         toolbar.addHandler("image", function () {
-            const inputFile = document.createElement("input");
-            inputFile.type = "file";
-            inputFile.accept = "image/*";
-            inputFile.click();
-            inputFile.addEventListener("change", function () {
-                const file = inputFile.files[0];
-                if (!file) return;
-                const formData = new FormData();
-                formData.append("image", file);
-                formData.append("csrf", "<?= csrf_token() ?>");
-                fetch("/admin/upload-image", { method: "POST", body: formData })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.url) {
-                            const range = quill.getSelection(true);
-                            quill.insertEmbed(range ? range.index : 0, "image", data.url);
-                        } else {
-                            alert(data.error || "上传失败");
-                        }
-                    });
+            openMediaLibrary(function(url) {
+                const range = quill.getSelection(true);
+                quill.insertEmbed(range ? range.index : 0, "image", url);
             });
         });
     }
