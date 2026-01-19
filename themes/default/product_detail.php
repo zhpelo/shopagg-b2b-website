@@ -83,55 +83,92 @@
 <?php if (!empty($inquiry_form)): ?>
   <section class="section" id="inquiry">
     <div class="container">
-      <div class="box soft-card">
-        <h2 class="title is-5"><?= h(t('detail_send_inquiry')) ?></h2>
-        <form method="post" action="/inquiry">
-          <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-          <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <label class="label"><?= h(t('form_name')) ?></label>
-                <div class="control">
-                  <input class="input" name="name" required>
+      <div class="columns is-centered">
+        <div class="column is-10 is-8-widescreen">
+          <div class="box soft-card p-6">
+            <div class="columns">
+              <div class="column is-4">
+                <h2 class="title is-4">Request a Quote</h2>
+                <p class="subtitle is-6 has-text-grey">Complete the form below and our team will get back to you with a detailed quotation within 24 hours.</p>
+                <div class="mt-5">
+                  <div class="is-flex is-align-items-center mb-3">
+                    <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
+                    <span class="is-size-7">Direct Factory Pricing</span>
+                  </div>
+                  <div class="is-flex is-align-items-center mb-3">
+                    <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
+                    <span class="is-size-7">OEM/ODM Support</span>
+                  </div>
+                  <div class="is-flex is-align-items-center">
+                    <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
+                    <span class="is-size-7">Global Shipping Available</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="column">
-              <div class="field">
-                <label class="label"><?= h(t('form_email')) ?></label>
-                <div class="control">
-                  <input class="input" name="email" type="email" required>
-                </div>
+              <div class="column is-8">
+                <form method="post" action="/inquiry">
+                  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+                  <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
+                  
+                  <div class="columns">
+                    <div class="column">
+                      <div class="field">
+                        <label class="label is-size-7">Your Name *</label>
+                        <div class="control">
+                          <input class="input" name="name" required placeholder="Full Name">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="column">
+                      <div class="field">
+                        <label class="label is-size-7">Email Address *</label>
+                        <div class="control">
+                          <input class="input" name="email" type="email" required placeholder="example@email.com">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="columns">
+                    <div class="column">
+                      <div class="field">
+                        <label class="label is-size-7">Company Name</label>
+                        <div class="control">
+                          <input class="input" name="company" placeholder="Company Ltd.">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="column">
+                      <div class="field">
+                        <label class="label is-size-7">Quantity Needed</label>
+                        <div class="control">
+                          <input class="input" name="quantity" placeholder="e.g. 500 units">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label is-size-7">Requirements / Customization</label>
+                    <div class="control">
+                      <textarea class="textarea" name="message" rows="4" placeholder="Tell us about your project requirements, shipping destination, or any questions."></textarea>
+                    </div>
+                  </div>
+
+                  <div class="field mt-5">
+                    <button class="button is-link is-large is-fullwidth" type="submit">
+                      <span class="icon"><i class="fas fa-paper-plane"></i></span>
+                      <span>Send My Inquiry</span>
+                    </button>
+                  </div>
+                  <p class="has-text-centered is-size-7 has-text-grey mt-2">
+                    <i class="fas fa-lock mr-1"></i> Your information is safe with us.
+                  </p>
+                </form>
               </div>
             </div>
           </div>
-          <div class="columns">
-            <div class="column">
-              <div class="field">
-                <label class="label"><?= h(t('form_company')) ?></label>
-                <div class="control">
-                  <input class="input" name="company">
-                </div>
-              </div>
-            </div>
-            <div class="column">
-              <div class="field">
-                <label class="label"><?= h(t('form_phone')) ?></label>
-                <div class="control">
-                  <input class="input" name="phone">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label"><?= h(t('form_requirements')) ?></label>
-            <div class="control">
-              <textarea class="textarea" name="message" rows="5"></textarea>
-            </div>
-          </div>
-          <button class="button is-link" type="submit"><?= h(t('btn_send_inquiry')) ?></button>
-        </form>
+        </div>
       </div>
     </div>
   </section>

@@ -24,7 +24,8 @@ class Database {
     }
 
     private static function ensureColumns(SQLite3 $db): void {
-        $cols = [
+        // Products columns
+        $productCols = [
             'status' => 'TEXT DEFAULT "active"',
             'product_type' => 'TEXT',
             'vendor' => 'TEXT',
@@ -33,13 +34,24 @@ class Database {
         ];
         $res = $db->query("PRAGMA table_info(products)");
         $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            $existing[] = $row['name'];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($productCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE products ADD COLUMN $col $type");
         }
-        foreach ($cols as $col => $type) {
-            if (!in_array($col, $existing)) {
-                $db->exec("ALTER TABLE products ADD COLUMN $col $type");
-            }
+
+        // Inquiries columns
+        $inquiryCols = [
+            'quantity' => 'TEXT',
+            'status' => 'TEXT DEFAULT "pending"',
+            'ip' => 'TEXT',
+            'user_agent' => 'TEXT',
+            'source_url' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(inquiries)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($inquiryCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE inquiries ADD COLUMN $col $type");
         }
     }
 

@@ -354,8 +354,46 @@ class AdminController extends Controller {
     }
 
     public function inquiryList(): void {
-        $inquiries = $this->inquiryModel->getAll();
-        $this->renderAdmin('询单列表', $this->renderView('admin/inquiries', ['inquiries' => $inquiries]));
+        $status = $_GET['status'] ?? '';
+        $inquiries = $this->inquiryModel->getList(['status' => $status]);
+        $this->renderAdmin('询单管理', $this->renderView('admin/inquiries', [
+            'inquiries' => $inquiries,
+            'current_status' => $status
+        ]));
+    }
+
+    public function inquiryUpdateStatus(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $status = $_GET['status'] ?? '';
+        if ($id && in_array($status, ['pending', 'contacted', 'quoted', 'closed'])) {
+            $this->inquiryModel->updateStatus($id, $status);
+        }
+        $this->redirect('/admin/inquiries');
+    }
+
+    public function inquiryExport(): void {
+        $inquiries = $this->inquiryModel->getList();
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=inquiries_' . date('Ymd') . '.csv');
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['ID', 'Date', 'Product', 'Name', 'Email', 'Company', 'Phone', 'Quantity', 'Status', 'IP', 'Source URL']);
+        foreach ($inquiries as $i) {
+            fputcsv($output, [
+                $i['id'],
+                $i['created_at'],
+                $i['product_title'] ?? 'General',
+                $i['name'],
+                $i['email'],
+                $i['company'],
+                $i['phone'],
+                $i['quantity'],
+                $i['status'],
+                $i['ip'],
+                $i['source_url']
+            ]);
+        }
+        fclose($output);
+        exit;
     }
 
     // --- AJAX ---

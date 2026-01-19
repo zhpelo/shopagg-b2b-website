@@ -113,6 +113,8 @@ $router->add('GET', '/admin/posts/delete', [AdminController::class, 'postDelete'
 // Messages & Inquiries
 $router->add('GET', '/admin/messages', [AdminController::class, 'messageList']);
 $router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList']);
+$router->add('GET', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
+$router->add('GET', '/admin/inquiries/export', [AdminController::class, 'inquiryExport']);
 
 // AJAX
 $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);

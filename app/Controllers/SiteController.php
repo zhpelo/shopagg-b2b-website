@@ -118,7 +118,11 @@ class SiteController extends BaseController {
             'email' => trim((string)$_POST['email']),
             'company' => trim((string)($_POST['company'] ?? '')),
             'phone' => trim((string)($_POST['phone'] ?? '')),
+            'quantity' => trim((string)($_POST['quantity'] ?? '')),
             'message' => trim((string)($_POST['message'] ?? '')),
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'source_url' => $_SERVER['HTTP_REFERER'] ?? '',
         ]);
         $this->renderSite('thanks');
     }

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-function h(string $s): string {
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+function h($s): string {
+    return htmlspecialchars((string)($s ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 function slugify(string $text): string {
