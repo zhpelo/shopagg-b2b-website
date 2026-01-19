@@ -13,7 +13,10 @@ use App\Models\Inquiry;
 class SiteController extends BaseController {
     public function home(): void {
         $products = (new Product())->getList(6);
+        foreach ($products as &$p) $p['url'] = '/product/' . $p['slug'];
+        
         $cases = (new CaseModel())->getList(6);
+        foreach ($cases as &$c) $c['url'] = '/case/' . $c['slug'];
         
         $this->renderSite('home', [
             'products' => $products,
@@ -27,6 +30,7 @@ class SiteController extends BaseController {
 
     public function products(): void {
         $items = (new Product())->getList();
+        foreach ($items as &$i) $i['url'] = '/product/' . $i['slug'];
         $this->renderSite('list', [
             'title' => t('products'),
             'items' => $items,
@@ -65,7 +69,7 @@ class SiteController extends BaseController {
     }
 
     public function caseDetail(string $slug): void {
-        $item = (new CaseModel())->fetchOne("SELECT * FROM cases WHERE slug = :s", [':s' => $slug]);
+        $item = (new CaseModel())->getBySlug($slug);
         if (!$item) { $this->notFound(); return; }
         $this->renderSite('detail', [
             'item' => $item,
@@ -84,7 +88,7 @@ class SiteController extends BaseController {
     }
 
     public function blogDetail(string $slug): void {
-        $item = (new PostModel())->fetchOne("SELECT * FROM posts WHERE slug = :s", [':s' => $slug]);
+        $item = (new PostModel())->getBySlug($slug);
         if (!$item) { $this->notFound(); return; }
         $this->renderSite('detail', [
             'item' => $item,

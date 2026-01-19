@@ -36,6 +36,10 @@ class CaseModel extends BaseModel {
         $stmt->execute();
     }
 
+    public function getBySlug(string $slug): ?array {
+        return $this->fetchOne("SELECT * FROM cases WHERE slug = :s", [':s' => $slug]);
+    }
+
     public function delete(int $id): void {
         $stmt = $this->db->prepare("DELETE FROM cases WHERE id = :id");
         $stmt->bindValue(':id', $id);
