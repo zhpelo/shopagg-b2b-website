@@ -3,7 +3,7 @@
     <div class="hero-body">
         <div class="container">
             <h1 class="title is-3"><?= h($title) ?></h1>
-            <p class="subtitle is-6 mt-2">浏览我们的全线产品，为您提供最优质的 B2B 解决方案。</p>
+            <p class="subtitle is-6 mt-2"><?= h(t('product_list_subtitle')) ?></p>
         </div>
     </div>
 </section>
@@ -23,7 +23,7 @@
                         </div>
                         <div class="card-content" style="flex-grow: 1;">
                             <div class="mb-2">
-                                <span class="tag is-info is-light"><?= h($item['category_name'] ?? '未分类') ?></span>
+                                <span class="tag is-info is-light"><?= h($item['category_name'] ?? t('product_uncategorized')) ?></span>
                             </div>
                             <p class="title is-5 mb-2">
                                 <a href="<?= h($item['url']) ?>" class="has-text-dark"><?= h($item['title']) ?></a>
@@ -33,7 +33,7 @@
                             </p>
                         </div>
                         <footer class="card-footer" style="border-top: none; padding: 0 1.5rem 1.5rem;">
-                            <a href="<?= h($item['url']) ?>" class="button is-link is-outlined is-fullwidth is-small">查看详情</a>
+                            <a href="<?= h($item['url']) ?>" class="button is-link is-outlined is-fullwidth is-small"><?= h(t('product_view_details')) ?></a>
                         </footer>
                     </div>
                 </div>
@@ -41,4 +41,3 @@
         </div>
     </div>
 </section>
-

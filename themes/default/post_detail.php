@@ -19,7 +19,7 @@
                             <div class="level-item">
                                 <span class="icon-text has-text-grey">
                                     <span class="icon"><i class="far fa-calendar"></i></span>
-                                    <span><?= date('Y-m-d', strtotime($item['created_at'])) ?></span>
+                                    <span><?= h($item['created_at']) ?></span>
                                 </span>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                         <div class="level-left">
                             <a href="/blog" class="button is-light">
                                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                                <span>返回博客列表</span>
+                                <span><?= h(t('post_back_list')) ?></span>
                             </a>
                         </div>
                     </div>
@@ -54,4 +54,3 @@
         </div>
     </div>
 </section>
-

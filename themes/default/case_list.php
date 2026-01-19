@@ -2,7 +2,7 @@
     <div class="hero-body">
         <div class="container">
             <h1 class="title"><?= h($title) ?></h1>
-            <p class="subtitle mt-2">见证我们的专业实力，为全球客户创造价值。</p>
+            <p class="subtitle mt-2"><?= h(t('case_interest')) ?></p>
         </div>
     </div>
 </section>
@@ -30,7 +30,7 @@
                                 <?= h($item['summary']) ?>
                             </p>
                             <div class="mt-4">
-                                <a href="<?= h($item['url']) ?>" class="button is-link is-light">阅读案例详情 &rarr;</a>
+                                <a href="<?= h($item['url']) ?>" class="button is-link is-light"><?= h(t('list_read_more')) ?> &rarr;</a>
                             </div>
                         </div>
                     </div>
@@ -39,4 +39,3 @@
         </div>
     </div>
 </section>
-
