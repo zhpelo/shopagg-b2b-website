@@ -127,6 +127,7 @@ if (setting_get($db, 'site_name', '') === '') {
     setting_set($db, 'company_email', 'sales@example.com');
     setting_set($db, 'company_phone', '+86-000-0000-0000');
     setting_set($db, 'theme', 'default');
+    setting_set($db, 'default_lang', 'en');
 }
 
 // -----------------------------
@@ -185,6 +186,120 @@ function csrf_check(): void {
     }
 }
 
+function available_languages(): array {
+    return [
+        'en' => 'English',
+        'zh' => '中文',
+    ];
+}
+
+function current_lang(SQLite3 $db): string {
+    $langs = available_languages();
+    if (isset($_GET['lang']) && isset($langs[$_GET['lang']])) {
+        $_SESSION['lang'] = $_GET['lang'];
+    }
+    $lang = $_SESSION['lang'] ?? setting_get($db, 'default_lang', 'en');
+    if (!isset($langs[$lang])) {
+        $lang = 'en';
+    }
+    return $lang;
+}
+
+$translations = [
+    'en' => [
+        'nav_home' => 'Home',
+        'nav_products' => 'Products',
+        'nav_cases' => 'Cases',
+        'nav_blog' => 'Blog',
+        'nav_contact' => 'Contact',
+        'cta_quote' => 'Request a Quote',
+        'home_quality_title' => 'Quality Assurance',
+        'home_quality_desc' => 'ISO-aligned production with strict QC before shipment.',
+        'home_logistics_title' => 'Global Logistics',
+        'home_logistics_desc' => 'On-time delivery with consolidated freight options.',
+        'home_support_title' => 'Dedicated Support',
+        'home_support_desc' => 'One-to-one account service for long-term buyers.',
+        'section_featured_products' => 'Featured Products',
+        'section_success_cases' => 'Success Cases',
+        'btn_view_all' => 'View All',
+        'list_read_more' => 'Read More',
+        'detail_send_inquiry' => 'Send Inquiry',
+        'form_name' => 'Name',
+        'form_email' => 'Email',
+        'form_company' => 'Company',
+        'form_phone' => 'Phone',
+        'form_message' => 'Message',
+        'form_requirements' => 'Requirements',
+        'btn_send_inquiry' => 'Send Inquiry',
+        'contact_title' => 'Contact Us',
+        'contact_message' => 'Send Message',
+        'thanks_title' => 'Thank you',
+        'thanks_desc' => 'We have received your request and will reply within 24 hours.',
+        'btn_back_home' => 'Back to Home',
+        'not_found_title' => 'Page Not Found',
+        'not_found_desc' => 'The page you are looking for does not exist.',
+        'btn_go_home' => 'Go Home',
+        'products' => 'Products',
+        'cases' => 'Success Cases',
+        'blog' => 'Blog',
+    ],
+    'zh' => [
+        'nav_home' => '首页',
+        'nav_products' => '产品',
+        'nav_cases' => '案例',
+        'nav_blog' => '博客',
+        'nav_contact' => '联系',
+        'cta_quote' => '立即询价',
+        'home_quality_title' => '品质保障',
+        'home_quality_desc' => '符合国际标准的生产流程与出货前严格质检。',
+        'home_logistics_title' => '全球物流',
+        'home_logistics_desc' => '准时交付，支持多种国际物流方案。',
+        'home_support_title' => '专属服务',
+        'home_support_desc' => '一对一客户经理，全流程响应。',
+        'section_featured_products' => '核心产品',
+        'section_success_cases' => '成功案例',
+        'btn_view_all' => '查看全部',
+        'list_read_more' => '查看详情',
+        'detail_send_inquiry' => '发送询单',
+        'form_name' => '姓名',
+        'form_email' => '邮箱',
+        'form_company' => '公司',
+        'form_phone' => '电话',
+        'form_message' => '留言',
+        'form_requirements' => '需求描述',
+        'btn_send_inquiry' => '提交询单',
+        'contact_title' => '联系我们',
+        'contact_message' => '提交留言',
+        'thanks_title' => '提交成功',
+        'thanks_desc' => '我们已收到您的请求，将在 24 小时内回复。',
+        'btn_back_home' => '返回首页',
+        'not_found_title' => '页面不存在',
+        'not_found_desc' => '您访问的页面不存在。',
+        'btn_go_home' => '返回首页',
+        'products' => '产品',
+        'cases' => '成功案例',
+        'blog' => '博客',
+    ],
+];
+
+function t(string $key, ?string $lang = null): string {
+    $lang = $lang ?? ($GLOBALS['current_lang'] ?? 'en');
+    $translations = $GLOBALS['translations'] ?? [];
+    if (isset($translations[$lang][$key])) {
+        return $translations[$lang][$key];
+    }
+    return $translations['en'][$key] ?? $key;
+}
+
+function lang_switch_url(string $lang): string {
+    $path = current_path();
+    $query = $_GET;
+    $query['lang'] = $lang;
+    return $path . '?' . http_build_query($query);
+}
+
+$GLOBALS['current_lang'] = current_lang($db);
+
 function admin_nav_html(): string {
     $links = [
         '/admin' => 'Dashboard',
@@ -239,11 +354,21 @@ function render(SQLite3 $db, string $view, array $data = []): void {
     ];
 
     $seo = $data['seo'] ?? [];
+    $canonical = base_url() . current_path();
+    if (isset($_GET['lang']) && $_GET['lang'] !== '') {
+        $canonical .= '?lang=' . rawurlencode((string)$_GET['lang']);
+    }
     $seo = array_merge([
         'title' => $site['name'],
         'description' => $site['tagline'],
-        'canonical' => base_url() . current_path(),
+        'canonical' => $canonical,
     ], $seo);
+
+    $lang = $GLOBALS['current_lang'] ?? 'en';
+    $languages = available_languages();
+
+    $data['lang'] = $lang;
+    $data['languages'] = $languages;
 
     extract($data, EXTR_SKIP);
     include $themePath . '/header.php';
@@ -337,10 +462,10 @@ if ($path === '/products') {
         $items[] = $row;
     }
     render($db, 'list', [
-        'title' => 'Products',
+        'title' => t('products'),
         'items' => $items,
         'seo' => [
-            'title' => 'Products - ' . setting_get($db, 'site_name'),
+            'title' => t('products') . ' - ' . setting_get($db, 'site_name'),
             'description' => setting_get($db, 'site_tagline'),
         ],
     ]);
@@ -356,10 +481,10 @@ if ($path === '/cases') {
         $items[] = $row;
     }
     render($db, 'list', [
-        'title' => 'Success Cases',
+        'title' => t('cases'),
         'items' => $items,
         'seo' => [
-            'title' => 'Cases - ' . setting_get($db, 'site_name'),
+            'title' => t('cases') . ' - ' . setting_get($db, 'site_name'),
             'description' => setting_get($db, 'site_tagline'),
         ],
     ]);
@@ -375,10 +500,10 @@ if ($path === '/blog') {
         $items[] = $row;
     }
     render($db, 'list', [
-        'title' => 'Blog',
+        'title' => t('blog'),
         'items' => $items,
         'seo' => [
-            'title' => 'Blog - ' . setting_get($db, 'site_name'),
+            'title' => t('blog') . ' - ' . setting_get($db, 'site_name'),
             'description' => setting_get($db, 'site_tagline'),
         ],
     ]);
@@ -559,6 +684,8 @@ if ($path === '/admin') {
 if ($path === '/admin/settings' && $method === 'GET') {
     require_admin();
     $theme = setting_get($db, 'theme', 'default');
+    $langs = available_languages();
+    $defaultLang = setting_get($db, 'default_lang', 'en');
     ob_start();
     echo '<h1 class="title is-3">Settings</h1>';
     echo '<div class="box admin-card"><form method="post" action="/admin/settings">';
@@ -573,7 +700,15 @@ if ($path === '/admin/settings' && $method === 'GET') {
     echo '<div class="column"><div class="field"><label class="label">Email</label><div class="control"><input class="input" name="company_email" value="' . h(setting_get($db, 'company_email')) . '"></div></div></div>';
     echo '<div class="column"><div class="field"><label class="label">Phone</label><div class="control"><input class="input" name="company_phone" value="' . h(setting_get($db, 'company_phone')) . '"></div></div></div>';
     echo '</div>';
-    echo '<div class="field"><label class="label">Theme</label><div class="control"><input class="input" name="theme" value="' . h($theme) . '"></div><p class="help">Theme folder under /themes</p></div>';
+    echo '<div class="columns">';
+    echo '<div class="column"><div class="field"><label class="label">Theme</label><div class="control"><input class="input" name="theme" value="' . h($theme) . '"></div><p class="help">Theme folder under /themes</p></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">Default Language</label><div class="control"><div class="select is-fullwidth"><select name="default_lang">';
+    foreach ($langs as $code => $label) {
+        $selected = $code === $defaultLang ? ' selected' : '';
+        echo '<option value="' . h($code) . '"' . $selected . '>' . h($label) . '</option>';
+    }
+    echo '</select></div></div></div></div>';
+    echo '</div>';
     echo '<button class="button is-link" type="submit">Save Settings</button>';
     echo '</form></div>';
     $content = ob_get_clean();
@@ -583,7 +718,7 @@ if ($path === '/admin/settings' && $method === 'GET') {
 if ($path === '/admin/settings' && $method === 'POST') {
     require_admin();
     csrf_check();
-    $keys = ['site_name','site_tagline','company_about','company_address','company_email','company_phone','theme'];
+    $keys = ['site_name','site_tagline','company_about','company_address','company_email','company_phone','theme','default_lang'];
     foreach ($keys as $k) {
         setting_set($db, $k, trim((string)($_POST[$k] ?? '')));
     }

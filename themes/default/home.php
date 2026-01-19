@@ -3,7 +3,7 @@
     <div class="container">
       <p class="title has-text-white"><?= h($site['tagline']) ?></p>
       <p class="subtitle has-text-white"><?= h($site['about']) ?></p>
-      <a class="button is-light" href="/contact">Request a Quote</a>
+      <a class="button is-light" href="/contact"><?= h(t('cta_quote')) ?></a>
     </div>
   </div>
 </section>
@@ -13,20 +13,20 @@
     <div class="columns">
       <div class="column">
         <div class="box soft-card">
-          <h3 class="title is-6">Quality Assurance</h3>
-          <p class="is-size-7">ISO-aligned production with strict QC before shipment.</p>
+          <h3 class="title is-6"><?= h(t('home_quality_title')) ?></h3>
+          <p class="is-size-7"><?= h(t('home_quality_desc')) ?></p>
         </div>
       </div>
       <div class="column">
         <div class="box soft-card">
-          <h3 class="title is-6">Global Logistics</h3>
-          <p class="is-size-7">On-time delivery with consolidated freight options.</p>
+          <h3 class="title is-6"><?= h(t('home_logistics_title')) ?></h3>
+          <p class="is-size-7"><?= h(t('home_logistics_desc')) ?></p>
         </div>
       </div>
       <div class="column">
         <div class="box soft-card">
-          <h3 class="title is-6">Dedicated Support</h3>
-          <p class="is-size-7">One-to-one account service for long-term buyers.</p>
+          <h3 class="title is-6"><?= h(t('home_support_title')) ?></h3>
+          <p class="is-size-7"><?= h(t('home_support_desc')) ?></p>
         </div>
       </div>
     </div>
@@ -37,10 +37,10 @@
   <div class="container">
     <div class="level">
       <div class="level-left">
-        <h2 class="title is-4">Featured Products</h2>
+        <h2 class="title is-4"><?= h(t('section_featured_products')) ?></h2>
       </div>
       <div class="level-right">
-        <a class="button is-link is-light" href="/products">View All</a>
+        <a class="button is-link is-light" href="/products"><?= h(t('btn_view_all')) ?></a>
       </div>
     </div>
     <div class="columns is-multiline">
@@ -62,10 +62,10 @@
   <div class="container">
     <div class="level">
       <div class="level-left">
-        <h2 class="title is-4">Success Cases</h2>
+        <h2 class="title is-4"><?= h(t('section_success_cases')) ?></h2>
       </div>
       <div class="level-right">
-        <a class="button is-link is-light" href="/cases">View All</a>
+        <a class="button is-link is-light" href="/cases"><?= h(t('btn_view_all')) ?></a>
       </div>
     </div>
     <div class="columns is-multiline">

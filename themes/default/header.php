@@ -35,12 +35,21 @@
     </div>
     <div id="main-nav" class="navbar-menu">
       <div class="navbar-end">
-        <a class="navbar-item" href="/products">Products</a>
-        <a class="navbar-item" href="/cases">Cases</a>
-        <a class="navbar-item" href="/blog">Blog</a>
-        <a class="navbar-item" href="/contact">Contact</a>
+        <a class="navbar-item" href="/"><?= h(t('nav_home')) ?></a>
+        <a class="navbar-item" href="/products"><?= h(t('nav_products')) ?></a>
+        <a class="navbar-item" href="/cases"><?= h(t('nav_cases')) ?></a>
+        <a class="navbar-item" href="/blog"><?= h(t('nav_blog')) ?></a>
+        <a class="navbar-item" href="/contact"><?= h(t('nav_contact')) ?></a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link"><?= h($languages[$lang] ?? $lang) ?></a>
+          <div class="navbar-dropdown">
+            <?php foreach ($languages as $code => $label): ?>
+              <a class="navbar-item" href="<?= h(lang_switch_url($code)) ?>"><?= h($label) ?></a>
+            <?php endforeach; ?>
+          </div>
+        </div>
         <div class="navbar-item">
-          <a class="button is-link" href="/contact">Request a Quote</a>
+          <a class="button is-link" href="/contact"><?= h(t('cta_quote')) ?></a>
         </div>
       </div>
     </div>

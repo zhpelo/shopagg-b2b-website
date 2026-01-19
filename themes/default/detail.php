@@ -11,14 +11,14 @@
   <section class="section">
     <div class="container">
       <div class="box soft-card">
-        <h2 class="title is-5">Send Inquiry</h2>
+        <h2 class="title is-5"><?= h(t('detail_send_inquiry')) ?></h2>
         <form method="post" action="/inquiry">
           <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
           <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label">Name</label>
+                <label class="label"><?= h(t('form_name')) ?></label>
                 <div class="control">
                   <input class="input" name="name" required>
                 </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="column">
               <div class="field">
-                <label class="label">Email</label>
+                <label class="label"><?= h(t('form_email')) ?></label>
                 <div class="control">
                   <input class="input" name="email" type="email" required>
                 </div>
@@ -36,7 +36,7 @@
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label">Company</label>
+                <label class="label"><?= h(t('form_company')) ?></label>
                 <div class="control">
                   <input class="input" name="company">
                 </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="column">
               <div class="field">
-                <label class="label">Phone</label>
+                <label class="label"><?= h(t('form_phone')) ?></label>
                 <div class="control">
                   <input class="input" name="phone">
                 </div>
@@ -52,12 +52,12 @@
             </div>
           </div>
           <div class="field">
-            <label class="label">Requirements</label>
+            <label class="label"><?= h(t('form_requirements')) ?></label>
             <div class="control">
               <textarea class="textarea" name="message" rows="5"></textarea>
             </div>
           </div>
-          <button class="button is-link" type="submit">Send Inquiry</button>
+          <button class="button is-link" type="submit"><?= h(t('btn_send_inquiry')) ?></button>
         </form>
       </div>
     </div>

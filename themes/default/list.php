@@ -8,7 +8,7 @@
             <div class="card-content">
               <p class="title is-6"><a href="<?= h($item['url']) ?>"><?= h($item['title']) ?></a></p>
               <p class="content is-size-7"><?= h($item['summary']) ?></p>
-              <a class="button is-small is-link is-light" href="<?= h($item['url']) ?>">Read More</a>
+              <a class="button is-small is-link is-light" href="<?= h($item['url']) ?>"><?= h(t('list_read_more')) ?></a>
             </div>
           </div>
         </div>
