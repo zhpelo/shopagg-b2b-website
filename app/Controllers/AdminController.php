@@ -12,6 +12,7 @@ use App\Models\CaseModel;
 use App\Models\PostModel;
 use App\Models\Inquiry;
 use App\Models\Message;
+use App\Models\User;
 use SQLite3;
 
 class AdminController extends Controller {
@@ -23,6 +24,7 @@ class AdminController extends Controller {
     private PostModel $postModel;
     private Inquiry $inquiryModel;
     private Message $messageModel;
+    private User $userModel;
 
     public function __construct() {
         $this->db = Database::getInstance();
@@ -33,11 +35,40 @@ class AdminController extends Controller {
         $this->postModel = new PostModel();
         $this->inquiryModel = new Inquiry();
         $this->messageModel = new Message();
+        $this->userModel = new User();
         
         // Auth check
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         if ($path !== '/admin/login' && !isset($_SESSION['admin_user'])) {
             $this->redirect('/admin/login');
+        }
+
+        // Permission check
+        if (isset($_SESSION['admin_user'])) {
+            $this->checkPermission($path);
+        }
+    }
+
+    private function checkPermission(string $path): void {
+        if ($_SESSION['admin_role'] === 'admin') return;
+
+        $perms = $_SESSION['admin_permissions'] ?? [];
+        
+        $map = [
+            '/admin/products' => 'products',
+            '/admin/categories' => 'products',
+            '/admin/cases' => 'cases',
+            '/admin/posts' => 'blog',
+            '/admin/messages' => 'inbox',
+            '/admin/inquiries' => 'inbox',
+            '/admin/settings' => 'settings',
+            '/admin/staff' => 'staff',
+        ];
+
+        foreach ($map as $prefix => $perm) {
+            if (str_starts_with($path, $prefix) && !in_array($perm, $perms)) {
+                $this->redirect('/admin');
+            }
         }
     }
 
@@ -52,12 +83,13 @@ class AdminController extends Controller {
     public function doLogin(): void {
         $username = trim((string)$_POST['username']);
         $password = (string)$_POST['password'];
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :u");
-        $stmt->bindValue(':u', $username);
-        $res = $stmt->execute();
-        $user = $res->fetchArray(SQLITE3_ASSOC);
+        $user = $this->userModel->getByUsername($username);
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['admin_user'] = $user['username'];
+            $_SESSION['admin_user_id'] = $user['id'];
+            $_SESSION['admin_role'] = $user['role'];
+            $_SESSION['admin_permissions'] = array_filter(explode(',', $user['permissions'] ?? ''));
+            $_SESSION['admin_display_name'] = $user['display_name'] ?? $user['username'];
             $this->redirect('/admin');
         }
         $this->renderAdmin('登录', '<div class="notification is-danger">登录失败</div>' . $this->renderView('admin/login'), false);
@@ -498,6 +530,92 @@ class AdminController extends Controller {
         [$ok, $result] = save_uploaded_image($_FILES['image']);
         if (!$ok) $this->json(['error' => $result], 400);
         $this->json(['url' => $result]);
+    }
+
+    // --- Staff Management ---
+    public function staffList(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->redirect('/admin');
+        }
+        $users = $this->userModel->getAll();
+        $this->renderAdmin('员工管理', $this->renderView('admin/staff/index', ['users' => $users]));
+    }
+
+    public function staffCreate(): void {
+        if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
+        $this->renderAdmin('新增员工', $this->renderView('admin/staff/form', ['action' => '/admin/staff/create']));
+    }
+
+    public function staffStore(): void {
+        if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
+        csrf_check();
+        $data = [
+            'username' => trim((string)$_POST['username']),
+            'password' => (string)$_POST['password'],
+            'display_name' => trim((string)$_POST['display_name']),
+            'role' => trim((string)$_POST['role']),
+            'permissions' => implode(',', $_POST['permissions'] ?? [])
+        ];
+        $this->userModel->create($data);
+        $this->redirect('/admin/staff');
+    }
+
+    public function staffEdit(): void {
+        if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
+        $id = (int)($_GET['id'] ?? 0);
+        $user = $this->userModel->getById($id);
+        if (!$user) $this->redirect('/admin/staff');
+        $user['permissions'] = explode(',', $user['permissions'] ?? '');
+        $this->renderAdmin('编辑员工', $this->renderView('admin/staff/form', [
+            'action' => '/admin/staff/edit?id=' . $id,
+            'user' => $user
+        ]));
+    }
+
+    public function staffUpdate(): void {
+        if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
+        csrf_check();
+        $id = (int)($_GET['id'] ?? 0);
+        $data = [
+            'username' => trim((string)$_POST['username']),
+            'display_name' => trim((string)$_POST['display_name']),
+            'role' => trim((string)$_POST['role']),
+            'permissions' => implode(',', $_POST['permissions'] ?? [])
+        ];
+        if (!empty($_POST['password'])) {
+            $data['password'] = (string)$_POST['password'];
+        }
+        $this->userModel->update($id, $data);
+        $this->redirect('/admin/staff');
+    }
+
+    public function staffDelete(): void {
+        if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id !== (int)$_SESSION['admin_user_id']) {
+            $this->userModel->delete($id);
+        }
+        $this->redirect('/admin/staff');
+    }
+
+    // --- Profile Management ---
+    public function profile(): void {
+        $user = $this->userModel->getById((int)$_SESSION['admin_user_id']);
+        $this->renderAdmin('个人资料', $this->renderView('admin/profile', ['user' => $user]));
+    }
+
+    public function profileUpdate(): void {
+        csrf_check();
+        $id = (int)$_SESSION['admin_user_id'];
+        $data = [
+            'display_name' => trim((string)$_POST['display_name'])
+        ];
+        if (!empty($_POST['password'])) {
+            $data['password'] = (string)$_POST['password'];
+        }
+        $this->userModel->update($id, $data);
+        $_SESSION['admin_display_name'] = $data['display_name'];
+        $this->redirect('/admin/profile');
     }
 
     // --- Rendering Helpers ---

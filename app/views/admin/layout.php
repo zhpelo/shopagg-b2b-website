@@ -45,7 +45,7 @@
         .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .media-item .delete { position: absolute; top: 8px; right: 8px; z-index: 10; display: none; }
         .media-item:hover .delete { display: block; }
-        
+
         .media-add-btn { aspect-ratio: 1/1; border: 1px dashed #dbdbdb; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #fdfdfd; transition: all .2s; }
         .media-add-btn:hover { border-color: #3273dc; background: #f9f9f9; }
         
@@ -59,13 +59,21 @@
     </style>
 </head>
 <body>
-<?php if ($showNav ?? true): 
+    <?php if ($showNav ?? true): 
     $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $active_group = '';
     if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/categories')) $active_group = 'catalog';
     elseif (str_starts_with($current_path, '/admin/cases')) $active_group = 'cases';
     elseif (str_starts_with($current_path, '/admin/posts')) $active_group = 'blog';
     elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
+    elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
+
+    $user_role = $_SESSION['admin_role'] ?? 'staff';
+    $user_perms = $_SESSION['admin_permissions'] ?? [];
+    
+    $can_access = function($perm) use ($user_role, $user_perms) {
+        return $user_role === 'admin' || in_array($perm, $user_perms);
+    };
 ?>
     <!-- 第一级主导航 -->
     <nav class="navbar is-white admin-navbar" role="navigation" aria-label="main navigation">
@@ -87,30 +95,48 @@
                     <a class="navbar-item <?= $current_path === '/admin' ? 'is-active' : '' ?>" href="/admin">
                         <span class="icon mr-1"><i class="fas fa-home"></i></span>仪表盘
                     </a>
+                    <?php if ($can_access('products')): ?>
                     <a class="navbar-item <?= $active_group === 'catalog' ? 'is-active' : '' ?>" href="/admin/products">
                         <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
                     </a>
+                    <?php endif; ?>
+                    <?php if ($can_access('cases')): ?>
                     <a class="navbar-item <?= $active_group === 'cases' ? 'is-active' : '' ?>" href="/admin/cases">
                         <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
                     </a>
+                    <?php endif; ?>
+                    <?php if ($can_access('blog')): ?>
                     <a class="navbar-item <?= $active_group === 'blog' ? 'is-active' : '' ?>" href="/admin/posts">
                         <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                     </a>
+                    <?php endif; ?>
+                    <?php if ($can_access('inbox')): ?>
                     <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="/admin/messages">
                         <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
                     </a>
+                    <?php endif; ?>
+                    <?php if ($user_role === 'admin'): ?>
+                    <a class="navbar-item <?= $active_group === 'staff' ? 'is-active' : '' ?>" href="/admin/staff">
+                        <span class="icon mr-1"><i class="fas fa-users"></i></span>员工管理
+                    </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="navbar-end">
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link">
                             <span class="icon mr-1"><i class="fas fa-user-circle"></i></span>
-                            <?= h($_SESSION['admin_user'] ?? 'Admin') ?>
+                            <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
                         </a>
                         <div class="navbar-dropdown is-right">
+                            <a class="navbar-item" href="/admin/profile">
+                                <span class="icon mr-1"><i class="fas fa-id-card"></i></span>个人资料
+                            </a>
+                            <?php if ($can_access('settings')): ?>
                             <a class="navbar-item" href="/admin/settings">
                                 <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
                             </a>
+                            <?php endif; ?>
                             <hr class="navbar-divider">
                             <a class="navbar-item has-text-danger" href="/admin/logout">
                                 <span class="icon mr-1"><i class="fas fa-sign-out-alt"></i></span>退出登录
@@ -138,6 +164,9 @@
             <?php elseif ($active_group === 'inbox'): ?>
                 <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="/admin/messages">联系留言</a>
                 <a class="navbar-item <?= str_contains($current_path, '/inquiries') ? 'is-active' : '' ?>" href="/admin/inquiries">询单管理</a>
+            <?php elseif ($active_group === 'staff'): ?>
+                <a class="navbar-item <?= $current_path === '/admin/staff' ? 'is-active' : '' ?>" href="/admin/staff">员工列表</a>
+                <a class="navbar-item <?= str_contains($current_path, '/staff/create') ? 'is-active' : '' ?>" href="/admin/staff/create">新增员工</a>
             <?php endif; ?>
         </div>
     </nav>
@@ -350,7 +379,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const toolbar = quill.getModule("toolbar");
         toolbar.addHandler("image", function () {
             openMediaLibrary(function(url) {
-                const range = quill.getSelection(true);
+                            const range = quill.getSelection(true);
                 quill.insertEmbed(range ? range.index : 0, "image", url);
             });
         });

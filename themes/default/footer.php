@@ -13,7 +13,7 @@
             <a class="button is-light is-rounded" href="<?= h($site['instagram']) ?>" target="_blank" title="Instagram"><span class="icon"><i class="fab fa-instagram"></i></span></a>
           <?php endif; ?>
           <?php if (!empty($site['twitter'])): ?>
-            <a class="button is-light is-rounded" href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"><span class="icon"><i class="fab fa-x-twitter"></i></span></a>
+            <a class="button is-light is-rounded" href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"><span class="icon"><i class="fab fa-twitter"></i></span></a>
           <?php endif; ?>
           <?php if (!empty($site['linkedin'])): ?>
             <a class="button is-light is-rounded" href="<?= h($site['linkedin']) ?>" target="_blank" title="LinkedIn"><span class="icon"><i class="fab fa-linkedin-in"></i></span></a>

@@ -369,11 +369,11 @@ $tabs = [
                 <div class="field">
                             <label class="label is-capitalized"><?= $sm ?></label>
                             <div class="control"><input class="input" name="<?= $sm ?>" value="<?= h($settings[$sm] ?? '') ?>"></div>
-                        </div>
+            </div>
                 </div>
                 <?php endforeach; ?>
             </div>
-        </div>
+                </div>
     <?php elseif ($tab === 'translations'): ?>
         <div class="box admin-card">
             <div class="level">
@@ -388,7 +388,7 @@ $tabs = [
                                 <?= $l === 'zh' ? '中文 (zh)' : ($l === 'en' ? 'English (en)' : strtoupper($l)) ?>
                             </a>
                         <?php endforeach; ?>
-                    </div>
+            </div>
                 </div>
             </div>
             <input type="hidden" name="edit_lang" value="<?= h($current_edit_lang) ?>">

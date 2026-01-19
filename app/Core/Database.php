@@ -53,6 +53,21 @@ class Database {
         foreach ($inquiryCols as $col => $type) {
             if (!in_array($col, $existing)) $db->exec("ALTER TABLE inquiries ADD COLUMN $col $type");
         }
+
+        // Users columns
+        $userCols = [
+            'role' => 'TEXT DEFAULT "staff"',
+            'permissions' => 'TEXT',
+            'display_name' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(users)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($userCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE users ADD COLUMN $col $type");
+        }
+        // Update default admin role
+        $db->exec("UPDATE users SET role = 'admin' WHERE username = 'admin'");
     }
 
     private static function initSchema(SQLite3 $db): void {

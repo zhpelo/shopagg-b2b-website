@@ -73,7 +73,7 @@
     </div>
     
     <div class="columns is-multiline">
-      <?php foreach ($products as $p): ?>
+    <?php foreach ($products as $p): ?>
         <div class="column is-4">
           <div class="card soft-card h-100" style="display: flex; flex-direction: column; height: 100%;">
             <div class="card-image">
@@ -145,8 +145,8 @@
               </div>
             </div>
           </a>
-        </div>
-      <?php endforeach; ?>
+      </div>
+    <?php endforeach; ?>
     </div>
   </div>
 </section>

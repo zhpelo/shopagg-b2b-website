@@ -117,6 +117,18 @@ $router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList'])
 $router->add('GET', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
 $router->add('GET', '/admin/inquiries/export', [AdminController::class, 'inquiryExport']);
 
+// Staff Management
+$router->add('GET', '/admin/staff', [AdminController::class, 'staffList']);
+$router->add('GET', '/admin/staff/create', [AdminController::class, 'staffCreate']);
+$router->add('POST', '/admin/staff/create', [AdminController::class, 'staffStore']);
+$router->add('GET', '/admin/staff/edit', [AdminController::class, 'staffEdit']);
+$router->add('POST', '/admin/staff/edit', [AdminController::class, 'staffUpdate']);
+$router->add('GET', '/admin/staff/delete', [AdminController::class, 'staffDelete']);
+
+// Profile
+$router->add('GET', '/admin/profile', [AdminController::class, 'profile']);
+$router->add('POST', '/admin/profile/update', [AdminController::class, 'profileUpdate']);
+
 // AJAX
 $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
 $router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
