@@ -94,6 +94,12 @@ class SiteController extends BaseController {
         ]);
     }
 
+    public function about(): void {
+        $this->renderSite('about', [
+            'seo' => ['title' => 'About Us - ' . $this->siteData['site']['name']]
+        ]);
+    }
+
     public function contact(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             csrf_check();

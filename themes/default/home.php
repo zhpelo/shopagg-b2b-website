@@ -78,7 +78,7 @@
           <div class="card soft-card h-100" style="display: flex; flex-direction: column; height: 100%;">
             <div class="card-image">
               <a href="<?= h($p['url']) ?>">
-                <figure class="image is-4by3">
+                <figure class="image is-1by1">
                   <img src="<?= h($p['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($p['title']) ?>" style="object-fit: cover;">
                 </figure>
               </a>

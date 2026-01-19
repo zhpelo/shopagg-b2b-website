@@ -81,21 +81,33 @@ class AdminController extends Controller {
     }
 
     public function settings(): void {
+        $tab = $_GET['tab'] ?? 'general';
         $settings = $this->settingModel->getAll();
-        $this->renderAdmin('设置', $this->renderView('admin/settings', ['settings' => $settings]));
+        $this->renderAdmin('系统设置', $this->renderView('admin/settings', [
+            'settings' => $settings,
+            'tab' => $tab
+        ]));
     }
 
     public function saveSettings(): void {
         csrf_check();
-        $keys = [
-            'site_name', 'site_tagline', 'company_about', 'company_address', 'company_email', 'company_phone', 
-            'theme', 'default_lang', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube',
-            'seo_title', 'seo_keywords', 'seo_description', 'og_image'
+        $tab = $_POST['tab'] ?? 'general';
+        
+        $groups = [
+            'general' => ['site_name', 'site_tagline', 'theme', 'default_lang', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
+            'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],
+            'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
+            'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube'],
+            'media' => ['company_show_json', 'company_certificates_json', 'company_profile_images_json']
         ];
+
+        $keys = $groups[$tab] ?? [];
         foreach ($keys as $k) {
-            $this->settingModel->set($k, trim((string)($_POST[$k] ?? '')));
+            if (isset($_POST[$k])) {
+                $this->settingModel->set($k, is_array($_POST[$k]) ? json_encode($_POST[$k]) : trim((string)$_POST[$k]));
+            }
         }
-        $this->redirect('/admin/settings');
+        $this->redirect('/admin/settings?tab=' . $tab);
     }
 
     // --- Products ---
