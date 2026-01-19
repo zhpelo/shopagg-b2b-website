@@ -31,11 +31,9 @@ class SiteController extends BaseController {
     public function products(): void {
         $items = (new Product())->getList();
         foreach ($items as &$i) $i['url'] = '/product/' . $i['slug'];
-        $this->renderSite('list', [
+        $this->renderSite('product_list', [
             'title' => t('products'),
             'items' => $items,
-            'show_category' => true,
-            'show_image' => true,
             'seo' => ['title' => t('products') . ' - ' . $this->siteData['site']['name']]
         ]);
     }
@@ -45,7 +43,7 @@ class SiteController extends BaseController {
         $item = $productModel->getBySlug($slug);
         if (!$item) { $this->notFound(); return; }
         
-        $this->renderSite('detail', [
+        $this->renderSite('product_detail', [
             'item' => $item,
             'images' => $item['images'] ?? [],
             'price_tiers' => $productModel->getPrices((int)$item['id']),
@@ -61,7 +59,7 @@ class SiteController extends BaseController {
     public function cases(): void {
         $items = (new CaseModel())->getList();
         foreach ($items as &$i) $i['url'] = '/case/' . $i['slug'];
-        $this->renderSite('list', [
+        $this->renderSite('case_list', [
             'title' => t('cases'),
             'items' => $items,
             'seo' => ['title' => t('cases') . ' - ' . $this->siteData['site']['name']]
@@ -71,7 +69,7 @@ class SiteController extends BaseController {
     public function caseDetail(string $slug): void {
         $item = (new CaseModel())->getBySlug($slug);
         if (!$item) { $this->notFound(); return; }
-        $this->renderSite('detail', [
+        $this->renderSite('case_detail', [
             'item' => $item,
             'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
         ]);
@@ -80,7 +78,7 @@ class SiteController extends BaseController {
     public function blog(): void {
         $items = (new PostModel())->getList();
         foreach ($items as &$i) $i['url'] = '/blog/' . $i['slug'];
-        $this->renderSite('list', [
+        $this->renderSite('post_list', [
             'title' => t('blog'),
             'items' => $items,
             'seo' => ['title' => t('blog') . ' - ' . $this->siteData['site']['name']]
@@ -90,7 +88,7 @@ class SiteController extends BaseController {
     public function blogDetail(string $slug): void {
         $item = (new PostModel())->getBySlug($slug);
         if (!$item) { $this->notFound(); return; }
-        $this->renderSite('detail', [
+        $this->renderSite('post_detail', [
             'item' => $item,
             'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
         ]);

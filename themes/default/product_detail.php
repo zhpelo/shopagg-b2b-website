@@ -41,7 +41,7 @@
               $waDigits = preg_replace('/\\D+/', '', $wa);
             ?>
             <?php if (!empty($waDigits)): ?>
-              <a class="button is-success is-medium is-fullwidth" target="_blank" rel="noopener" href="https://wa.me/<?= h($waDigits) ?>">WhatsApp</a>
+              <a class="button is-success is-medium is-fullwidth" target="_blank" rel="noopener" href="https://wa.me/<?= h($waDigits) ?>">Chat on WhatsApp</a>
             <?php endif; ?>
           </div>
           <?php if (!empty($item['summary'])): ?>
