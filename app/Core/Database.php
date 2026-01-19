@@ -18,8 +18,29 @@ class Database {
             if ($isNew) {
                 self::initSchema(self::$instance);
             }
+            self::ensureColumns(self::$instance);
         }
         return self::$instance;
+    }
+
+    private static function ensureColumns(SQLite3 $db): void {
+        $cols = [
+            'status' => 'TEXT DEFAULT "active"',
+            'product_type' => 'TEXT',
+            'vendor' => 'TEXT',
+            'tags' => 'TEXT',
+            'images_json' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(products)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $existing[] = $row['name'];
+        }
+        foreach ($cols as $col => $type) {
+            if (!in_array($col, $existing)) {
+                $db->exec("ALTER TABLE products ADD COLUMN $col $type");
+            }
+        }
     }
 
     private static function initSchema(SQLite3 $db): void {

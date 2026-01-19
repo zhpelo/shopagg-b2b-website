@@ -44,6 +44,10 @@ function lang_switch_url(string $lang): string {
     return $path . '?' . http_build_query($query);
 }
 
+function get_languages(): array {
+    return ['en' => 'English', 'zh' => '中文'];
+}
+
 function base_url(): string {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';

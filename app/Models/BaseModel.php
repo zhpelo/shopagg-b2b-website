@@ -15,10 +15,15 @@ abstract class BaseModel {
 
     protected function fetchAll(string $query, array $params = []): array {
         $stmt = $this->db->prepare($query);
+        if ($stmt === false) {
+            error_log("SQLite prepare failed: " . $this->db->lastErrorMsg() . " | Query: " . $query);
+            return [];
+        }
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val, $this->getSqliteType($val));
         }
         $res = $stmt->execute();
+        if ($res === false) return [];
         $list = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
             $list[] = $row;
@@ -28,10 +33,15 @@ abstract class BaseModel {
 
     protected function fetchOne(string $query, array $params = []): ?array {
         $stmt = $this->db->prepare($query);
+        if ($stmt === false) {
+            error_log("SQLite prepare failed: " . $this->db->lastErrorMsg() . " | Query: " . $query);
+            return null;
+        }
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val, $this->getSqliteType($val));
         }
         $res = $stmt->execute();
+        if ($res === false) return null;
         $row = $res->fetchArray(SQLITE3_ASSOC);
         return $row ?: null;
     }

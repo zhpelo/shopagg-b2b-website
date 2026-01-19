@@ -6,7 +6,29 @@
     <title><?= h($title) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
-    <style>body{background:#f5f7fb}.admin-card{box-shadow:0 10px 30px rgba(15,23,42,0.08)}</style>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        body{background:#f5f7fb}
+        .admin-card{box-shadow:0 10px 30px rgba(15,23,42,0.08); border-radius: 8px;}
+        .relative{position:relative}
+        .media-select-item.is-selected{background-color:#f0f7ff; border-color: #3273dc !important;}
+        
+        /* 媒体网格样式 */
+        #media-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .media-item { aspect-ratio: 1/1; border: 1px solid #dbdbdb; border-radius: 8px; overflow: hidden; background: #fff; cursor: grab; position: relative; }
+        .media-item:first-child { grid-column: span 2; grid-row: span 2; }
+        .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .media-item .delete { position: absolute; top: 8px; right: 8px; z-index: 10; display: none; }
+        .media-item:hover .delete { display: block; }
+        
+        .media-add-btn { aspect-ratio: 1/1; border: 1px dashed #dbdbdb; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #fdfdfd; transition: all .2s; }
+        .media-add-btn:hover { border-color: #3273dc; background: #f9f9f9; }
+        
+        .media-placeholder { border: 1px dashed #dbdbdb; border-radius: 8px; padding: 40px; text-align: center; background: #fff; }
+        .media-placeholder .buttons { justify-content: center; margin-bottom: 10px; }
+        
+        .ql-editor { font-size: 16px !important; }
+    </style>
 </head>
 <body>
 <?php if ($showNav ?? true): ?>

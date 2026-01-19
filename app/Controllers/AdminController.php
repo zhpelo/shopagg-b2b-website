@@ -112,7 +112,6 @@ class AdminController extends Controller {
         csrf_check();
         $data = $this->getProductFormData();
         $productId = $this->productModel->create($data);
-        $this->handleProductImages($productId);
         $this->handleProductPrices($productId);
         $this->redirect('/admin/products');
     }
@@ -121,14 +120,14 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $product = $this->productModel->getById($id);
         if (!$product) $this->redirect('/admin/products');
+        
         $categories = $this->categoryModel->getAll();
-        $images = $this->productModel->getImages($id);
         $prices = $this->productModel->getPrices($id);
+        
         $this->renderAdmin('编辑产品', $this->renderView('admin/products/form', [
             'action' => '/admin/products/edit?id=' . $id,
             'product' => $product,
             'categories' => $categories,
-            'images' => $images,
             'prices' => $prices
         ]));
     }
@@ -138,11 +137,6 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $data = $this->getProductFormData();
         $this->productModel->update($id, $data);
-        $removeIds = $_POST['remove_images'] ?? [];
-        foreach ($removeIds as $rid) {
-            $this->productModel->deleteImage((int)$rid, $id);
-        }
-        $this->handleProductImages($id);
         $this->handleProductPrices($id);
         $this->redirect('/admin/products');
     }
@@ -157,25 +151,57 @@ class AdminController extends Controller {
         $title = trim((string)$_POST['title']);
         $slug = trim((string)($_POST['slug'] ?? ''));
         if ($slug === '') $slug = slugify($title);
+        
+        // Handle images from hidden input or newly uploaded
+        $images = $_POST['images'] ?? []; // This will be from the UI selection
+        if (!is_array($images)) $images = [$images];
+        
+        // Handle new uploads if any
+        if (isset($_FILES['new_images'])) {
+            $files = normalize_files_array($_FILES['new_images']);
+            foreach ($files as $file) {
+                [$ok, $result] = save_uploaded_image($file);
+                if ($ok) {
+                    $images[] = $result;
+                }
+            }
+        }
+
         return [
             'title' => $title,
             'slug' => $slug,
             'summary' => trim((string)($_POST['summary'] ?? '')),
             'content' => trim((string)($_POST['content'] ?? '')),
             'category_id' => (int)($_POST['category_id'] ?? 0),
+            'status' => trim((string)($_POST['status'] ?? 'active')),
+            'product_type' => trim((string)($_POST['product_type'] ?? '')),
+            'vendor' => trim((string)($_POST['vendor'] ?? '')),
+            'tags' => trim((string)($_POST['tags'] ?? '')),
+            'images_json' => json_encode(array_values(array_unique(array_filter($images)))),
         ];
     }
 
-    private function handleProductImages(int $productId): void {
-        if (!isset($_FILES['images'])) return;
-        $files = normalize_files_array($_FILES['images']);
-        $sort = 0;
-        foreach ($files as $file) {
-            [$ok, $result] = save_uploaded_image($file);
-            if ($ok) {
-                $this->productModel->addImage($productId, $result, $sort++);
+    public function mediaLibrary(): void {
+        $dir = __DIR__ . '/../../uploads';
+        $files = [];
+        if (is_dir($dir)) {
+            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
+            foreach ($it as $file) {
+                if ($file->isDir()) continue;
+                if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file->getFilename())) {
+                    $path = str_replace('\\', '/', $file->getPathname());
+                    $uploadsPos = strpos($path, '/uploads/');
+                    if ($uploadsPos !== false) {
+                        $files[] = substr($path, $uploadsPos);
+                    }
+                }
             }
         }
+        // Sort by newest first
+        usort($files, function($a, $b) {
+            return filemtime(__DIR__ . '/../..' . $b) <=> filemtime(__DIR__ . '/../..' . $a);
+        });
+        $this->json($files);
     }
 
     private function handleProductPrices(int $productId): void {

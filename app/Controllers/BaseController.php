@@ -38,6 +38,7 @@ abstract class BaseController extends Controller {
         // Add multi-language helpers to data
         $lang = $_SESSION['lang'] ?? $this->siteData['site']['default_lang'];
         $data['lang'] = $lang;
+        $data['languages'] = get_languages();
         $data['site'] = $this->siteData['site'];
         
         // Merge SEO

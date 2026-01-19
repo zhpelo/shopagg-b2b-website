@@ -5,32 +5,49 @@ namespace App\Models;
 
 class Product extends BaseModel {
     public function getList(int $limit = 0): array {
-        $query = "SELECT products.*, product_categories.name AS category_name,
-            (SELECT url FROM product_images WHERE product_id = products.id ORDER BY sort ASC, id ASC LIMIT 1) AS cover
+        $query = "SELECT products.*, product_categories.name AS category_name
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
             ORDER BY products.id DESC";
         if ($limit > 0) $query .= " LIMIT $limit";
-        return $this->fetchAll($query);
+        $items = $this->fetchAll($query);
+        foreach ($items as &$item) {
+            $images = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $images[0] ?? '';
+        }
+        return $items;
     }
 
     public function getById(int $id): ?array {
-        return $this->fetchOne("SELECT * FROM products WHERE id = :id", [':id' => $id]);
+        $item = $this->fetchOne("SELECT * FROM products WHERE id = :id", [':id' => $id]);
+        if ($item) {
+            $item['images'] = json_decode((string)($item['images_json'] ?? '[]'), true);
+        }
+        return $item;
     }
 
     public function getBySlug(string $slug): ?array {
-        return $this->fetchOne("SELECT products.*, product_categories.name AS category_name
+        $item = $this->fetchOne("SELECT products.*, product_categories.name AS category_name
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.slug = :s", [':s' => $slug]);
+        if ($item) {
+            $item['images'] = json_decode((string)($item['images_json'] ?? '[]'), true);
+        }
+        return $item;
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, created_at, updated_at) 
-            VALUES (:t, :s, :sum, :c, :cid, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, created_at, updated_at) 
+            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
         $stmt->bindValue(':cid', (int)$data['category_id']);
+        $stmt->bindValue(':st', $data['status'] ?? 'active');
+        $stmt->bindValue(':pt', $data['product_type'] ?? '');
+        $stmt->bindValue(':v', $data['vendor'] ?? '');
+        $stmt->bindValue(':tags', $data['tags'] ?? '');
+        $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
         $stmt->bindValue(':ca', gmdate('c'));
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->execute();
@@ -38,12 +55,17 @@ class Product extends BaseModel {
     }
 
     public function update(int $id, array $data): void {
-        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
         $stmt->bindValue(':cid', (int)$data['category_id']);
+        $stmt->bindValue(':st', $data['status'] ?? 'active');
+        $stmt->bindValue(':pt', $data['product_type'] ?? '');
+        $stmt->bindValue(':v', $data['vendor'] ?? '');
+        $stmt->bindValue(':tags', $data['tags'] ?? '');
+        $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -56,7 +78,7 @@ class Product extends BaseModel {
     }
 
     public function getImages(int $productId): array {
-        return $this->fetchAll("SELECT * FROM product_images WHERE productId = :pid ORDER BY sort ASC, id ASC", [':pid' => $productId]);
+        return $this->fetchAll("SELECT * FROM product_images WHERE product_id = :pid ORDER BY sort ASC, id ASC", [':pid' => $productId]);
     }
 
     public function addImage(int $productId, string $url, int $sort = 0): void {

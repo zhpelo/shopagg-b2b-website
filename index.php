@@ -46,7 +46,7 @@ use App\Controllers\AdminController;
 $db = Database::getInstance();
 
 // Multi-language setup
-$langs = ['en' => 'English', 'zh' => '中文'];
+$langs = get_languages();
 if (isset($_GET['lang']) && isset($langs[$_GET['lang']])) {
     $_SESSION['lang'] = $_GET['lang'];
 }
@@ -116,6 +116,7 @@ $router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList'])
 
 // AJAX
 $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
+$router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
 
 // Run the router
 $router->run();

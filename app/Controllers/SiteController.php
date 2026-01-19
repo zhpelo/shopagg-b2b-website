@@ -43,7 +43,7 @@ class SiteController extends BaseController {
         
         $this->renderSite('detail', [
             'item' => $item,
-            'images' => array_column($productModel->getImages((int)$item['id']), 'url'),
+            'images' => $item['images'] ?? [],
             'price_tiers' => $productModel->getPrices((int)$item['id']),
             'whatsapp' => $this->siteData['site']['whatsapp'],
             'inquiry_form' => true,
