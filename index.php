@@ -1,4 +1,16 @@
 <?php
+
+/**
+ * SHOPAGG B2B Website - A Professional B2B Website Platform
+ *
+ * @copyright  Copyright (c) 2015–2026 SHOPAGG. All rights reserved.
+ * @license    MIT License
+ * @link       https://www.shopagg.com
+ * @author     SHOPAGG
+ * @version    1.0.0
+ */
+
+
 declare(strict_types=1);
 
 /**

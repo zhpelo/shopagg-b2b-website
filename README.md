@@ -1,6 +1,9 @@
-# B2B 企业官网 (MVC 架构版)
+# SHOPAGG B2B 企业官网 (MVC 架构版)
 
 基于 PHP 8.4 + SQLite3 构建的现代 B2B 企业官网系统。采用标准 MVC 设计模式重新架构，代码清晰、易于扩展，专为海外运营设计。
+
+开发者：SHOPAGG
+网站：https://www.shopagg.com
 
 ## 核心特性
 - **标准 MVC 架构**：逻辑 (Controller)、数据 (Model)、视图 (View) 彻底分离。
