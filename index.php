@@ -14,12 +14,16 @@ $baseDir = __DIR__;
 $dataDir = $baseDir . '/data';
 $themesDir = $baseDir . '/themes';
 $dbFile = $dataDir . '/site.db';
+$uploadsDir = $baseDir . '/uploads';
 
 if (!is_dir($dataDir)) {
     mkdir($dataDir, 0755, true);
 }
 if (!is_dir($themesDir)) {
     mkdir($themesDir, 0755, true);
+}
+if (!is_dir($uploadsDir)) {
+    mkdir($uploadsDir, 0755, true);
 }
 
 // -----------------------------
@@ -89,7 +93,34 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT,
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS product_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    url TEXT NOT NULL,
+    sort INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS product_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
 ");
+
+function ensure_column(SQLite3 $db, string $table, string $column, string $type): void {
+    $res = $db->query("PRAGMA table_info($table)");
+    while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+        if ($row['name'] === $column) {
+            return;
+        }
+    }
+    $db->exec("ALTER TABLE $table ADD COLUMN $column $type");
+}
+
+ensure_column($db, 'products', 'category_id', 'INTEGER');
 
 // Seed default admin
 $adminCount = (int)$db->querySingle("SELECT COUNT(*) FROM users");
@@ -128,6 +159,7 @@ if (setting_get($db, 'site_name', '') === '') {
     setting_set($db, 'company_phone', '+86-000-0000-0000');
     setting_set($db, 'theme', 'default');
     setting_set($db, 'default_lang', 'en');
+    setting_set($db, 'whatsapp', '');
 }
 
 // -----------------------------
@@ -183,6 +215,141 @@ function csrf_check(): void {
         http_response_code(400);
         echo 'Invalid CSRF token';
         exit;
+    }
+}
+
+function json_response(array $data, int $status = 200): void {
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+function validate_image_upload(array $file): array {
+    if (!empty($file['error'])) {
+        return [false, '上传失败'];
+    }
+    $maxSize = 5 * 1024 * 1024;
+    if (($file['size'] ?? 0) > $maxSize) {
+        return [false, '图片过大，请小于 5MB'];
+    }
+    $info = getimagesize($file['tmp_name']);
+    if ($info === false) {
+        return [false, '非法图片'];
+    }
+    $mime = $info['mime'] ?? '';
+    $extMap = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'image/webp' => 'webp',
+    ];
+    if (!isset($extMap[$mime])) {
+        return [false, '不支持的图片格式'];
+    }
+    return [true, $extMap[$mime]];
+}
+
+function save_uploaded_image(array $file): array {
+    [$ok, $extOrError] = validate_image_upload($file);
+    if (!$ok) {
+        return [false, $extOrError];
+    }
+    $ext = $extOrError;
+    $subDir = '/uploads/' . date('Ym');
+    $targetDir = __DIR__ . $subDir;
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true);
+    }
+    $filename = uniqid('img_', true) . '.' . $ext;
+    $targetPath = $targetDir . '/' . $filename;
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        return [false, '保存失败'];
+    }
+    return [true, $subDir . '/' . $filename];
+}
+
+function delete_uploaded_image(string $url): void {
+    if (strpos($url, '/uploads/') !== 0) {
+        return;
+    }
+    $path = __DIR__ . $url;
+    if (is_file($path)) {
+        @unlink($path);
+    }
+}
+
+function normalize_files_array(array $files): array {
+    $normalized = [];
+    $names = $files['name'] ?? [];
+    if (!is_array($names)) {
+        return $normalized;
+    }
+    $count = count($names);
+    for ($i = 0; $i < $count; $i++) {
+        if ($names[$i] === '') {
+            continue;
+        }
+        $normalized[] = [
+            'name' => $files['name'][$i] ?? '',
+            'type' => $files['type'][$i] ?? '',
+            'tmp_name' => $files['tmp_name'][$i] ?? '',
+            'error' => $files['error'][$i] ?? 0,
+            'size' => $files['size'][$i] ?? 0,
+        ];
+    }
+    return $normalized;
+}
+
+function admin_error(string $message): void {
+    admin_page('操作失败', '<div class="notification is-danger is-light">' . h($message) . '</div>', true);
+    exit;
+}
+
+function fetch_categories(SQLite3 $db): array {
+    $list = [];
+    $res = $db->query("SELECT id,name,slug FROM product_categories ORDER BY id DESC");
+    while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+        $list[] = $row;
+    }
+    return $list;
+}
+
+function process_product_images(SQLite3 $db, int $productId, int $existingCount, bool $requireAtLeastOne): void {
+    $files = $_FILES['images'] ?? null;
+    if (!$files || !isset($files['name'])) {
+        if ($requireAtLeastOne) {
+            admin_error('请上传 1-6 张产品图片');
+        }
+        return;
+    }
+    $list = normalize_files_array($files);
+    $count = count($list);
+    if ($count === 0) {
+        if ($requireAtLeastOne) {
+            admin_error('请上传 1-6 张产品图片');
+        }
+        return;
+    }
+    if ($count < 1 || $count > 6) {
+        admin_error('产品图片数量需为 1-6 张');
+    }
+    if ($existingCount + $count > 6) {
+        admin_error('产品图片总数不能超过 6 张');
+    }
+    $sort = $existingCount;
+    foreach ($list as $file) {
+        [$ok, $result] = save_uploaded_image($file);
+        if (!$ok) {
+            admin_error($result);
+        }
+        $stmt = $db->prepare("INSERT INTO product_images (product_id,url,sort,created_at) VALUES (:pid,:url,:sort,:t)");
+        $stmt->bindValue(':pid', $productId, SQLITE3_INTEGER);
+        $stmt->bindValue(':url', $result, SQLITE3_TEXT);
+        $stmt->bindValue(':sort', $sort, SQLITE3_INTEGER);
+        $stmt->bindValue(':t', gmdate('c'), SQLITE3_TEXT);
+        $stmt->execute();
+        $sort++;
     }
 }
 
@@ -304,6 +471,7 @@ function admin_nav_html(): string {
     $links = [
         '/admin' => '仪表盘',
         '/admin/products' => '产品',
+        '/admin/categories' => '产品分类',
         '/admin/cases' => '案例',
         '/admin/posts' => '博客',
         '/admin/messages' => '留言',
@@ -323,6 +491,7 @@ function admin_page(string $title, string $content, bool $showNav = true): void 
     echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . h($title) . '</title>';
     echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">';
+    echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">';
     echo '<style>body{background:#f5f7fb}.admin-card{box-shadow:0 10px 30px rgba(15,23,42,0.08)}</style>';
     echo '</head><body>';
     if ($showNav) {
@@ -331,9 +500,84 @@ function admin_page(string $title, string $content, bool $showNav = true): void 
         echo admin_nav_html();
         echo '</div></nav>';
     }
-    echo '<section class="section"><div class="container">';
+    echo '<div class="admin-page" style="min-height: 700px;"> <section class="section"><div class="container">';
     echo $content;
-    echo '</div></section></body></html>';
+    echo '</div></section></div>';
+    echo '<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>';
+    echo '<script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const editor = document.getElementById("quill-editor");
+        const input = document.getElementById("content-input");
+        if (!editor || !input) return;
+        const csrfToken = ' . json_encode(csrf_token(), JSON_UNESCAPED_UNICODE) . ';
+        const quill = new Quill(editor, {
+          theme: "snow",
+          placeholder: "请输入内容...",
+          modules: {
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ["bold", "italic", "underline", "strike"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              ["blockquote", "code-block"],
+              ["link", "image"],
+              ["clean"]
+            ]
+          }
+        });
+        const toolbar = quill.getModule("toolbar");
+        toolbar.addHandler("image", function () {
+          const inputFile = document.createElement("input");
+          inputFile.type = "file";
+          inputFile.accept = "image/*";
+          inputFile.click();
+          inputFile.addEventListener("change", function () {
+            const file = inputFile.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append("image", file);
+            formData.append("csrf", csrfToken);
+            fetch("/admin/upload-image", { method: "POST", body: formData })
+              .then(res => res.json())
+              .then(data => {
+                if (!data || !data.url) {
+                  alert(data && data.error ? data.error : "上传失败");
+                  return;
+                }
+                const range = quill.getSelection(true);
+                quill.insertEmbed(range ? range.index : 0, "image", data.url, "user");
+              })
+              .catch(() => alert("上传失败"));
+          });
+        });
+        quill.root.innerHTML = input.value || "";
+        const form = input.closest("form");
+        if (form) {
+          form.addEventListener("submit", function () {
+            input.value = quill.root.innerHTML;
+          });
+        }
+
+        const imageInput = document.querySelector("input[name=\'images[]\']");
+        const preview = document.getElementById("product-image-preview");
+        if (imageInput && preview) {
+          imageInput.addEventListener("change", function () {
+            preview.innerHTML = "";
+            const files = Array.from(imageInput.files || []);
+            files.slice(0, 6).forEach(file => {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                const div = document.createElement("div");
+                div.className = "column is-3";
+                div.innerHTML = "<figure class=\\"image is-4by3\\"><img src=\\"" + e.target.result + "\\"></figure>";
+                preview.appendChild(div);
+              };
+              reader.readAsDataURL(file);
+            });
+          });
+        }
+      });
+    </script>';
+    echo '</body></html>';
 }
 
 function render(SQLite3 $db, string $view, array $data = []): void {
@@ -351,6 +595,7 @@ function render(SQLite3 $db, string $view, array $data = []): void {
         'address' => setting_get($db, 'company_address', ''),
         'email' => setting_get($db, 'company_email', ''),
         'phone' => setting_get($db, 'company_phone', ''),
+        'whatsapp' => setting_get($db, 'whatsapp', ''),
     ];
 
     $seo = $data['seo'] ?? [];
@@ -456,7 +701,11 @@ if ($path === '/' || $path === '') {
 // Products list
 if ($path === '/products') {
     $items = [];
-    $res = $db->query("SELECT title,slug,summary FROM products ORDER BY id DESC");
+    $res = $db->query("SELECT products.title,products.slug,products.summary,
+        product_categories.name AS category_name,
+        (SELECT url FROM product_images WHERE product_id = products.id ORDER BY sort ASC, id ASC LIMIT 1) AS cover
+        FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
+        ORDER BY products.id DESC");
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         $row['url'] = '/product/' . $row['slug'];
         $items[] = $row;
@@ -464,6 +713,8 @@ if ($path === '/products') {
     render($db, 'list', [
         'title' => t('products'),
         'items' => $items,
+        'show_category' => true,
+        'show_image' => true,
         'seo' => [
             'title' => t('products') . ' - ' . setting_get($db, 'site_name'),
             'description' => setting_get($db, 'site_tagline'),
@@ -513,13 +764,24 @@ if ($path === '/blog') {
 // Product detail
 if (preg_match('#^/product/([a-z0-9\\-]+)$#', $path, $m)) {
     $slug = $m[1];
-    $stmt = $db->prepare("SELECT * FROM products WHERE slug = :s");
+    $stmt = $db->prepare("SELECT products.*, product_categories.name AS category_name
+        FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
+        WHERE products.slug = :s");
     $stmt->bindValue(':s', $slug, SQLITE3_TEXT);
     $res = $stmt->execute();
     $item = $res->fetchArray(SQLITE3_ASSOC);
     if ($item) {
+        $images = [];
+        $stmtImg = $db->prepare("SELECT url FROM product_images WHERE product_id = :pid ORDER BY sort ASC, id ASC");
+        $stmtImg->bindValue(':pid', (int)$item['id'], SQLITE3_INTEGER);
+        $resImg = $stmtImg->execute();
+        while ($row = $resImg->fetchArray(SQLITE3_ASSOC)) {
+            $images[] = $row['url'];
+        }
         render($db, 'detail', [
             'item' => $item,
+            'images' => $images,
+            'whatsapp' => setting_get($db, 'whatsapp', ''),
             'inquiry_form' => true,
             'seo' => [
                 'title' => $item['title'] . ' - ' . setting_get($db, 'site_name'),
@@ -657,6 +919,20 @@ if ($path === '/admin/logout') {
     exit;
 }
 
+if ($path === '/admin/upload-image' && $method === 'POST') {
+    require_admin();
+    csrf_check();
+    if (!isset($_FILES['image'])) {
+        json_response(['error' => '未选择文件'], 400);
+    }
+    $file = $_FILES['image'];
+    [$ok, $result] = save_uploaded_image($file);
+    if (!$ok) {
+        json_response(['error' => $result], 400);
+    }
+    json_response(['url' => $result]);
+}
+
 if ($path === '/admin') {
     require_admin();
     $counts = [
@@ -709,6 +985,7 @@ if ($path === '/admin/settings' && $method === 'GET') {
     }
     echo '</select></div></div></div></div>';
     echo '</div>';
+    echo '<div class="field"><label class="label">WhatsApp 账号</label><div class="control"><input class="input" name="whatsapp" value="' . h(setting_get($db, 'whatsapp')) . '"></div><p class="help">建议填写国际格式，如 +8613812345678</p></div>';
     echo '<button class="button is-link" type="submit">保存设置</button>';
     echo '</form></div>';
     $content = ob_get_clean();
@@ -718,7 +995,7 @@ if ($path === '/admin/settings' && $method === 'GET') {
 if ($path === '/admin/settings' && $method === 'POST') {
     require_admin();
     csrf_check();
-    $keys = ['site_name','site_tagline','company_about','company_address','company_email','company_phone','theme','default_lang'];
+    $keys = ['site_name','site_tagline','company_about','company_address','company_email','company_phone','theme','default_lang','whatsapp'];
     foreach ($keys as $k) {
         setting_set($db, $k, trim((string)($_POST[$k] ?? '')));
     }
@@ -729,15 +1006,28 @@ if ($path === '/admin/settings' && $method === 'POST') {
 // Admin CRUD helper
 function admin_list(SQLite3 $db, string $table, string $label, string $basePath): void {
     require_admin();
-    $res = $db->query("SELECT id,title,slug,created_at FROM $table ORDER BY id DESC");
+    if ($table === 'products') {
+        $res = $db->query("SELECT products.id,products.title,products.slug,products.created_at, product_categories.name AS category_name
+            FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
+            ORDER BY products.id DESC");
+    } else {
+        $res = $db->query("SELECT id,title,slug,created_at FROM $table ORDER BY id DESC");
+    }
     ob_start();
     echo '<div class="level"><div class="level-left"><h1 class="title is-3">' . h($label) . '</h1></div>';
     echo '<div class="level-right"><a class="button is-link" href="' . h($basePath) . '/create">新建</a></div></div>';
     echo '<div class="box admin-card"><table class="table is-fullwidth is-striped">';
-    echo '<thead><tr><th>标题</th><th>别名</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
+    if ($table === 'products') {
+        echo '<thead><tr><th>标题</th><th>分类</th><th>别名</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
+    } else {
+        echo '<thead><tr><th>标题</th><th>别名</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
+    }
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         echo '<tr>';
         echo '<td>' . h($row['title']) . '</td>';
+        if ($table === 'products') {
+            echo '<td>' . h($row['category_name'] ?? '未分类') . '</td>';
+        }
         echo '<td>' . h($row['slug']) . '</td>';
         echo '<td>' . h($row['created_at']) . '</td>';
         echo '<td><a class="button is-small is-light" href="' . h($basePath) . '/edit?id=' . (int)$row['id'] . '">编辑</a> ';
@@ -749,21 +1039,137 @@ function admin_list(SQLite3 $db, string $table, string $label, string $basePath)
     admin_page($label, $content, true);
 }
 
-function admin_form(string $action, array $item = []): void {
+function admin_form(string $action, array $item = [], array $options = []): void {
     $title = $item['title'] ?? '';
     $slug = $item['slug'] ?? '';
     $summary = $item['summary'] ?? '';
     $content = $item['content'] ?? '';
-    echo '<form method="post" action="' . h($action) . '">';
+    echo '<form method="post" action="' . h($action) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="csrf" value="' . h(csrf_token()) . '">';
     echo '<div class="columns">';
     echo '<div class="column"><div class="field"><label class="label">标题</label><div class="control"><input class="input" name="title" value="' . h($title) . '" required></div></div></div>';
     echo '<div class="column"><div class="field"><label class="label">别名</label><div class="control"><input class="input" name="slug" value="' . h($slug) . '"></div><p class="help">留空自动生成</p></div></div></div>';
     echo '</div>';
     echo '<div class="field"><label class="label">摘要</label><div class="control"><textarea class="textarea" name="summary" rows="3">' . h($summary) . '</textarea></div></div>';
-    echo '<div class="field"><label class="label">内容</label><div class="control"><textarea class="textarea" name="content" rows="10">' . h($content) . '</textarea></div></div>';
+    if (($options['type'] ?? '') === 'product') {
+        $categories = fetch_categories($GLOBALS['db']);
+        $currentCategory = (int)($item['category_id'] ?? 0);
+        echo '<div class="field"><label class="label">产品分类</label>';
+        echo '<div class="control"><div class="select is-fullwidth"><select name="category_id">';
+        echo '<option value="0">未分类</option>';
+        foreach ($categories as $cat) {
+            $selected = ((int)$cat['id'] === $currentCategory) ? ' selected' : '';
+            echo '<option value="' . (int)$cat['id'] . '"' . $selected . '>' . h($cat['name']) . '</option>';
+        }
+        echo '</select></div></div>';
+        echo '<p class="help">如需新增分类，请先到「产品分类」管理</p>';
+        echo '</div>';
+    }
+    echo '<div class="field"><label class="label">内容</label>';
+    echo '<div class="control">';
+    echo '<textarea id="content-input" class="textarea" name="content" rows="10" style="display:none">' . h($content) . '</textarea>';
+    echo '<div id="quill-editor" style="height:360px;background:#fff"></div>';
+    echo '</div></div>';
+    if (($options['type'] ?? '') === 'product') {
+        $images = $options['images'] ?? [];
+        echo '<div class="field"><label class="label">产品图片（1-6 张）</label>';
+        echo '<div class="control"><input class="input" type="file" name="images[]" accept="image/*" multiple></div>';
+        echo '<div class="columns is-multiline" id="product-image-preview" style="margin-top:8px"></div>';
+        if (!empty($images)) {
+            echo '<p class="help">已上传图片，勾选可删除：</p>';
+            echo '<div class="columns is-multiline">';
+            foreach ($images as $img) {
+                echo '<div class="column is-3">';
+                echo '<div class="box">';
+                echo '<figure class="image is-4by3"><img src="' . h($img['url']) . '" alt=""></figure>';
+                echo '<label class="checkbox"><input type="checkbox" name="remove_images[]" value="' . (int)$img['id'] . '"> 删除</label>';
+                echo '</div></div>';
+            }
+            echo '</div>';
+        }
+        echo '<p class="help">如不上传新图片，将保留现有图片。</p>';
+        echo '</div>';
+    }
     echo '<button class="button is-link" type="submit">保存</button>';
     echo '</form>';
+}
+
+function admin_category_form(string $action, array $item = []): void {
+    $name = $item['name'] ?? '';
+    $slug = $item['slug'] ?? '';
+    echo '<form method="post" action="' . h($action) . '">';
+    echo '<input type="hidden" name="csrf" value="' . h(csrf_token()) . '">';
+    echo '<div class="columns">';
+    echo '<div class="column"><div class="field"><label class="label">分类名称</label><div class="control"><input class="input" name="name" value="' . h($name) . '" required></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">别名</label><div class="control"><input class="input" name="slug" value="' . h($slug) . '"></div><p class="help">留空自动生成</p></div></div></div>';
+    echo '</div>';
+    echo '<button class="button is-link" type="submit">保存</button>';
+    echo '</form>';
+}
+
+function admin_category_list(SQLite3 $db): void {
+    require_admin();
+    $res = $db->query("SELECT id,name,slug,created_at FROM product_categories ORDER BY id DESC");
+    ob_start();
+    echo '<div class="level"><div class="level-left"><h1 class="title is-3">产品分类</h1></div>';
+    echo '<div class="level-right"><a class="button is-link" href="/admin/categories/create">新建</a></div></div>';
+    echo '<div class="box admin-card"><table class="table is-fullwidth is-striped">';
+    echo '<thead><tr><th>名称</th><th>别名</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
+    while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+        echo '<tr>';
+        echo '<td>' . h($row['name']) . '</td>';
+        echo '<td>' . h($row['slug']) . '</td>';
+        echo '<td>' . h($row['created_at']) . '</td>';
+        echo '<td><a class="button is-small is-light" href="/admin/categories/edit?id=' . (int)$row['id'] . '">编辑</a> ';
+        echo '<a class="button is-small is-danger is-light" href="/admin/categories/delete?id=' . (int)$row['id'] . '" onclick="return confirm(\'确认删除？\')">删除</a></td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table></div>';
+    $content = ob_get_clean();
+    admin_page('产品分类', $content, true);
+}
+
+function admin_category_store(SQLite3 $db): void {
+    require_admin();
+    csrf_check();
+    $name = trim((string)$_POST['name']);
+    $slug = trim((string)($_POST['slug'] ?? ''));
+    if ($slug === '') {
+        $slug = slugify($name);
+    }
+    $stmt = $db->prepare("INSERT INTO product_categories (name,slug,created_at,updated_at)
+        VALUES (:n,:s,:ca,:ua)");
+    $stmt->bindValue(':n', $name, SQLITE3_TEXT);
+    $stmt->bindValue(':s', $slug, SQLITE3_TEXT);
+    $stmt->bindValue(':ca', gmdate('c'), SQLITE3_TEXT);
+    $stmt->bindValue(':ua', gmdate('c'), SQLITE3_TEXT);
+    $stmt->execute();
+}
+
+function admin_category_update(SQLite3 $db): void {
+    require_admin();
+    csrf_check();
+    $id = (int)($_GET['id'] ?? 0);
+    $name = trim((string)$_POST['name']);
+    $slug = trim((string)($_POST['slug'] ?? ''));
+    if ($slug === '') {
+        $slug = slugify($name);
+    }
+    $stmt = $db->prepare("UPDATE product_categories SET name=:n, slug=:s, updated_at=:ua WHERE id=:id");
+    $stmt->bindValue(':n', $name, SQLITE3_TEXT);
+    $stmt->bindValue(':s', $slug, SQLITE3_TEXT);
+    $stmt->bindValue(':ua', gmdate('c'), SQLITE3_TEXT);
+    $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+    $stmt->execute();
+}
+
+function admin_category_delete(SQLite3 $db): void {
+    require_admin();
+    $id = (int)($_GET['id'] ?? 0);
+    $db->exec("UPDATE products SET category_id = 0 WHERE category_id = " . $id);
+    $stmt = $db->prepare("DELETE FROM product_categories WHERE id = :id");
+    $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+    $stmt->execute();
 }
 
 function admin_create(SQLite3 $db, string $table, string $label, string $basePath): void {
@@ -771,7 +1177,7 @@ function admin_create(SQLite3 $db, string $table, string $label, string $basePat
     ob_start();
     echo '<h1 class="title is-3">新建' . h($label) . '</h1>';
     echo '<div class="box admin-card">';
-    admin_form($basePath . '/create');
+    admin_form($basePath . '/create', [], ['type' => $table === 'products' ? 'product' : '']);
     echo '</div>';
     $content = ob_get_clean();
     admin_page('新建' . $label, $content, true);
@@ -785,15 +1191,27 @@ function admin_store(SQLite3 $db, string $table): void {
     if ($slug === '') {
         $slug = slugify($title);
     }
-    $stmt = $db->prepare("INSERT INTO $table (title,slug,summary,content,created_at,updated_at)
-        VALUES (:t,:s,:sum,:c,:ca,:ua)");
+    $columns = "title,slug,summary,content,created_at,updated_at";
+    $values = ":t,:s,:sum,:c,:ca,:ua";
+    if ($table === 'products') {
+        $columns = "title,slug,summary,content,category_id,created_at,updated_at";
+        $values = ":t,:s,:sum,:c,:cid,:ca,:ua";
+    }
+    $stmt = $db->prepare("INSERT INTO $table ($columns) VALUES ($values)");
     $stmt->bindValue(':t', $title, SQLITE3_TEXT);
     $stmt->bindValue(':s', $slug, SQLITE3_TEXT);
     $stmt->bindValue(':sum', trim((string)($_POST['summary'] ?? '')), SQLITE3_TEXT);
     $stmt->bindValue(':c', trim((string)($_POST['content'] ?? '')), SQLITE3_TEXT);
+    if ($table === 'products') {
+        $stmt->bindValue(':cid', (int)($_POST['category_id'] ?? 0), SQLITE3_INTEGER);
+    }
     $stmt->bindValue(':ca', gmdate('c'), SQLITE3_TEXT);
     $stmt->bindValue(':ua', gmdate('c'), SQLITE3_TEXT);
     $stmt->execute();
+    if ($table === 'products') {
+        $productId = (int)$db->lastInsertRowID();
+        process_product_images($db, $productId, 0, true);
+    }
 }
 
 function admin_edit(SQLite3 $db, string $table, string $label, string $basePath): void {
@@ -807,10 +1225,19 @@ function admin_edit(SQLite3 $db, string $table, string $label, string $basePath)
         admin_page('未找到', '<div class="notification is-danger is-light">内容不存在。</div>', true);
         return;
     }
+    $images = [];
+    if ($table === 'products') {
+        $stmtImg = $db->prepare("SELECT id,url,sort FROM product_images WHERE product_id = :pid ORDER BY sort ASC, id ASC");
+        $stmtImg->bindValue(':pid', $id, SQLITE3_INTEGER);
+        $resImg = $stmtImg->execute();
+        while ($row = $resImg->fetchArray(SQLITE3_ASSOC)) {
+            $images[] = $row;
+        }
+    }
     ob_start();
     echo '<h1 class="title is-3">编辑' . h($label) . '</h1>';
     echo '<div class="box admin-card">';
-    admin_form($basePath . '/edit?id=' . $id, $item);
+    admin_form($basePath . '/edit?id=' . $id, $item, ['type' => $table === 'products' ? 'product' : '', 'images' => $images]);
     echo '</div>';
     $content = ob_get_clean();
     admin_page('编辑' . $label, $content, true);
@@ -825,14 +1252,45 @@ function admin_update(SQLite3 $db, string $table): void {
     if ($slug === '') {
         $slug = slugify($title);
     }
-    $stmt = $db->prepare("UPDATE $table SET title=:t, slug=:s, summary=:sum, content=:c, updated_at=:ua WHERE id=:id");
+    $sql = "UPDATE $table SET title=:t, slug=:s, summary=:sum, content=:c, updated_at=:ua";
+    if ($table === 'products') {
+        $sql .= ", category_id=:cid";
+    }
+    $sql .= " WHERE id=:id";
+    $stmt = $db->prepare($sql);
     $stmt->bindValue(':t', $title, SQLITE3_TEXT);
     $stmt->bindValue(':s', $slug, SQLITE3_TEXT);
     $stmt->bindValue(':sum', trim((string)($_POST['summary'] ?? '')), SQLITE3_TEXT);
     $stmt->bindValue(':c', trim((string)($_POST['content'] ?? '')), SQLITE3_TEXT);
     $stmt->bindValue(':ua', gmdate('c'), SQLITE3_TEXT);
+    if ($table === 'products') {
+        $stmt->bindValue(':cid', (int)($_POST['category_id'] ?? 0), SQLITE3_INTEGER);
+    }
     $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
     $stmt->execute();
+    if ($table === 'products') {
+        $removeIds = $_POST['remove_images'] ?? [];
+        if (is_array($removeIds) && !empty($removeIds)) {
+            $ids = array_map('intval', $removeIds);
+            foreach ($ids as $rid) {
+                $stmtImg = $db->prepare("SELECT url FROM product_images WHERE id = :id AND product_id = :pid");
+                $stmtImg->bindValue(':id', $rid, SQLITE3_INTEGER);
+                $stmtImg->bindValue(':pid', $id, SQLITE3_INTEGER);
+                $resImg = $stmtImg->execute();
+                $row = $resImg->fetchArray(SQLITE3_ASSOC);
+                if ($row) {
+                    $stmtDel = $db->prepare("DELETE FROM product_images WHERE id = :id AND product_id = :pid");
+                    $stmtDel->bindValue(':id', $rid, SQLITE3_INTEGER);
+                    $stmtDel->bindValue(':pid', $id, SQLITE3_INTEGER);
+                    $stmtDel->execute();
+                    delete_uploaded_image($row['url']);
+                }
+            }
+        }
+        $existingCount = (int)$db->querySingle("SELECT COUNT(*) FROM product_images WHERE product_id = " . $id);
+        $requireAtLeastOne = $existingCount === 0;
+        process_product_images($db, $id, $existingCount, $requireAtLeastOne);
+    }
 }
 
 function admin_delete(SQLite3 $db, string $table): void {
@@ -850,6 +1308,40 @@ if ($path === '/admin/products/create' && $method === 'POST') { admin_store($db,
 if ($path === '/admin/products/edit' && $method === 'GET') { admin_edit($db, 'products', '产品', '/admin/products'); exit; }
 if ($path === '/admin/products/edit' && $method === 'POST') { admin_update($db, 'products'); header('Location: /admin/products'); exit; }
 if ($path === '/admin/products/delete') { admin_delete($db, 'products'); header('Location: /admin/products'); exit; }
+
+// Product categories admin
+if ($path === '/admin/categories') { admin_category_list($db); exit; }
+if ($path === '/admin/categories/create' && $method === 'GET') {
+    ob_start();
+    echo '<h1 class="title is-3">新建产品分类</h1><div class="box admin-card">';
+    admin_category_form('/admin/categories/create');
+    echo '</div>';
+    $content = ob_get_clean();
+    admin_page('新建产品分类', $content, true);
+    exit;
+}
+if ($path === '/admin/categories/create' && $method === 'POST') { admin_category_store($db); header('Location: /admin/categories'); exit; }
+if ($path === '/admin/categories/edit' && $method === 'GET') {
+    require_admin();
+    $id = (int)($_GET['id'] ?? 0);
+    $stmt = $db->prepare("SELECT * FROM product_categories WHERE id = :id");
+    $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+    $res = $stmt->execute();
+    $item = $res->fetchArray(SQLITE3_ASSOC);
+    if (!$item) {
+        admin_page('未找到', '<div class="notification is-danger is-light">内容不存在。</div>', true);
+        exit;
+    }
+    ob_start();
+    echo '<h1 class="title is-3">编辑产品分类</h1><div class="box admin-card">';
+    admin_category_form('/admin/categories/edit?id=' . $id, $item);
+    echo '</div>';
+    $content = ob_get_clean();
+    admin_page('编辑产品分类', $content, true);
+    exit;
+}
+if ($path === '/admin/categories/edit' && $method === 'POST') { admin_category_update($db); header('Location: /admin/categories'); exit; }
+if ($path === '/admin/categories/delete') { admin_category_delete($db); header('Location: /admin/categories'); exit; }
 
 // Cases admin
 if ($path === '/admin/cases') { admin_list($db, 'cases', '案例', '/admin/cases'); exit; }
