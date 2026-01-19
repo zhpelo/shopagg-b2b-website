@@ -49,8 +49,18 @@ $tabs = [
         <div class="columns">
             <div class="column">
                 <div class="field">
-                    <label class="label">主题</label>
-                    <div class="control"><input class="input" name="theme" value="<?= h($settings['theme'] ?? 'default') ?>"></div>
+                    <label class="label">启用主题</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="theme">
+                                <?php foreach ($available_themes as $t): ?>
+                                    <option value="<?= h($t) ?>" <?= ($settings['theme'] ?? 'default') === $t ? 'selected' : '' ?>>
+                                        <?= h($t) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="column">

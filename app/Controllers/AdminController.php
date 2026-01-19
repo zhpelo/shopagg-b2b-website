@@ -83,7 +83,20 @@ class AdminController extends Controller {
     public function settings(): void {
         $tab = $_GET['tab'] ?? 'general';
         $settings = $this->settingModel->getAll();
+        
+        // Scan for available themes
+        $themesDir = __DIR__ . "/../../themes";
+        $availableThemes = [];
+        if (is_dir($themesDir)) {
+            $dirs = array_filter(glob("{$themesDir}/*"), 'is_dir');
+            foreach ($dirs as $d) {
+                $availableThemes[] = basename($d);
+            }
+        }
+        if (empty($availableThemes)) $availableThemes = ['default'];
+
         $theme = $settings['theme'] ?? 'default';
+        if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
         
         // Scan for available languages in current theme
         $langDir = __DIR__ . "/../../themes/{$theme}/lang";
@@ -99,7 +112,8 @@ class AdminController extends Controller {
         $data = [
             'settings' => $settings,
             'tab' => $tab,
-            'available_langs' => $availableLangs
+            'available_langs' => $availableLangs,
+            'available_themes' => $availableThemes
         ];
 
         if ($tab === 'translations') {
