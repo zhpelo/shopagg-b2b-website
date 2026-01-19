@@ -95,6 +95,11 @@
                     <a class="navbar-item <?= $current_path === '/admin' ? 'is-active' : '' ?>" href="/admin">
                         <span class="icon mr-1"><i class="fas fa-home"></i></span>仪表盘
                     </a>
+                    <?php if ($can_access('inbox')): ?>
+                    <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="/admin/messages">
+                        <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
+                    </a>
+                    <?php endif; ?>
                     <?php if ($can_access('products')): ?>
                     <a class="navbar-item <?= $active_group === 'catalog' ? 'is-active' : '' ?>" href="/admin/products">
                         <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
@@ -110,14 +115,16 @@
                         <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                     </a>
                     <?php endif; ?>
-                    <?php if ($can_access('inbox')): ?>
-                    <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="/admin/messages">
-                        <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
-                    </a>
-                    <?php endif; ?>
+                    
                     <?php if ($user_role === 'admin'): ?>
                     <a class="navbar-item <?= $active_group === 'staff' ? 'is-active' : '' ?>" href="/admin/staff">
                         <span class="icon mr-1"><i class="fas fa-users"></i></span>员工管理
+                    </a>
+                    <?php endif; ?>
+
+                    <?php if ($can_access('settings')): ?>
+                    <a class="navbar-item <?= $current_path === '/admin/settings' ? 'is-active' : '' ?>" href="/admin/settings">
+                        <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
                     </a>
                     <?php endif; ?>
                 </div>
@@ -132,11 +139,6 @@
                             <a class="navbar-item" href="/admin/profile">
                                 <span class="icon mr-1"><i class="fas fa-id-card"></i></span>个人资料
                             </a>
-                            <?php if ($can_access('settings')): ?>
-                            <a class="navbar-item" href="/admin/settings">
-                                <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
-                            </a>
-                            <?php endif; ?>
                             <hr class="navbar-divider">
                             <a class="navbar-item has-text-danger" href="/admin/logout">
                                 <span class="icon mr-1"><i class="fas fa-sign-out-alt"></i></span>退出登录
