@@ -4,7 +4,8 @@ $tabs = [
     'company' => '公司简介',
     'trade' => '贸易能力',
     'media' => '公司展示',
-    'contact' => '联系方式'
+    'contact' => '联系方式',
+    'translations' => '语言包翻译'
 ];
 ?>
 
@@ -344,7 +345,7 @@ $tabs = [
             <div class="field">
                 <label class="label">公司地址</label>
                 <div class="control"><input class="input" name="company_address" value="<?= h($settings['company_address'] ?? '') ?>"></div>
-            </div>
+        </div>
     </div>
 
     <div class="box admin-card">
@@ -359,6 +360,40 @@ $tabs = [
                 </div>
                 <?php endforeach; ?>
             </div>
+        </div>
+    <?php elseif ($tab === 'translations'): ?>
+        <div class="box admin-card">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="title is-5">编辑语言包: <?= h($current_edit_lang) ?></h2>
+                </div>
+                <div class="level-right">
+                    <div class="buttons has-addons">
+                        <a href="/admin/settings?tab=translations&lang=en" class="button is-small <?= $current_edit_lang === 'en' ? 'is-link' : '' ?>">English (en)</a>
+                        <a href="/admin/settings?tab=translations&lang=zh" class="button is-small <?= $current_edit_lang === 'zh' ? 'is-link' : '' ?>">中文 (zh)</a>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="edit_lang" value="<?= h($current_edit_lang) ?>">
+            
+            <table class="table is-fullwidth is-narrow is-striped is-hoverable is-size-7">
+                <thead>
+                    <tr>
+                        <th width="30%">键名 (Key)</th>
+                        <th>翻译内容 (Value)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($translations as $key => $val): ?>
+                        <tr>
+                            <td class="has-text-grey"><?= h($key) ?></td>
+                            <td>
+                                <input class="input is-small" name="t[<?= h($key) ?>]" value="<?= h($val) ?>">
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     <?php endif; ?>
 

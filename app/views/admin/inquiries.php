@@ -36,7 +36,7 @@
 <div class="box admin-card p-0">
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable">
-            <thead>
+        <thead>
                 <tr style="background: #f8fafc;">
                     <th class="py-3 pl-4">客户信息</th>
                     <th class="py-3">需求产品</th>
@@ -44,14 +44,14 @@
                     <th class="py-3">状态</th>
                     <th class="py-3">来源信息</th>
                     <th class="py-3 pr-4">操作</th>
-                </tr>
-            </thead>
-            <tbody>
+            </tr>
+        </thead>
+        <tbody>
                 <?php if (empty($inquiries)): ?>
                     <tr><td colspan="6" class="has-text-centered py-6 has-text-grey">暂无相关询单记录</td></tr>
                 <?php endif; ?>
-                <?php foreach ($inquiries as $row): ?>
-                <tr>
+            <?php foreach ($inquiries as $row): ?>
+            <tr>
                     <td class="pl-4">
                         <strong><?= h($row['name']) ?></strong><br>
                         <span class="is-size-7 has-text-grey"><?= h($row['email']) ?></span><br>
@@ -106,9 +106,9 @@
                             </div>
                         </div>
                     </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 </div>

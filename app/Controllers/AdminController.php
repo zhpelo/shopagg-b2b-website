@@ -83,16 +83,46 @@ class AdminController extends Controller {
     public function settings(): void {
         $tab = $_GET['tab'] ?? 'general';
         $settings = $this->settingModel->getAll();
-        $this->renderAdmin('系统设置', $this->renderView('admin/settings', [
+        
+        $data = [
             'settings' => $settings,
             'tab' => $tab
-        ]));
+        ];
+
+        if ($tab === 'translations') {
+            $lang = $_GET['lang'] ?? 'en';
+            $theme = $settings['theme'] ?? 'default';
+            $file = __DIR__ . "/../../themes/{$theme}/lang/{$lang}.php";
+            $translations = [];
+            if (file_exists($file)) {
+                $translations = include $file;
+            }
+            $data['translations'] = $translations;
+            $data['current_edit_lang'] = $lang;
+        }
+
+        $this->renderAdmin('系统设置', $this->renderView('admin/settings', $data));
     }
 
     public function saveSettings(): void {
         csrf_check();
         $tab = $_POST['tab'] ?? 'general';
         
+        if ($tab === 'translations') {
+            $lang = $_POST['edit_lang'] ?? 'en';
+            $theme = $this->settingModel->get('theme', 'default');
+            $dir = __DIR__ . "/../../themes/{$theme}/lang";
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            $file = "{$dir}/{$lang}.php";
+            
+            $newTranslations = $_POST['t'] ?? [];
+            $content = "<?php\nreturn " . var_export($newTranslations, true) . ";\n";
+            file_put_contents($file, $content);
+            
+            $this->redirect('/admin/settings?tab=translations&lang=' . $lang);
+            return;
+        }
+
         $groups = [
             'general' => ['site_name', 'site_tagline', 'theme', 'default_lang', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],

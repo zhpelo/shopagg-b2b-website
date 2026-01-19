@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= !empty($site['seo_title']) ? h($site['seo_title']) : h($seo['title']) ?></title>
   <meta name="description" content="<?= !empty($site['seo_description']) ? h($site['seo_description']) : h($seo['description']) ?>">
   <?php if (!empty($site['seo_keywords'])): ?>
     <meta name="keywords" content="<?= h($site['seo_keywords']) ?>">
   <?php endif; ?>
-  <link rel="canonical" href="<?= h($seo['canonical']) ?>">
+    <link rel="canonical" href="<?= h($seo['canonical']) ?>">
   <meta property="og:title" content="<?= !empty($site['seo_title']) ? h($site['seo_title']) : h($seo['title']) ?>">
   <meta property="og:description" content="<?= !empty($site['seo_description']) ? h($site['seo_description']) : h($seo['description']) ?>">
-  <meta property="og:type" content="website">
+    <meta property="og:type" content="website">
   <?php if (!empty($site['og_image'])): ?>
     <meta property="og:image" content="<?= h($site['og_image']) ?>">
   <?php endif; ?>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
+    <style>
     body{background:#f9fafb}
     .brand-gradient{background:linear-gradient(120deg,#0f172a,#1e293b)}
     .soft-card{box-shadow:0 10px 30px rgba(15,23,42,0.08)}
     .tagline{opacity:.7}
-  </style>
+    </style>
 </head>
 <body>
 <nav class="navbar is-white is-spaced" role="navigation">
   <div class="container">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <div>
+      <div>
           <strong><?= h($site['name']) ?></strong>
           <div class="tagline is-size-7"><?= h($site['tagline']) ?></div>
         </div>

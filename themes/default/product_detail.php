@@ -42,7 +42,7 @@
           <?php if (!empty($price_tiers)): ?>
             <div class="price-tiers-wrap mt-5 mb-4">
               <div class="columns is-mobile is-variable is-3">
-                <?php foreach ($price_tiers as $tier): ?>
+                  <?php foreach ($price_tiers as $tier): ?>
                   <div class="column">
                     <div class="price-tier">
                       <div class="has-text-weight-bold is-size-4" style="color: #333;">
@@ -53,7 +53,7 @@
                       </div>
                     </div>
                   </div>
-                <?php endforeach; ?>
+                  <?php endforeach; ?>
               </div>
             </div>
           <?php endif; ?>
@@ -123,40 +123,40 @@
           </div>
           <div class="column is-8-desktop is-12-mobile">
             <h2 class="title is-4 is-hidden-tablet"><?= h(t('cta_quote')) ?></h2>
-            <form method="post" action="/inquiry">
-              <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-              <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
+        <form method="post" action="/inquiry">
+          <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+          <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
               
-              <div class="columns">
-                <div class="column">
-                  <div class="field">
+          <div class="columns">
+            <div class="column">
+              <div class="field">
                     <label class="label is-size-7"><?= h(t('form_name_full')) ?> *</label>
-                    <div class="control">
+                <div class="control">
                       <input class="input" name="name" required placeholder="<?= h(t('form_name_placeholder')) ?>">
-                    </div>
-                  </div>
-                </div>
-                <div class="column">
-                  <div class="field">
-                    <label class="label is-size-7"><?= h(t('form_email_full')) ?> *</label>
-                    <div class="control">
-                      <input class="input" name="email" type="email" required placeholder="<?= h(t('form_email_placeholder')) ?>">
-                    </div>
-                  </div>
                 </div>
               </div>
-
-              <div class="columns">
-                <div class="column">
-                  <div class="field">
-                    <label class="label is-size-7"><?= h(t('form_company')) ?></label>
-                    <div class="control">
-                      <input class="input" name="company" placeholder="<?= h(t('form_company_placeholder')) ?>">
-                    </div>
-                  </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                    <label class="label is-size-7"><?= h(t('form_email_full')) ?> *</label>
+                <div class="control">
+                      <input class="input" name="email" type="email" required placeholder="<?= h(t('form_email_placeholder')) ?>">
                 </div>
-                <div class="column">
-                  <div class="field">
+              </div>
+            </div>
+          </div>
+
+          <div class="columns">
+            <div class="column">
+              <div class="field">
+                    <label class="label is-size-7"><?= h(t('form_company')) ?></label>
+                <div class="control">
+                      <input class="input" name="company" placeholder="<?= h(t('form_company_placeholder')) ?>">
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
                     <label class="label is-size-7"><?= h(t('form_quantity')) ?></label>
                     <div class="control">
                       <input class="input" name="quantity" placeholder="<?= h(t('form_qty_placeholder')) ?>">
@@ -177,10 +177,10 @@
                   <span class="icon"><i class="fas fa-paper-plane"></i></span>
                   <span><?= h(t('btn_send_inquiry')) ?></span>
                 </button>
-              </div>
+            </div>
             </form>
+            </div>
           </div>
-        </div>
       </div>
     </div>
   </div>

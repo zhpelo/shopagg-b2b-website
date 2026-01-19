@@ -13,12 +13,32 @@ function slugify(string $text): string {
 }
 
 function t(string $key, ?string $lang = null): string {
-    global $translations, $current_lang;
+    global $current_lang;
+    static $translations = [];
+    
     $lang = $lang ?? ($current_lang ?? 'en');
+    
+    if (!isset($translations[$lang])) {
+        $settingModel = new \App\Models\Setting();
+        $theme = $settingModel->get('theme', 'default');
+        $file = __DIR__ . "/../themes/{$theme}/lang/{$lang}.php";
+        if (file_exists($file)) {
+            $translations[$lang] = include $file;
+        } else {
+            $translations[$lang] = [];
+        }
+    }
+
     if (isset($translations[$lang][$key])) {
         return $translations[$lang][$key];
     }
-    return $translations['en'][$key] ?? $key;
+    
+    // Fallback to English if not found in current lang
+    if ($lang !== 'en') {
+        return t($key, 'en');
+    }
+
+    return $key;
 }
 
 function csrf_token(): string {
@@ -115,79 +135,3 @@ function normalize_price_tiers(array $post): array {
     return $tiers;
 }
 
-$translations = [
-    'en' => [
-        'nav_home' => 'Home', 'nav_products' => 'Products', 'nav_cases' => 'Cases', 'nav_blog' => 'Blog', 'nav_contact' => 'Contact', 'nav_about' => 'About Us',
-        'cta_quote' => 'Request a Quote', 'btn_view_all' => 'View All', 'list_read_more' => 'Read More',
-        'products' => 'Products', 'cases' => 'Cases', 'blog' => 'Blog',
-        'home_quality_title' => 'Quality Assurance', 'home_quality_desc' => 'ISO-aligned production with strict QC before shipment.',
-        'home_logistics_title' => 'Global Logistics', 'home_logistics_desc' => 'On-time delivery with consolidated freight options.',
-        'home_support_title' => 'Dedicated Support', 'home_support_desc' => 'One-to-one account service for long-term buyers.',
-        'home_highlights' => 'Company Highlights', 'home_why_us' => 'Why Choose Us',
-        'home_iso' => 'ISO Certified', 'home_oem' => 'OEM & ODM', 'home_rd' => 'R&D Team', 'home_global' => 'Global Presence',
-        'home_ready_title' => 'Ready to start your project?', 'home_ready_desc' => 'Contact us today for a professional quote and expert consultation.',
-        'section_featured_products' => 'Featured Products', 'section_success_cases' => 'Success Cases',
-        'detail_send_inquiry' => 'Send Inquiry', 'btn_send_inquiry' => 'Send My Inquiry',
-        'form_name' => 'Name', 'form_email' => 'Email', 'form_company' => 'Company', 'form_phone' => 'Phone', 'form_message' => 'Message', 'form_requirements' => 'Requirements',
-        'form_quantity' => 'Quantity Needed', 'form_name_full' => 'Your Name', 'form_email_full' => 'Email Address', 'form_req_custom' => 'Requirements / Customization',
-        'thanks_title' => 'Inquiry Sent Successfully!', 'thanks_desc' => 'Thank you for your interest. Our team will review your requirements.',
-        'thanks_expected' => 'Expected Response Time: We usually reply within 24 hours during business days.',
-        'btn_back_home' => 'Back to Home', 'btn_view_more' => 'View More Products',
-        'not_found_title' => 'Page Not Found', 'not_found_desc' => 'The page you are looking for does not exist.', 'btn_go_home' => 'Go Home',
-        'about_tab_desc' => 'Product Description', 'about_tab_info' => 'Company Info.',
-        'about_profile' => 'Company Profile', 'about_gen_info' => 'General Information', 'about_trade_cap' => 'Trade Capacity', 'about_rd_cap' => 'R&D Capacity',
-        'about_corp_show' => 'Company Show', 'about_certificates' => 'Certificates', 'about_factory_tour' => 'Book a Factory Tour',
-        'about_sgs_verified' => 'items verified by SGS', 'about_all_verified' => 'All information verified by SGS',
-        'about_verify_now' => 'Verify Now', 'about_rating' => 'Rating', 'about_resp_time' => 'Avg. Response Time',
-        'about_biz_type' => 'Business Type', 'about_main_products' => 'Main Products', 'about_year' => 'Year of Establishment', 'about_employees' => 'Number of Employees',
-        'about_address' => 'Address', 'about_plant_area' => 'Plant Area', 'about_capital' => 'Registered Capital', 'about_sgs_report' => 'SGS Audit Report No.',
-        'about_main_markets' => 'Main Markets', 'about_trade_staff' => 'Number of Trade Staff', 'about_incoterms' => 'Incoterms', 'about_payment' => 'Terms of Payment',
-        'about_lead_time' => 'Average Lead Time', 'about_overseas' => 'Overseas Agent/Branch', 'about_export_year' => 'Export Year', 'about_port' => 'Nearest Port',
-        'about_rd_engineers' => 'R&D Engineers', 'about_contact_provider' => 'Contact Provider', 'chat_now' => 'Chat Now',
-        'product_price_tiers' => 'Tiered Pricing', 'product_pieces' => 'Pieces', 'product_sample_tip' => 'Still deciding? Get samples of', 'product_sample_btn' => 'Request Sample',
-        'product_detail_title' => 'Product Details', 'detail_intro' => 'Product Description',
-        'footer_company' => 'Company', 'footer_contact' => 'Contact', 'footer_rights' => 'All rights reserved.',
-        'case_success' => 'Success Case', 'case_details' => 'Project Details', 'case_about' => 'About This Case', 'case_publish_time' => 'Publish Time', 'case_interest' => 'If you are interested in this solution or have similar needs, please contact our expert team.', 'case_back_list' => 'Back to All Cases',
-        'post_industry_insights' => 'Get the latest industry insights and company news', 'post_read_full' => 'Read Full Article', 'post_back_list' => 'Back to Blog List',
-        'product_list_subtitle' => 'Browse our full range of products to provide you with the best B2B solutions.', 'product_view_details' => 'View Details', 'product_uncategorized' => 'Uncategorized',
-        'carousel_prev' => 'Prev', 'carousel_next' => 'Next', 'form_name_placeholder' => 'Full Name', 'form_email_placeholder' => 'example@email.com', 'form_company_placeholder' => 'Company Ltd.', 'form_qty_placeholder' => 'e.g. 500 units', 'form_req_placeholder' => 'Project requirements, customization, etc.',
-        'form_message_label' => 'Message', 'contact_title' => 'Contact Us', 'contact_message' => 'Send Message',
-    ],
-    'zh' => [
-        'nav_home' => '首页', 'nav_products' => '产品', 'nav_cases' => '案例', 'nav_blog' => '博客', 'nav_contact' => '联系', 'nav_about' => '关于我们',
-        'cta_quote' => '立即询价', 'btn_view_all' => '查看全部', 'list_read_more' => '查看详情',
-        'products' => '产品中心', 'cases' => '成功案例', 'blog' => '新闻资讯',
-        'home_quality_title' => '品质保障', 'home_quality_desc' => '符合国际标准的生产流程与出货前严格质检。',
-        'home_logistics_title' => '全球物流', 'home_logistics_desc' => '准时交付，支持多种国际物流方案。',
-        'home_support_title' => '专属服务', 'home_support_desc' => '一对一客户经理，全流程响应。',
-        'home_highlights' => '公司亮点', 'home_why_us' => '为什么选择我们',
-        'home_iso' => 'ISO 认证工厂', 'home_oem' => '支持 OEM/ODM', 'home_rd' => '专业研发团队', 'home_global' => '全球业务覆盖',
-        'home_ready_title' => '准备好开始您的项目了吗？', 'home_ready_desc' => '立即联系我们，获取专业报价和咨询服务。',
-        'section_featured_products' => '核心产品', 'section_success_cases' => '成功案例',
-        'detail_send_inquiry' => '发送询单', 'btn_send_inquiry' => '提交询单',
-        'form_name' => '姓名', 'form_email' => '邮箱', 'form_company' => '公司', 'form_phone' => '电话', 'form_message' => '留言', 'form_requirements' => '需求描述',
-        'form_quantity' => '采购数量', 'form_name_full' => '您的姓名', 'form_email_full' => '电子邮箱', 'form_req_custom' => '具体需求 / 定制说明',
-        'thanks_title' => '询单发送成功！', 'thanks_desc' => '感谢您的关注。我们的销售团队已收到您的信息，将尽快审核您的需求。',
-        'thanks_expected' => '预计回复时间：我们通常会在 24 小时内（工作日）回复。',
-        'btn_back_home' => '返回首页', 'btn_view_more' => '查看更多产品',
-        'not_found_title' => '页面不存在', 'not_found_desc' => '您访问的页面不存在。', 'btn_go_home' => '返回首页',
-        'about_tab_desc' => '产品描述', 'about_tab_info' => '公司信息',
-        'about_profile' => '公司简介', 'about_gen_info' => '基本信息', 'about_trade_cap' => '贸易能力', 'about_rd_cap' => '研发能力',
-        'about_corp_show' => '公司展示', 'about_certificates' => '资质证书', 'about_factory_tour' => '预约验厂',
-        'about_sgs_verified' => '项信息已通过 SGS 认证', 'about_all_verified' => '所有信息均已通过 SGS 认证',
-        'about_verify_now' => '立即验证', 'about_rating' => '综合评分', 'about_resp_time' => '平均响应时间',
-        'about_biz_type' => '业务类型', 'about_main_products' => '主营产品', 'about_year' => '成立年份', 'about_employees' => '员工人数',
-        'about_address' => '办公地址', 'about_plant_area' => '厂房面积', 'about_capital' => '注册资本', 'about_sgs_report' => 'SGS 审计报告编号',
-        'about_main_markets' => '主要市场', 'about_trade_staff' => '外贸团队人数', 'about_incoterms' => '贸易条款', 'about_payment' => '付款方式',
-        'about_lead_time' => '平均交期', 'about_overseas' => '海外代理/分支', 'about_export_year' => '出口开始年份', 'about_port' => '最近港口',
-        'about_rd_engineers' => '研发工程师人数', 'about_contact_provider' => '联系供应商', 'chat_now' => '在线洽谈',
-        'product_price_tiers' => '阶梯价格', 'product_pieces' => '件/个', 'product_sample_tip' => '还在犹豫？获取样品仅需', 'product_sample_btn' => '申请样品',
-        'product_detail_title' => '产品详情', 'detail_intro' => '产品介绍',
-        'footer_company' => '公司信息', 'footer_contact' => '联系我们', 'footer_rights' => '版权所有。',
-        'case_success' => '成功案例', 'case_details' => '项目详情', 'case_about' => '关于此案例', 'case_publish_time' => '发布时间', 'case_interest' => '如果您对该解决方案感兴趣，或有类似的需求，欢迎联系我们的专家团队获取专业咨询。', 'case_back_list' => '返回所有案例',
-        'post_industry_insights' => '获取最新的行业洞察与公司动态', 'post_read_full' => '阅读全文', 'post_back_list' => '返回博客列表',
-        'product_list_subtitle' => '浏览我们的全线产品，为您提供最优质的 B2B 解决方案。', 'product_view_details' => '查看详情', 'product_uncategorized' => '未分类',
-        'carousel_prev' => '上一张', 'carousel_next' => '下一张', 'form_name_placeholder' => '姓名', 'form_email_placeholder' => '电子邮箱', 'form_company_placeholder' => '公司名称', 'form_qty_placeholder' => '例如：500件', 'form_req_placeholder' => '项目需求、定制说明等...',
-        'form_message_label' => '留言内容', 'contact_title' => '联系我们', 'contact_message' => '发送留言',
-    ],
-];

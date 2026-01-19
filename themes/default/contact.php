@@ -12,8 +12,8 @@
       </div>
       <div class="column is-7">
         <div class="box soft-card">
-          <form method="post" action="/contact">
-            <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+<form method="post" action="/contact">
+  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             <div class="columns">
               <div class="column">
                 <div class="field">
@@ -57,7 +57,7 @@
               </div>
             </div>
             <button class="button is-link" type="submit"><?= h(t('contact_message')) ?></button>
-          </form>
+</form>
         </div>
       </div>
     </div>
