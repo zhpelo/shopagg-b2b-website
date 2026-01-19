@@ -302,19 +302,19 @@ $GLOBALS['current_lang'] = current_lang($db);
 
 function admin_nav_html(): string {
     $links = [
-        '/admin' => 'Dashboard',
-        '/admin/products' => 'Products',
-        '/admin/cases' => 'Cases',
-        '/admin/posts' => 'Blog',
-        '/admin/messages' => 'Messages',
-        '/admin/inquiries' => 'Inquiries',
-        '/admin/settings' => 'Settings',
+        '/admin' => '仪表盘',
+        '/admin/products' => '产品',
+        '/admin/cases' => '案例',
+        '/admin/posts' => '博客',
+        '/admin/messages' => '留言',
+        '/admin/inquiries' => '询单',
+        '/admin/settings' => '设置',
     ];
     $html = '<div class="navbar-menu is-active"><div class="navbar-start">';
     foreach ($links as $url => $label) {
         $html .= '<a class="navbar-item" href="' . h($url) . '">' . h($label) . '</a>';
     }
-    $html .= '</div><div class="navbar-end"><div class="navbar-item"><a class="button is-light" href="/admin/logout">Logout</a></div></div></div>';
+    $html .= '</div><div class="navbar-end"><div class="navbar-item"><a class="button is-light" href="/admin/logout">退出登录</a></div></div></div>';
     return $html;
 }
 
@@ -327,7 +327,7 @@ function admin_page(string $title, string $content, bool $showNav = true): void 
     echo '</head><body>';
     if ($showNav) {
         echo '<nav class="navbar is-white is-spaced"><div class="container">';
-        echo '<div class="navbar-brand"><a class="navbar-item" href="/admin"><strong>' . h($siteName) . ' Admin</strong></a></div>';
+        echo '<div class="navbar-brand"><a class="navbar-item" href="/admin"><strong> 管理后台 </strong></a></div>';
         echo admin_nav_html();
         echo '</div></nav>';
     }
@@ -617,14 +617,14 @@ if ($path === '/admin/login' && $method === 'GET') {
     ob_start();
     echo '<div class="columns is-centered"><div class="column is-4">';
     echo '<div class="box admin-card">';
-    echo '<h1 class="title is-4">Admin Login</h1>';
+    echo '<h1 class="title is-4">后台登录</h1>';
     echo '<form method="post" action="/admin/login">';
-    echo '<div class="field"><label class="label">Username</label><div class="control"><input class="input" name="username" required></div></div>';
-    echo '<div class="field"><label class="label">Password</label><div class="control"><input class="input" type="password" name="password" required></div></div>';
-    echo '<button class="button is-link is-fullwidth" type="submit">Login</button>';
+    echo '<div class="field"><label class="label">用户名</label><div class="control"><input class="input" name="username" required></div></div>';
+    echo '<div class="field"><label class="label">密码</label><div class="control"><input class="input" type="password" name="password" required></div></div>';
+    echo '<button class="button is-link is-fullwidth" type="submit">登录</button>';
     echo '</form></div></div></div>';
     $content = ob_get_clean();
-    admin_page('Admin Login', $content, false);
+    admin_page('后台登录', $content, false);
     exit;
 }
 if ($path === '/admin/login' && $method === 'POST') {
@@ -639,16 +639,16 @@ if ($path === '/admin/login' && $method === 'POST') {
     }
     ob_start();
     echo '<div class="columns is-centered"><div class="column is-4">';
-    echo '<div class="notification is-danger is-light">Login failed. Please try again.</div>';
+    echo '<div class="notification is-danger is-light">登录失败，请重试。</div>';
     echo '<div class="box admin-card">';
-    echo '<h1 class="title is-4">Admin Login</h1>';
+    echo '<h1 class="title is-4">后台登录</h1>';
     echo '<form method="post" action="/admin/login">';
-    echo '<div class="field"><label class="label">Username</label><div class="control"><input class="input" name="username" required></div></div>';
-    echo '<div class="field"><label class="label">Password</label><div class="control"><input class="input" type="password" name="password" required></div></div>';
-    echo '<button class="button is-link is-fullwidth" type="submit">Login</button>';
+    echo '<div class="field"><label class="label">用户名</label><div class="control"><input class="input" name="username" required></div></div>';
+    echo '<div class="field"><label class="label">密码</label><div class="control"><input class="input" type="password" name="password" required></div></div>';
+    echo '<button class="button is-link is-fullwidth" type="submit">登录</button>';
     echo '</form></div></div></div>';
     $content = ob_get_clean();
-    admin_page('Admin Login', $content, false);
+    admin_page('后台登录', $content, false);
     exit;
 }
 if ($path === '/admin/logout') {
@@ -667,16 +667,16 @@ if ($path === '/admin') {
         'inquiries' => (int)$db->querySingle("SELECT COUNT(*) FROM inquiries"),
     ];
     ob_start();
-    echo '<h1 class="title is-3">Admin Dashboard</h1>';
+    echo '<h1 class="title is-3">仪表盘</h1>';
     echo '<div class="columns is-multiline">';
-    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">Products</p><p class="title is-4">' . $counts['products'] . '</p><a href="/admin/products" class="button is-small is-link is-light">Manage</a></div></div>';
-    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">Cases</p><p class="title is-4">' . $counts['cases'] . '</p><a href="/admin/cases" class="button is-small is-link is-light">Manage</a></div></div>';
-    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">Blog</p><p class="title is-4">' . $counts['posts'] . '</p><a href="/admin/posts" class="button is-small is-link is-light">Manage</a></div></div>';
-    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">Messages</p><p class="title is-4">' . $counts['messages'] . '</p><a href="/admin/messages" class="button is-small is-link is-light">View</a></div></div>';
-    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">Inquiries</p><p class="title is-4">' . $counts['inquiries'] . '</p><a href="/admin/inquiries" class="button is-small is-link is-light">View</a></div></div>';
+    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">产品</p><p class="title is-4">' . $counts['products'] . '</p><a href="/admin/products" class="button is-small is-link is-light">管理</a></div></div>';
+    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">案例</p><p class="title is-4">' . $counts['cases'] . '</p><a href="/admin/cases" class="button is-small is-link is-light">管理</a></div></div>';
+    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">博客</p><p class="title is-4">' . $counts['posts'] . '</p><a href="/admin/posts" class="button is-small is-link is-light">管理</a></div></div>';
+    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">留言</p><p class="title is-4">' . $counts['messages'] . '</p><a href="/admin/messages" class="button is-small is-link is-light">查看</a></div></div>';
+    echo '<div class="column is-3"><div class="box admin-card"><p class="heading">询单</p><p class="title is-4">' . $counts['inquiries'] . '</p><a href="/admin/inquiries" class="button is-small is-link is-light">查看</a></div></div>';
     echo '</div>';
     $content = ob_get_clean();
-    admin_page('Admin Dashboard', $content, true);
+    admin_page('仪表盘', $content, true);
     exit;
 }
 
@@ -687,32 +687,32 @@ if ($path === '/admin/settings' && $method === 'GET') {
     $langs = available_languages();
     $defaultLang = setting_get($db, 'default_lang', 'en');
     ob_start();
-    echo '<h1 class="title is-3">Settings</h1>';
+    echo '<h1 class="title is-3">设置</h1>';
     echo '<div class="box admin-card"><form method="post" action="/admin/settings">';
     echo '<input type="hidden" name="csrf" value="' . h(csrf_token()) . '">';
     echo '<div class="columns">';
-    echo '<div class="column"><div class="field"><label class="label">Site Name</label><div class="control"><input class="input" name="site_name" value="' . h(setting_get($db, 'site_name')) . '"></div></div></div>';
-    echo '<div class="column"><div class="field"><label class="label">Tagline</label><div class="control"><input class="input" name="site_tagline" value="' . h(setting_get($db, 'site_tagline')) . '"></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">网站名称</label><div class="control"><input class="input" name="site_name" value="' . h(setting_get($db, 'site_name')) . '"></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">标语</label><div class="control"><input class="input" name="site_tagline" value="' . h(setting_get($db, 'site_tagline')) . '"></div></div></div>';
     echo '</div>';
-    echo '<div class="field"><label class="label">About</label><div class="control"><textarea class="textarea" name="company_about" rows="4">' . h(setting_get($db, 'company_about')) . '</textarea></div></div>';
+    echo '<div class="field"><label class="label">公司简介</label><div class="control"><textarea class="textarea" name="company_about" rows="4">' . h(setting_get($db, 'company_about')) . '</textarea></div></div>';
     echo '<div class="columns">';
-    echo '<div class="column"><div class="field"><label class="label">Address</label><div class="control"><input class="input" name="company_address" value="' . h(setting_get($db, 'company_address')) . '"></div></div></div>';
-    echo '<div class="column"><div class="field"><label class="label">Email</label><div class="control"><input class="input" name="company_email" value="' . h(setting_get($db, 'company_email')) . '"></div></div></div>';
-    echo '<div class="column"><div class="field"><label class="label">Phone</label><div class="control"><input class="input" name="company_phone" value="' . h(setting_get($db, 'company_phone')) . '"></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">地址</label><div class="control"><input class="input" name="company_address" value="' . h(setting_get($db, 'company_address')) . '"></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">邮箱</label><div class="control"><input class="input" name="company_email" value="' . h(setting_get($db, 'company_email')) . '"></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">电话</label><div class="control"><input class="input" name="company_phone" value="' . h(setting_get($db, 'company_phone')) . '"></div></div></div>';
     echo '</div>';
     echo '<div class="columns">';
-    echo '<div class="column"><div class="field"><label class="label">Theme</label><div class="control"><input class="input" name="theme" value="' . h($theme) . '"></div><p class="help">Theme folder under /themes</p></div></div>';
-    echo '<div class="column"><div class="field"><label class="label">Default Language</label><div class="control"><div class="select is-fullwidth"><select name="default_lang">';
+    echo '<div class="column"><div class="field"><label class="label">主题</label><div class="control"><input class="input" name="theme" value="' . h($theme) . '"></div><p class="help">主题目录位于 /themes</p></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">默认语言</label><div class="control"><div class="select is-fullwidth"><select name="default_lang">';
     foreach ($langs as $code => $label) {
         $selected = $code === $defaultLang ? ' selected' : '';
         echo '<option value="' . h($code) . '"' . $selected . '>' . h($label) . '</option>';
     }
     echo '</select></div></div></div></div>';
     echo '</div>';
-    echo '<button class="button is-link" type="submit">Save Settings</button>';
+    echo '<button class="button is-link" type="submit">保存设置</button>';
     echo '</form></div>';
     $content = ob_get_clean();
-    admin_page('Settings', $content, true);
+    admin_page('设置', $content, true);
     exit;
 }
 if ($path === '/admin/settings' && $method === 'POST') {
@@ -732,16 +732,16 @@ function admin_list(SQLite3 $db, string $table, string $label, string $basePath)
     $res = $db->query("SELECT id,title,slug,created_at FROM $table ORDER BY id DESC");
     ob_start();
     echo '<div class="level"><div class="level-left"><h1 class="title is-3">' . h($label) . '</h1></div>';
-    echo '<div class="level-right"><a class="button is-link" href="' . h($basePath) . '/create">Create</a></div></div>';
+    echo '<div class="level-right"><a class="button is-link" href="' . h($basePath) . '/create">新建</a></div></div>';
     echo '<div class="box admin-card"><table class="table is-fullwidth is-striped">';
-    echo '<thead><tr><th>Title</th><th>Slug</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
+    echo '<thead><tr><th>标题</th><th>别名</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         echo '<tr>';
         echo '<td>' . h($row['title']) . '</td>';
         echo '<td>' . h($row['slug']) . '</td>';
         echo '<td>' . h($row['created_at']) . '</td>';
-        echo '<td><a class="button is-small is-light" href="' . h($basePath) . '/edit?id=' . (int)$row['id'] . '">Edit</a> ';
-        echo '<a class="button is-small is-danger is-light" href="' . h($basePath) . '/delete?id=' . (int)$row['id'] . '" onclick="return confirm(\'Delete?\')">Delete</a></td>';
+        echo '<td><a class="button is-small is-light" href="' . h($basePath) . '/edit?id=' . (int)$row['id'] . '">编辑</a> ';
+        echo '<a class="button is-small is-danger is-light" href="' . h($basePath) . '/delete?id=' . (int)$row['id'] . '" onclick="return confirm(\'确认删除？\')">删除</a></td>';
         echo '</tr>';
     }
     echo '</tbody></table></div>';
@@ -757,24 +757,24 @@ function admin_form(string $action, array $item = []): void {
     echo '<form method="post" action="' . h($action) . '">';
     echo '<input type="hidden" name="csrf" value="' . h(csrf_token()) . '">';
     echo '<div class="columns">';
-    echo '<div class="column"><div class="field"><label class="label">Title</label><div class="control"><input class="input" name="title" value="' . h($title) . '" required></div></div></div>';
-    echo '<div class="column"><div class="field"><label class="label">Slug</label><div class="control"><input class="input" name="slug" value="' . h($slug) . '"></div><p class="help">Leave empty to auto-generate</p></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">标题</label><div class="control"><input class="input" name="title" value="' . h($title) . '" required></div></div></div>';
+    echo '<div class="column"><div class="field"><label class="label">别名</label><div class="control"><input class="input" name="slug" value="' . h($slug) . '"></div><p class="help">留空自动生成</p></div></div></div>';
     echo '</div>';
-    echo '<div class="field"><label class="label">Summary</label><div class="control"><textarea class="textarea" name="summary" rows="3">' . h($summary) . '</textarea></div></div>';
-    echo '<div class="field"><label class="label">Content</label><div class="control"><textarea class="textarea" name="content" rows="10">' . h($content) . '</textarea></div></div>';
-    echo '<button class="button is-link" type="submit">Save</button>';
+    echo '<div class="field"><label class="label">摘要</label><div class="control"><textarea class="textarea" name="summary" rows="3">' . h($summary) . '</textarea></div></div>';
+    echo '<div class="field"><label class="label">内容</label><div class="control"><textarea class="textarea" name="content" rows="10">' . h($content) . '</textarea></div></div>';
+    echo '<button class="button is-link" type="submit">保存</button>';
     echo '</form>';
 }
 
 function admin_create(SQLite3 $db, string $table, string $label, string $basePath): void {
     require_admin();
     ob_start();
-    echo '<h1 class="title is-3">Create ' . h($label) . '</h1>';
+    echo '<h1 class="title is-3">新建' . h($label) . '</h1>';
     echo '<div class="box admin-card">';
     admin_form($basePath . '/create');
     echo '</div>';
     $content = ob_get_clean();
-    admin_page('Create ' . $label, $content, true);
+    admin_page('新建' . $label, $content, true);
 }
 
 function admin_store(SQLite3 $db, string $table): void {
@@ -804,16 +804,16 @@ function admin_edit(SQLite3 $db, string $table, string $label, string $basePath)
     $res = $stmt->execute();
     $item = $res->fetchArray(SQLITE3_ASSOC);
     if (!$item) {
-        admin_page('Not Found', '<div class="notification is-danger is-light">Item not found.</div>', true);
+        admin_page('未找到', '<div class="notification is-danger is-light">内容不存在。</div>', true);
         return;
     }
     ob_start();
-    echo '<h1 class="title is-3">Edit ' . h($label) . '</h1>';
+    echo '<h1 class="title is-3">编辑' . h($label) . '</h1>';
     echo '<div class="box admin-card">';
     admin_form($basePath . '/edit?id=' . $id, $item);
     echo '</div>';
     $content = ob_get_clean();
-    admin_page('Edit ' . $label, $content, true);
+    admin_page('编辑' . $label, $content, true);
 }
 
 function admin_update(SQLite3 $db, string $table): void {
@@ -844,26 +844,26 @@ function admin_delete(SQLite3 $db, string $table): void {
 }
 
 // Products admin
-if ($path === '/admin/products') { admin_list($db, 'products', 'Products', '/admin/products'); exit; }
-if ($path === '/admin/products/create' && $method === 'GET') { admin_create($db, 'products', 'Product', '/admin/products'); exit; }
+if ($path === '/admin/products') { admin_list($db, 'products', '产品', '/admin/products'); exit; }
+if ($path === '/admin/products/create' && $method === 'GET') { admin_create($db, 'products', '产品', '/admin/products'); exit; }
 if ($path === '/admin/products/create' && $method === 'POST') { admin_store($db, 'products'); header('Location: /admin/products'); exit; }
-if ($path === '/admin/products/edit' && $method === 'GET') { admin_edit($db, 'products', 'Product', '/admin/products'); exit; }
+if ($path === '/admin/products/edit' && $method === 'GET') { admin_edit($db, 'products', '产品', '/admin/products'); exit; }
 if ($path === '/admin/products/edit' && $method === 'POST') { admin_update($db, 'products'); header('Location: /admin/products'); exit; }
 if ($path === '/admin/products/delete') { admin_delete($db, 'products'); header('Location: /admin/products'); exit; }
 
 // Cases admin
-if ($path === '/admin/cases') { admin_list($db, 'cases', 'Cases', '/admin/cases'); exit; }
-if ($path === '/admin/cases/create' && $method === 'GET') { admin_create($db, 'cases', 'Case', '/admin/cases'); exit; }
+if ($path === '/admin/cases') { admin_list($db, 'cases', '案例', '/admin/cases'); exit; }
+if ($path === '/admin/cases/create' && $method === 'GET') { admin_create($db, 'cases', '案例', '/admin/cases'); exit; }
 if ($path === '/admin/cases/create' && $method === 'POST') { admin_store($db, 'cases'); header('Location: /admin/cases'); exit; }
-if ($path === '/admin/cases/edit' && $method === 'GET') { admin_edit($db, 'cases', 'Case', '/admin/cases'); exit; }
+if ($path === '/admin/cases/edit' && $method === 'GET') { admin_edit($db, 'cases', '案例', '/admin/cases'); exit; }
 if ($path === '/admin/cases/edit' && $method === 'POST') { admin_update($db, 'cases'); header('Location: /admin/cases'); exit; }
 if ($path === '/admin/cases/delete') { admin_delete($db, 'cases'); header('Location: /admin/cases'); exit; }
 
 // Blog admin
-if ($path === '/admin/posts') { admin_list($db, 'posts', 'Posts', '/admin/posts'); exit; }
-if ($path === '/admin/posts/create' && $method === 'GET') { admin_create($db, 'posts', 'Post', '/admin/posts'); exit; }
+if ($path === '/admin/posts') { admin_list($db, 'posts', '博客', '/admin/posts'); exit; }
+if ($path === '/admin/posts/create' && $method === 'GET') { admin_create($db, 'posts', '博客', '/admin/posts'); exit; }
 if ($path === '/admin/posts/create' && $method === 'POST') { admin_store($db, 'posts'); header('Location: /admin/posts'); exit; }
-if ($path === '/admin/posts/edit' && $method === 'GET') { admin_edit($db, 'posts', 'Post', '/admin/posts'); exit; }
+if ($path === '/admin/posts/edit' && $method === 'GET') { admin_edit($db, 'posts', '博客', '/admin/posts'); exit; }
 if ($path === '/admin/posts/edit' && $method === 'POST') { admin_update($db, 'posts'); header('Location: /admin/posts'); exit; }
 if ($path === '/admin/posts/delete') { admin_delete($db, 'posts'); header('Location: /admin/posts'); exit; }
 
@@ -872,15 +872,15 @@ if ($path === '/admin/messages') {
     require_admin();
     $res = $db->query("SELECT * FROM messages ORDER BY id DESC");
     ob_start();
-    echo '<h1 class="title is-3">Messages</h1>';
+    echo '<h1 class="title is-3">留言</h1>';
     echo '<div class="box admin-card"><table class="table is-fullwidth is-striped">';
-    echo '<thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Message</th><th>Time</th></tr></thead><tbody>';
+    echo '<thead><tr><th>姓名</th><th>邮箱</th><th>公司</th><th>内容</th><th>时间</th></tr></thead><tbody>';
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         echo '<tr><td>' . h($row['name']) . '</td><td>' . h($row['email']) . '</td><td>' . h($row['company']) . '</td><td>' . h($row['message']) . '</td><td>' . h($row['created_at']) . '</td></tr>';
     }
     echo '</tbody></table></div>';
     $content = ob_get_clean();
-    admin_page('Messages', $content, true);
+    admin_page('留言', $content, true);
     exit;
 }
 
@@ -888,15 +888,15 @@ if ($path === '/admin/inquiries') {
     require_admin();
     $res = $db->query("SELECT inquiries.*, products.title AS product_title FROM inquiries LEFT JOIN products ON products.id = inquiries.product_id ORDER BY inquiries.id DESC");
     ob_start();
-    echo '<h1 class="title is-3">Inquiries</h1>';
+    echo '<h1 class="title is-3">询单</h1>';
     echo '<div class="box admin-card"><table class="table is-fullwidth is-striped">';
-    echo '<thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Product</th><th>Message</th><th>Time</th></tr></thead><tbody>';
+    echo '<thead><tr><th>姓名</th><th>邮箱</th><th>公司</th><th>产品</th><th>内容</th><th>时间</th></tr></thead><tbody>';
     while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
         echo '<tr><td>' . h($row['name']) . '</td><td>' . h($row['email']) . '</td><td>' . h($row['company']) . '</td><td>' . h($row['product_title'] ?? '') . '</td><td>' . h($row['message']) . '</td><td>' . h($row['created_at']) . '</td></tr>';
     }
     echo '</tbody></table></div>';
     $content = ob_get_clean();
-    admin_page('Inquiries', $content, true);
+    admin_page('询单', $content, true);
     exit;
 }
 
