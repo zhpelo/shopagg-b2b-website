@@ -87,7 +87,11 @@ class AdminController extends Controller {
 
     public function saveSettings(): void {
         csrf_check();
-        $keys = ['site_name','site_tagline','company_about','company_address','company_email','company_phone','theme','default_lang','whatsapp'];
+        $keys = [
+            'site_name', 'site_tagline', 'company_about', 'company_address', 'company_email', 'company_phone', 
+            'theme', 'default_lang', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube',
+            'seo_title', 'seo_keywords', 'seo_description', 'og_image'
+        ];
         foreach ($keys as $k) {
             $this->settingModel->set($k, trim((string)($_POST[$k] ?? '')));
         }

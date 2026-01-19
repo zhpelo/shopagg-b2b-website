@@ -4,7 +4,24 @@
     <div class="columns">
       <div class="column is-5">
         <h3 class="title is-5"><?= h($site['name']) ?></h3>
-        <p class="subtitle is-6"><?= h($site['tagline']) ?></p>
+        <p class="subtitle is-6 mb-4"><?= h($site['tagline']) ?></p>
+        <div class="buttons">
+          <?php if (!empty($site['facebook'])): ?>
+            <a class="button is-light is-rounded" href="<?= h($site['facebook']) ?>" target="_blank" title="Facebook"><span class="icon"><i class="fab fa-facebook-f"></i></span></a>
+          <?php endif; ?>
+          <?php if (!empty($site['instagram'])): ?>
+            <a class="button is-light is-rounded" href="<?= h($site['instagram']) ?>" target="_blank" title="Instagram"><span class="icon"><i class="fab fa-instagram"></i></span></a>
+          <?php endif; ?>
+          <?php if (!empty($site['twitter'])): ?>
+            <a class="button is-light is-rounded" href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"><span class="icon"><i class="fab fa-x-twitter"></i></span></a>
+          <?php endif; ?>
+          <?php if (!empty($site['linkedin'])): ?>
+            <a class="button is-light is-rounded" href="<?= h($site['linkedin']) ?>" target="_blank" title="LinkedIn"><span class="icon"><i class="fab fa-linkedin-in"></i></span></a>
+          <?php endif; ?>
+          <?php if (!empty($site['youtube'])): ?>
+            <a class="button is-light is-rounded" href="<?= h($site['youtube']) ?>" target="_blank" title="YouTube"><span class="icon"><i class="fab fa-youtube"></i></span></a>
+          <?php endif; ?>
+        </div>
       </div>
       <div class="column is-7">
         <div class="columns">

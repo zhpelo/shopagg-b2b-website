@@ -188,9 +188,29 @@
     <div class="modal-card" style="width: 90%; max-width: 1000px;">
         <header class="modal-card-head">
             <p class="modal-card-title">选择媒体文件</p>
+            <div class="field mb-0 mr-3">
+                <div class="control">
+                    <div class="file is-info is-small">
+                        <label class="file-label">
+                            <input class="file-input" type="file" id="media-upload-input" multiple accept="image/*">
+                            <span class="file-cta">
+                                <span class="file-icon"><i class="fas fa-upload"></i></span>
+                                <span class="file-label">上传图片</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
             <button type="button" class="delete close-modal" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
+            <div id="upload-progress-container" class="mb-4 is-hidden">
+                <div class="is-size-7 mb-1 is-flex is-justify-content-between">
+                    <span id="upload-status-text">正在上传...</span>
+                    <span id="upload-progress-percent">0%</span>
+                </div>
+                <progress id="overall-progress" class="progress is-info is-small" value="0" max="100">0%</progress>
+            </div>
             <div id="media-library-list" class="columns is-multiline is-mobile">
                 <!-- 动态加载图片列表 -->
             </div>
@@ -236,6 +256,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeBtns = document.querySelectorAll('.close-modal, .modal-background');
     const mediaListContainer = document.getElementById('media-library-list');
     const confirmBtn = document.getElementById('confirm-media-selection');
+    const uploadInput = document.getElementById('media-upload-input');
+    const progressContainer = document.getElementById('upload-progress-container');
+    const overallProgress = document.getElementById('overall-progress');
+    const progressPercent = document.getElementById('upload-progress-percent');
+    const statusText = document.getElementById('upload-status-text');
     
     openBtns.forEach(btn => btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -246,6 +271,74 @@ document.addEventListener("DOMContentLoaded", function() {
     closeBtns.forEach(btn => btn.addEventListener('click', () => {
         modal.classList.remove('is-active');
     }));
+
+    if (uploadInput) {
+        uploadInput.addEventListener('change', async function() {
+            const files = Array.from(this.files);
+            if (files.length === 0) return;
+            if (files.length > 20) {
+                alert('单次最多只能上传20张图片');
+                this.value = '';
+                return;
+            }
+
+            progressContainer.classList.remove('is-hidden');
+            overallProgress.value = 0;
+            progressPercent.innerText = '0%';
+            statusText.innerText = `正在上传 ${files.length} 个文件...`;
+
+            const fileProgresses = new Array(files.length).fill(0);
+
+            const uploadTasks = files.map((file, index) => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/admin/upload-image', true);
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) {
+                            fileProgresses[index] = e.loaded / e.total;
+                            const totalProgress = fileProgresses.reduce((a, b) => a + b, 0) / files.length;
+                            const percent = Math.round(totalProgress * 100);
+                            overallProgress.value = percent;
+                            progressPercent.innerText = percent + '%';
+                        }
+                    };
+                    xhr.onload = () => {
+                        if (xhr.status === 200) resolve();
+                        else reject();
+                    };
+                    xhr.onerror = () => reject();
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('csrf', '<?= csrf_token() ?>');
+                    xhr.send(formData);
+                });
+            });
+
+            try {
+                await Promise.all(uploadTasks);
+                statusText.innerText = '上传成功！';
+                overallProgress.classList.remove('is-info');
+                overallProgress.classList.add('is-success');
+                setTimeout(() => {
+                    progressContainer.classList.add('is-hidden');
+                    overallProgress.classList.remove('is-success');
+                    overallProgress.classList.add('is-info');
+                    fetchMediaLibrary();
+                }, 1000);
+            } catch (err) {
+                statusText.innerText = '部分文件上传失败';
+                overallProgress.classList.remove('is-info');
+                overallProgress.classList.add('is-danger');
+                setTimeout(() => {
+                    progressContainer.classList.add('is-hidden');
+                    overallProgress.classList.remove('is-danger');
+                    overallProgress.classList.add('is-info');
+                    fetchMediaLibrary();
+                }, 2000);
+            }
+            this.value = '';
+        });
+    }
 
     async function fetchMediaLibrary() {
         mediaListContainer.innerHTML = '<div class="column is-12 has-text-centered p-6"><p>正在加载...</p></div>';

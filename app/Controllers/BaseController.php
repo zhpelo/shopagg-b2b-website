@@ -28,6 +28,15 @@ abstract class BaseController extends Controller {
                 'whatsapp' => $settings['whatsapp'] ?? '',
                 'theme' => $settings['theme'] ?? 'default',
                 'default_lang' => $settings['default_lang'] ?? 'en',
+                'facebook' => $settings['facebook'] ?? '',
+                'instagram' => $settings['instagram'] ?? '',
+                'twitter' => $settings['twitter'] ?? '',
+                'linkedin' => $settings['linkedin'] ?? '',
+                'youtube' => $settings['youtube'] ?? '',
+                'seo_title' => $settings['seo_title'] ?? '',
+                'seo_keywords' => $settings['seo_keywords'] ?? '',
+                'seo_description' => $settings['seo_description'] ?? '',
+                'og_image' => $settings['og_image'] ?? '',
             ]
         ];
     }
