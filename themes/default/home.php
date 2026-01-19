@@ -8,7 +8,7 @@
             <?= h($site['tagline'] ?: h(t('home_ready_title'))) ?>
           </h1>
           <p class="subtitle is-4 has-text-grey-light mb-6">
-            <?= h($site['about'] ?: h(t('home_ready_desc'))) ?>
+            <?= h(($site['company_bio'] ?? '') ?: h(t('home_ready_desc'))) ?>
           </p>
           <div class="buttons">
             <a class="button is-link is-large px-6" href="/products"><?= h(t('nav_products')) ?></a>

@@ -3,11 +3,11 @@
     <div class="columns">
       <div class="column is-5">
         <h1 class="title is-3"><?= h(t('contact_title')) ?></h1>
-        <p class="subtitle is-6"><?= h($site['about']) ?></p>
+        <p class="subtitle is-6"><?= h($site['company_bio'] ?? '') ?></p>
         <div class="content">
-          <p><strong><?= h(t('about_address')) ?>:</strong> <?= h($site['address']) ?></p>
-          <p><strong><?= h(t('form_email')) ?>:</strong> <?= h($site['email']) ?></p>
-          <p><strong><?= h(t('form_phone')) ?>:</strong> <?= h($site['phone']) ?></p>
+          <p><strong><?= h(t('about_address')) ?>:</strong> <?= h($site['company_address'] ?? '') ?></p>
+          <p><strong><?= h(t('form_email')) ?>:</strong> <?= h($site['company_email'] ?? '') ?></p>
+          <p><strong><?= h(t('form_phone')) ?>:</strong> <?= h($site['company_phone'] ?? '') ?></p>
         </div>
       </div>
       <div class="column is-7">

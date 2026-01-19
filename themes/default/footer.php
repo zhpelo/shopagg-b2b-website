@@ -27,12 +27,12 @@
         <div class="columns">
           <div class="column">
             <p class="has-text-weight-semibold"><?= h(t('footer_company')) ?></p>
-            <p class="is-size-7"><?= h($site['address']) ?></p>
+            <p class="is-size-7"><?= h($site['company_address'] ?? '') ?></p>
           </div>
           <div class="column">
             <p class="has-text-weight-semibold"><?= h(t('footer_contact')) ?></p>
-            <p class="is-size-7"><?= h($site['email']) ?></p>
-            <p class="is-size-7"><?= h($site['phone']) ?></p>
+            <p class="is-size-7"><?= h($site['company_email'] ?? '') ?></p>
+            <p class="is-size-7"><?= h($site['company_phone'] ?? '') ?></p>
           </div>
         </div>
       </div>
