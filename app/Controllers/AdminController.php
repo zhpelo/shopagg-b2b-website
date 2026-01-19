@@ -149,12 +149,39 @@ class AdminController extends Controller {
             return;
         }
 
+        // Special handling for media tab JSON conversion
+        if ($tab === 'media') {
+            // Handle Company Show
+            $showImgs = $_POST['show_img'] ?? [];
+            $showTitles = $_POST['show_title'] ?? [];
+            $showData = [];
+            foreach ($showImgs as $idx => $img) {
+                if (!empty($img)) {
+                    $showData[] = ['img' => $img, 'title' => $showTitles[$idx] ?? ''];
+                }
+            }
+            $this->settingModel->set('company_show_json', json_encode($showData));
+
+            // Handle Certificates
+            $certImgs = $_POST['cert_img'] ?? [];
+            $certTitles = $_POST['cert_title'] ?? [];
+            $certData = [];
+            foreach ($certImgs as $idx => $img) {
+                if (!empty($img)) {
+                    $certData[] = ['img' => $img, 'title' => $certTitles[$idx] ?? ''];
+                }
+            }
+            $this->settingModel->set('company_certificates_json', json_encode($certData));
+
+            $this->redirect('/admin/settings?tab=media');
+            return;
+        }
+
         $groups = [
             'general' => ['site_name', 'site_tagline', 'theme', 'default_lang', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],
             'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
-            'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube'],
-            'media' => ['company_show_json', 'company_certificates_json', 'company_profile_images_json']
+            'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube']
         ];
 
         $keys = $groups[$tab] ?? [];

@@ -1,13 +1,5 @@
 <section class="section">
     <div class="container">
-        <!-- 顶部 Tab 导航 (模拟图片效果) -->
-        <div class="tabs is-boxed mb-6">
-            <ul>
-                <li><a><?= h(t('about_tab_desc')) ?></a></li>
-                <li class="is-active"><a><?= h(t('about_tab_info')) ?></a></li>
-            </ul>
-        </div>
-
         <div class="columns">
             <!-- 左侧内容 -->
             <div class="column is-9">
