@@ -542,7 +542,9 @@ class AdminController extends Controller {
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=inquiries_' . date('Ymd') . '.csv');
         $output = fopen('php://output', 'w');
-        fputcsv($output, ['ID', 'Date', 'Product', 'Name', 'Email', 'Company', 'Phone', 'Quantity', 'Status', 'IP', 'Source URL']);
+        // 添加 BOM 以支持 Excel 正确识别 UTF-8
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        fputcsv($output, ['ID', 'Date', 'Product', 'Name', 'Email', 'Company', 'Phone', 'Quantity', 'Status', 'IP', 'Source URL'], ',', '"', '\\');
         foreach ($inquiries as $i) {
             fputcsv($output, [
                 $i['id'],
@@ -556,7 +558,7 @@ class AdminController extends Controller {
                 $i['status'],
                 $i['ip'],
                 $i['source_url']
-            ]);
+            ], ',', '"', '\\');
         }
         fclose($output);
         exit;
