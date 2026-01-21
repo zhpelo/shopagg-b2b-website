@@ -32,7 +32,12 @@ return [
     'footer_company' => 'Company', 'footer_contact' => 'Contact', 'footer_rights' => 'All rights reserved.',
     'case_success' => 'Success Case', 'case_details' => 'Project Details', 'case_about' => 'About This Case', 'case_publish_time' => 'Publish Time', 'case_interest' => 'If you are interested in this solution or have similar needs, please contact our expert team.', 'case_back_list' => 'Back to All Cases',
     'post_industry_insights' => 'Get the latest industry insights and company news', 'post_read_full' => 'Read Full Article', 'post_back_list' => 'Back to Blog List',
+    'post_categories' => 'Categories', 'post_all_articles' => 'All Articles', 'post_no_articles' => 'No articles found', 'post_view_all' => 'View All Articles',
+    'post_need_help' => 'Need Help?', 'post_contact_desc' => 'If you have any questions, feel free to contact our professional team.',
+    'post_category_label' => 'Category:', 'post_more_in_category' => 'More in this category',
     'product_list_subtitle' => 'Browse our full range of products to provide you with the best B2B solutions.', 'product_view_details' => 'View Details', 'product_uncategorized' => 'Uncategorized',
+    'product_categories' => 'Categories', 'product_all' => 'All Products', 'product_no_items' => 'No products found', 'product_view_all' => 'View All Products',
+    'product_quick_quote' => 'Quick Quote', 'product_quote_desc' => 'Found what you need? Send an inquiry to get a quote now.', 'product_more_in_category' => 'More in this category',
     'carousel_prev' => 'Prev', 'carousel_next' => 'Next', 'form_name_placeholder' => 'Full Name', 'form_email_placeholder' => 'example@email.com', 'form_company_placeholder' => 'Company Ltd.', 'form_qty_placeholder' => 'e.g. 500 units', 'form_req_placeholder' => 'Project requirements, customization, etc.',
     'form_message_label' => 'Message', 'contact_title' => 'Contact Us', 'contact_message' => 'Send Message',
 ];

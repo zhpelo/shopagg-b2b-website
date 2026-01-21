@@ -67,7 +67,7 @@ $categories = $categories ?? [];
                 <div class="field">
                     <label class="label">文章内容</label>
                     <div class="control">
-                        <div id="editor-container" style="min-height: 400px; background: white; border: 1px solid #dbdbdb; border-radius: 8px;"></div>
+                        <div id="editor-container" style="min-height: 400px; background: white;"></div>
                         <input type="hidden" name="content" id="content-input">
                     </div>
                 </div>

@@ -32,7 +32,12 @@ return [
     'footer_company' => '公司信息', 'footer_contact' => '联系我们', 'footer_rights' => '版权所有。',
     'case_success' => '成功案例', 'case_details' => '项目详情', 'case_about' => '关于此案例', 'case_publish_time' => '发布时间', 'case_interest' => '如果您对该解决方案感兴趣，或有类似的需求，欢迎联系我们的专家团队获取专业咨询。', 'case_back_list' => '返回所有案例',
     'post_industry_insights' => '获取最新的行业洞察与公司动态', 'post_read_full' => '阅读全文', 'post_back_list' => '返回博客列表',
+    'post_categories' => '文章分类', 'post_all_articles' => '全部文章', 'post_no_articles' => '暂无文章', 'post_view_all' => '查看所有文章',
+    'post_need_help' => '需要帮助？', 'post_contact_desc' => '如果您有任何问题，欢迎随时联系我们的专业团队。',
+    'post_category_label' => '分类：', 'post_more_in_category' => '更多同类文章',
     'product_list_subtitle' => '浏览我们的全线产品，为您提供最优质的 B2B 解决方案。', 'product_view_details' => '查看详情', 'product_uncategorized' => '未分类',
+    'product_categories' => '产品分类', 'product_all' => '全部产品', 'product_no_items' => '暂无产品', 'product_view_all' => '查看所有产品',
+    'product_quick_quote' => '快速询价', 'product_quote_desc' => '找到心仪的产品了吗？立即发送询单获取报价。', 'product_more_in_category' => '更多同类产品',
     'carousel_prev' => '上一张', 'carousel_next' => '下一张', 'form_name_placeholder' => '姓名', 'form_email_placeholder' => '电子邮箱', 'form_company_placeholder' => '公司名称', 'form_qty_placeholder' => '例如：500件', 'form_req_placeholder' => '项目需求、定制说明等...',
     'form_message_label' => '留言内容', 'contact_title' => '联系我们', 'contact_message' => '发送留言',
 ];

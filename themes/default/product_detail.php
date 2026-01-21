@@ -1,5 +1,20 @@
+<?php
+$category = $category ?? null;
+?>
 <section class="section">
   <div class="container">
+    <!-- 面包屑导航 -->
+    <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/"><?= h(t('nav_home')) ?></a></li>
+            <li><a href="/products"><?= h(t('products')) ?></a></li>
+            <?php if ($category): ?>
+            <li><a href="/products?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
+            <?php endif; ?>
+            <li class="is-active"><a href="#" aria-current="page"><?= h($item['title']) ?></a></li>
+        </ul>
+    </nav>
+
     <div class="columns">
       <div class="column is-6">
         <?php if (!empty($images)): ?>
@@ -32,8 +47,20 @@
       <div class="column is-6">
         <div class="box soft-card">
           <h1 class="title is-3"><?= h($item['title']) ?></h1>
-          <p class="is-size-7 has-text-grey"><?= h($item['created_at']) ?></p>
-          <p class="tag is-light"><?= h($item['category_name'] ?? t('product_uncategorized')) ?></p>
+          <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
+            <span class="is-size-7 has-text-grey">
+              <i class="far fa-calendar-alt mr-1"></i>
+              <?= date('Y-m-d', strtotime($item['created_at'])) ?>
+            </span>
+            <?php if ($category): ?>
+            <a href="/products?category=<?= (int)$category['id'] ?>" class="tag is-warning is-light">
+              <span class="icon is-small"><i class="fas fa-folder"></i></span>
+              <span><?= h($category['name']) ?></span>
+            </a>
+            <?php else: ?>
+            <span class="tag is-light"><?= h($item['category_name'] ?? t('product_uncategorized')) ?></span>
+            <?php endif; ?>
+          </div>
 
           <?php if (!empty($item['summary'])): ?>
             <div class="content" style="margin-top:16px"><?= h($item['summary']) ?></div>
@@ -89,7 +116,16 @@
             <?= h(t('product_sample_tip')) ?> <span class="has-text-weight-bold">US$ <?= !empty($price_tiers) ? h($price_tiers[0]['currency']).' '.h((string)($price_tiers[0]['price'] * 2)) : '50.00' ?>/<?= h(t('product_pieces')) ?></span> ! 
             <a href="#inquiry" class="has-text-weight-bold is-underlined has-text-black" onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(t('product_sample_btn')) ?></a>
           </div>
-         
+
+          <!-- 同类产品链接 -->
+          <?php if ($category): ?>
+          <div class="mt-5 pt-4" style="border-top: 1px solid #f0f0f0;">
+            <a href="/products?category=<?= (int)$category['id'] ?>" class="button is-warning is-light is-small">
+              <span class="icon"><i class="fas fa-folder"></i></span>
+              <span><?= h(t('product_more_in_category') ?? '更多同类产品') ?></span>
+            </a>
+          </div>
+          <?php endif; ?>
           
         </div>
       </div>

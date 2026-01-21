@@ -29,23 +29,52 @@ class SiteController extends BaseController {
     }
 
     public function products(): void {
-        $items = (new Product())->getList(0, true);  // 只获取已上架产品
+        $categoryModel = new Category();
+        $productModel = new Product();
+        
+        // 获取当前分类ID
+        $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+        $currentCategory = $categoryId > 0 ? $categoryModel->getById($categoryId) : null;
+        
+        // 获取产品列表
+        if ($categoryId > 0) {
+            $items = $productModel->getByCategory($categoryId);
+        } else {
+            $items = $productModel->getList(0, true);  // 只获取已上架产品
+        }
         foreach ($items as &$i) $i['url'] = '/product/' . $i['slug'];
+        
+        // 获取分类列表
+        $categories = $categoryModel->getTree('product');
+        
+        $title = $currentCategory ? $currentCategory['name'] : t('products');
+        
         $this->renderSite('product_list', [
-            'title' => t('products'),
+            'title' => $title,
             'items' => $items,
-            'seo' => ['title' => t('products') . ' - ' . $this->siteData['site']['name']]
+            'categories' => $categories,
+            'current_category' => $currentCategory,
+            'seo' => ['title' => $title . ' - ' . $this->siteData['site']['name']]
         ]);
     }
 
     public function productDetail(string $slug): void {
         $productModel = new Product();
+        $categoryModel = new Category();
+        
         $item = $productModel->getBySlug($slug);
         // 只有已上架的产品才能查看
         if (!$item || $item['status'] !== 'active') { $this->notFound(); return; }
         
+        // 获取分类信息用于面包屑
+        $category = null;
+        if (!empty($item['category_id'])) {
+            $category = $categoryModel->getById((int)$item['category_id']);
+        }
+        
         $this->renderSite('product_detail', [
             'item' => $item,
+            'category' => $category,
             'images' => $item['images'] ?? [],
             'price_tiers' => $productModel->getPrices((int)$item['id']),
             'whatsapp' => $this->siteData['site']['whatsapp'],
@@ -77,21 +106,52 @@ class SiteController extends BaseController {
     }
 
     public function blog(): void {
-        $items = (new PostModel())->getList(0, true);  // 只获取已发布文章
+        $categoryModel = new Category();
+        $postModel = new PostModel();
+        
+        // 获取当前分类ID
+        $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+        $currentCategory = $categoryId > 0 ? $categoryModel->getById($categoryId) : null;
+        
+        // 获取文章列表
+        if ($categoryId > 0) {
+            $items = $postModel->getByCategory($categoryId);
+        } else {
+            $items = $postModel->getList(0, true);  // 只获取已发布文章
+        }
         foreach ($items as &$i) $i['url'] = '/blog/' . $i['slug'];
+        
+        // 获取分类列表（带文章数量）
+        $categories = $categoryModel->getTree('post');
+        
+        $title = $currentCategory ? $currentCategory['name'] : t('blog');
+        
         $this->renderSite('post_list', [
-            'title' => t('blog'),
+            'title' => $title,
             'items' => $items,
-            'seo' => ['title' => t('blog') . ' - ' . $this->siteData['site']['name']]
+            'categories' => $categories,
+            'current_category' => $currentCategory,
+            'seo' => ['title' => $title . ' - ' . $this->siteData['site']['name']]
         ]);
     }
 
     public function blogDetail(string $slug): void {
-        $item = (new PostModel())->getBySlug($slug);
+        $postModel = new PostModel();
+        $categoryModel = new Category();
+        
+        $item = $postModel->getBySlug($slug);
         // 只有已发布的文章才能查看
         if (!$item || ($item['status'] ?? 'active') !== 'active') { $this->notFound(); return; }
+        
+        // 获取分类信息用于面包屑
+        $category = null;
+        if (!empty($item['category_id'])) {
+            $category = $categoryModel->getById((int)$item['category_id']);
+        }
+        
         $this->renderSite('post_detail', [
             'item' => $item,
+            'category' => $category,
             'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
         ]);
     }

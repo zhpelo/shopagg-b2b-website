@@ -118,4 +118,19 @@ class Product extends BaseModel {
             $stmt->execute();
         }
     }
+
+    public function getByCategory(int $categoryId, int $limit = 0): array {
+        $query = "SELECT products.*, product_categories.name AS category_name
+            FROM products 
+            LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE products.category_id = :cid AND products.status = 'active'
+            ORDER BY products.id DESC";
+        if ($limit > 0) $query .= " LIMIT $limit";
+        $items = $this->fetchAll($query, [':cid' => $categoryId]);
+        foreach ($items as &$item) {
+            $images = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $images[0] ?? '';
+        }
+        return $items;
+    }
 }
