@@ -78,9 +78,10 @@
                     <td>
                         <?php
                         $status_map = [
-                            'active' => ['已上架', 'success', 'check-circle'],
                             'draft' => ['草稿', 'warning', 'edit'],
-                            'archived' => ['已归档', 'grey', 'archive']
+                            'active' => ['已上架', 'success', 'check-circle'],
+                            'inactive' => ['已下架', 'grey', 'arrow-down'],
+                            'archived' => ['已下架', 'grey', 'arrow-down']  // 兼容旧数据
                         ];
                         $s = $status_map[$row['status'] ?? 'active'] ?? $status_map['active'];
                         ?>

@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 class Product extends BaseModel {
-    public function getList(int $limit = 0): array {
+    public function getList(int $limit = 0, bool $activeOnly = false): array {
         $query = "SELECT products.*, product_categories.name AS category_name
-            FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
-            ORDER BY products.id DESC";
+            FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id";
+        if ($activeOnly) {
+            $query .= " WHERE products.status = 'active'";
+        }
+        $query .= " ORDER BY products.id DESC";
         if ($limit > 0) $query .= " LIMIT $limit";
         $items = $this->fetchAll($query);
         foreach ($items as &$item) {

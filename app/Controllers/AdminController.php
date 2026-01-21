@@ -56,9 +56,10 @@ class AdminController extends Controller {
         
         $map = [
             '/admin/products' => 'products',
-            '/admin/categories' => 'products',
+            '/admin/product-categories' => 'products',
             '/admin/cases' => 'cases',
             '/admin/posts' => 'blog',
+            '/admin/post-categories' => 'blog',
             '/admin/messages' => 'inbox',
             '/admin/inquiries' => 'inbox',
             '/admin/settings' => 'settings',
@@ -111,7 +112,8 @@ class AdminController extends Controller {
             'messages' => (int)$this->db->querySingle("SELECT COUNT(*) FROM messages"),
             'inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries"),
             'pending_inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE status = 'pending'"),
-            'categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories"),
+            'categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories WHERE type = 'product' OR type IS NULL"),
+            'post_categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories WHERE type = 'post'"),
             'users' => (int)$this->db->querySingle("SELECT COUNT(*) FROM users"),
         ];
 
@@ -380,49 +382,132 @@ class AdminController extends Controller {
         $this->productModel->savePrices($productId, $tiers);
     }
 
-    // --- Categories ---
-    public function categoryList(): void {
-        $categories = $this->categoryModel->getAll();
-        $this->renderAdmin('产品分类', $this->renderView('admin/categories/index', ['categories' => $categories]));
-    }
-
-    public function categoryCreate(): void {
-        $this->renderAdmin('新建分类', $this->renderView('admin/categories/form', ['action' => '/admin/categories/create']));
-    }
-
-    public function categoryStore(): void {
-        csrf_check();
-        $name = trim((string)$_POST['name']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($name);
-        $this->categoryModel->create($name, $slug);
-        $this->redirect('/admin/categories');
-    }
-
-    public function categoryEdit(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $category = $this->categoryModel->getById($id);
-        if (!$category) $this->redirect('/admin/categories');
-        $this->renderAdmin('编辑分类', $this->renderView('admin/categories/form', [
-            'action' => '/admin/categories/edit?id=' . $id,
-            'category' => $category
+    // --- Product Categories (产品分类) ---
+    public function productCategoryList(): void {
+        $categories = $this->categoryModel->getTree('product');
+        $this->renderAdmin('产品分类', $this->renderView('admin/categories/index', [
+            'categories' => $categories,
+            'type' => 'product',
+            'base_url' => '/admin/product-categories'
         ]));
     }
 
-    public function categoryUpdate(): void {
+    public function productCategoryCreate(): void {
+        $parentCategories = $this->categoryModel->getFlatTree('product');
+        $this->renderAdmin('新建产品分类', $this->renderView('admin/categories/form', [
+            'action' => '/admin/product-categories/create',
+            'type' => 'product',
+            'base_url' => '/admin/product-categories',
+            'parent_categories' => $parentCategories
+        ]));
+    }
+
+    public function productCategoryStore(): void {
+        csrf_check();
+        $name = trim((string)$_POST['name']);
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') $slug = slugify($name);
+        $parentId = (int)($_POST['parent_id'] ?? 0);
+        $description = trim((string)($_POST['description'] ?? ''));
+        $this->categoryModel->create($name, $slug, 'product', $parentId, $description);
+        $this->redirect('/admin/product-categories');
+    }
+
+    public function productCategoryEdit(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $category = $this->categoryModel->getById($id);
+        if (!$category) $this->redirect('/admin/product-categories');
+        
+        $parentCategories = $this->categoryModel->getFlatTree('product');
+        $this->renderAdmin('编辑产品分类', $this->renderView('admin/categories/form', [
+            'action' => '/admin/product-categories/edit?id=' . $id,
+            'category' => $category,
+            'type' => 'product',
+            'base_url' => '/admin/product-categories',
+            'parent_categories' => $parentCategories
+        ]));
+    }
+
+    public function productCategoryUpdate(): void {
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
         $name = trim((string)$_POST['name']);
         $slug = trim((string)($_POST['slug'] ?? ''));
         if ($slug === '') $slug = slugify($name);
-        $this->categoryModel->update($id, $name, $slug);
-        $this->redirect('/admin/categories');
+        $parentId = (int)($_POST['parent_id'] ?? 0);
+        $description = trim((string)($_POST['description'] ?? ''));
+        $this->categoryModel->update($id, $name, $slug, $parentId, $description);
+        $this->redirect('/admin/product-categories');
     }
 
-    public function categoryDelete(): void {
+    public function productCategoryDelete(): void {
         $id = (int)($_GET['id'] ?? 0);
         $this->categoryModel->delete($id);
-        $this->redirect('/admin/categories');
+        $this->redirect('/admin/product-categories');
+    }
+
+    // --- Post Categories (文章分类) ---
+    public function postCategoryList(): void {
+        $categories = $this->categoryModel->getTree('post');
+        $this->renderAdmin('文章分类', $this->renderView('admin/categories/index', [
+            'categories' => $categories,
+            'type' => 'post',
+            'base_url' => '/admin/post-categories'
+        ]));
+    }
+
+    public function postCategoryCreate(): void {
+        $parentCategories = $this->categoryModel->getFlatTree('post');
+        $this->renderAdmin('新建文章分类', $this->renderView('admin/categories/form', [
+            'action' => '/admin/post-categories/create',
+            'type' => 'post',
+            'base_url' => '/admin/post-categories',
+            'parent_categories' => $parentCategories
+        ]));
+    }
+
+    public function postCategoryStore(): void {
+        csrf_check();
+        $name = trim((string)$_POST['name']);
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') $slug = slugify($name);
+        $parentId = (int)($_POST['parent_id'] ?? 0);
+        $description = trim((string)($_POST['description'] ?? ''));
+        $this->categoryModel->create($name, $slug, 'post', $parentId, $description);
+        $this->redirect('/admin/post-categories');
+    }
+
+    public function postCategoryEdit(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $category = $this->categoryModel->getById($id);
+        if (!$category) $this->redirect('/admin/post-categories');
+        
+        $parentCategories = $this->categoryModel->getFlatTree('post');
+        $this->renderAdmin('编辑文章分类', $this->renderView('admin/categories/form', [
+            'action' => '/admin/post-categories/edit?id=' . $id,
+            'category' => $category,
+            'type' => 'post',
+            'base_url' => '/admin/post-categories',
+            'parent_categories' => $parentCategories
+        ]));
+    }
+
+    public function postCategoryUpdate(): void {
+        csrf_check();
+        $id = (int)($_GET['id'] ?? 0);
+        $name = trim((string)$_POST['name']);
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') $slug = slugify($name);
+        $parentId = (int)($_POST['parent_id'] ?? 0);
+        $description = trim((string)($_POST['description'] ?? ''));
+        $this->categoryModel->update($id, $name, $slug, $parentId, $description);
+        $this->redirect('/admin/post-categories');
+    }
+
+    public function postCategoryDelete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $this->categoryModel->delete($id);
+        $this->redirect('/admin/post-categories');
     }
 
     // --- Cases ---
@@ -466,16 +551,24 @@ class AdminController extends Controller {
     // --- Posts ---
     public function postList(): void {
         $items = $this->postModel->getList();
-        $this->renderAdmin('博客管理', $this->renderView('admin/crud/index', ['items' => $items, 'label' => '博客', 'base' => '/admin/posts']));
+        $categories = $this->categoryModel->getFlatTree('post');
+        $this->renderAdmin('博客管理', $this->renderView('admin/posts/index', [
+            'items' => $items,
+            'categories' => $categories
+        ]));
     }
 
     public function postCreate(): void {
-        $this->renderAdmin('新建博客', $this->renderView('admin/crud/form', ['action' => '/admin/posts/create', 'label' => '博客']));
+        $categories = $this->categoryModel->getFlatTree('post');
+        $this->renderAdmin('新建博客', $this->renderView('admin/posts/form', [
+            'action' => '/admin/posts/create',
+            'categories' => $categories
+        ]));
     }
 
     public function postStore(): void {
         csrf_check();
-        $data = $this->getGenericFormData();
+        $data = $this->getPostFormData();
         $this->postModel->create($data);
         $this->redirect('/admin/posts');
     }
@@ -484,13 +577,18 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $item = $this->postModel->getById($id);
         if (!$item) $this->redirect('/admin/posts');
-        $this->renderAdmin('编辑博客', $this->renderView('admin/crud/form', ['action' => '/admin/posts/edit?id='.$id, 'item' => $item, 'label' => '博客']));
+        $categories = $this->categoryModel->getFlatTree('post');
+        $this->renderAdmin('编辑博客', $this->renderView('admin/posts/form', [
+            'action' => '/admin/posts/edit?id='.$id,
+            'item' => $item,
+            'categories' => $categories
+        ]));
     }
 
     public function postUpdate(): void {
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
-        $data = $this->getGenericFormData();
+        $data = $this->getPostFormData();
         $this->postModel->update($id, $data);
         $this->redirect('/admin/posts');
     }
@@ -499,6 +597,20 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $this->postModel->delete($id);
         $this->redirect('/admin/posts');
+    }
+
+    private function getPostFormData(): array {
+        $title = trim((string)$_POST['title']);
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') $slug = slugify($title);
+        return [
+            'title' => $title,
+            'slug' => $slug,
+            'summary' => trim((string)($_POST['summary'] ?? '')),
+            'content' => trim((string)($_POST['content'] ?? '')),
+            'category_id' => (int)($_POST['category_id'] ?? 0),
+            'status' => trim((string)($_POST['status'] ?? 'active')),
+        ];
     }
 
     private function getGenericFormData(): array {

@@ -87,13 +87,21 @@ $router->add('GET', '/admin/products/edit', [AdminController::class, 'productEdi
 $router->add('POST', '/admin/products/edit', [AdminController::class, 'productUpdate']);
 $router->add('GET', '/admin/products/delete', [AdminController::class, 'productDelete']);
 
-// Admin CRUD for Categories
-$router->add('GET', '/admin/categories', [AdminController::class, 'categoryList']);
-$router->add('GET', '/admin/categories/create', [AdminController::class, 'categoryCreate']);
-$router->add('POST', '/admin/categories/create', [AdminController::class, 'categoryStore']);
-$router->add('GET', '/admin/categories/edit', [AdminController::class, 'categoryEdit']);
-$router->add('POST', '/admin/categories/edit', [AdminController::class, 'categoryUpdate']);
-$router->add('GET', '/admin/categories/delete', [AdminController::class, 'categoryDelete']);
+// Admin CRUD for Product Categories (产品分类)
+$router->add('GET', '/admin/product-categories', [AdminController::class, 'productCategoryList']);
+$router->add('GET', '/admin/product-categories/create', [AdminController::class, 'productCategoryCreate']);
+$router->add('POST', '/admin/product-categories/create', [AdminController::class, 'productCategoryStore']);
+$router->add('GET', '/admin/product-categories/edit', [AdminController::class, 'productCategoryEdit']);
+$router->add('POST', '/admin/product-categories/edit', [AdminController::class, 'productCategoryUpdate']);
+$router->add('GET', '/admin/product-categories/delete', [AdminController::class, 'productCategoryDelete']);
+
+// Admin CRUD for Post Categories (文章分类)
+$router->add('GET', '/admin/post-categories', [AdminController::class, 'postCategoryList']);
+$router->add('GET', '/admin/post-categories/create', [AdminController::class, 'postCategoryCreate']);
+$router->add('POST', '/admin/post-categories/create', [AdminController::class, 'postCategoryStore']);
+$router->add('GET', '/admin/post-categories/edit', [AdminController::class, 'postCategoryEdit']);
+$router->add('POST', '/admin/post-categories/edit', [AdminController::class, 'postCategoryUpdate']);
+$router->add('GET', '/admin/post-categories/delete', [AdminController::class, 'postCategoryDelete']);
 
 // Admin CRUD for Cases
 $router->add('GET', '/admin/cases', [AdminController::class, 'caseList']);

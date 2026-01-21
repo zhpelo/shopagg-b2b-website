@@ -640,9 +640,9 @@
     <?php if ($showNav ?? true): 
     $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $active_group = '';
-    if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/categories')) $active_group = 'catalog';
+    if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/product-categories')) $active_group = 'catalog';
     elseif (str_starts_with($current_path, '/admin/cases')) $active_group = 'cases';
-    elseif (str_starts_with($current_path, '/admin/posts')) $active_group = 'blog';
+    elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories')) $active_group = 'blog';
     elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
     elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
 
@@ -735,10 +735,10 @@
     <nav class="admin-subnav">
         <div class="container admin-subnav-container">
             <?php if ($active_group === 'catalog'): ?>
-                <a class="navbar-item <?= str_contains($current_path, '/products') && !str_contains($current_path, '/categories') ? 'is-active' : '' ?>" href="/admin/products">
+                <a class="navbar-item <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'is-active' : '' ?>" href="/admin/products">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>产品列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/categories') ? 'is-active' : '' ?>" href="/admin/categories">
+                <a class="navbar-item <?= str_contains($current_path, '/admin/product-categories') ? 'is-active' : '' ?>" href="/admin/product-categories">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>产品分类
                 </a>
             <?php elseif ($active_group === 'cases'): ?>
@@ -749,11 +749,11 @@
                     <span class="icon mr-1"><i class="fas fa-plus"></i></span>新增案例
                 </a>
             <?php elseif ($active_group === 'blog'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/posts' ? 'is-active' : '' ?>" href="/admin/posts">
+                <a class="navbar-item <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'is-active' : '' ?>" href="/admin/posts">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>文章列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/create') ? 'is-active' : '' ?>" href="/admin/posts/create">
-                    <span class="icon mr-1"><i class="fas fa-plus"></i></span>发布文章
+                <a class="navbar-item <?= str_contains($current_path, '/admin/post-categories') ? 'is-active' : '' ?>" href="/admin/post-categories">
+                    <span class="icon mr-1"><i class="fas fa-folder"></i></span>文章分类
                 </a>
             <?php elseif ($active_group === 'inbox'): ?>
                 <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="/admin/messages">

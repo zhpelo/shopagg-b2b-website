@@ -12,7 +12,7 @@ use App\Models\Inquiry;
 
 class SiteController extends BaseController {
     public function home(): void {
-        $products = (new Product())->getList(6);
+        $products = (new Product())->getList(6, true);  // 只获取已上架产品
         foreach ($products as &$p) $p['url'] = '/product/' . $p['slug'];
         
         $cases = (new CaseModel())->getList(6);
@@ -29,7 +29,7 @@ class SiteController extends BaseController {
     }
 
     public function products(): void {
-        $items = (new Product())->getList();
+        $items = (new Product())->getList(0, true);  // 只获取已上架产品
         foreach ($items as &$i) $i['url'] = '/product/' . $i['slug'];
         $this->renderSite('product_list', [
             'title' => t('products'),
@@ -41,7 +41,8 @@ class SiteController extends BaseController {
     public function productDetail(string $slug): void {
         $productModel = new Product();
         $item = $productModel->getBySlug($slug);
-        if (!$item) { $this->notFound(); return; }
+        // 只有已上架的产品才能查看
+        if (!$item || $item['status'] !== 'active') { $this->notFound(); return; }
         
         $this->renderSite('product_detail', [
             'item' => $item,
@@ -76,7 +77,7 @@ class SiteController extends BaseController {
     }
 
     public function blog(): void {
-        $items = (new PostModel())->getList();
+        $items = (new PostModel())->getList(0, true);  // 只获取已发布文章
         foreach ($items as &$i) $i['url'] = '/blog/' . $i['slug'];
         $this->renderSite('post_list', [
             'title' => t('blog'),
@@ -87,7 +88,8 @@ class SiteController extends BaseController {
 
     public function blogDetail(string $slug): void {
         $item = (new PostModel())->getBySlug($slug);
-        if (!$item) { $this->notFound(); return; }
+        // 只有已发布的文章才能查看
+        if (!$item || ($item['status'] ?? 'active') !== 'active') { $this->notFound(); return; }
         $this->renderSite('post_detail', [
             'item' => $item,
             'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
@@ -144,11 +146,11 @@ class SiteController extends BaseController {
         $db = \App\Core\Database::getInstance();
         $urls = [base_url() . '/', base_url() . '/products', base_url() . '/cases', base_url() . '/blog', base_url() . '/contact'];
         
-        $res = $db->query("SELECT slug FROM products");
+        $res = $db->query("SELECT slug FROM products WHERE status = 'active'");  // 只索引已上架产品
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/product/' . $r['slug'];
         $res = $db->query("SELECT slug FROM cases");
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/case/' . $r['slug'];
-        $res = $db->query("SELECT slug FROM posts");
+        $res = $db->query("SELECT slug FROM posts WHERE status = 'active'");  // 只索引已发布文章
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/blog/' . $r['slug'];
 
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";

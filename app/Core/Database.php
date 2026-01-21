@@ -68,6 +68,32 @@ class Database {
         }
         // Update default admin role
         $db->exec("UPDATE users SET role = 'admin' WHERE username = 'admin'");
+
+        // Categories columns (支持多级分类和类型区分)
+        $categoryCols = [
+            'parent_id' => 'INTEGER DEFAULT 0',
+            'type' => 'TEXT DEFAULT "product"',
+            'sort_order' => 'INTEGER DEFAULT 0',
+            'description' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(product_categories)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($categoryCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE product_categories ADD COLUMN $col $type");
+        }
+
+        // Posts columns (添加分类支持)
+        $postCols = [
+            'category_id' => 'INTEGER DEFAULT 0',
+            'status' => 'TEXT DEFAULT "active"'
+        ];
+        $res = $db->query("PRAGMA table_info(posts)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($postCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE posts ADD COLUMN $col $type");
+        }
     }
 
     private static function initSchema(SQLite3 $db): void {

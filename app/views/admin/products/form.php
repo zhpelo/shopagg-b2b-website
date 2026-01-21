@@ -170,9 +170,9 @@
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select name="status">
-                                <option value="active" <?= ($product['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>✅ 已上架</option>
                                 <option value="draft" <?= ($product['status'] ?? '') === 'draft' ? 'selected' : '' ?>>📝 草稿</option>
-                                <option value="archived" <?= ($product['status'] ?? '') === 'archived' ? 'selected' : '' ?>>📦 已归档</option>
+                                <option value="active" <?= ($product['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>✅ 已上架</option>
+                                <option value="inactive" <?= ($product['status'] ?? '') === 'inactive' || ($product['status'] ?? '') === 'archived' ? 'selected' : '' ?>>⬇️ 已下架</option>
                             </select>
                         </div>
                     </div>

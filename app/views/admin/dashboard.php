@@ -336,7 +336,7 @@
                 </div>
                 <div class="stat-value"><?= $counts['categories'] ?></div>
                 <div class="stat-label">产品分类</div>
-                <a href="/admin/categories" class="button is-small is-warning is-light mt-3">
+                <a href="/admin/product-categories" class="button is-small is-warning is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
