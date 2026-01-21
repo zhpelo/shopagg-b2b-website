@@ -67,7 +67,7 @@
                     <td>
                         <div class="is-flex is-align-items-center">
                             <div class="icon-box mr-3" style="width: 44px; height: 44px; background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; flex-shrink: 0;">
-                                <?= strtoupper(substr($row['name'], 0, 1)) ?>
+                                <?= strtoupper(mb_substr($row['name'], 0, 1)) ?>
                             </div>
                             <div>
                                 <strong><?= h($row['name']) ?></strong>
