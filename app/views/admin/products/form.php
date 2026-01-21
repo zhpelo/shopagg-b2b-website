@@ -1,186 +1,260 @@
-<div class="level">
-    <div class="level-left">
-        <h1 class="title is-4"><?= isset($product) ? '编辑' : '添加' ?>产品</h1>
+<!-- 页面头部 -->
+<div class="page-header animate-in">
+    <div class="level mb-0">
+        <div class="level-left">
+            <div>
+                <h1 class="title is-4 mb-1">
+                    <span class="icon mr-2"><i class="fas fa-<?= isset($product) ? 'edit' : 'plus' ?>"></i></span>
+                    <?= isset($product) ? '编辑产品' : '添加产品' ?>
+                </h1>
+                <p class="subtitle is-6"><?= isset($product) ? '修改产品信息' : '创建新的产品' ?></p>
+            </div>
+        </div>
+        <div class="level-right header-actions">
+            <a href="/admin/products" class="button is-white">
+                <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                <span>返回列表</span>
+            </a>
+        </div>
     </div>
 </div>
 
-<form method="post" action="<?= h($action) ?>" enctype="multipart/form-data" id="product-form">
-        <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+<form method="post" action="<?= h($action) ?>" enctype="multipart/form-data" id="product-form" class="modern-form">
+    <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
-        <div class="columns">
+    <div class="columns">
         <!-- 左侧栏 -->
         <div class="column is-8">
             <!-- 标题和描述 -->
-            <div class="card mb-5 admin-card">
-                <div class="card-content">
+            <div class="admin-card mb-5 animate-in delay-1" style="padding: 2rem;">
+                <div class="section-title">
+                    <span class="icon-box primary"><i class="fas fa-info-circle"></i></span>
+                    基本信息
+                </div>
                 <div class="field">
-                    <label class="label">标题</label>
-                        <div class="control">
-                            <input class="input" name="title" value="<?= h($product['title'] ?? '') ?>" placeholder="短袖 T 恤" required>
-            </div>
-        </div>
-        <div class="field">
-                        <label class="label">描述</label>
-            <div class="control">
-                            <textarea id="content-input" name="content" style="display:none"><?= h($product['content'] ?? '') ?></textarea>
-                            <div id="quill-editor" style="height:300px; background:#fff"></div>
-            </div>
-        </div>
+                    <label class="label">产品标题</label>
+                    <div class="control">
+                        <input class="input" name="title" value="<?= h($product['title'] ?? '') ?>" placeholder="输入产品标题" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">产品描述</label>
+                    <div class="control">
+                        <textarea id="content-input" name="content" style="display:none"><?= h($product['content'] ?? '') ?></textarea>
+                        <div id="quill-editor" style="height:300px; background:#fff; border-radius: 0 0 10px 10px;"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- 媒体文件 -->
-            <div class="card mb-5 admin-card">
-                <div class="card-header">
-                    <p class="card-header-title">媒体文件</p>
+            <div class="admin-card mb-5 animate-in delay-2" style="padding: 2rem;">
+                <div class="section-title">
+                    <span class="icon-box info"><i class="fas fa-images"></i></span>
+                    媒体文件
                 </div>
-                <div class="card-content">
-                    <!-- 状态 1：已选图片网格 (图片 2 UI) -->
-                    <?php $images = $product['images'] ?? []; ?>
-                    <div id="media-grid-wrap" class="<?= empty($images) ? 'is-hidden' : '' ?>">
-                        <div id="media-container" class="mb-4">
-                            <?php foreach ($images as $img): ?>
-                                <div class="media-item" data-url="<?= h($img) ?>">
-                                    <img src="<?= h($img) ?>">
-                                    <input type="hidden" name="images[]" value="<?= h($img) ?>">
-                                    <button type="button" class="delete is-small remove-media"></button>
-                                </div>
-                            <?php endforeach; ?>
-                            
-                            <!-- 网格末尾的添加按钮 -->
-                            <div class="media-add-btn open-media-library-btn" id="grid-add-btn">
-                                <span class="is-size-4 has-text-grey-light">+</span>
-        </div>
-            </div>
-        </div>
-
-                    <!-- 状态 2：空占位区域 (图片 1 UI) -->
-                    <div id="media-empty-placeholder" class="media-placeholder <?= !empty($images) ? 'is-hidden' : '' ?>">
-                        <div class="buttons">
-                            <div class="file is-centered">
-                                <label class="file-label">
-                                    <input class="file-input" type="file" name="new_images[]" multiple accept="image/*" id="file-upload-input">
-                                    <span class="file-cta button is-white border" style="height: auto; padding: 8px 20px;">
-                                        <span class="file-label has-text-weight-bold">上传新文件</span>
-                                    </span>
-                                </label>
+                
+                <?php $images = $product['images'] ?? []; ?>
+                <div id="media-grid-wrap" class="<?= empty($images) ? 'is-hidden' : '' ?>">
+                    <div id="media-container" class="mb-4">
+                        <?php foreach ($images as $img): ?>
+                            <div class="media-item" data-url="<?= h($img) ?>">
+                                <img src="<?= h($img) ?>">
+                                <input type="hidden" name="images[]" value="<?= h($img) ?>">
+                                <button type="button" class="delete is-small remove-media"></button>
                             </div>
-                            <button type="button" class="button is-white border open-media-library-btn has-text-weight-bold ml-2" style="height: auto; padding: 8px 20px;">选择现有文件</button>
+                        <?php endforeach; ?>
+                        
+                        <!-- 网格末尾的添加按钮 -->
+                        <div class="media-add-btn open-media-library-btn" id="grid-add-btn">
+                            <span class="is-size-4 has-text-grey-light">+</span>
                         </div>
-                        <p class="is-size-7 has-text-grey mt-2">支持图片、视频或 3D 模型</p>
                     </div>
                 </div>
-        </div>
 
-          
-            <!-- 价格 -->
-            <div class="card mb-5 admin-card">
-                <div class="card-header"><p class="card-header-title">价格 (阶梯价格)</p></div>
-                <div class="card-content">
-            <input type="hidden" name="price_tiers_enabled" value="1">
-            <div id="price-tier-wrap">
-                <?php 
-                $tierData = !empty($prices) ? $prices : [['min_qty'=>'', 'max_qty'=>'', 'price'=>'', 'currency'=>'USD']];
-                foreach ($tierData as $tier): 
-                ?>
-                <div class="columns price-tier-row">
-                    <div class="column"><div class="field"><label class="label is-size-7">最小数量</label><div class="control"><input class="input" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required></div></div></div>
-                    <div class="column"><div class="field"><label class="label is-size-7">最大数量</label><div class="control"><input class="input" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>"></div></div></div>
-                    <div class="column"><div class="field"><label class="label is-size-7">单价</label><div class="control"><input class="input" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required></div></div></div>
-                    <div class="column"><div class="field"><label class="label is-size-7">货币</label><div class="control"><input class="input" name="price_currency[]" value="<?= h($tier['currency'] ?? 'USD') ?>" required></div></div></div>
-                    <div class="column is-narrow"><div class="field"><label class="label is-size-7">操作</label><div class="control"><button type="button" class="button is-light remove-price-tier">删除</button></div></div></div>
+                <!-- 空占位区域 -->
+                <div id="media-empty-placeholder" class="media-placeholder <?= !empty($images) ? 'is-hidden' : '' ?>">
+                    <div class="buttons">
+                        <div class="file is-centered">
+                            <label class="file-label">
+                                <input class="file-input" type="file" name="new_images[]" multiple accept="image/*" id="file-upload-input">
+                                <span class="file-cta button is-light" style="height: auto; padding: 12px 24px; border-radius: 10px;">
+                                    <span class="file-icon"><i class="fas fa-upload"></i></span>
+                                    <span class="file-label has-text-weight-semibold">上传新文件</span>
+                                </span>
+                            </label>
+                        </div>
+                        <button type="button" class="button is-light open-media-library-btn has-text-weight-semibold ml-2" style="height: auto; padding: 12px 24px; border-radius: 10px;">
+                            <span class="icon"><i class="fas fa-photo-video"></i></span>
+                            <span>选择现有文件</span>
+                        </button>
+                    </div>
+                    <p class="is-size-7 has-text-grey mt-3">支持 JPG、PNG、GIF、WebP 格式图片</p>
                 </div>
-                <?php endforeach; ?>
             </div>
-                    <button type="button" class="button is-link is-light is-small" id="add-price-tier">新增阶梯价格</button>
+
+            <!-- 价格 -->
+            <div class="admin-card mb-5 animate-in delay-3" style="padding: 2rem;">
+                <div class="section-title">
+                    <span class="icon-box success"><i class="fas fa-dollar-sign"></i></span>
+                    阶梯价格
                 </div>
+                
+                <input type="hidden" name="price_tiers_enabled" value="1">
+                <div id="price-tier-wrap">
+                    <?php 
+                    $tierData = !empty($prices) ? $prices : [['min_qty'=>'', 'max_qty'=>'', 'price'=>'', 'currency'=>'USD']];
+                    foreach ($tierData as $tier): 
+                    ?>
+                    <div class="columns price-tier-row is-vcentered" style="background: #f8fafc; border-radius: 10px; padding: 0.75rem; margin-bottom: 0.5rem;">
+                        <div class="column is-2">
+                            <div class="field mb-0">
+                                <label class="label is-size-7">最小数量</label>
+                                <div class="control">
+                                    <input class="input is-small" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-2">
+                            <div class="field mb-0">
+                                <label class="label is-size-7">最大数量</label>
+                                <div class="control">
+                                    <input class="input is-small" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="field mb-0">
+                                <label class="label is-size-7">单价</label>
+                                <div class="control">
+                                    <input class="input is-small" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-2">
+                            <div class="field mb-0">
+                                <label class="label is-size-7">货币</label>
+                                <div class="control">
+                                    <input class="input is-small" name="price_currency[]" value="<?= h($tier['currency'] ?? 'USD') ?>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-narrow">
+                            <div class="field mb-0">
+                                <label class="label is-size-7">&nbsp;</label>
+                                <div class="control">
+                                    <button type="button" class="button is-danger is-light is-small remove-price-tier" style="border-radius: 8px;">
+                                        <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="button is-success is-light is-small mt-3" id="add-price-tier" style="border-radius: 8px;">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>新增阶梯价格</span>
+                </button>
             </div>
         </div>
 
         <!-- 右侧栏 -->
         <div class="column is-4">
             <!-- 状态 -->
-            <div class="card mb-5 admin-card">
-                <div class="card-header"><p class="card-header-title">状态</p></div>
-                <div class="card-content">
-                    <div class="field">
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select name="status">
-                                    <option value="active" <?= ($product['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>有效</option>
-                                    <option value="draft" <?= ($product['status'] ?? '') === 'draft' ? 'selected' : '' ?>>草稿</option>
-                                    <option value="archived" <?= ($product['status'] ?? '') === 'archived' ? 'selected' : '' ?>>归档</option>
-                                </select>
-                            </div>
+            <div class="admin-card mb-5 animate-in delay-1" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box warning"><i class="fas fa-toggle-on"></i></span>
+                    发布状态
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="status">
+                                <option value="active" <?= ($product['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>✅ 已上架</option>
+                                <option value="draft" <?= ($product['status'] ?? '') === 'draft' ? 'selected' : '' ?>>📝 草稿</option>
+                                <option value="archived" <?= ($product['status'] ?? '') === 'archived' ? 'selected' : '' ?>>📦 已归档</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
 
-  <!-- 类别和摘要 -->
-  <div class="card mb-5 admin-card">
-                <div class="card-content">
-                    <div class="field">
-                        <label class="label">别名 (Slug)</label>
-                        <div class="control">
-                            <input class="input" name="slug" value="<?= h($product['slug'] ?? '') ?>" placeholder="t-shirt-slug">
-                        </div>
+            <!-- 类别和摘要 -->
+            <div class="admin-card mb-5 animate-in delay-2" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box primary"><i class="fas fa-cog"></i></span>
+                    产品设置
+                </div>
+                
+                <div class="field">
+                    <label class="label">别名 (Slug)</label>
+                    <div class="control">
+                        <input class="input" name="slug" value="<?= h($product['slug'] ?? '') ?>" placeholder="product-slug">
                     </div>
-                    <div class="field">
-                        <label class="label">产品摘要</label>
-                        <div class="control">
-                            <textarea class="textarea" name="summary" rows="2"><?= h($product['summary'] ?? '') ?></textarea>
-                        </div>
+                    <p class="help">留空自动生成</p>
+                </div>
+                
+                <div class="field">
+                    <label class="label">产品摘要</label>
+                    <div class="control">
+                        <textarea class="textarea" name="summary" rows="2" placeholder="简短描述产品特点"><?= h($product['summary'] ?? '') ?></textarea>
                     </div>
-                    <div class="field">
-                        <label class="label">产品分类</label>
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select name="category_id">
-                                    <option value="0">选择产品类别</option>
-                                    <?php foreach ($categories as $cat): ?>
-                                        <option value="<?= (int)$cat['id'] ?>" <?= (int)($product['category_id'] ?? 0) === (int)$cat['id'] ? 'selected' : '' ?>>
-                                            <?= h($cat['name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">产品分类</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="category_id">
+                                <option value="0">选择分类</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= (int)$cat['id'] ?>" <?= (int)($product['category_id'] ?? 0) === (int)$cat['id'] ? 'selected' : '' ?>>
+                                        <?= h($cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 产品组织 -->
-            <div class="card mb-5 admin-card">
-                <div class="card-header"><p class="card-header-title">产品组织</p></div>
-                <div class="card-content">
-                    <div class="field">
-                        <label class="label is-size-7">类型</label>
-                        <div class="control">
-                            <input class="input" name="product_type" value="<?= h($product['product_type'] ?? '') ?>">
-                        </div>
+            <div class="admin-card mb-5 animate-in delay-3" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box info"><i class="fas fa-sitemap"></i></span>
+                    产品组织
+                </div>
+                
+                <div class="field">
+                    <label class="label is-size-7">产品类型</label>
+                    <div class="control">
+                        <input class="input" name="product_type" value="<?= h($product['product_type'] ?? '') ?>" placeholder="如：服装、电子产品">
                     </div>
-                    <div class="field">
-                        <label class="label is-size-7">厂商</label>
-                        <div class="control">
-                            <input class="input" name="vendor" value="<?= h($product['vendor'] ?? '') ?>">
-                        </div>
+                </div>
+                <div class="field">
+                    <label class="label is-size-7">供应商/厂商</label>
+                    <div class="control">
+                        <input class="input" name="vendor" value="<?= h($product['vendor'] ?? '') ?>" placeholder="厂商名称">
                     </div>
-                    <div class="field">
-                        <label class="label is-size-7">标签</label>
-                        <div class="control">
-                            <input class="input" name="tags" value="<?= h($product['tags'] ?? '') ?>" placeholder="用逗号分隔">
-                        </div>
+                </div>
+                <div class="field">
+                    <label class="label is-size-7">标签</label>
+                    <div class="control">
+                        <input class="input" name="tags" value="<?= h($product['tags'] ?? '') ?>" placeholder="用逗号分隔多个标签">
                     </div>
                 </div>
             </div>
 
-            <div class="buttons mt-5">
-                <button type="submit" class="button is-link is-fullwidth is-medium">保存产品</button>
+            <!-- 提交按钮 -->
+            <div class="animate-in delay-3">
+                <button type="submit" class="button is-primary is-fullwidth is-medium">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <span><?= isset($product) ? '保存修改' : '发布产品' ?></span>
+                </button>
             </div>
         </div>
     </div>
-    </form>
+</form>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -215,10 +289,9 @@ document.addEventListener("DOMContentLoaded", function() {
     openBtns.forEach(btn => btn.addEventListener('click', (e) => {
         e.preventDefault();
         openMediaLibrary(function(urls) {
-            // urls 是数组，因为开了多选
             urls.forEach(url => addMediaItem(url));
             checkMediaState();
-        }, true); // true 表示多选模式
+        }, true);
     }));
 
     function addMediaItem(url) {
@@ -241,12 +314,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // 3. 本地上传预览 (保持原有逻辑，但上传后刷新媒体库)
+    // 3. 本地上传预览
     const fileInput = document.getElementById('file-upload-input');
     fileInput.addEventListener('change', async function() {
         if (this.files.length > 0) {
             const files = Array.from(this.files);
-            // 立即显示预览
             files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = e => {
@@ -260,7 +332,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             checkMediaState();
 
-            // 执行实际上传
             const uploadTasks = files.map(file => {
                 const formData = new FormData();
                 formData.append('image', file);
@@ -270,7 +341,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
             try {
                 const results = await Promise.all(uploadTasks);
-                // 上传完成后，替换预览为正式项目
                 mediaContainer.querySelectorAll('.media-item[style*="opacity: 0.6"]').forEach(el => el.remove());
                 results.forEach(res => {
                     if (res.url) addMediaItem(res.url);
