@@ -79,7 +79,7 @@ $isEdit = isset($item);
                 <div class="field">
                     <div class="control">
                         <textarea id="content-input" name="content" style="display:none"><?= h($item['content'] ?? '') ?></textarea>
-                        <div id="quill-editor" style="height:400px; background:#fff; border-radius: 0 0 10px 10px;"></div>
+                        <div id="quill-editor" style="min-height: 400px; background: white;"></div>
                     </div>
                 </div>
             </div>

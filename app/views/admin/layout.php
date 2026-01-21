@@ -531,7 +531,7 @@
         }
 
         .relative{position:relative}
-        .media-select-item.is-selected{background-color:#f0f7ff; border-color: #667eea !important;}
+        .media-select-item.is-selected{background-color:#f0f7ff; border-color: #FF5722 !important;}
         
         /* 媒体网格样式 */
         #media-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
@@ -867,7 +867,7 @@ async function fetchMediaLibrary() {
             const col = document.createElement('div');
             col.className = 'column is-2-desktop is-3-tablet is-4-mobile';
             col.innerHTML = `
-                <div class="card media-select-item" data-url="${file}" style="cursor: pointer; border: 2px solid transparent; border-radius: 12px; overflow:hidden; transition: all 0.2s;">
+                <div class="card media-select-item" data-url="${file}" style="cursor: pointer; border: 4px solid transparent; border-radius: 12px; overflow:hidden; transition: all 0.2s;">
                     <div class="card-image">
                         <figure class="image is-1by1">
                             <img src="${file}" style="object-fit: cover;">
@@ -970,11 +970,14 @@ document.addEventListener("DOMContentLoaded", function () {
             theme: "snow",
             modules: {
                 toolbar: [
-                    [{ header: [1, 2, 3, false] }],
-                    ["bold", "italic", "underline", "strike"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["link", "image"],
-                    ["clean"]
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image'],
+                    ['clean']
                 ]
             }
         });
@@ -984,13 +987,17 @@ document.addEventListener("DOMContentLoaded", function () {
             input.value = quill.root.innerHTML;
         });
 
-        // 调用统一媒体库
+        // 调用统一媒体库（支持多选图片）
         const toolbar = quill.getModule("toolbar");
         toolbar.addHandler("image", function () {
-            openMediaLibrary(function(url) {
-                            const range = quill.getSelection(true);
-                quill.insertEmbed(range ? range.index : 0, "image", url);
-            });
+            openMediaLibrary(function(urls) {
+                const range = quill.getSelection(true);
+                let index = range ? range.index : 0;
+                urls.forEach(url => {
+                    quill.insertEmbed(index, "image", url);
+                    index += 1;
+                });
+            }, true);
         });
     }
 

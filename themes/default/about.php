@@ -9,7 +9,7 @@
                     <div class="columns">
                         <div class="column is-5">
                             <figure class="image is-4by3 mb-3">
-                                <img src="<?= h($site['og_image'] ?? 'https://via.placeholder.com/400x300') ?>" alt="Company Profile" style="object-fit: cover; border-radius: 4px;">
+                                <img src="<?= ( $site['og_image'] ? $site['og_image'] : 'https://devtool.tech/api/placeholder/400/300') ?>" alt="Company Profile" style="object-fit: cover; border-radius: 4px;">
                             </figure>
                             <button class="button is-white is-fullwidth border" style="border: 1px solid #dbdbdb;"><?= h(t('about_factory_tour')) ?></button>
                         </div>

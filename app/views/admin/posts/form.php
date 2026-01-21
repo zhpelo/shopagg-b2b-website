@@ -67,8 +67,8 @@ $categories = $categories ?? [];
                 <div class="field">
                     <label class="label">文章内容</label>
                     <div class="control">
-                        <div id="editor-container" style="min-height: 400px; background: white;"></div>
-                        <input type="hidden" name="content" id="content-input">
+                        <textarea id="content-input" name="content" style="display:none"><?= h($item['content'] ?? '') ?></textarea>
+                        <div id="quill-editor" style="min-height:400px; background:#fff; border-radius: 0 0 10px 10px;"></div>
                     </div>
                 </div>
             </div>
