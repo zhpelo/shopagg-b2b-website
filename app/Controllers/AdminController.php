@@ -102,13 +102,52 @@ class AdminController extends Controller {
 
     // --- Dashboard & Settings ---
     public function dashboard(): void {
+        // 基础统计
         $counts = [
             'products' => (int)$this->db->querySingle("SELECT COUNT(*) FROM products"),
+            'active_products' => (int)$this->db->querySingle("SELECT COUNT(*) FROM products WHERE status = 'active'"),
             'cases' => (int)$this->db->querySingle("SELECT COUNT(*) FROM cases"),
             'posts' => (int)$this->db->querySingle("SELECT COUNT(*) FROM posts"),
             'messages' => (int)$this->db->querySingle("SELECT COUNT(*) FROM messages"),
             'inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries"),
+            'pending_inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE status = 'pending'"),
+            'categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories"),
+            'users' => (int)$this->db->querySingle("SELECT COUNT(*) FROM users"),
         ];
+
+        // 今日统计
+        $today = date('Y-m-d');
+        $counts['today_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) = '$today'");
+        $counts['today_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) = '$today'");
+
+        // 本周统计
+        $weekStart = date('Y-m-d', strtotime('monday this week'));
+        $weekEnd = date('Y-m-d', strtotime('sunday this week'));
+        $counts['week_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
+        $counts['week_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
+
+        // 本月统计
+        $monthStart = date('Y-m-01');
+        $monthEnd = date('Y-m-t');
+        $counts['month_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) >= '$monthStart' AND DATE(created_at) <= '$monthEnd'");
+        $counts['month_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) >= '$monthStart' AND DATE(created_at) <= '$monthEnd'");
+
+        // 最近30天趋势数据
+        $counts['recent_messages'] = [];
+        $counts['recent_inquiries'] = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $counts['recent_messages'][] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) = '$date'");
+            $counts['recent_inquiries'][] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) = '$date'");
+        }
+
+        // 系统统计
+        $counts['total_images'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM product_images");
+
+        // 计算数据库创建日期（近似值）
+        $dbFile = __DIR__ . '/../../data/site.db';
+        $counts['system_age_days'] = file_exists($dbFile) ? (int)((time() - filectime($dbFile)) / 86400) : 0;
+
         $this->renderAdmin('仪表盘', $this->renderView('admin/dashboard', ['counts' => $counts]));
     }
 
