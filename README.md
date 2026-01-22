@@ -51,7 +51,7 @@
 ### 1. 下载部署
 ```bash
 # 克隆项目
-git clone https://github.com/your-repo/b2bwebsite.git
+git clone https://github.com/zhpelo/b2bwebsite.git
 
 # 或直接上传至服务器
 ```
