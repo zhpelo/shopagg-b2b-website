@@ -379,6 +379,102 @@ class AdminController extends Controller {
         $this->json($files);
     }
 
+    // --- Media Management (媒体库管理) ---
+    public function mediaList(): void {
+        $dir = __DIR__ . '/../../uploads';
+        $files = [];
+        $totalSize = 0;
+        
+        if (is_dir($dir)) {
+            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS));
+            foreach ($it as $file) {
+                if ($file->isDir()) continue;
+                $filename = $file->getFilename();
+                $filesize = $file->getSize();
+                $totalSize += $filesize;
+                
+                if (preg_match('/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i', $filename)) {
+                    $path = str_replace('\\', '/', $file->getPathname());
+                    $uploadsPos = strpos($path, '/uploads/');
+                    if ($uploadsPos !== false) {
+                        $relativePath = substr($path, $uploadsPos);
+                        $files[] = [
+                            'path' => $relativePath,
+                            'name' => $filename,
+                            'size' => $filesize,
+                            'size_formatted' => $this->formatBytes($filesize),
+                            'mtime' => $file->getMTime(),
+                            'date' => date('Y-m-d H:i', $file->getMTime()),
+                            'width' => 0,
+                            'height' => 0,
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // Sort by newest first
+        usort($files, function($a, $b) {
+            return $b['mtime'] <=> $a['mtime'];
+        });
+        
+        // Get image dimensions (do this after sorting to limit processing)
+        foreach ($files as &$f) {
+            $fullPath = __DIR__ . '/../..' . $f['path'];
+            if (file_exists($fullPath)) {
+                $info = @getimagesize($fullPath);
+                if ($info) {
+                    $f['width'] = $info[0];
+                    $f['height'] = $info[1];
+                }
+            }
+        }
+        
+        $this->renderAdmin('媒体库管理', $this->renderView('admin/media/index', [
+            'files' => $files,
+            'total_size' => $totalSize,
+            'total_size_formatted' => $this->formatBytes($totalSize),
+            'total_count' => count($files),
+        ]));
+    }
+    
+    public function mediaDelete(): void {
+        $path = $_GET['path'] ?? '';
+        
+        if (empty($path)) {
+            $this->redirect('/admin/media?error=无效的文件路径');
+            return;
+        }
+        
+        // Security: ensure path is within uploads directory
+        $fullPath = realpath(__DIR__ . '/../..' . $path);
+        $uploadsDir = realpath(__DIR__ . '/../../uploads');
+        
+        if ($fullPath === false || $uploadsDir === false || strpos($fullPath, $uploadsDir) !== 0) {
+            $this->redirect('/admin/media?error=无效的文件路径');
+            return;
+        }
+        
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            if (unlink($fullPath)) {
+                $this->redirect('/admin/media?success=文件已删除');
+            } else {
+                $this->redirect('/admin/media?error=删除失败');
+            }
+        } else {
+            $this->redirect('/admin/media?error=文件不存在');
+        }
+    }
+    
+    private function formatBytes(int $bytes, int $precision = 2): string {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
     private function handleProductPrices(int $productId): void {
         if (!isset($_POST['price_tiers_enabled'])) return;
         $tiers = normalize_price_tiers($_POST);

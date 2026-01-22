@@ -25,6 +25,8 @@ abstract class BaseController extends Controller {
                 'tagline' => $settings['site_tagline'] ?? '',
                 'theme' => $settings['theme'] ?? 'default',
                 'default_lang' => $settings['default_lang'] ?? 'en',
+                'logo' => $settings['site_logo'] ?? '',
+                'favicon' => $settings['site_favicon'] ?? '',
                 
                 // SEO
                 'seo_title' => $settings['seo_title'] ?? '',

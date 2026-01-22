@@ -15,8 +15,7 @@
     $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $active_group = '';
     if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/product-categories')) $active_group = 'catalog';
-    elseif (str_starts_with($current_path, '/admin/cases')) $active_group = 'cases';
-    elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories')) $active_group = 'blog';
+    elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
     elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
     elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
 
@@ -56,13 +55,8 @@
                         <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
                     </a>
                     <?php endif; ?>
-                    <?php if ($can_access('cases')): ?>
-                    <a class="navbar-item <?= $active_group === 'cases' ? 'is-active' : '' ?>" href="/admin/cases">
-                        <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
-                    </a>
-                    <?php endif; ?>
-                    <?php if ($can_access('blog')): ?>
-                    <a class="navbar-item <?= $active_group === 'blog' ? 'is-active' : '' ?>" href="/admin/posts">
+                    <?php if ($can_access('blog') || $can_access('cases')): ?>
+                    <a class="navbar-item <?= $active_group === 'content' ? 'is-active' : '' ?>" href="/admin/posts">
                         <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                     </a>
                     <?php endif; ?>
@@ -115,19 +109,18 @@
                 <a class="navbar-item <?= str_contains($current_path, '/admin/product-categories') ? 'is-active' : '' ?>" href="/admin/product-categories">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>产品分类
                 </a>
-            <?php elseif ($active_group === 'cases'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/cases' ? 'is-active' : '' ?>" href="/admin/cases">
-                    <span class="icon mr-1"><i class="fas fa-list"></i></span>所有案例
-                </a>
-                <a class="navbar-item <?= str_contains($current_path, '/create') ? 'is-active' : '' ?>" href="/admin/cases/create">
-                    <span class="icon mr-1"><i class="fas fa-plus"></i></span>新增案例
-                </a>
-            <?php elseif ($active_group === 'blog'): ?>
+            <?php elseif ($active_group === 'content'): ?>
                 <a class="navbar-item <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'is-active' : '' ?>" href="/admin/posts">
-                    <span class="icon mr-1"><i class="fas fa-list"></i></span>文章列表
+                    <span class="icon mr-1"><i class="fas fa-newspaper"></i></span>文章管理
                 </a>
                 <a class="navbar-item <?= str_contains($current_path, '/admin/post-categories') ? 'is-active' : '' ?>" href="/admin/post-categories">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>文章分类
+                </a>
+                <a class="navbar-item <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'is-active' : '' ?>" href="/admin/cases">
+                    <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
+                </a>
+                <a class="navbar-item <?= str_contains($current_path, '/admin/media') ? 'is-active' : '' ?>" href="/admin/media">
+                    <span class="icon mr-1"><i class="fas fa-photo-video"></i></span>媒体库
                 </a>
             <?php elseif ($active_group === 'inbox'): ?>
                 <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="/admin/messages">

@@ -137,6 +137,10 @@ $router->add('GET', '/admin/staff/delete', [AdminController::class, 'staffDelete
 $router->add('GET', '/admin/profile', [AdminController::class, 'profile']);
 $router->add('POST', '/admin/profile/update', [AdminController::class, 'profileUpdate']);
 
+// Media Management
+$router->add('GET', '/admin/media', [AdminController::class, 'mediaList']);
+$router->add('GET', '/admin/media/delete', [AdminController::class, 'mediaDelete']);
+
 // AJAX
 $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
 $router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);

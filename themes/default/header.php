@@ -15,6 +15,10 @@
     <?php if (!empty($site['og_image'])): ?>
     <meta property="og:image" content="<?= h($site['og_image']) ?>">
     <?php endif; ?>
+    <?php if (!empty($site['favicon'])): ?>
+    <link rel="icon" type="image/x-icon" href="<?= h($site['favicon']) ?>">
+    <link rel="shortcut icon" href="<?= h($site['favicon']) ?>">
+    <?php endif; ?>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,15 +26,24 @@
     .brand-gradient{background:linear-gradient(120deg,#0f172a,#1e293b)}
     .soft-card{box-shadow:0 10px 30px rgba(15,23,42,0.08)}
     .tagline{opacity:.7}
+    .navbar-logo{
+        color: #1e293b;
+        font-size: 500;
+        padding: 5px;
+    }
     </style>
 </head>
 <body>
 <nav class="navbar is-white is-spaced" role="navigation">
   <div class="container">
     <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-      <div>
-          <strong><?= h($site['name']) ?></strong>
+      <a href="/">
+      <div class="navbar-logo">
+          <?php if (!empty($site['logo'])): ?>
+          <img src="<?= h($site['logo']) ?>" alt="<?= h($site['name']) ?>" style="height: 36px; max-height: 36px;">
+          <?php else: ?>
+          <h1 class="is-size-5"><?= h($site['name']) ?></h1>
+          <?php endif; ?>
           <div class="tagline is-size-7"><?= h($site['tagline']) ?></div>
         </div>
       </a>
