@@ -420,12 +420,17 @@ body {
     color: #94a3b8;
 }
 
-.empty-state .icon {
-    font-size: 1.8rem;
-    margin-bottom: 0rem;
+.empty-state > .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
     opacity: 0.5;
 }
 
+.empty-state > button > .icon {
+    font-size: 1.6rem;
+    margin-bottom: 0rem;
+    opacity: 0.5;
+}
 .empty-state p {
     font-size: 1rem;
 }
