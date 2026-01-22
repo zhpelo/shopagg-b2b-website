@@ -421,8 +421,8 @@ body {
 }
 
 .empty-state .icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    margin-bottom: 0rem;
     opacity: 0.5;
 }
 
