@@ -104,59 +104,35 @@ $tabs = [
                     <div class="column is-6">
                         <div class="field">
                             <label class="label">网站 Logo</label>
-                            <div class="columns is-vcentered">
-                                <div class="column is-narrow">
-                                    <div class="logo-preview" style="width: 120px; height: 60px; border: 2px dashed #e5e7eb; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden;">
-                                        <?php if (!empty($settings['site_logo'])): ?>
-                                            <img src="<?= h($settings['site_logo']) ?>" alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                                        <?php else: ?>
-                                            <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
-                                        <?php endif; ?>
+                            <input type="hidden" name="site_logo" id="site_logo" value="<?= h($settings['site_logo'] ?? '') ?>">
+                            <div class="logo-preview-box" onclick="openMediaLibrary(url => { document.getElementById('site_logo').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 200px; height: 80px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
+                                <?php if (!empty($settings['site_logo'])): ?>
+                                    <img src="<?= h($settings['site_logo']) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                <?php else: ?>
+                                    <div class="has-text-centered has-text-grey-light">
+                                        <span class="icon is-large"><i class="fas fa-image fa-2x"></i></span>
+                                        <p class="is-size-7 mt-1">点击选择 Logo</p>
                                     </div>
-                                </div>
-                                <div class="column">
-                                    <div class="field has-addons mb-0">
-                                        <div class="control is-expanded">
-                                            <input class="input" name="site_logo" id="site_logo" value="<?= h($settings['site_logo'] ?? '') ?>" placeholder="选择或输入Logo地址">
-                                        </div>
-                                        <div class="control">
-                                            <button type="button" class="button is-info" onclick="openMediaLibrary(url => { document.getElementById('site_logo').value = url; this.closest('.field').previousElementSibling.querySelector('.logo-preview').innerHTML = '<img src=\'' + url + '\' style=\'max-width: 100%; max-height: 100%; object-fit: contain;\'>'; })">
-                                                <span class="icon"><i class="fas fa-image"></i></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="help">推荐尺寸: 200×60 像素，支持 PNG/SVG 透明背景</p>
-                                </div>
+                                <?php endif; ?>
                             </div>
+                            <p class="help">推荐尺寸: 200×60 像素，支持 PNG/SVG</p>
                         </div>
                     </div>
                     <div class="column is-6">
                         <div class="field">
                             <label class="label">网站 Favicon</label>
-                            <div class="columns is-vcentered">
-                                <div class="column is-narrow">
-                                    <div class="favicon-preview" style="width: 48px; height: 48px; border: 2px dashed #e5e7eb; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden;">
-                                        <?php if (!empty($settings['site_favicon'])): ?>
-                                            <img src="<?= h($settings['site_favicon']) ?>" alt="Favicon" style="max-width: 32px; max-height: 32px; object-fit: contain;">
-                                        <?php else: ?>
-                                            <span class="icon has-text-grey-light"><i class="fas fa-star"></i></span>
-                                        <?php endif; ?>
+                            <input type="hidden" name="site_favicon" id="site_favicon" value="<?= h($settings['site_favicon'] ?? '') ?>">
+                            <div class="favicon-preview-box" onclick="openMediaLibrary(url => { document.getElementById('site_favicon').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 80px; height: 80px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
+                                <?php if (!empty($settings['site_favicon'])): ?>
+                                    <img src="<?= h($settings['site_favicon']) ?>" style="max-width: 48px; max-height: 48px; object-fit: contain;">
+                                <?php else: ?>
+                                    <div class="has-text-centered has-text-grey-light">
+                                        <span class="icon"><i class="fas fa-star fa-lg"></i></span>
+                                        <p class="is-size-7 mt-1">Favicon</p>
                                     </div>
-                                </div>
-                                <div class="column">
-                                    <div class="field has-addons mb-0">
-                                        <div class="control is-expanded">
-                                            <input class="input" name="site_favicon" id="site_favicon" value="<?= h($settings['site_favicon'] ?? '') ?>" placeholder="选择或输入Favicon地址">
-                                        </div>
-                                        <div class="control">
-                                            <button type="button" class="button is-info" onclick="openMediaLibrary(url => { document.getElementById('site_favicon').value = url; this.closest('.field').previousElementSibling.querySelector('.favicon-preview').innerHTML = '<img src=\'' + url + '\' style=\'max-width: 32px; max-height: 32px; object-fit: contain;\'>'; })">
-                                                <span class="icon"><i class="fas fa-image"></i></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p class="help">推荐尺寸: 32×32 或 64×64 像素，支持 ICO/PNG</p>
-                                </div>
+                                <?php endif; ?>
                             </div>
+                            <p class="help">推荐尺寸: 32×32 或 64×64 像素</p>
                         </div>
                     </div>
                 </div>
