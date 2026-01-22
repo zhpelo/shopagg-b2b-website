@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= !empty($site['seo_title']) ? h($site['seo_title']) : h($seo['title']) ?></title>
-  <meta name="description" content="<?= !empty($site['seo_description']) ? h($site['seo_description']) : h($seo['description']) ?>">
-  <?php if (!empty($site['seo_keywords'])): ?>
-    <meta name="keywords" content="<?= h($site['seo_keywords']) ?>">
-  <?php endif; ?>
+    <title><?= h($seo['title'] ?? $site['name']) ?></title>
+    <meta name="description" content="<?= h($seo['description'] ?? $site['tagline']) ?>">
+    <?php if (!empty($seo['keywords'])): ?>
+    <meta name="keywords" content="<?= h($seo['keywords']) ?>">
+    <?php endif; ?>
     <link rel="canonical" href="<?= h($seo['canonical']) ?>">
-  <meta property="og:title" content="<?= !empty($site['seo_title']) ? h($site['seo_title']) : h($seo['title']) ?>">
-  <meta property="og:description" content="<?= !empty($site['seo_description']) ? h($site['seo_description']) : h($seo['description']) ?>">
+    <meta property="og:title" content="<?= h($seo['title'] ?? $site['name']) ?>">
+    <meta property="og:description" content="<?= h($seo['description'] ?? $site['tagline']) ?>">
     <meta property="og:type" content="website">
-  <?php if (!empty($site['og_image'])): ?>
+    <?php if (!empty($site['og_image'])): ?>
     <meta property="og:image" content="<?= h($site['og_image']) ?>">
-  <?php endif; ?>
+    <?php endif; ?>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>

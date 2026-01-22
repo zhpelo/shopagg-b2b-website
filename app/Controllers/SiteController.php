@@ -18,12 +18,14 @@ class SiteController extends BaseController {
         $cases = (new CaseModel())->getList(6);
         foreach ($cases as &$c) $c['url'] = '/case/' . $c['slug'];
         
+        // 首页使用全局 SEO 设置
         $this->renderSite('home', [
             'products' => $products,
             'cases' => $cases,
             'seo' => [
-                'title' => $this->siteData['site']['name'],
-                'description' => $this->siteData['site']['tagline'],
+                'title' => $this->siteData['site']['seo_title'] ?: $this->siteData['site']['name'],
+                'description' => $this->siteData['site']['seo_description'] ?: $this->siteData['site']['tagline'],
+                'keywords' => $this->siteData['site']['seo_keywords'] ?? '',
             ]
         ]);
     }
@@ -80,8 +82,9 @@ class SiteController extends BaseController {
             'whatsapp' => $this->siteData['site']['whatsapp'],
             'inquiry_form' => true,
             'seo' => [
-                'title' => $item['title'] . ' - ' . $this->siteData['site']['name'],
-                'description' => $item['summary'] ?: $this->siteData['site']['tagline'],
+                'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
+                'description' => $item['seo_description'] ?: ($item['summary'] ?: $this->siteData['site']['tagline']),
+                'keywords' => $item['seo_keywords'] ?? '',
             ]
         ]);
     }
@@ -101,7 +104,11 @@ class SiteController extends BaseController {
         if (!$item) { $this->notFound(); return; }
         $this->renderSite('case_detail', [
             'item' => $item,
-            'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
+            'seo' => [
+                'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
+                'description' => $item['seo_description'] ?: ($item['summary'] ?? ''),
+                'keywords' => $item['seo_keywords'] ?? '',
+            ]
         ]);
     }
 
@@ -152,7 +159,11 @@ class SiteController extends BaseController {
         $this->renderSite('post_detail', [
             'item' => $item,
             'category' => $category,
-            'seo' => ['title' => $item['title'] . ' - ' . $this->siteData['site']['name']]
+            'seo' => [
+                'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
+                'description' => $item['seo_description'] ?: ($item['summary'] ?? ''),
+                'keywords' => $item['seo_keywords'] ?? '',
+            ]
         ]);
     }
 

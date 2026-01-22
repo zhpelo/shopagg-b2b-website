@@ -39,8 +39,8 @@ class Product extends BaseModel {
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, created_at, updated_at) 
-            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at) 
+            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -51,6 +51,9 @@ class Product extends BaseModel {
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
         $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
+        $stmt->bindValue(':seot', $data['seo_title'] ?? '');
+        $stmt->bindValue(':seok', $data['seo_keywords'] ?? '');
+        $stmt->bindValue(':seod', $data['seo_description'] ?? '');
         $stmt->bindValue(':ca', gmdate('c'));
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->execute();
@@ -58,7 +61,7 @@ class Product extends BaseModel {
     }
 
     public function update(int $id, array $data): void {
-        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -69,6 +72,9 @@ class Product extends BaseModel {
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
         $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
+        $stmt->bindValue(':seot', $data['seo_title'] ?? '');
+        $stmt->bindValue(':seok', $data['seo_keywords'] ?? '');
+        $stmt->bindValue(':seod', $data['seo_description'] ?? '');
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->bindValue(':id', $id);
         $stmt->execute();

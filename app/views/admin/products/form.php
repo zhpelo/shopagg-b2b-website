@@ -245,6 +245,34 @@
                 </div>
             </div>
 
+            <!-- SEO 设置 -->
+            <div class="admin-card mb-5 animate-in delay-3" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box success"><i class="fas fa-search"></i></span>
+                    SEO 设置
+                </div>
+                <p class="is-size-7 has-text-grey mb-3">留空则使用产品标题和摘要作为默认值</p>
+                
+                <div class="field">
+                    <label class="label is-size-7">SEO 标题</label>
+                    <div class="control">
+                        <input class="input" name="seo_title" value="<?= h($product['seo_title'] ?? '') ?>" placeholder="页面标题 (留空使用产品标题)">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label is-size-7">SEO 关键词</label>
+                    <div class="control">
+                        <input class="input" name="seo_keywords" value="<?= h($product['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label is-size-7">SEO 描述</label>
+                    <div class="control">
+                        <textarea class="textarea" name="seo_description" rows="2" placeholder="页面描述 (留空使用产品摘要)"><?= h($product['seo_description'] ?? '') ?></textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- 提交按钮 -->
             <div class="animate-in delay-3">
                 <button type="submit" class="button is-primary is-fullwidth is-medium">

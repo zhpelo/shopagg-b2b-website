@@ -350,6 +350,9 @@ class AdminController extends Controller {
             'vendor' => trim((string)($_POST['vendor'] ?? '')),
             'tags' => trim((string)($_POST['tags'] ?? '')),
             'images_json' => json_encode(array_values(array_unique(array_filter($images)))),
+            'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
+            'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
+            'seo_description' => trim((string)($_POST['seo_description'] ?? '')),
         ];
     }
 
@@ -610,6 +613,9 @@ class AdminController extends Controller {
             'content' => trim((string)($_POST['content'] ?? '')),
             'category_id' => (int)($_POST['category_id'] ?? 0),
             'status' => trim((string)($_POST['status'] ?? 'active')),
+            'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
+            'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
+            'seo_description' => trim((string)($_POST['seo_description'] ?? '')),
         ];
     }
 
@@ -622,6 +628,9 @@ class AdminController extends Controller {
             'slug' => $slug,
             'summary' => trim((string)($_POST['summary'] ?? '')),
             'content' => trim((string)($_POST['content'] ?? '')),
+            'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
+            'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
+            'seo_description' => trim((string)($_POST['seo_description'] ?? '')),
         ];
     }
 
