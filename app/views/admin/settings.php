@@ -378,18 +378,22 @@ $tabs = [
             foreach ($showItems as $item): ?>
                 <div class="box mb-3 media-item-row" style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px;">
                     <div class="columns is-vcentered">
-                        <div class="column is-3">
-                            <div class="field mb-0">
-                                <input class="input" name="show_img[]" value="<?= h($item['img']) ?>" placeholder="图片URL">
-                                <button type="button" class="button is-small is-info is-fullwidth mt-2" onclick="selectMedia(this)" style="border-radius: 8px;">
-                                    <span class="icon"><i class="fas fa-image"></i></span>
-                                    <span>选择</span>
-                                </button>
+                        <div class="column is-2">
+                            <div class="media-preview-wrap">
+                                <input type="hidden" name="show_img[]" value="<?= h($item['img']) ?>">
+                                <div class="media-preview <?= empty($item['img']) ? 'is-empty' : '' ?>" onclick="selectMediaPreview(this)">
+                                    <?php if (!empty($item['img'])): ?>
+                                        <img src="<?= h($item['img']) ?>" alt="">
+                                    <?php else: ?>
+                                        <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                         <div class="column">
                             <div class="field mb-0">
-                                <input class="input" name="show_title[]" value="<?= h($item['title']) ?>" placeholder="图片标题">
+                                <label class="label is-size-7">图片标题</label>
+                                <input class="input" name="show_title[]" value="<?= h($item['title']) ?>" placeholder="输入图片标题">
                             </div>
                         </div>
                         <div class="column is-narrow">
@@ -418,18 +422,22 @@ $tabs = [
             foreach ($certItems as $item): ?>
                 <div class="box mb-3 media-item-row" style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px;">
                     <div class="columns is-vcentered">
-                        <div class="column is-3">
-                            <div class="field mb-0">
-                                <input class="input" name="cert_img[]" value="<?= h($item['img']) ?>" placeholder="图片URL">
-                                <button type="button" class="button is-small is-info is-fullwidth mt-2" onclick="selectMedia(this)" style="border-radius: 8px;">
-                                    <span class="icon"><i class="fas fa-image"></i></span>
-                                    <span>选择</span>
-                                </button>
+                        <div class="column is-2">
+                            <div class="media-preview-wrap">
+                                <input type="hidden" name="cert_img[]" value="<?= h($item['img']) ?>">
+                                <div class="media-preview <?= empty($item['img']) ? 'is-empty' : '' ?>" onclick="selectMediaPreview(this)">
+                                    <?php if (!empty($item['img'])): ?>
+                                        <img src="<?= h($item['img']) ?>" alt="">
+                                    <?php else: ?>
+                                        <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                         <div class="column">
                             <div class="field mb-0">
-                                <input class="input" name="cert_title[]" value="<?= h($item['title']) ?>" placeholder="证书名称">
+                                <label class="label is-size-7">证书名称</label>
+                                <input class="input" name="cert_title[]" value="<?= h($item['title']) ?>" placeholder="输入证书名称">
                             </div>
                         </div>
                         <div class="column is-narrow">
@@ -447,26 +455,58 @@ $tabs = [
         </button>
     </div>
 
+    <style>
+    .media-preview-wrap { position: relative; }
+    .media-preview {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fafafa;
+        transition: all 0.2s;
+    }
+    .media-preview:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+    .media-preview:not(.is-empty) {
+        border-style: solid;
+        border-color: #e5e7eb;
+    }
+    .media-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    </style>
+
     <script>
     function addMediaRow(containerId, imgName, titleName) {
         const container = document.getElementById(containerId);
         const div = document.createElement('div');
         div.className = 'box mb-3 media-item-row';
         div.style.cssText = 'background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px;';
+        const labelText = imgName.includes('cert') ? '证书名称' : '图片标题';
+        const placeholderText = imgName.includes('cert') ? '输入证书名称' : '输入图片标题';
         div.innerHTML = `
             <div class="columns is-vcentered">
-                <div class="column is-3">
-                    <div class="field mb-0">
-                        <input class="input" name="${imgName}[]" value="" placeholder="图片URL">
-                        <button type="button" class="button is-small is-info is-fullwidth mt-2" onclick="selectMedia(this)" style="border-radius: 8px;">
-                            <span class="icon"><i class="fas fa-image"></i></span>
-                            <span>选择</span>
-                        </button>
+                <div class="column is-2">
+                    <div class="media-preview-wrap">
+                        <input type="hidden" name="${imgName}[]" value="">
+                        <div class="media-preview is-empty" onclick="selectMediaPreview(this)">
+                            <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
+                        </div>
                     </div>
                 </div>
                 <div class="column">
                     <div class="field mb-0">
-                        <input class="input" name="${titleName}[]" value="" placeholder="标题/名称">
+                        <label class="label is-size-7">${labelText}</label>
+                        <input class="input" name="${titleName}[]" value="" placeholder="${placeholderText}">
                     </div>
                 </div>
                 <div class="column is-narrow">
@@ -478,10 +518,13 @@ $tabs = [
         `;
         container.appendChild(div);
     }
-    function selectMedia(btn) {
-        const input = btn.closest('.field').querySelector('input');
+    function selectMediaPreview(previewEl) {
+        const wrap = previewEl.closest('.media-preview-wrap');
+        const input = wrap.querySelector('input[type="hidden"]');
         openMediaLibrary(function(url) {
             input.value = url;
+            previewEl.innerHTML = `<img src="${url}" alt="">`;
+            previewEl.classList.remove('is-empty');
         });
     }
     </script>
