@@ -164,18 +164,19 @@ $tabs = [
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">OG Image</label>
-                    <div class="field has-addons">
-                        <div class="control is-expanded">
-                            <input class="input" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>" placeholder="选择社交分享图片">
-                        </div>
-                        <div class="control">
-                            <button type="button" class="button is-info" onclick="openMediaLibrary(url => document.getElementById('og_image').value = url)">
-                                <span class="icon"><i class="fas fa-image"></i></span>
-                                <span>选择</span>
-                            </button>
-                        </div>
+                    <label class="label">OG Image (社交分享图)</label>
+                    <input type="hidden" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>">
+                    <div class="og-image-preview-box" onclick="openMediaLibrary(url => { document.getElementById('og_image').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 200px; height: 105px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
+                        <?php if (!empty($settings['og_image'])): ?>
+                            <img src="<?= h($settings['og_image']) ?>" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="has-text-centered has-text-grey-light">
+                                <span class="icon is-large"><i class="fas fa-share-alt fa-2x"></i></span>
+                                <p class="is-size-7 mt-1">点击选择图片</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
+                    <p class="help">推荐尺寸: 1200×630 像素，用于社交媒体分享</p>
                 </div>
             </div>
         </div>
