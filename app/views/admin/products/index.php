@@ -93,7 +93,7 @@
                     <td>
                         <span class="is-size-7 has-text-grey">
                             <span class="icon is-small"><i class="far fa-calendar-alt"></i></span>
-                            <?= h($row['created_at']) ?>
+                            <?= format_date($row['created_at']) ?>
                         </span>
                     </td>
                     <td>

@@ -89,7 +89,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                                     <div class="is-flex is-align-items-center mb-2" style="gap: 0.75rem;">
                                         <span class="is-size-7 has-text-grey">
                                             <i class="far fa-calendar-alt mr-1"></i>
-                                            <?= date('Y-m-d', strtotime($item['created_at'])) ?>
+                                            <?= format_date($item['created_at'], 'Y-m-d') ?>
                                         </span>
                                         <?php if (!empty($item['category_name'])): ?>
                                         <a href="/blog?category=<?= (int)$item['category_id'] ?>" class="tag is-link is-light is-small">

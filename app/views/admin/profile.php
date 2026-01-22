@@ -30,7 +30,7 @@
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
                 <div class="is-flex is-justify-content-center is-align-items-center">
                     <span class="icon has-text-grey-light mr-2"><i class="far fa-calendar-alt"></i></span>
-                    <span class="is-size-7 has-text-grey">创建于 <?= h($user['created_at'] ?? '未知') ?></span>
+                    <span class="is-size-7 has-text-grey">创建于 <?= format_date($user['created_at'] ?? '') ?: '未知' ?></span>
                 </div>
             </div>
         </div>

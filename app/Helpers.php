@@ -110,6 +110,16 @@ function save_uploaded_image(array $file): array {
     return [true, $subDir . '/' . $filename];
 }
 
+function format_date(?string $datetime, string $format = 'Y-m-d H:i:s'): string {
+    if (empty($datetime)) return '';
+    try {
+        $dt = new DateTime($datetime);
+        return $dt->format($format);
+    } catch (Exception $e) {
+        return $datetime;
+    }
+}
+
 function normalize_price_tiers(array $post): array {
     $mins = $post['price_min'] ?? [];
     $maxs = $post['price_max'] ?? [];

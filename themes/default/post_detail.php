@@ -25,7 +25,7 @@ $category = $category ?? null;
                             <div class="level-item">
                                 <span class="icon-text has-text-grey">
                                     <span class="icon"><i class="far fa-calendar"></i></span>
-                                    <span><?= date('Y-m-d', strtotime($item['created_at'])) ?></span>
+                                    <span><?= format_date($item['created_at'], 'Y-m-d') ?></span>
                                 </span>
                             </div>
                             <?php if ($category): ?>

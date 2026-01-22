@@ -34,7 +34,7 @@
                     <h3 class="title is-5 mb-4"><?= h(t('case_about')) ?></h3>
                     <div class="field mb-4">
                         <label class="label is-small has-text-grey"><?= h(t('case_publish_time')) ?></label>
-                        <p class="is-size-6"><?= h($item['created_at']) ?></p>
+                        <p class="is-size-6"><?= format_date($item['created_at'], 'Y-m-d') ?></p>
                     </div>
                     <hr>
                     <div class="content">

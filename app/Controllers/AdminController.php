@@ -736,6 +736,24 @@ class AdminController extends Controller {
         $this->renderAdmin('留言列表', $this->renderView('admin/messages', ['messages' => $messages]));
     }
 
+    public function messageDetail(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $message = $this->messageModel->getById($id);
+        if (!$message) {
+            $this->redirect('/admin/messages');
+            return;
+        }
+        $this->renderAdmin('留言详情', $this->renderView('admin/message_detail', ['message' => $message]));
+    }
+
+    public function messageDelete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id) {
+            $this->messageModel->delete($id);
+        }
+        $this->redirect('/admin/messages?success=留言已删除');
+    }
+
     public function inquiryList(): void {
         $status = $_GET['status'] ?? '';
         $inquiries = $this->inquiryModel->getList(['status' => $status]);
@@ -745,13 +763,32 @@ class AdminController extends Controller {
         ]));
     }
 
+    public function inquiryDetail(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $inquiry = $this->inquiryModel->getById($id);
+        if (!$inquiry) {
+            $this->redirect('/admin/inquiries');
+            return;
+        }
+        $this->renderAdmin('询单详情', $this->renderView('admin/inquiry_detail', ['inquiry' => $inquiry]));
+    }
+
     public function inquiryUpdateStatus(): void {
         $id = (int)($_GET['id'] ?? 0);
         $status = $_GET['status'] ?? '';
+        $redirect = $_GET['redirect'] ?? '/admin/inquiries';
         if ($id && in_array($status, ['pending', 'contacted', 'quoted', 'closed'])) {
             $this->inquiryModel->updateStatus($id, $status);
         }
-        $this->redirect('/admin/inquiries');
+        $this->redirect($redirect);
+    }
+
+    public function inquiryDelete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id) {
+            $this->inquiryModel->delete($id);
+        }
+        $this->redirect('/admin/inquiries?success=询单已删除');
     }
 
     public function inquiryExport(): void {

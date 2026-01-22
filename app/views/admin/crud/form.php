@@ -96,7 +96,7 @@ $isEdit = isset($item);
                 <div class="content is-size-7 has-text-grey mb-4">
                     <p>
                         <span class="icon is-small"><i class="far fa-clock"></i></span>
-                        <?= $isEdit ? '上次修改: ' . h($item['updated_at'] ?? $item['created_at']) : '准备发布新' . h($label) ?>
+                        <?= $isEdit ? '上次修改: ' . format_date($item['updated_at'] ?? $item['created_at']) : '准备发布新' . h($label) ?>
                     </p>
                 </div>
                 

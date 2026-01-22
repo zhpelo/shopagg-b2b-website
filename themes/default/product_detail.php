@@ -50,7 +50,7 @@ $category = $category ?? null;
           <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
             <span class="is-size-7 has-text-grey">
               <i class="far fa-calendar-alt mr-1"></i>
-              <?= date('Y-m-d', strtotime($item['created_at'])) ?>
+              <?= format_date($item['created_at'], 'Y-m-d') ?>
             </span>
             <?php if ($category): ?>
             <a href="/products?category=<?= (int)$category['id'] ?>" class="tag is-warning is-light">

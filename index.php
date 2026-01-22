@@ -121,8 +121,12 @@ $router->add('GET', '/admin/posts/delete', [AdminController::class, 'postDelete'
 
 // Messages & Inquiries
 $router->add('GET', '/admin/messages', [AdminController::class, 'messageList']);
+$router->add('GET', '/admin/messages/detail', [AdminController::class, 'messageDetail']);
+$router->add('GET', '/admin/messages/delete', [AdminController::class, 'messageDelete']);
 $router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList']);
+$router->add('GET', '/admin/inquiries/detail', [AdminController::class, 'inquiryDetail']);
 $router->add('GET', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
+$router->add('GET', '/admin/inquiries/delete', [AdminController::class, 'inquiryDelete']);
 $router->add('GET', '/admin/inquiries/export', [AdminController::class, 'inquiryExport']);
 
 // Staff Management

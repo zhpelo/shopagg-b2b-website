@@ -19,6 +19,13 @@
     </div>
 </div>
 
+<?php if (isset($_GET['success'])): ?>
+<div class="notification is-success is-light animate-in">
+    <button class="delete" onclick="this.parentElement.remove()"></button>
+    <?= h($_GET['success']) ?>
+</div>
+<?php endif; ?>
+
 <!-- 状态筛选 -->
 <div class="modern-tabs animate-in delay-1">
     <a href="/admin/inquiries" class="<?= empty($current_status) ? 'is-active' : '' ?>">
@@ -89,7 +96,7 @@
                         </div>
                         <p class="is-size-7 has-text-grey mt-2">
                             <span class="icon is-small"><i class="far fa-clock"></i></span>
-                            <?= h($row['created_at']) ?>
+                            <?= format_date($row['created_at']) ?>
                         </p>
                     </td>
                     <td>
@@ -126,32 +133,41 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                        <div class="dropdown is-right is-hoverable">
-                            <div class="dropdown-trigger">
-                                <button class="button is-small is-light" aria-haspopup="true" style="border-radius: 8px;">
-                                    <span>更改状态</span>
-                                    <span class="icon is-small"><i class="fas fa-chevron-down"></i></span>
-                                </button>
-                            </div>
-                            <div class="dropdown-menu">
-                                <div class="dropdown-content">
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=contacted" class="dropdown-item">
-                                        <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
-                                        标记为已联系
-                                    </a>
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=quoted" class="dropdown-item">
-                                        <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
-                                        标记为已报价
-                                    </a>
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=closed" class="dropdown-item">
-                                        <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
-                                        标记为已关闭
-                                    </a>
-                                    <hr class="dropdown-divider">
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=pending" class="dropdown-item">
-                                        <span class="icon is-small has-text-warning mr-2"><i class="fas fa-undo"></i></span>
-                                        重置为待处理
-                                    </a>
+                        <div class="buttons are-small">
+                            <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="button is-info is-light" title="查看详情">
+                                <span class="icon"><i class="fas fa-eye"></i></span>
+                            </a>
+                            <div class="dropdown is-right is-hoverable">
+                                <div class="dropdown-trigger">
+                                    <button class="button is-small is-light" aria-haspopup="true" style="border-radius: 8px;">
+                                        <span class="icon is-small"><i class="fas fa-ellipsis-v"></i></span>
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-content">
+                                        <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="dropdown-item">
+                                            <span class="icon is-small has-text-info mr-2"><i class="fas fa-eye"></i></span>
+                                            查看详情
+                                        </a>
+                                        <hr class="dropdown-divider">
+                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=contacted" class="dropdown-item">
+                                            <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
+                                            标记为已联系
+                                        </a>
+                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=quoted" class="dropdown-item">
+                                            <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
+                                            标记为已报价
+                                        </a>
+                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=closed" class="dropdown-item">
+                                            <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
+                                            标记为已关闭
+                                        </a>
+                                        <hr class="dropdown-divider">
+                                        <a href="/admin/inquiries/delete?id=<?= $row['id'] ?>" class="dropdown-item has-text-danger" onclick="return confirm('确定要删除此询单吗？')">
+                                            <span class="icon is-small mr-2"><i class="fas fa-trash"></i></span>
+                                            删除询单
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

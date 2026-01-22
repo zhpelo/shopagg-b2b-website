@@ -13,6 +13,13 @@
     </div>
 </div>
 
+<?php if (isset($_GET['success'])): ?>
+<div class="notification is-success is-light animate-in">
+    <button class="delete" onclick="this.parentElement.remove()"></button>
+    <?= h($_GET['success']) ?>
+</div>
+<?php endif; ?>
+
 <?php if (empty($messages)): ?>
 <!-- 空状态 -->
 <div class="admin-card animate-in delay-1">
@@ -29,10 +36,11 @@
             <thead>
                 <tr>
                     <th style="width: 15%;">客户信息</th>
-                    <th style="width: 20%;">联系方式</th>
-                    <th style="width: 15%;">公司</th>
-                    <th style="width: 35%;">留言内容</th>
-                    <th style="width: 15%;">时间</th>
+                    <th style="width: 18%;">联系方式</th>
+                    <th style="width: 12%;">公司</th>
+                    <th style="width: 30%;">留言内容</th>
+                    <th style="width: 13%;">时间</th>
+                    <th style="width: 12%;">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -71,7 +79,17 @@
                     <td>
                         <div class="is-size-7 has-text-grey">
                             <span class="icon is-small mr-1"><i class="far fa-clock"></i></span>
-                            <?= h($row['created_at']) ?>
+                            <?= format_date($row['created_at']) ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="buttons are-small">
+                            <a href="/admin/messages/detail?id=<?= $row['id'] ?>" class="button is-info is-light" title="查看详情">
+                                <span class="icon"><i class="fas fa-eye"></i></span>
+                            </a>
+                            <a href="/admin/messages/delete?id=<?= $row['id'] ?>" class="button is-danger is-light" title="删除" onclick="return confirm('确定要删除此留言吗？')">
+                                <span class="icon"><i class="fas fa-trash"></i></span>
+                            </a>
                         </div>
                     </td>
                 </tr>

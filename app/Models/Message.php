@@ -8,6 +8,16 @@ class Message extends BaseModel {
         return $this->fetchAll("SELECT * FROM messages ORDER BY id DESC");
     }
 
+    public function getById(int $id): ?array {
+        return $this->fetchOne("SELECT * FROM messages WHERE id = :id", [':id' => $id]);
+    }
+
+    public function delete(int $id): void {
+        $stmt = $this->db->prepare("DELETE FROM messages WHERE id = :id");
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+    }
+
     public function create(array $data): void {
         $stmt = $this->db->prepare("INSERT INTO messages (name, email, company, phone, message, created_at) 
             VALUES (:n, :e, :c, :p, :m, :t)");

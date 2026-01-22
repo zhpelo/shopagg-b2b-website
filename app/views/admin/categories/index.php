@@ -47,7 +47,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
     <td>
         <span class="is-size-7 has-text-grey">
             <span class="icon is-small"><i class="far fa-calendar-alt"></i></span>
-            <?= date('Y-m-d', strtotime($row['created_at'])) ?>
+            <?= format_date($row['created_at'], 'Y-m-d') ?>
         </span>
     </td>
     <td>
