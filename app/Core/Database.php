@@ -86,16 +86,45 @@ class Database {
             if (!in_array($col, $existing)) $db->exec("ALTER TABLE product_categories ADD COLUMN $col $type");
         }
 
-        // Posts columns (添加分类支持)
+        // Posts columns (添加分类支持和SEO)
         $postCols = [
             'category_id' => 'INTEGER DEFAULT 0',
-            'status' => 'TEXT DEFAULT "active"'
+            'status' => 'TEXT DEFAULT "active"',
+            'seo_title' => 'TEXT',
+            'seo_keywords' => 'TEXT',
+            'seo_description' => 'TEXT'
         ];
         $res = $db->query("PRAGMA table_info(posts)");
         $existing = [];
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
         foreach ($postCols as $col => $type) {
             if (!in_array($col, $existing)) $db->exec("ALTER TABLE posts ADD COLUMN $col $type");
+        }
+
+        // Products SEO columns
+        $productSeoCols = [
+            'seo_title' => 'TEXT',
+            'seo_keywords' => 'TEXT',
+            'seo_description' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(products)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($productSeoCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE products ADD COLUMN $col $type");
+        }
+
+        // Cases SEO columns
+        $caseSeoCols = [
+            'seo_title' => 'TEXT',
+            'seo_keywords' => 'TEXT',
+            'seo_description' => 'TEXT'
+        ];
+        $res = $db->query("PRAGMA table_info(cases)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
+        foreach ($caseSeoCols as $col => $type) {
+            if (!in_array($col, $existing)) $db->exec("ALTER TABLE cases ADD COLUMN $col $type");
         }
     }
 
@@ -105,6 +134,9 @@ class Database {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
+                role TEXT DEFAULT 'staff',
+                permissions TEXT,
+                display_name TEXT,
                 created_at TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS settings (
@@ -119,6 +151,14 @@ class Database {
                 content TEXT,
                 cover TEXT,
                 category_id INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'active',
+                product_type TEXT,
+                vendor TEXT,
+                tags TEXT,
+                images_json TEXT,
+                seo_title TEXT,
+                seo_keywords TEXT,
+                seo_description TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -129,6 +169,9 @@ class Database {
                 summary TEXT,
                 content TEXT,
                 cover TEXT,
+                seo_title TEXT,
+                seo_keywords TEXT,
+                seo_description TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -139,6 +182,11 @@ class Database {
                 summary TEXT,
                 content TEXT,
                 cover TEXT,
+                category_id INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'active',
+                seo_title TEXT,
+                seo_keywords TEXT,
+                seo_description TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -150,6 +198,11 @@ class Database {
                 company TEXT,
                 phone TEXT,
                 message TEXT,
+                quantity TEXT,
+                status TEXT DEFAULT 'pending',
+                ip TEXT,
+                user_agent TEXT,
+                source_url TEXT,
                 created_at TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS messages (
@@ -173,6 +226,10 @@ class Database {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 slug TEXT UNIQUE NOT NULL,
+                parent_id INTEGER DEFAULT 0,
+                type TEXT DEFAULT 'product',
+                sort_order INTEGER DEFAULT 0,
+                description TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -190,9 +247,11 @@ class Database {
 
         // Seed default admin
         $passwordHash = password_hash('admin123', PASSWORD_DEFAULT);
-        $stmt = $db->prepare("INSERT INTO users (username, password_hash, created_at) VALUES (:u, :p, :c)");
+        $stmt = $db->prepare("INSERT INTO users (username, password_hash, role, display_name, created_at) VALUES (:u, :p, :r, :d, :c)");
         $stmt->bindValue(':u', 'admin', SQLITE3_TEXT);
         $stmt->bindValue(':p', $passwordHash, SQLITE3_TEXT);
+        $stmt->bindValue(':r', 'admin', SQLITE3_TEXT);
+        $stmt->bindValue(':d', 'Administrator', SQLITE3_TEXT);
         $stmt->bindValue(':c', gmdate('c'), SQLITE3_TEXT);
         $stmt->execute();
 

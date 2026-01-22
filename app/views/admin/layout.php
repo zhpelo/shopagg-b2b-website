@@ -358,12 +358,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const toolbar = quill.getModule("toolbar");
         toolbar.addHandler("image", function () {
             openMediaLibrary(function(urls) {
-                const range = quill.getSelection(true);
+                            const range = quill.getSelection(true);
                 let index = range ? range.index : 0;
                 urls.forEach(url => {
                     quill.insertEmbed(index, "image", url);
                     index += 1;
-                });
+            });
             }, true);
         });
     }

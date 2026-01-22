@@ -137,36 +137,36 @@
                             <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="button is-info is-light" title="查看详情">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <div class="dropdown is-right is-hoverable">
-                                <div class="dropdown-trigger">
-                                    <button class="button is-small is-light" aria-haspopup="true" style="border-radius: 8px;">
+                        <div class="dropdown is-right is-hoverable">
+                            <div class="dropdown-trigger">
+                                <button class="button is-small is-light" aria-haspopup="true" style="border-radius: 8px;">
                                         <span class="icon is-small"><i class="fas fa-ellipsis-v"></i></span>
-                                    </button>
-                                </div>
-                                <div class="dropdown-menu">
-                                    <div class="dropdown-content">
+                                </button>
+                            </div>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-content">
                                         <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="dropdown-item">
                                             <span class="icon is-small has-text-info mr-2"><i class="fas fa-eye"></i></span>
                                             查看详情
                                         </a>
                                         <hr class="dropdown-divider">
-                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=contacted" class="dropdown-item">
-                                            <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
-                                            标记为已联系
-                                        </a>
-                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=quoted" class="dropdown-item">
-                                            <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
-                                            标记为已报价
-                                        </a>
-                                        <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=closed" class="dropdown-item">
-                                            <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
-                                            标记为已关闭
-                                        </a>
-                                        <hr class="dropdown-divider">
+                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=contacted" class="dropdown-item">
+                                        <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
+                                        标记为已联系
+                                    </a>
+                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=quoted" class="dropdown-item">
+                                        <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
+                                        标记为已报价
+                                    </a>
+                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=closed" class="dropdown-item">
+                                        <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
+                                        标记为已关闭
+                                    </a>
+                                    <hr class="dropdown-divider">
                                         <a href="/admin/inquiries/delete?id=<?= $row['id'] ?>" class="dropdown-item has-text-danger" onclick="return confirm('确定要删除此询单吗？')">
                                             <span class="icon is-small mr-2"><i class="fas fa-trash"></i></span>
                                             删除询单
-                                        </a>
+                                    </a>
                                     </div>
                                 </div>
                             </div>

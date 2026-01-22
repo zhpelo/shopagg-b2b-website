@@ -173,7 +173,7 @@ $tabs = [
                             <div class="has-text-centered has-text-grey-light">
                                 <span class="icon is-large"><i class="fas fa-share-alt fa-2x"></i></span>
                                 <p class="is-size-7 mt-1">点击选择图片</p>
-                            </div>
+                        </div>
                         <?php endif; ?>
                     </div>
                     <p class="help">推荐尺寸: 1200×630 像素，用于社交媒体分享</p>
