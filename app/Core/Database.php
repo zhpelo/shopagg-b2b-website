@@ -10,7 +10,7 @@ class Database {
 
     public static function getInstance(): SQLite3 {
         if (self::$instance === null) {
-            $dbFile = __DIR__ . '/../../data/site.db';
+            $dbFile = __DIR__ . '/../../#data/site.db';
             $isNew = !is_file($dbFile);
             self::$instance = new SQLite3($dbFile);
             self::$instance->exec('PRAGMA foreign_keys = ON;');
