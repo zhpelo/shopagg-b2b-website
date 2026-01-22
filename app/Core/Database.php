@@ -12,6 +12,9 @@ class Database {
         if (self::$instance === null) {
             $dbFile = __DIR__ . '/../../#data/site.db';
             $isNew = !is_file($dbFile);
+            if ($isNew) {
+                mkdir(__DIR__ . '/../../#data/', 0755, true);
+            }
             self::$instance = new SQLite3($dbFile);
             self::$instance->exec('PRAGMA foreign_keys = ON;');
             self::$instance->exec('PRAGMA journal_mode = WAL;');
