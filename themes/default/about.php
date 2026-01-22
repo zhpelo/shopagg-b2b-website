@@ -112,38 +112,50 @@
                 </div>
 
                 <!-- Company Show -->
+                <?php 
+                $showJson = $site['company_show_json'] ?? '[]';
+                $showItems = is_array($showJson) ? $showJson : json_decode($showJson, true);
+                if (!empty($showItems) && is_array($showItems)): 
+                ?>
                 <div class="mb-6 pt-5" style="border-top: 1px solid #f0f0f0;">
                     <h3 class="title is-5 mb-4"><?= h(t('about_corp_show')) ?></h3>
                     <div class="columns is-multiline">
-                        <?php 
-                        $showItems = json_decode($site['company_show_json'] ?? '[]', true);
-                        foreach ($showItems as $item): ?>
+                        <?php foreach ($showItems as $item): 
+                            if (empty($item['img'])) continue;
+                        ?>
                             <div class="column is-3">
                                 <figure class="image is-4by3 mb-2">
-                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover; border: 1px solid #eee; border-radius: 2px;">
+                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: cover; border: 1px solid #eee; border-radius: 2px;">
                                 </figure>
-                                <p class="is-size-7 has-text-centered"><?= h($item['title']) ?></p>
+                                <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <!-- Certificates -->
+                <?php 
+                $certJson = $site['company_certificates_json'] ?? '[]';
+                $certItems = is_array($certJson) ? $certJson : json_decode($certJson, true);
+                if (!empty($certItems) && is_array($certItems)): 
+                ?>
                 <div class="mb-6 pt-5" style="border-top: 1px solid #f0f0f0;">
                     <h3 class="title is-5 mb-4"><?= h(t('about_certificates')) ?></h3>
                     <div class="columns is-multiline">
-                        <?php 
-                        $certItems = json_decode($site['company_certificates_json'] ?? '[]', true);
-                        foreach ($certItems as $item): ?>
+                        <?php foreach ($certItems as $item): 
+                            if (empty($item['img'])) continue;
+                        ?>
                             <div class="column is-3">
                                 <figure class="image is-4by3 mb-2">
-                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title']) ?>" style="object-fit: contain; background: #fafafa; border: 1px solid #eee; border-radius: 2px; padding: 5px;">
+                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: contain; background: #fafafa; border: 1px solid #eee; border-radius: 2px; padding: 5px;">
                                 </figure>
-                                <p class="is-size-7 has-text-centered"><?= h($item['title']) ?></p>
+                                <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- 右侧边栏 (可选) -->
