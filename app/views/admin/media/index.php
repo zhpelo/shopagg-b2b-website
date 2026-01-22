@@ -11,10 +11,15 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <button type="button" class="button is-white" onclick="openMediaLibrary(function(urls){ location.reload(); }, true)">
-                <span class="icon"><i class="fas fa-upload"></i></span>
-                <span>上传图片</span>
-            </button>
+            <div class="file is-white">
+                <label class="file-label mb-0">
+                    <input class="file-input" type="file" id="directUploadInput" multiple accept="image/*">
+                    <span class="file-cta" style="border-radius: 8px; background: white; color: #17a2b8; border: none;">
+                        <span class="file-icon"><i class="fas fa-upload"></i></span>
+                        <span class="file-label">上传图片</span>
+                    </span>
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -408,6 +413,51 @@ function copyToClipboard(text) {
 // ESC关闭弹窗
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMediaDetail();
+});
+
+// 直接上传图片
+document.getElementById('directUploadInput').addEventListener('change', async function(e) {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    // 显示上传进度提示
+    const uploadBtn = this.closest('.file');
+    const originalHTML = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<span class="button is-white is-loading" style="border-radius: 8px;">上传中...</span>';
+    
+    let uploadedCount = 0;
+    let failedCount = 0;
+    
+    for (const file of files) {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('csrf', '<?= csrf_token() ?>');
+            
+            const response = await fetch('/admin/upload-image', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                uploadedCount++;
+            } else {
+                failedCount++;
+            }
+        } catch (err) {
+            failedCount++;
+        }
+    }
+    
+    // 恢复按钮
+    uploadBtn.innerHTML = originalHTML;
+    
+    // 刷新页面显示新上传的图片
+    if (uploadedCount > 0) {
+        location.href = '/admin/media?success=' + encodeURIComponent('成功上传 ' + uploadedCount + ' 张图片' + (failedCount > 0 ? '，' + failedCount + ' 张失败' : ''));
+    } else if (failedCount > 0) {
+        location.href = '/admin/media?error=' + encodeURIComponent('上传失败');
+    }
 });
 </script>
 
