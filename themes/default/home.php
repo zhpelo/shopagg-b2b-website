@@ -205,8 +205,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="section pb-6">
     <div class="container">
         <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card">
-            <h2 class="title is-3 has-text-white mb-4"><?= h(t('home_ready_title')) ?></h2>
-            <p class="subtitle is-5 has-text-grey-light mb-6"><?= h(t('home_ready_desc')) ?></p>
+            <h2 class="title is-3 has-text-white my-5"><?= h(t('home_ready_title')) ?></h2>
+            <p class="is-5 has-text-grey-light mb-5"><?= h(t('home_ready_desc')) ?></p>
             <div class="buttons is-centered">
                 <a href="<?= url('/contact') ?>" class="button is-white is-large px-6"><?= h(t('cta_quote')) ?></a>
                 <?php
