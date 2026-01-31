@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
-    <link rel="stylesheet" href="/app/views/admin/style.css">
+    <link rel="stylesheet" href="<?= url('/app/views/admin/style.css') ?>">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body class="<?= ($showNav ?? true) ? '' : 'login-page' ?>">
@@ -208,6 +208,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script>
+// 子目录部署：前端请求需带 base path
+window.APP_BASE_PATH = <?= json_encode(base_path()) ?>;
+</script>
+<script>
 // 全局媒体库逻辑
 let mediaLibraryCallback = null;
 let isMultiSelect = false;
@@ -227,7 +231,7 @@ async function fetchMediaLibrary() {
     const container = document.getElementById('media-library-list');
     container.innerHTML = '<div class="column is-12 has-text-centered p-6"><span class="icon is-large has-text-grey-light"><i class="fas fa-spinner fa-pulse fa-2x"></i></span><p class="mt-3 has-text-grey">正在加载...</p></div>';
     try {
-        const res = await fetch('/admin/media-library');
+        const res = await fetch((window.APP_BASE_PATH || '') + '/admin/media-library');
         const files = await res.json();
         container.innerHTML = '';
         if (files.length === 0) {
@@ -303,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const uploadTasks = files.map((file, index) => {
                 return new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/admin/upload-image', true);
+                    xhr.open('POST', (window.APP_BASE_PATH || '') + '/admin/upload-image', true);
                     xhr.upload.onprogress = (e) => {
                         if (e.lengthComputable) {
                             fileProgresses[index] = e.loaded / e.total;
