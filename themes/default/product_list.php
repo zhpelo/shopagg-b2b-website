@@ -88,7 +88,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                     <p class="mb-4 is-size-6" style="opacity: 0.9;">
                         <?= h(t('product_quote_desc') ?? '找到心仪的产品了吗？立即发送询单获取报价。') ?>
                     </p>
-                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined">
+                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined is-fullwidth">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
                         <span><?= h(t('nav_contact')) ?></span>
                     </a>

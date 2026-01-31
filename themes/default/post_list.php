@@ -144,7 +144,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
                     <p class="mb-4 is-size-6" style="opacity: 0.9;">
                         <?= h(t('post_contact_desc') ?? '如果您有任何问题，欢迎随时联系我们的专业团队。') ?>
                     </p>
-                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined">
+                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined is-fullwidth">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
                         <span><?= h(t('nav_contact')) ?></span>
                     </a>
