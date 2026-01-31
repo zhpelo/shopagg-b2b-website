@@ -8,7 +8,7 @@
             <p>欢迎回来，请登录您的账户</p>
         </div>
         
-        <form method="post" action="/admin/login" class="login-form">
+        <form method="post" action="<?= url('/admin/login'); ?>" class="login-form">
             <div class="field">
                 <label class="label">用户名</label>
                 <div class="control has-icons-left">
