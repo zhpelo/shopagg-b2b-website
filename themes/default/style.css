@@ -108,6 +108,66 @@ body {
   background: #fff;
 }
 
+/* ========== Hero Swiper 轮播 (home) ========== */
+.hero-swiper {
+  min-height: 480px;
+  overflow: hidden;
+}
+.hero-swiper .hero-swiper-container {
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+}
+.hero-swiper-slide {
+  background-size: cover;
+  background-position: center;
+  background-color: #1e293b;
+}
+.hero-swiper-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(15, 23, 42, 0.4) 100%);
+  z-index: 0;
+}
+.hero-swiper-slide .hero-body {
+  position: relative;
+  z-index: 1;
+}
+.hero-swiper-title {
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.hero-swiper-desc {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  max-width: 32rem;
+}
+.hero-swiper .swiper-button-prev,
+.hero-swiper .swiper-button-next {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.hero-swiper .swiper-button-prev:hover,
+.hero-swiper .swiper-button-next:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.hero-swiper .swiper-button-prev::after,
+.hero-swiper .swiper-button-next::after {
+  font-size: 1rem;
+  font-weight: bold;
+}
+.hero-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+}
+.hero-swiper .swiper-pagination-bullet-active {
+  background: #fff;
+}
+
 /* ========== 首页区块 ========== */
 .section-trust {
   background: #fff;
