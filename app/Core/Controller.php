@@ -5,9 +5,9 @@ namespace App\Core;
 
 abstract class Controller {
     protected function render(string $theme, string $view, array $data = []): void {
-        $themePath = __DIR__ . '/../../themes/' . $theme;
+        $themePath = APP_ROOT . '/themes/' . $theme;
         if (!is_dir($themePath)) {
-            $themePath = __DIR__ . '/../../themes/default';
+            $themePath = APP_ROOT . '/themes/default';
         }
 
         extract($data, EXTR_SKIP);

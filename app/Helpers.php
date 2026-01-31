@@ -21,7 +21,7 @@ function t(string $key, ?string $lang = null): string {
     if (!isset($translations[$lang])) {
         $settingModel = new \App\Models\Setting();
         $theme = $settingModel->get('theme', 'default');
-        $file = __DIR__ . "/../themes/{$theme}/lang/{$lang}.php";
+        $file = APP_ROOT . "/themes/{$theme}/lang/{$lang}.php";
         if (file_exists($file)) {
             $translations[$lang] = include $file;
         } else {
@@ -117,7 +117,7 @@ function save_uploaded_image(array $file): array {
     if (!isset($extMap[$mime])) return [false, '不支持的图片格式'];
     $ext = $extMap[$mime];
     $subDir = '/uploads/' . date('Ym');
-    $targetDir = __DIR__ . '/..' . $subDir;
+    $targetDir = APP_ROOT . $subDir;
     if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
     $filename = uniqid('img_', true) . '.' . $ext;
     if (!move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) return [false, '保存失败'];

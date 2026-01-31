@@ -1,163 +1,50 @@
 <?php
 
 /**
- * SHOPAGG B2B Website - A Professional B2B Website Platform
- *
- * @copyright  Copyright (c) 2015–2026 SHOPAGG. All rights reserved.
- * @license    MIT License
- * @link       https://www.shopagg.com
- * @author     SHOPAGG
- * @version    1.0.0
+ * SHOPAGG B2B Website - Entry Point
+ * @copyright Copyright (c) 2015–2026 SHOPAGG. All rights reserved.
+ * @license   MIT License
  */
-
 
 declare(strict_types=1);
 
-/**
- * Entry point for MVC B2B Website
- */
-
+// 运行环境
 session_start();
 date_default_timezone_set('UTC');
 mb_internal_encoding('UTF-8');
 
-// 二级目录支持：根据 index.php 所在目录自动检测 base path（根目录为空，子目录如 /b2bwebsite）
+// 根目录与二级目录（子目录部署）
+define('APP_ROOT', rtrim(str_replace('\\', '/', realpath(__DIR__)), '/'));
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
 $basePath = rtrim(dirname($scriptName), '/');
-if ($basePath === '' || $basePath === '/') {
-    $basePath = '';
-} else {
-    $basePath = '/' . ltrim($basePath, '/');
-}
-define('APP_BASE_PATH', $basePath);
+define('APP_BASE_PATH', ($basePath === '' || $basePath === '/') ? '' : '/' . ltrim($basePath, '/'));
 
-// Simple PSR-4 Autoloader
-spl_autoload_register(function ($class) {
+// PSR-4 自动加载
+spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
-    $base_dir = __DIR__ . '/app/';
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) return;
-    $relative_class = substr($class, $len);
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-    if (file_exists($file)) {
-        require $file;
-    }
+    $baseDir = APP_ROOT . '/app/';
+    if (strncmp($prefix, $class, strlen($prefix)) !== 0) return;
+    $file = $baseDir . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+    if (file_exists($file)) require $file;
 });
 
-// Load global helpers
-require __DIR__ . '/app/Helpers.php';
+require APP_ROOT . '/app/Helpers.php';
 
 use App\Core\Router;
 use App\Core\Database;
-use App\Controllers\SiteController;
-use App\Controllers\AdminController;
 
-// Init DB (Schema auto-init if not exists)
-$db = Database::getInstance();
+// 数据库（首次访问时初始化 schema）
+Database::getInstance();
 
-// Multi-language setup
+// 语言
 $langs = get_languages();
-if (isset($_GET['lang']) && isset($langs[$_GET['lang']])) {
+if (!empty($_GET['lang']) && isset($langs[$_GET['lang']])) {
     $_SESSION['lang'] = $_GET['lang'];
 }
-$settingModel = new \App\Models\Setting();
-$current_lang = $_SESSION['lang'] ?? $settingModel->get('default_lang', 'en');
+$current_lang = $_SESSION['lang'] ?? (new \App\Models\Setting())->get('default_lang', 'en');
 
-// Routing
+// 路由
 $router = new Router();
-
-// Frontend Routes
-$router->add('GET', '/', [SiteController::class, 'home']);
-$router->add('GET', '/products', [SiteController::class, 'products']);
-$router->add('GET', '/product/:slug', [SiteController::class, 'productDetail']);
-$router->add('GET', '/cases', [SiteController::class, 'cases']);
-$router->add('GET', '/case/:slug', [SiteController::class, 'caseDetail']);
-$router->add('GET', '/blog', [SiteController::class, 'blog']);
-$router->add('GET', '/blog/:slug', [SiteController::class, 'blogDetail']);
-$router->add('GET', '/about', [SiteController::class, 'about']);
-$router->add('GET', '/contact', [SiteController::class, 'contact']);
-$router->add('POST', '/contact', [SiteController::class, 'contact']);
-$router->add('POST', '/inquiry', [SiteController::class, 'inquiry']);
-$router->add('GET', '/robots.txt', [SiteController::class, 'robots']);
-$router->add('GET', '/sitemap.xml', [SiteController::class, 'sitemap']);
-
-// Admin Routes
-$router->add('GET', '/admin/login', [AdminController::class, 'login']);
-$router->add('POST', '/admin/login', [AdminController::class, 'doLogin']);
-$router->add('GET', '/admin/logout', [AdminController::class, 'logout']);
-$router->add('GET', '/admin', [AdminController::class, 'dashboard']);
-$router->add('GET', '/admin/settings', [AdminController::class, 'settings']);
-$router->add('POST', '/admin/settings', [AdminController::class, 'saveSettings']);
-
-// Admin CRUD for Products
-$router->add('GET', '/admin/products', [AdminController::class, 'productList']);
-$router->add('GET', '/admin/products/create', [AdminController::class, 'productCreate']);
-$router->add('POST', '/admin/products/create', [AdminController::class, 'productStore']);
-$router->add('GET', '/admin/products/edit', [AdminController::class, 'productEdit']);
-$router->add('POST', '/admin/products/edit', [AdminController::class, 'productUpdate']);
-$router->add('GET', '/admin/products/delete', [AdminController::class, 'productDelete']);
-
-// Admin CRUD for Product Categories (产品分类)
-$router->add('GET', '/admin/product-categories', [AdminController::class, 'productCategoryList']);
-$router->add('GET', '/admin/product-categories/create', [AdminController::class, 'productCategoryCreate']);
-$router->add('POST', '/admin/product-categories/create', [AdminController::class, 'productCategoryStore']);
-$router->add('GET', '/admin/product-categories/edit', [AdminController::class, 'productCategoryEdit']);
-$router->add('POST', '/admin/product-categories/edit', [AdminController::class, 'productCategoryUpdate']);
-$router->add('GET', '/admin/product-categories/delete', [AdminController::class, 'productCategoryDelete']);
-
-// Admin CRUD for Post Categories (文章分类)
-$router->add('GET', '/admin/post-categories', [AdminController::class, 'postCategoryList']);
-$router->add('GET', '/admin/post-categories/create', [AdminController::class, 'postCategoryCreate']);
-$router->add('POST', '/admin/post-categories/create', [AdminController::class, 'postCategoryStore']);
-$router->add('GET', '/admin/post-categories/edit', [AdminController::class, 'postCategoryEdit']);
-$router->add('POST', '/admin/post-categories/edit', [AdminController::class, 'postCategoryUpdate']);
-$router->add('GET', '/admin/post-categories/delete', [AdminController::class, 'postCategoryDelete']);
-
-// Admin CRUD for Cases
-$router->add('GET', '/admin/cases', [AdminController::class, 'caseList']);
-$router->add('GET', '/admin/cases/create', [AdminController::class, 'caseCreate']);
-$router->add('POST', '/admin/cases/create', [AdminController::class, 'caseStore']);
-$router->add('GET', '/admin/cases/edit', [AdminController::class, 'caseEdit']);
-$router->add('POST', '/admin/cases/edit', [AdminController::class, 'caseUpdate']);
-$router->add('GET', '/admin/cases/delete', [AdminController::class, 'caseDelete']);
-
-// Admin CRUD for Posts
-$router->add('GET', '/admin/posts', [AdminController::class, 'postList']);
-$router->add('GET', '/admin/posts/create', [AdminController::class, 'postCreate']);
-$router->add('POST', '/admin/posts/create', [AdminController::class, 'postStore']);
-$router->add('GET', '/admin/posts/edit', [AdminController::class, 'postEdit']);
-$router->add('POST', '/admin/posts/edit', [AdminController::class, 'postUpdate']);
-$router->add('GET', '/admin/posts/delete', [AdminController::class, 'postDelete']);
-
-// Messages & Inquiries
-$router->add('GET', '/admin/messages', [AdminController::class, 'messageList']);
-$router->add('GET', '/admin/messages/detail', [AdminController::class, 'messageDetail']);
-$router->add('GET', '/admin/messages/delete', [AdminController::class, 'messageDelete']);
-$router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList']);
-$router->add('GET', '/admin/inquiries/detail', [AdminController::class, 'inquiryDetail']);
-$router->add('GET', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
-$router->add('GET', '/admin/inquiries/delete', [AdminController::class, 'inquiryDelete']);
-$router->add('GET', '/admin/inquiries/export', [AdminController::class, 'inquiryExport']);
-
-// Staff Management
-$router->add('GET', '/admin/staff', [AdminController::class, 'staffList']);
-$router->add('GET', '/admin/staff/create', [AdminController::class, 'staffCreate']);
-$router->add('POST', '/admin/staff/create', [AdminController::class, 'staffStore']);
-$router->add('GET', '/admin/staff/edit', [AdminController::class, 'staffEdit']);
-$router->add('POST', '/admin/staff/edit', [AdminController::class, 'staffUpdate']);
-$router->add('GET', '/admin/staff/delete', [AdminController::class, 'staffDelete']);
-
-// Profile
-$router->add('GET', '/admin/profile', [AdminController::class, 'profile']);
-$router->add('POST', '/admin/profile/update', [AdminController::class, 'profileUpdate']);
-
-// Media Management
-$router->add('GET', '/admin/media', [AdminController::class, 'mediaList']);
-$router->add('GET', '/admin/media/delete', [AdminController::class, 'mediaDelete']);
-
-// AJAX
-$router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
-$router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
-
-// Run the router
+require APP_ROOT . '/app/routes.php';
+register_routes($router);
 $router->run();

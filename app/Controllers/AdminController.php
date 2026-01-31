@@ -44,7 +44,7 @@ class AdminController extends Controller {
             $path = substr($path, strlen($basePath)) ?: '/';
         }
         if ($path !== '/admin/login' && !isset($_SESSION['admin_user'])) {
-            $this->redirect( url('/admin/login'));
+            $this->redirect('/admin/login');
         }
 
         // Permission check
@@ -107,54 +107,75 @@ class AdminController extends Controller {
 
     // --- Dashboard & Settings ---
     public function dashboard(): void {
-        // 基础统计
-        $counts = [
-            'products' => (int)$this->db->querySingle("SELECT COUNT(*) FROM products"),
-            'active_products' => (int)$this->db->querySingle("SELECT COUNT(*) FROM products WHERE status = 'active'"),
-            'cases' => (int)$this->db->querySingle("SELECT COUNT(*) FROM cases"),
-            'posts' => (int)$this->db->querySingle("SELECT COUNT(*) FROM posts"),
-            'messages' => (int)$this->db->querySingle("SELECT COUNT(*) FROM messages"),
-            'inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries"),
-            'pending_inquiries' => (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE status = 'pending'"),
-            'categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories WHERE type = 'product' OR type IS NULL"),
-            'post_categories' => (int)$this->db->querySingle("SELECT COUNT(*) FROM product_categories WHERE type = 'post'"),
-            'users' => (int)$this->db->querySingle("SELECT COUNT(*) FROM users"),
-        ];
+        // 一次查询获取全部基础统计，减少 DB 往返
+        $row = $this->db->querySingle(
+            "SELECT
+                (SELECT COUNT(*) FROM products) AS products,
+                (SELECT COUNT(*) FROM products WHERE status = 'active') AS active_products,
+                (SELECT COUNT(*) FROM cases) AS cases,
+                (SELECT COUNT(*) FROM posts) AS posts,
+                (SELECT COUNT(*) FROM messages) AS messages,
+                (SELECT COUNT(*) FROM inquiries) AS inquiries,
+                (SELECT COUNT(*) FROM inquiries WHERE status = 'pending') AS pending_inquiries,
+                (SELECT COUNT(*) FROM product_categories WHERE type = 'product' OR type IS NULL) AS categories,
+                (SELECT COUNT(*) FROM product_categories WHERE type = 'post') AS post_categories,
+                (SELECT COUNT(*) FROM users) AS users,
+                (SELECT COUNT(*) FROM product_images) AS total_images",
+            true
+        );
+        $counts = $row ? array_map('intval', $row) : array_fill_keys(
+            ['products', 'active_products', 'cases', 'posts', 'messages', 'inquiries', 'pending_inquiries', 'categories', 'post_categories', 'users', 'total_images'], 0
+        );
 
-        // 今日统计
         $today = date('Y-m-d');
-        $counts['today_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) = '$today'");
-        $counts['today_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) = '$today'");
-
-        // 本周统计
         $weekStart = date('Y-m-d', strtotime('monday this week'));
         $weekEnd = date('Y-m-d', strtotime('sunday this week'));
-        $counts['week_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
-        $counts['week_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
-
-        // 本月统计
         $monthStart = date('Y-m-01');
         $monthEnd = date('Y-m-t');
+
+        // 今日：一次查询取留言/询单两列
+        $stmt = $this->db->prepare("SELECT
+            (SELECT COUNT(*) FROM messages WHERE DATE(created_at) = :d) AS m,
+            (SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) = :d) AS i");
+        $stmt->bindValue(':d', $today, SQLITE3_TEXT);
+        $r = $stmt->execute()->fetchArray(SQLITE3_NUM);
+        $counts['today_messages'] = (int)($r[0] ?? 0);
+        $counts['today_inquiries'] = (int)($r[1] ?? 0);
+
+        // 本周、本月：按区间各一次查询
+        $counts['week_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
+        $counts['week_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) >= '$weekStart' AND DATE(created_at) <= '$weekEnd'");
         $counts['month_messages'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) >= '$monthStart' AND DATE(created_at) <= '$monthEnd'");
         $counts['month_inquiries'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) >= '$monthStart' AND DATE(created_at) <= '$monthEnd'");
 
-        // 最近30天趋势数据
-        $counts['recent_messages'] = [];
-        $counts['recent_inquiries'] = [];
-        for ($i = 29; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days"));
-            $counts['recent_messages'][] = (int)$this->db->querySingle("SELECT COUNT(*) FROM messages WHERE DATE(created_at) = '$date'");
-            $counts['recent_inquiries'][] = (int)$this->db->querySingle("SELECT COUNT(*) FROM inquiries WHERE DATE(created_at) = '$date'");
-        }
+        // 最近30天：两次 GROUP BY 替代 60 次单日查询
+        $counts['recent_messages'] = $this->dashboardDailyCounts('messages', 30);
+        $counts['recent_inquiries'] = $this->dashboardDailyCounts('inquiries', 30);
 
-        // 系统统计
-        $counts['total_images'] = (int)$this->db->querySingle("SELECT COUNT(*) FROM product_images");
-
-        // 计算数据库创建日期（近似值）
-        $dbFile = __DIR__ . '/../../data/site.db';
-        $counts['system_age_days'] = file_exists($dbFile) ? (int)((time() - filectime($dbFile)) / 86400) : 0;
+        $dbFile = APP_ROOT . '/#data/site.db';
+        $counts['system_age_days'] = is_file($dbFile) ? (int)((time() - filectime($dbFile)) / 86400) : 0;
 
         $this->renderAdmin('仪表盘', $this->renderView('admin/dashboard', ['counts' => $counts]));
+    }
+
+    /** 返回最近 N 天每日数量数组，用于仪表盘趋势图；$table 仅允许 messages|inquiries */
+    private function dashboardDailyCounts(string $table, int $days = 30): array {
+        if ($table !== 'messages' && $table !== 'inquiries') {
+            return array_fill(0, $days, 0);
+        }
+        $stmt = $this->db->prepare("SELECT DATE(created_at) AS d, COUNT(*) AS c FROM $table WHERE created_at >= DATE('now', :offset) GROUP BY d");
+        $stmt->bindValue(':offset', "-$days days", SQLITE3_TEXT);
+        $res = $stmt->execute();
+        $byDate = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $byDate[$row['d']] = (int)$row['c'];
+        }
+        $out = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-$i days"));
+            $out[] = $byDate[$d] ?? 0;
+        }
+        return $out;
     }
 
     public function settings(): void {
@@ -162,7 +183,7 @@ class AdminController extends Controller {
         $settings = $this->settingModel->getAll();
         
         // Scan for available themes
-        $themesDir = __DIR__ . "/../../themes";
+        $themesDir = APP_ROOT . '/themes';
         $availableThemes = [];
         if (is_dir($themesDir)) {
             $dirs = array_filter(glob("{$themesDir}/*"), 'is_dir');
@@ -176,7 +197,7 @@ class AdminController extends Controller {
         if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
         
         // Scan for available languages in current theme
-        $langDir = __DIR__ . "/../../themes/{$theme}/lang";
+        $langDir = APP_ROOT . "/themes/{$theme}/lang";
         $availableLangs = [];
         if (is_dir($langDir)) {
             $files = glob("{$langDir}/*.php");
@@ -214,7 +235,7 @@ class AdminController extends Controller {
         if ($tab === 'translations') {
             $lang = $_POST['edit_lang'] ?? 'en';
             $theme = $this->settingModel->get('theme', 'default');
-            $dir = __DIR__ . "/../../themes/{$theme}/lang";
+            $dir = APP_ROOT . "/themes/{$theme}/lang";
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             $file = "{$dir}/{$lang}.php";
             
@@ -361,7 +382,7 @@ class AdminController extends Controller {
     }
 
     public function mediaLibrary(): void {
-        $dir = __DIR__ . '/../../uploads';
+        $dir = APP_ROOT . '/uploads';
         $files = [];
         if (is_dir($dir)) {
             $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
@@ -378,14 +399,14 @@ class AdminController extends Controller {
         }
         // Sort by newest first
         usort($files, function($a, $b) {
-            return filemtime(__DIR__ . '/../..' . $b) <=> filemtime(__DIR__ . '/../..' . $a);
+            return filemtime(APP_ROOT . $b) <=> filemtime(APP_ROOT . $a);
         });
         $this->json($files);
     }
 
     // --- Media Management (媒体库管理) ---
     public function mediaList(): void {
-        $dir = __DIR__ . '/../../uploads';
+        $dir = APP_ROOT . '/uploads';
         $files = [];
         $totalSize = 0;
         
@@ -424,7 +445,7 @@ class AdminController extends Controller {
         
         // Get image dimensions (do this after sorting to limit processing)
         foreach ($files as &$f) {
-            $fullPath = __DIR__ . '/../..' . $f['path'];
+            $fullPath = APP_ROOT . $f['path'];
             if (file_exists($fullPath)) {
                 $info = @getimagesize($fullPath);
                 if ($info) {
@@ -451,8 +472,8 @@ class AdminController extends Controller {
         }
         
         // Security: ensure path is within uploads directory
-        $fullPath = realpath(__DIR__ . '/../..' . $path);
-        $uploadsDir = realpath(__DIR__ . '/../../uploads');
+        $fullPath = realpath(APP_ROOT . $path);
+        $uploadsDir = realpath(APP_ROOT . '/uploads');
         
         if ($fullPath === false || $uploadsDir === false || strpos($fullPath, $uploadsDir) !== 0) {
             $this->redirect('/admin/media?error=无效的文件路径');
@@ -491,7 +512,7 @@ class AdminController extends Controller {
         $this->renderAdmin('产品分类', $this->renderView('admin/categories/index', [
             'categories' => $categories,
             'type' => 'product',
-            'base_url' => '/admin/product-categories'
+            'base_url' => url('/admin/product-categories')
         ]));
     }
 
@@ -500,7 +521,7 @@ class AdminController extends Controller {
         $this->renderAdmin('新建产品分类', $this->renderView('admin/categories/form', [
             'action' => '/admin/product-categories/create',
             'type' => 'product',
-            'base_url' => '/admin/product-categories',
+            'base_url' => url('/admin/product-categories'),
             'parent_categories' => $parentCategories
         ]));
     }
@@ -526,7 +547,7 @@ class AdminController extends Controller {
             'action' => '/admin/product-categories/edit?id=' . $id,
             'category' => $category,
             'type' => 'product',
-            'base_url' => '/admin/product-categories',
+            'base_url' => url('/admin/product-categories'),
             'parent_categories' => $parentCategories
         ]));
     }
@@ -555,7 +576,7 @@ class AdminController extends Controller {
         $this->renderAdmin('文章分类', $this->renderView('admin/categories/index', [
             'categories' => $categories,
             'type' => 'post',
-            'base_url' => '/admin/post-categories'
+            'base_url' => url('/admin/post-categories')
         ]));
     }
 
@@ -564,7 +585,7 @@ class AdminController extends Controller {
         $this->renderAdmin('新建文章分类', $this->renderView('admin/categories/form', [
             'action' => '/admin/post-categories/create',
             'type' => 'post',
-            'base_url' => '/admin/post-categories',
+            'base_url' => url('/admin/post-categories'),
             'parent_categories' => $parentCategories
         ]));
     }
@@ -590,7 +611,7 @@ class AdminController extends Controller {
             'action' => '/admin/post-categories/edit?id=' . $id,
             'category' => $category,
             'type' => 'post',
-            'base_url' => '/admin/post-categories',
+            'base_url' => url('/admin/post-categories'),
             'parent_categories' => $parentCategories
         ]));
     }
@@ -919,13 +940,13 @@ class AdminController extends Controller {
 
     // --- Rendering Helpers ---
     private function renderAdmin(string $title, string $content, bool $showNav = true): void {
-        include __DIR__ . '/../views/admin/layout.php';
+        include APP_ROOT . '/app/views/admin/layout.php';
     }
 
     private function renderView(string $view, array $data = []): string {
         extract($data);
         ob_start();
-        include __DIR__ . '/../views/' . $view . '.php';
+        include APP_ROOT . '/app/views/' . $view . '.php';
         return ob_get_clean();
     }
 }

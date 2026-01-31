@@ -10,10 +10,10 @@ class Database {
 
     public static function getInstance(): SQLite3 {
         if (self::$instance === null) {
-            $dbFile = __DIR__ . '/../../#data/site.db';
+            $dbFile = APP_ROOT . '/#data/site.db';
             $isNew = !is_file($dbFile);
             if ($isNew) {
-                mkdir(__DIR__ . '/../../#data/', 0755, true);
+                mkdir(APP_ROOT . '/#data/', 0755, true);
             }
             self::$instance = new SQLite3($dbFile);
             self::$instance->exec('PRAGMA foreign_keys = ON;');
@@ -26,106 +26,62 @@ class Database {
         return self::$instance;
     }
 
+    /** 为表补充缺失列，避免重复 PRAGMA/ALTER 代码 */
+    private static function addColumnsIfMissing(SQLite3 $db, string $table, array $columnDefs): void {
+        $res = $db->query("PRAGMA table_info($table)");
+        $existing = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $existing[] = $row['name'];
+        }
+        foreach ($columnDefs as $col => $type) {
+            if (!in_array($col, $existing)) {
+                $db->exec("ALTER TABLE $table ADD COLUMN $col $type");
+            }
+        }
+    }
+
     private static function ensureColumns(SQLite3 $db): void {
-        // Products columns
-        $productCols = [
+        self::addColumnsIfMissing($db, 'products', [
             'status' => 'TEXT DEFAULT "active"',
             'product_type' => 'TEXT',
             'vendor' => 'TEXT',
             'tags' => 'TEXT',
-            'images_json' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(products)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($productCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE products ADD COLUMN $col $type");
-        }
-
-        // Inquiries columns
-        $inquiryCols = [
+            'images_json' => 'TEXT',
+            'seo_title' => 'TEXT',
+            'seo_keywords' => 'TEXT',
+            'seo_description' => 'TEXT',
+        ]);
+        self::addColumnsIfMissing($db, 'inquiries', [
             'quantity' => 'TEXT',
             'status' => 'TEXT DEFAULT "pending"',
             'ip' => 'TEXT',
             'user_agent' => 'TEXT',
-            'source_url' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(inquiries)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($inquiryCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE inquiries ADD COLUMN $col $type");
-        }
-
-        // Users columns
-        $userCols = [
+            'source_url' => 'TEXT',
+        ]);
+        self::addColumnsIfMissing($db, 'users', [
             'role' => 'TEXT DEFAULT "staff"',
             'permissions' => 'TEXT',
-            'display_name' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(users)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($userCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE users ADD COLUMN $col $type");
-        }
-        // Update default admin role
+            'display_name' => 'TEXT',
+        ]);
         $db->exec("UPDATE users SET role = 'admin' WHERE username = 'admin'");
-
-        // Categories columns (支持多级分类和类型区分)
-        $categoryCols = [
+        self::addColumnsIfMissing($db, 'product_categories', [
             'parent_id' => 'INTEGER DEFAULT 0',
             'type' => 'TEXT DEFAULT "product"',
             'sort_order' => 'INTEGER DEFAULT 0',
-            'description' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(product_categories)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($categoryCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE product_categories ADD COLUMN $col $type");
-        }
-
-        // Posts columns (添加分类支持和SEO)
-        $postCols = [
+            'description' => 'TEXT',
+        ]);
+        self::addColumnsIfMissing($db, 'posts', [
             'category_id' => 'INTEGER DEFAULT 0',
             'status' => 'TEXT DEFAULT "active"',
             'seo_title' => 'TEXT',
             'seo_keywords' => 'TEXT',
-            'seo_description' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(posts)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($postCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE posts ADD COLUMN $col $type");
-        }
-
-        // Products SEO columns
-        $productSeoCols = [
+            'seo_description' => 'TEXT',
+        ]);
+        self::addColumnsIfMissing($db, 'cases', [
             'seo_title' => 'TEXT',
             'seo_keywords' => 'TEXT',
-            'seo_description' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(products)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($productSeoCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE products ADD COLUMN $col $type");
-        }
-
-        // Cases SEO columns
-        $caseSeoCols = [
-            'seo_title' => 'TEXT',
-            'seo_keywords' => 'TEXT',
-            'seo_description' => 'TEXT'
-        ];
-        $res = $db->query("PRAGMA table_info(cases)");
-        $existing = [];
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) { $existing[] = $row['name']; }
-        foreach ($caseSeoCols as $col => $type) {
-            if (!in_array($col, $existing)) $db->exec("ALTER TABLE cases ADD COLUMN $col $type");
-        }
+            'seo_description' => 'TEXT',
+        ]);
     }
 
     private static function initSchema(SQLite3 $db): void {

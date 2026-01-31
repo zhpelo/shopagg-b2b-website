@@ -23,7 +23,7 @@ class Router {
         
         // 二级目录：去掉 base path 再匹配路由
         $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
-        if ($basePath !== '' && strpos($uri, $basePath) === 0) {
+        if ($basePath !== '' && str_starts_with($uri, $basePath)) {
             $uri = substr($uri, strlen($basePath)) ?: '/';
         }
         

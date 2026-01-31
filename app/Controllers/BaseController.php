@@ -96,9 +96,11 @@ abstract class BaseController extends Controller {
     }
 
     private function getCurrentUrl(): string {
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        return $scheme . '://' . $host . parse_url($uri, PHP_URL_PATH);
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $base = base_path();
+        if ($base !== '' && strpos($path, $base) === 0) {
+            $path = substr($path, strlen($base)) ?: '/';
+        }
+        return base_url() . ($path ?: '/');
     }
 }
