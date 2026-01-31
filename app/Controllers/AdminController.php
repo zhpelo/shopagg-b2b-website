@@ -44,7 +44,7 @@ class AdminController extends Controller {
             $path = substr($path, strlen($basePath)) ?: '/';
         }
         if ($path !== '/admin/login' && !isset($_SESSION['admin_user'])) {
-            $this->redirect('/admin/login');
+            $this->redirect( url('/admin/login'));
         }
 
         // Permission check
