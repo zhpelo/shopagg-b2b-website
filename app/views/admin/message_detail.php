@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/messages" class="button is-white is-outlined">
+            <a href="<?= url('/admin/messages') ?>" class="button is-white is-outlined">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -162,7 +162,7 @@
                 危险操作
             </div>
             
-            <a href="/admin/messages/delete?id=<?= $message['id'] ?>" 
+            <a href="<?= url('/admin/messages/delete?id=' . (int)$message['id']) ?>" 
                class="button is-danger is-outlined is-fullwidth"
                onclick="return confirm('确定要删除此留言吗？此操作不可恢复。')">
                 <span class="icon"><i class="fas fa-trash"></i></span>

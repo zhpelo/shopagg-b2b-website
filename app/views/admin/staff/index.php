@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/staff/create" class="button is-white">
+            <a href="<?= url('/admin/staff/create') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-user-plus"></i></span>
                 <span>新增员工</span>
             </a>
@@ -96,12 +96,12 @@
                     </td>
                     <td>
                         <div class="buttons are-small" style="gap: 0.5rem;">
-                            <a href="/admin/staff/edit?id=<?= $user['id'] ?>" class="button is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/admin/staff/edit?id=' . (int)$user['id']) ?>" class="button is-light" style="border-radius: 8px;">
                                 <span class="icon"><i class="fas fa-edit"></i></span>
                                 <span>编辑</span>
                             </a>
                             <?php if ($user['id'] !== (int)$_SESSION['admin_user_id']): ?>
-                            <a href="/admin/staff/delete?id=<?= $user['id'] ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该员工吗？此操作不可恢复。')">
+                            <a href="<?= url('/admin/staff/delete?id=' . (int)$user['id']) ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该员工吗？此操作不可恢复。')">
                                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
                             </a>
                             <?php endif; ?>

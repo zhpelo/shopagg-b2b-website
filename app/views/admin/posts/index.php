@@ -11,11 +11,11 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/post-categories" class="button is-white is-outlined mr-2">
+            <a href="<?= url('/admin/post-categories') ?>" class="button is-white is-outlined mr-2">
                 <span class="icon"><i class="fas fa-folder"></i></span>
                 <span>管理分类</span>
             </a>
-            <a href="/admin/posts/create" class="button is-white">
+            <a href="<?= url('/admin/posts/create') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-plus"></i></span>
                 <span>新建文章</span>
             </a>
@@ -29,7 +29,7 @@
     <div class="empty-state">
         <span class="icon"><i class="fas fa-file-alt"></i></span>
         <p>暂无博客文章</p>
-        <a href="/admin/posts/create" class="button is-success mt-4">
+        <a href="<?= url('/admin/posts/create') ?>" class="button is-success mt-4">
             <span class="icon"><i class="fas fa-plus"></i></span>
             <span>创建第一篇文章</span>
         </a>
@@ -101,14 +101,14 @@
                     </td>
                     <td>
                         <div class="buttons are-small" style="gap: 0.5rem;">
-                            <a href="/blog/<?= h($row['slug']) ?>" target="_blank" class="button is-info is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/blog/' . h($row['slug'])) ?>" target="_blank" class="button is-info is-light" style="border-radius: 8px;">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <a href="/admin/posts/edit?id=<?= (int)$row['id'] ?>" class="button is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/admin/posts/edit?id=' . (int)$row['id']) ?>" class="button is-light" style="border-radius: 8px;">
                                 <span class="icon"><i class="fas fa-edit"></i></span>
                                 <span>编辑</span>
                             </a>
-                            <a href="/admin/posts/delete?id=<?= (int)$row['id'] ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该文章吗？此操作不可恢复。')">
+                            <a href="<?= url('/admin/posts/delete?id=' . (int)$row['id']) ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该文章吗？此操作不可恢复。')">
                                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
                             </a>
                         </div>

@@ -32,7 +32,7 @@ $style = $status_styles[$inquiry['status']] ?? $status_styles['pending'];
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/inquiries" class="button is-white is-outlined">
+            <a href="<?= url('/admin/inquiries') ?>" class="button is-white is-outlined">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -204,22 +204,22 @@ $style = $status_styles[$inquiry['status']] ?? $status_styles['pending'];
             <div class="field">
                 <label class="label is-small has-text-grey mb-2">更改状态</label>
                 <div class="buttons">
-                    <a href="/admin/inquiries/status?id=<?= $inquiry['id'] ?>&status=pending&redirect=<?= urlencode('/admin/inquiries/detail?id=' . $inquiry['id']) ?>" 
+                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$inquiry['id'] . '&status=pending&redirect=' . urlencode(url('/admin/inquiries/detail?id=' . $inquiry['id']))) ?>" 
                        class="button is-small <?= $inquiry['status'] === 'pending' ? 'is-warning' : 'is-warning is-light' ?>">
                         <span class="icon"><i class="fas fa-clock"></i></span>
                         <span>待处理</span>
                     </a>
-                    <a href="/admin/inquiries/status?id=<?= $inquiry['id'] ?>&status=contacted&redirect=<?= urlencode('/admin/inquiries/detail?id=' . $inquiry['id']) ?>" 
+                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$inquiry['id'] . '&status=contacted&redirect=' . urlencode(url('/admin/inquiries/detail?id=' . $inquiry['id']))) ?>" 
                        class="button is-small <?= $inquiry['status'] === 'contacted' ? 'is-info' : 'is-info is-light' ?>">
                         <span class="icon"><i class="fas fa-phone"></i></span>
                         <span>已联系</span>
                     </a>
-                    <a href="/admin/inquiries/status?id=<?= $inquiry['id'] ?>&status=quoted&redirect=<?= urlencode('/admin/inquiries/detail?id=' . $inquiry['id']) ?>" 
+                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$inquiry['id'] . '&status=quoted&redirect=' . urlencode(url('/admin/inquiries/detail?id=' . $inquiry['id']))) ?>" 
                        class="button is-small <?= $inquiry['status'] === 'quoted' ? 'is-success' : 'is-success is-light' ?>">
                         <span class="icon"><i class="fas fa-file-invoice-dollar"></i></span>
                         <span>已报价</span>
                     </a>
-                    <a href="/admin/inquiries/status?id=<?= $inquiry['id'] ?>&status=closed&redirect=<?= urlencode('/admin/inquiries/detail?id=' . $inquiry['id']) ?>" 
+                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$inquiry['id'] . '&status=closed&redirect=' . urlencode(url('/admin/inquiries/detail?id=' . $inquiry['id']))) ?>" 
                        class="button is-small <?= $inquiry['status'] === 'closed' ? 'is-dark' : 'is-dark is-light' ?>">
                         <span class="icon"><i class="fas fa-check-circle"></i></span>
                         <span>已关闭</span>
@@ -250,7 +250,7 @@ $style = $status_styles[$inquiry['status']] ?? $status_styles['pending'];
                 <?php endif; ?>
                 
                 <?php if (!empty($inquiry['product_id'])): ?>
-                <a href="/admin/products/edit?id=<?= $inquiry['product_id'] ?>" class="button is-link is-light is-fullwidth">
+                <a href="<?= url('/admin/products/edit?id=' . (int)$inquiry['product_id']) ?>" class="button is-link is-light is-fullwidth">
                     <span class="icon"><i class="fas fa-box"></i></span>
                     <span>查看关联产品</span>
                 </a>
@@ -265,7 +265,7 @@ $style = $status_styles[$inquiry['status']] ?? $status_styles['pending'];
                 危险操作
             </div>
             
-            <a href="/admin/inquiries/delete?id=<?= $inquiry['id'] ?>" 
+            <a href="<?= url('/admin/inquiries/delete?id=' . (int)$inquiry['id']) ?>" 
                class="button is-danger is-outlined is-fullwidth"
                onclick="return confirm('确定要删除此询单吗？此操作不可恢复。')">
                 <span class="icon"><i class="fas fa-trash"></i></span>

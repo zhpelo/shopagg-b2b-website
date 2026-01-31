@@ -181,7 +181,7 @@
                             <button class="button is-primary is-light" onclick="copyToClipboard('<?= h($file['path']) ?>')" title="复制链接">
                                 <span class="icon"><i class="fas fa-copy"></i></span>
                             </button>
-                            <a class="button is-danger is-light" href="/admin/media/delete?path=<?= urlencode($file['path']) ?>" onclick="return confirm('确定要删除此图片吗？')" title="删除">
+                            <a class="button is-danger is-light" href="<?= url('/admin/media/delete?path=' . urlencode($file['path'])) ?>" onclick="return confirm('确定要删除此图片吗？')" title="删除">
                                 <span class="icon"><i class="fas fa-trash"></i></span>
                             </a>
                         </div>

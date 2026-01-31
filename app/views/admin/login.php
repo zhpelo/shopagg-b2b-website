@@ -34,7 +34,7 @@
         </form>
         
         <div class="login-footer">
-            <a href="/">
+            <a href="<?= url('/') ?>">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 返回网站首页
             </a>

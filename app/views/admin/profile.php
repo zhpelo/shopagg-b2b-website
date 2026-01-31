@@ -98,7 +98,7 @@
                         <span class="icon"><i class="fas fa-save"></i></span>
                         <span>保存修改</span>
                     </button>
-                    <a href="/admin" class="button is-light">
+                    <a href="<?= url('/admin') ?>" class="button is-light">
                         <span class="icon"><i class="fas fa-arrow-left"></i></span>
                         <span>返回仪表盘</span>
                     </a>

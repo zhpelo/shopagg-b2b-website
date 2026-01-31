@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/products" class="button is-white">
+            <a href="<?= url('/admin/products') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>

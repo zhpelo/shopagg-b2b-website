@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/products/create" class="button is-white">
+            <a href="<?= url('/admin/products/create') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-plus"></i></span>
                 <span>添加产品</span>
             </a>
@@ -25,7 +25,7 @@
     <div class="empty-state">
         <span class="icon"><i class="fas fa-box-open"></i></span>
         <p>暂无产品记录</p>
-        <a href="/admin/products/create" class="button is-primary mt-4">
+        <a href="<?= url('/admin/products/create') ?>" class="button is-primary mt-4">
             <span class="icon"><i class="fas fa-plus"></i></span>
             <span>添加第一个产品</span>
         </a>
@@ -98,14 +98,14 @@
                     </td>
                     <td>
                         <div class="buttons are-small" style="gap: 0.5rem;">
-                            <a href="/product/<?= h($row['slug']) ?>" target="_blank" class="button is-light" style="border-radius: 8px;" title="预览">
+                            <a href="<?= url('/product/' . h($row['slug'])) ?>" target="_blank" class="button is-light" style="border-radius: 8px;" title="预览">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <a href="/admin/products/edit?id=<?= (int)$row['id'] ?>" class="button is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/admin/products/edit?id=' . (int)$row['id']) ?>" class="button is-light" style="border-radius: 8px;">
                                 <span class="icon"><i class="fas fa-edit"></i></span>
                                 <span>编辑</span>
                             </a>
-                            <a href="/admin/products/delete?id=<?= (int)$row['id'] ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该产品吗？此操作不可恢复。')">
+                            <a href="<?= url('/admin/products/delete?id=' . (int)$row['id']) ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该产品吗？此操作不可恢复。')">
                                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
                             </a>
                         </div>

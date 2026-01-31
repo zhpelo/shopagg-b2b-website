@@ -27,7 +27,7 @@ $tabs = [
 <!-- 选项卡 -->
 <div class="modern-tabs animate-in delay-1" style="display: flex; flex-wrap: wrap;">
     <?php foreach ($tabs as $key => $info): ?>
-        <a href="/admin/settings?tab=<?= $key ?>" class="<?= $tab === $key ? 'is-active' : '' ?>">
+        <a href="<?= url('/admin/settings?tab=' . urlencode($key)) ?>" class="<?= $tab === $key ? 'is-active' : '' ?>">
             <span class="icon is-small mr-1"><i class="fas fa-<?= $info[1] ?>"></i></span>
             <?= $info[0] ?>
         </a>
@@ -654,7 +654,7 @@ $tabs = [
             <div class="level-right">
                 <div class="modern-tabs" style="margin-bottom: 0;">
                     <?php foreach ($available_langs as $l): ?>
-                        <a href="/admin/settings?tab=translations&lang=<?= h($l) ?>" class="<?= $current_edit_lang === $l ? 'is-active' : '' ?>">
+                        <a href="<?= url('/admin/settings?tab=translations&lang=' . urlencode($l)) ?>" class="<?= $current_edit_lang === $l ? 'is-active' : '' ?>">
                             <?= $l === 'zh' ? '中文' : ($l === 'en' ? 'English' : strtoupper($l)) ?>
                         </a>
                     <?php endforeach; ?>

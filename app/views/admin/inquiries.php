@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/inquiries/export" class="button is-white">
+            <a href="<?= url('/admin/inquiries/export') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-download"></i></span>
                 <span>导出 CSV</span>
             </a>
@@ -28,19 +28,19 @@
 
 <!-- 状态筛选 -->
 <div class="modern-tabs animate-in delay-1">
-    <a href="/admin/inquiries" class="<?= empty($current_status) ? 'is-active' : '' ?>">
+    <a href="<?= url('/admin/inquiries') ?>" class="<?= empty($current_status) ? 'is-active' : '' ?>">
         <span class="icon is-small mr-1"><i class="fas fa-list"></i></span>全部
     </a>
-    <a href="/admin/inquiries?status=pending" class="<?= $current_status === 'pending' ? 'is-active' : '' ?>">
+    <a href="<?= url('/admin/inquiries?status=pending') ?>" class="<?= $current_status === 'pending' ? 'is-active' : '' ?>">
         <span class="icon is-small mr-1"><i class="fas fa-clock"></i></span>待处理
     </a>
-    <a href="/admin/inquiries?status=contacted" class="<?= $current_status === 'contacted' ? 'is-active' : '' ?>">
+    <a href="<?= url('/admin/inquiries?status=contacted') ?>" class="<?= $current_status === 'contacted' ? 'is-active' : '' ?>">
         <span class="icon is-small mr-1"><i class="fas fa-phone"></i></span>已联系
     </a>
-    <a href="/admin/inquiries?status=quoted" class="<?= $current_status === 'quoted' ? 'is-active' : '' ?>">
+    <a href="<?= url('/admin/inquiries?status=quoted') ?>" class="<?= $current_status === 'quoted' ? 'is-active' : '' ?>">
         <span class="icon is-small mr-1"><i class="fas fa-file-invoice-dollar"></i></span>已报价
     </a>
-    <a href="/admin/inquiries?status=closed" class="<?= $current_status === 'closed' ? 'is-active' : '' ?>">
+    <a href="<?= url('/admin/inquiries?status=closed') ?>" class="<?= $current_status === 'closed' ? 'is-active' : '' ?>">
         <span class="icon is-small mr-1"><i class="fas fa-check-circle"></i></span>已关闭
     </a>
 </div>
@@ -134,7 +134,7 @@
                     </td>
                     <td>
                         <div class="buttons are-small">
-                            <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="button is-info is-light" title="查看详情">
+                            <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="button is-info is-light" title="查看详情">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
                         <div class="dropdown is-right is-hoverable">
@@ -145,25 +145,25 @@
                             </div>
                             <div class="dropdown-menu">
                                 <div class="dropdown-content">
-                                        <a href="/admin/inquiries/detail?id=<?= $row['id'] ?>" class="dropdown-item">
+                                        <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="dropdown-item">
                                             <span class="icon is-small has-text-info mr-2"><i class="fas fa-eye"></i></span>
                                             查看详情
                                         </a>
                                         <hr class="dropdown-divider">
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=contacted" class="dropdown-item">
+                                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=contacted') ?>" class="dropdown-item">
                                         <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
                                         标记为已联系
                                     </a>
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=quoted" class="dropdown-item">
+                                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=quoted') ?>" class="dropdown-item">
                                         <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
                                         标记为已报价
                                     </a>
-                                    <a href="/admin/inquiries/status?id=<?= $row['id'] ?>&status=closed" class="dropdown-item">
+                                    <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=closed') ?>" class="dropdown-item">
                                         <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
                                         标记为已关闭
                                     </a>
                                     <hr class="dropdown-divider">
-                                        <a href="/admin/inquiries/delete?id=<?= $row['id'] ?>" class="dropdown-item has-text-danger" onclick="return confirm('确定要删除此询单吗？')">
+                                        <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="dropdown-item has-text-danger" onclick="return confirm('确定要删除此询单吗？')">
                                             <span class="icon is-small mr-2"><i class="fas fa-trash"></i></span>
                                             删除询单
                                     </a>

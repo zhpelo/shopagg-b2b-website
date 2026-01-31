@@ -24,7 +24,7 @@
                     <i class="fas fa-check-circle mr-1"></i>
                     <?= $counts['active_products'] ?> 已上架
                 </div>
-                <a href="/admin/products" class="button is-small is-primary is-light mt-3">
+                <a href="<?= url('/admin/products') ?>" class="button is-small is-primary is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="stat-value"><?= $counts['cases'] ?></div>
                 <div class="stat-label">成功案例</div>
-                <a href="/admin/cases" class="button is-small is-info is-light mt-3">
+                <a href="<?= url('/admin/cases') ?>" class="button is-small is-info is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="stat-value"><?= $counts['posts'] ?></div>
                 <div class="stat-label">博客文章</div>
-                <a href="/admin/posts" class="button is-small is-success is-light mt-3">
+                <a href="<?= url('/admin/posts') ?>" class="button is-small is-success is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="stat-value"><?= $counts['categories'] ?></div>
                 <div class="stat-label">产品分类</div>
-                <a href="/admin/product-categories" class="button is-small is-warning is-light mt-3">
+                <a href="<?= url('/admin/product-categories') ?>" class="button is-small is-warning is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -92,7 +92,7 @@
                     <i class="fas fa-<?= $counts['today_messages'] > 0 ? 'arrow-up' : 'minus' ?> mr-1"></i>
                     今日 +<?= $counts['today_messages'] ?>
                 </div>
-                <a href="/admin/messages" class="button is-small is-danger is-light mt-3">
+                <a href="<?= url('/admin/messages') ?>" class="button is-small is-danger is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>查看</span>
                 </a>
@@ -109,7 +109,7 @@
                     <i class="fas fa-clock mr-1"></i>
                     <?= $counts['pending_inquiries'] ?> 待处理
                 </div>
-                <a href="/admin/inquiries" class="button is-small is-link is-light mt-3">
+                <a href="<?= url('/admin/inquiries') ?>" class="button is-small is-link is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -122,7 +122,7 @@
                 </div>
                 <div class="stat-value"><?= $counts['users'] ?></div>
                 <div class="stat-label">团队成员</div>
-                <a href="/admin/staff" class="button is-small is-dark is-light mt-3">
+                <a href="<?= url('/admin/staff') ?>" class="button is-small is-dark is-light mt-3">
                     <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
                     <span>管理</span>
                 </a>
@@ -296,7 +296,7 @@
     </div>
     <div class="columns is-multiline">
         <div class="column is-3-desktop is-6-tablet animate-in delay-1">
-            <a href="/admin/products/create" class="quick-action">
+            <a href="<?= url('/admin/products/create') ?>" class="quick-action">
                 <div class="action-icon has-background-primary-light has-text-primary">
                     <i class="fas fa-plus"></i>
                 </div>
@@ -307,7 +307,7 @@
             </a>
         </div>
         <div class="column is-3-desktop is-6-tablet animate-in delay-2">
-            <a href="/admin/posts/create" class="quick-action">
+            <a href="<?= url('/admin/posts/create') ?>" class="quick-action">
                 <div class="action-icon has-background-success-light has-text-success">
                     <i class="fas fa-edit"></i>
                 </div>
@@ -318,7 +318,7 @@
             </a>
         </div>
         <div class="column is-3-desktop is-6-tablet animate-in delay-3">
-            <a href="/admin/cases/create" class="quick-action">
+            <a href="<?= url('/admin/cases/create') ?>" class="quick-action">
                 <div class="action-icon has-background-info-light has-text-info">
                     <i class="fas fa-star"></i>
                 </div>
@@ -329,7 +329,7 @@
             </a>
         </div>
         <div class="column is-3-desktop is-6-tablet animate-in delay-4">
-            <a href="/admin/inquiries" class="quick-action">
+            <a href="<?= url('/admin/inquiries') ?>" class="quick-action">
                 <div class="action-icon has-background-danger-light has-text-danger">
                     <i class="fas fa-envelope-open-text"></i>
                 </div>

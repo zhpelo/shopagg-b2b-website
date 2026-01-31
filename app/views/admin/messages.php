@@ -84,10 +84,10 @@
                     </td>
                     <td>
                         <div class="buttons are-small">
-                            <a href="/admin/messages/detail?id=<?= $row['id'] ?>" class="button is-info is-light" title="查看详情">
+                            <a href="<?= url('/admin/messages/detail?id=' . (int)$row['id']) ?>" class="button is-info is-light" title="查看详情">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <a href="/admin/messages/delete?id=<?= $row['id'] ?>" class="button is-danger is-light" title="删除" onclick="return confirm('确定要删除此留言吗？')">
+                            <a href="<?= url('/admin/messages/delete?id=' . (int)$row['id']) ?>" class="button is-danger is-light" title="删除" onclick="return confirm('确定要删除此留言吗？')">
                                 <span class="icon"><i class="fas fa-trash"></i></span>
                             </a>
                         </div>

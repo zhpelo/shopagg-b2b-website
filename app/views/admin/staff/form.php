@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/staff" class="button is-white">
+            <a href="<?= url('/admin/staff') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -132,7 +132,7 @@
                     <span class="icon"><i class="fas fa-save"></i></span>
                     <span><?= isset($user) ? '保存修改' : '创建员工' ?></span>
                 </button>
-                <a href="/admin/staff" class="button is-light is-medium">
+                <a href="<?= url('/admin/staff') ?>" class="button is-light is-medium">
                     <span class="icon"><i class="fas fa-times"></i></span>
                     <span>取消</span>
                 </a>

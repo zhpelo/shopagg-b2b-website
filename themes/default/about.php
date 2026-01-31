@@ -162,7 +162,7 @@
             <div class="column is-3">
                 <div class="box is-shadowless" style="border: 1px solid #eee; position: sticky; top: 20px;">
                     <p class="has-text-weight-bold mb-3"><?= h(t('about_contact_provider')) ?></p>
-                    <button class="button is-danger is-fullwidth mb-3" onclick="location.href='/contact'"><?= h(t('btn_send_inquiry')) ?></button>
+                    <button class="button is-danger is-fullwidth mb-3" onclick="location.href='<?= url('/contact') ?>'"><?= h(t('btn_send_inquiry')) ?></button>
                     <?php
                         $waDigits = preg_replace('/\D+/', '', $site['whatsapp'] ?? '');
                     ?>

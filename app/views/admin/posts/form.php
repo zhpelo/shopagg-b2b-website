@@ -16,7 +16,7 @@ $categories = $categories ?? [];
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="/admin/posts" class="button is-white">
+            <a href="<?= url('/admin/posts') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -101,7 +101,7 @@ $categories = $categories ?? [];
                         </span>
                     </div>
                     <p class="help">
-                        <a href="/admin/post-categories" target="_blank" class="has-text-link">
+                        <a href="<?= url('/admin/post-categories') ?>" target="_blank" class="has-text-link">
                             <i class="fas fa-plus-circle"></i> 管理文章分类
                         </a>
                     </p>
@@ -128,7 +128,7 @@ $categories = $categories ?? [];
                         <span><?= $isEdit ? '保存修改' : '发布文章' ?></span>
                     </button>
                 </div>
-                <a href="/admin/posts" class="button is-light is-fullwidth">
+                <a href="<?= url('/admin/posts') ?>" class="button is-light is-fullwidth">
                     <span class="icon"><i class="fas fa-times"></i></span>
                     <span>取消</span>
                 </a>
