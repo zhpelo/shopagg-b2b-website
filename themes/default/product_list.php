@@ -10,7 +10,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
         $hasChildren = !empty($cat['children']);
         $paddingLeft = 1 + ($level * 1.2);
 ?>
-    <a href="/products?category=<?= (int)$cat['id'] ?>" 
+    <a href="<?= url('/products') ?>?category=<?= (int)$cat['id'] ?>" 
        class="panel-block <?= $isActive ? 'is-active' : '' ?>" 
        style="padding-left: <?= $paddingLeft ?>rem;">
         <?php if ($level > 0): ?>
@@ -36,9 +36,9 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
             <!-- 面包屑导航 -->
             <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
                 <ul>
-                    <li><a href="/"><?= h(t('nav_home')) ?></a></li>
+                    <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
                     <li class="<?= !$currentCategory ? 'is-active' : '' ?>">
-                        <a href="/products" <?= !$currentCategory ? 'aria-current="page"' : '' ?>><?= h(t('products')) ?></a>
+                        <a href="<?= url('/products') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>><?= h(t('products')) ?></a>
                     </li>
                     <?php if ($currentCategory): ?>
                     <li class="is-active"><a href="#" aria-current="page"><?= h($currentCategory['name']) ?></a></li>
@@ -69,7 +69,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                         <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
                         <?= h(t('product_categories') ?? '产品分类') ?>
                     </p>
-                    <a href="/products" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
+                    <a href="<?= url('/products') ?>" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
                         <span class="panel-icon">
                             <i class="fas fa-th-large" aria-hidden="true"></i>
                         </span>
@@ -88,7 +88,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                     <p class="mb-4 is-size-6" style="opacity: 0.9;">
                         <?= h(t('product_quote_desc') ?? '找到心仪的产品了吗？立即发送询单获取报价。') ?>
                     </p>
-                    <a href="/contact" class="button is-white is-outlined">
+                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
                         <span><?= h(t('nav_contact')) ?></span>
                     </a>
@@ -104,7 +104,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                     </span>
                     <p class="mt-4 has-text-grey"><?= h(t('product_no_items') ?? '暂无产品') ?></p>
                     <?php if ($currentCategory): ?>
-                    <a href="/products" class="button is-warning is-light mt-4">
+                    <a href="<?= url('/products') ?>" class="button is-warning is-light mt-4">
                         <span class="icon"><i class="fas fa-arrow-left"></i></span>
                         <span><?= h(t('product_view_all') ?? '查看所有产品') ?></span>
                     </a>
@@ -125,7 +125,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                 <div class="card-content" style="flex-grow: 1;">
                                     <div class="mb-2">
                                         <?php if (!empty($item['category_name'])): ?>
-                                        <a href="/products?category=<?= (int)$item['category_id'] ?>" class="tag is-warning is-light">
+                                        <a href="<?= url('/products') ?>?category=<?= (int)$item['category_id'] ?>" class="tag is-warning is-light">
                                             <?= h($item['category_name']) ?>
                                         </a>
                                         <?php else: ?>

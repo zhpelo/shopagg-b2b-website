@@ -12,7 +12,7 @@
       </div>
       <div class="column is-7">
         <div class="box soft-card">
-<form method="post" action="/contact">
+<form method="post" action="<?= url('/contact') ?>">
   <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             <div class="columns">
               <div class="column">

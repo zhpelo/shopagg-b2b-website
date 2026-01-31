@@ -29,6 +29,10 @@ abstract class Controller {
     }
 
     protected function redirect(string $url): void {
+        // 相对路径（以 / 开头且非协议）在二级目录下需加上 base path
+        if (strpos($url, 'http') !== 0 && strpos($url, '/') === 0 && function_exists('url')) {
+            $url = url($url);
+        }
         header("Location: $url");
         exit;
     }

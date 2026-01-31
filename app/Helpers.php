@@ -57,6 +57,19 @@ function csrf_check(): void {
     }
 }
 
+function base_path(): string {
+    return defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
+}
+
+/** 生成带 base path 的 URL，用于二级目录部署 */
+function url(string $path = ''): string {
+    $base = base_path();
+    if ($path === '' || $path === '/') {
+        return $base ?: '/';
+    }
+    return $base . ($path[0] === '/' ? $path : '/' . $path);
+}
+
 function lang_switch_url(string $lang): string {
     $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $query = $_GET;
@@ -71,7 +84,8 @@ function get_languages(): array {
 function base_url(): string {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    return $scheme . '://' . $host;
+    $base = base_path();
+    return $scheme . '://' . $host . $base;
 }
 
 function normalize_files_array(array $files): array {

@@ -10,7 +10,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
         $hasChildren = !empty($cat['children']);
         $paddingLeft = 1 + ($level * 1.2);
 ?>
-    <a href="/blog?category=<?= (int)$cat['id'] ?>" 
+    <a href="<?= url('/blog') ?>?category=<?= (int)$cat['id'] ?>" 
        class="panel-block <?= $isActive ? 'is-active' : '' ?>" 
        style="padding-left: <?= $paddingLeft ?>rem;">
         <?php if ($level > 0): ?>
@@ -34,9 +34,9 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
         <!-- 面包屑导航 -->
         <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
             <ul>
-                <li><a href="/"><?= h(t('nav_home')) ?></a></li>
+                <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
                 <li class="<?= !$currentCategory ? 'is-active' : '' ?>">
-                    <a href="/blog" <?= !$currentCategory ? 'aria-current="page"' : '' ?>><?= h(t('blog')) ?></a>
+                    <a href="<?= url('/blog') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>><?= h(t('blog')) ?></a>
                 </li>
                 <?php if ($currentCategory): ?>
                 <li class="is-active"><a href="#" aria-current="page"><?= h($currentCategory['name']) ?></a></li>
@@ -65,7 +65,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                     </span>
                     <p class="mt-4 has-text-grey"><?= h(t('post_no_articles') ?? '暂无文章') ?></p>
                     <?php if ($currentCategory): ?>
-                    <a href="/blog" class="button is-link is-light mt-4">
+                    <a href="<?= url('/blog') ?>" class="button is-link is-light mt-4">
                         <span class="icon"><i class="fas fa-arrow-left"></i></span>
                         <span><?= h(t('post_view_all') ?? '查看所有文章') ?></span>
                     </a>
@@ -92,7 +92,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                                             <?= format_date($item['created_at'], 'Y-m-d') ?>
                                         </span>
                                         <?php if (!empty($item['category_name'])): ?>
-                                        <a href="/blog?category=<?= (int)$item['category_id'] ?>" class="tag is-link is-light is-small">
+                                        <a href="<?= url('/blog') ?>?category=<?= (int)$item['category_id'] ?>" class="tag is-link is-light is-small">
                                             <?= h($item['category_name']) ?>
                                         </a>
                                         <?php endif; ?>
@@ -120,7 +120,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                         <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
                         <?= h(t('post_categories') ?? '文章分类') ?>
                     </p>
-                    <a href="/blog" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
+                    <a href="<?= url('/blog') ?>" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
                         <span class="panel-icon">
                             <i class="fas fa-list" aria-hidden="true"></i>
                         </span>
@@ -139,7 +139,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                     <p class="mb-4 is-size-6" style="opacity: 0.9;">
                         <?= h(t('post_contact_desc') ?? '如果您有任何问题，欢迎随时联系我们的专业团队。') ?>
                     </p>
-                    <a href="/contact" class="button is-white is-outlined">
+                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
                         <span><?= h(t('nav_contact')) ?></span>
                     </a>

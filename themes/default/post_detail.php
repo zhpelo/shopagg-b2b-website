@@ -6,10 +6,10 @@ $category = $category ?? null;
         <!-- 面包屑导航 -->
         <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
             <ul>
-                <li><a href="/"><?= h(t('nav_home')) ?></a></li>
-                <li><a href="/blog"><?= h(t('blog')) ?></a></li>
+                <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
+                <li><a href="<?= url('/blog') ?>"><?= h(t('blog')) ?></a></li>
                 <?php if ($category): ?>
-                <li><a href="/blog?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
+                <li><a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
                 <?php endif; ?>
                 <li class="is-active"><a href="#" aria-current="page"><?= h($item['title']) ?></a></li>
             </ul>
@@ -30,7 +30,7 @@ $category = $category ?? null;
                             </div>
                             <?php if ($category): ?>
                             <div class="level-item">
-                                <a href="/blog?category=<?= (int)$category['id'] ?>" class="tag is-link is-light">
+                                <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="tag is-link is-light">
                                     <span class="icon is-small"><i class="fas fa-folder"></i></span>
                                     <span><?= h($category['name']) ?></span>
                                 </a>
@@ -57,7 +57,7 @@ $category = $category ?? null;
                 <?php if ($category): ?>
                 <div class="mt-5 mb-5">
                     <span class="has-text-grey mr-2"><?= h(t('post_category_label') ?? '分类：') ?></span>
-                    <a href="/blog?category=<?= (int)$category['id'] ?>" class="tag is-medium is-link is-light">
+                    <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="tag is-medium is-link is-light">
                         <span class="icon is-small"><i class="fas fa-folder"></i></span>
                         <span><?= h($category['name']) ?></span>
                     </a>
@@ -69,18 +69,18 @@ $category = $category ?? null;
                     <div class="level">
                         <div class="level-left">
                             <?php if ($category): ?>
-                            <a href="/blog?category=<?= (int)$category['id'] ?>" class="button is-light mr-3">
+                            <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="button is-light mr-3">
                                 <span class="icon"><i class="fas fa-folder"></i></span>
                                 <span><?= h(t('post_more_in_category') ?? '更多同类文章') ?></span>
                             </a>
                             <?php endif; ?>
-                            <a href="/blog" class="button is-link is-light">
+                            <a href="<?= url('/blog') ?>" class="button is-link is-light">
                                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                                 <span><?= h(t('post_back_list')) ?></span>
                             </a>
                         </div>
                         <div class="level-right">
-                            <a href="/contact" class="button is-primary">
+                            <a href="<?= url('/contact') ?>" class="button is-primary">
                                 <span class="icon"><i class="fas fa-envelope"></i></span>
                                 <span><?= h(t('nav_contact')) ?></span>
                             </a>

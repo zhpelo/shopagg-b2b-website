@@ -21,6 +21,16 @@ session_start();
 date_default_timezone_set('UTC');
 mb_internal_encoding('UTF-8');
 
+// 二级目录支持：根据 index.php 所在目录自动检测 base path（根目录为空，子目录如 /b2bwebsite）
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+$basePath = rtrim(dirname($scriptName), '/');
+if ($basePath === '' || $basePath === '/') {
+    $basePath = '';
+} else {
+    $basePath = '/' . ltrim($basePath, '/');
+}
+define('APP_BASE_PATH', $basePath);
+
 // Simple PSR-4 Autoloader
 spl_autoload_register(function ($class) {
     $prefix = 'App\\';

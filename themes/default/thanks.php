@@ -14,8 +14,8 @@
             <p class="is-size-7"><strong><?= h(t('thanks_expected')) ?></strong></p>
           </div>
           <div class="buttons is-centered mt-6">
-            <a class="button is-link" href="/"><?= h(t('btn_back_home')) ?></a>
-            <a class="button is-light" href="/products"><?= h(t('btn_view_more')) ?></a>
+            <a class="button is-link" href="<?= url('/') ?>"><?= h(t('btn_back_home')) ?></a>
+            <a class="button is-light" href="<?= url('/products') ?>"><?= h(t('btn_view_more')) ?></a>
           </div>
         </div>
       </div>

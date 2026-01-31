@@ -13,10 +13,10 @@ use App\Models\Inquiry;
 class SiteController extends BaseController {
     public function home(): void {
         $products = (new Product())->getList(6, true);  // 只获取已上架产品
-        foreach ($products as &$p) $p['url'] = '/product/' . $p['slug'];
+        foreach ($products as &$p) $p['url'] = url('/product/' . $p['slug']);
         
         $cases = (new CaseModel())->getList(6);
-        foreach ($cases as &$c) $c['url'] = '/case/' . $c['slug'];
+        foreach ($cases as &$c) $c['url'] = url('/case/' . $c['slug']);
         
         // 首页使用全局 SEO 设置
         $this->renderSite('home', [
@@ -44,7 +44,7 @@ class SiteController extends BaseController {
         } else {
             $items = $productModel->getList(0, true);  // 只获取已上架产品
         }
-        foreach ($items as &$i) $i['url'] = '/product/' . $i['slug'];
+        foreach ($items as &$i) $i['url'] = url('/product/' . $i['slug']);
         
         // 获取分类列表
         $categories = $categoryModel->getTree('product');
@@ -91,7 +91,7 @@ class SiteController extends BaseController {
 
     public function cases(): void {
         $items = (new CaseModel())->getList();
-        foreach ($items as &$i) $i['url'] = '/case/' . $i['slug'];
+        foreach ($items as &$i) $i['url'] = url('/case/' . $i['slug']);
         $this->renderSite('case_list', [
             'title' => t('cases'),
             'items' => $items,
@@ -126,7 +126,7 @@ class SiteController extends BaseController {
         } else {
             $items = $postModel->getList(0, true);  // 只获取已发布文章
         }
-        foreach ($items as &$i) $i['url'] = '/blog/' . $i['slug'];
+        foreach ($items as &$i) $i['url'] = url('/blog/' . $i['slug']);
         
         // 获取分类列表（带文章数量）
         $categories = $categoryModel->getTree('post');

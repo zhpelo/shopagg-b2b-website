@@ -6,10 +6,10 @@ $category = $category ?? null;
     <!-- 面包屑导航 -->
     <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
         <ul>
-            <li><a href="/"><?= h(t('nav_home')) ?></a></li>
-            <li><a href="/products"><?= h(t('products')) ?></a></li>
+            <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
+            <li><a href="<?= url('/products') ?>"><?= h(t('products')) ?></a></li>
             <?php if ($category): ?>
-            <li><a href="/products?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
+            <li><a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
             <?php endif; ?>
             <li class="is-active"><a href="#" aria-current="page"><?= h($item['title']) ?></a></li>
         </ul>
@@ -53,7 +53,7 @@ $category = $category ?? null;
               <?= format_date($item['created_at'], 'Y-m-d') ?>
             </span>
             <?php if ($category): ?>
-            <a href="/products?category=<?= (int)$category['id'] ?>" class="tag is-warning is-light">
+            <a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" class="tag is-warning is-light">
               <span class="icon is-small"><i class="fas fa-folder"></i></span>
               <span><?= h($category['name']) ?></span>
             </a>
@@ -120,7 +120,7 @@ $category = $category ?? null;
           <!-- 同类产品链接 -->
           <?php if ($category): ?>
           <div class="mt-5 pt-4" style="border-top: 1px solid #f0f0f0;">
-            <a href="/products?category=<?= (int)$category['id'] ?>" class="button is-warning is-light is-small">
+            <a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" class="button is-warning is-light is-small">
               <span class="icon"><i class="fas fa-folder"></i></span>
               <span><?= h(t('product_more_in_category') ?? '更多同类产品') ?></span>
             </a>
@@ -159,7 +159,7 @@ $category = $category ?? null;
           </div>
           <div class="column is-8-desktop is-12-mobile">
             <h2 class="title is-4 is-hidden-tablet"><?= h(t('cta_quote')) ?></h2>
-        <form method="post" action="/inquiry">
+        <form method="post" action="<?= url('/inquiry') ?>">
           <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
           <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
               

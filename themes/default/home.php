@@ -11,8 +11,8 @@
             <?= h(($site['company_bio'] ?? '') ?: h(t('home_ready_desc'))) ?>
           </p>
           <div class="buttons">
-            <a class="button is-link is-large px-6" href="/products"><?= h(t('nav_products')) ?></a>
-            <a class="button is-white is-outlined is-large px-6" href="/contact"><?= h(t('nav_contact')) ?></a>
+            <a class="button is-link is-large px-6" href="<?= url('/products') ?>"><?= h(t('nav_products')) ?></a>
+            <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
         </div>
       </div>
       <div class="level-right">
-        <a class="button is-link is-light" href="/products"><?= h(t('btn_view_all')) ?> &rarr;</a>
+        <a class="button is-link is-light" href="<?= url('/products') ?>"><?= h(t('btn_view_all')) ?> &rarr;</a>
       </div>
     </div>
     
@@ -112,7 +112,7 @@
             <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_rd')) ?></li>
           </ul>
         </div>
-        <a href="/about" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
+        <a href="<?= url('/about') ?>" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
       </div>
       <div class="column is-6">
         <figure class="image is-16by9 box p-0 overflow-hidden soft-card">
@@ -158,7 +158,7 @@
       <h2 class="title is-3 has-text-white mb-4"><?= h(t('home_ready_title')) ?></h2>
       <p class="subtitle is-5 has-text-grey-light mb-6"><?= h(t('home_ready_desc')) ?></p>
       <div class="buttons is-centered">
-        <a href="/contact" class="button is-white is-large px-6"><?= h(t('cta_quote')) ?></a>
+        <a href="<?= url('/contact') ?>" class="button is-white is-large px-6"><?= h(t('cta_quote')) ?></a>
         <?php
           $wa = $site['whatsapp'] ?? '';
           $waDigits = preg_replace('/\D+/', '', $wa);

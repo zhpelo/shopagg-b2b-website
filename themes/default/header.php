@@ -37,7 +37,7 @@
 <nav class="navbar is-white is-spaced" role="navigation">
   <div class="container">
     <div class="navbar-brand">
-      <a href="/">
+      <a href="<?= url('/') ?>">
       <div class="navbar-logo">
           <?php if (!empty($site['logo'])): ?>
           <img src="<?= h($site['logo']) ?>" alt="<?= h($site['name']) ?>" style="height: 36px; max-height: 36px;">
@@ -55,12 +55,12 @@
     </div>
     <div id="main-nav" class="navbar-menu">
       <div class="navbar-end">
-        <a class="navbar-item" href="/"><?= h(t('nav_home')) ?></a>
-        <a class="navbar-item" href="/products"><?= h(t('nav_products')) ?></a>
-        <a class="navbar-item" href="/cases"><?= h(t('nav_cases')) ?></a>
-        <a class="navbar-item" href="/blog"><?= h(t('nav_blog')) ?></a>
-        <a class="navbar-item" href="/contact"><?= h(t('nav_contact')) ?></a>
-        <a class="navbar-item" href="/about"><?= h(t('nav_about')) ?></a>
+        <a class="navbar-item" href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a>
+        <a class="navbar-item" href="<?= url('/products') ?>"><?= h(t('nav_products')) ?></a>
+        <a class="navbar-item" href="<?= url('/cases') ?>"><?= h(t('nav_cases')) ?></a>
+        <a class="navbar-item" href="<?= url('/blog') ?>"><?= h(t('nav_blog')) ?></a>
+        <a class="navbar-item" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
+        <a class="navbar-item" href="<?= url('/about') ?>"><?= h(t('nav_about')) ?></a>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"><?= h($languages[$lang] ?? $lang) ?></a>
           <div class="navbar-dropdown">
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="navbar-item">
-          <a class="button is-link" href="/contact"><?= h(t('cta_quote')) ?></a>
+          <a class="button is-link" href="<?= url('/contact') ?>"><?= h(t('cta_quote')) ?></a>
         </div>
       </div>
     </div>

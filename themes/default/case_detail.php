@@ -39,13 +39,13 @@
                     <hr>
                     <div class="content">
                         <p class="is-size-7 has-text-grey"><?= h(t('case_interest')) ?></p>
-                        <a href="/contact" class="button is-link is-fullwidth"><?= h(t('cta_quote')) ?></a>
+                        <a href="<?= url('/contact') ?>" class="button is-link is-fullwidth"><?= h(t('cta_quote')) ?></a>
                     </div>
                 </div>
 
                 <!-- 分享/返回 -->
                 <div class="mt-4">
-                    <a href="/cases" class="button is-fullwidth is-light"><?= h(t('case_back_list')) ?></a>
+                    <a href="<?= url('/cases') ?>" class="button is-fullwidth is-light"><?= h(t('case_back_list')) ?></a>
                 </div>
             </div>
         </div>

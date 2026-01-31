@@ -21,9 +21,18 @@ class Router {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         
+        // 二级目录：去掉 base path 再匹配路由
+        $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
+        if ($basePath !== '' && strpos($uri, $basePath) === 0) {
+            $uri = substr($uri, strlen($basePath)) ?: '/';
+        }
+        
         // Support index.php?r=/path
-        if ($uri === '/index.php' && isset($_GET['r'])) {
+        if (($uri === '/index.php' || $uri === '') && isset($_GET['r'])) {
             $uri = '/' . ltrim((string)$_GET['r'], '/');
+        }
+        if ($uri === '') {
+            $uri = '/';
         }
 
         foreach ($this->routes as $route) {

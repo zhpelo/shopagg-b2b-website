@@ -13,6 +13,10 @@
 <body class="<?= ($showNav ?? true) ? '' : 'login-page' ?>">
     <?php if ($showNav ?? true): 
     $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $basePath = base_path();
+    if ($basePath !== '' && strpos($current_path, $basePath) === 0) {
+        $current_path = substr($current_path, strlen($basePath)) ?: '/';
+    }
     $active_group = '';
     if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/product-categories')) $active_group = 'catalog';
     elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
@@ -30,7 +34,7 @@
     <nav class="navbar is-white admin-navbar" role="navigation" aria-label="main navigation">
         <div class="container">
             <div class="navbar-brand">
-                <a class="logo-link" href="/admin" style="padding: 0.5rem;">
+                <a class="logo-link" href="<?= url('/admin') ?>" style="padding: 0.5rem;">
                     <img src="https://www.shopagg.com/wp-content/uploads/2024/12/shopagg-logo-b.png" alt="logo" style="height: 36px; max-height: 36px;">
                 </a>
                 <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="adminNavbar">
@@ -42,33 +46,33 @@
 
             <div id="adminNavbar" class="navbar-menu ml-6">
                 <div class="navbar-start">
-                    <a class="navbar-item <?= $current_path === '/admin' ? 'is-active' : '' ?>" href="/admin">
+                    <a class="navbar-item <?= $current_path === '/admin' ? 'is-active' : '' ?>" href="<?= url('/admin') ?>">
                         <span class="icon mr-1"><i class="fas fa-home"></i></span>仪表盘
                     </a>
                     <?php if ($can_access('inbox')): ?>
-                    <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="/admin/messages">
+                    <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="<?= url('/admin/messages') ?>">
                         <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
                     </a>
                     <?php endif; ?>
                     <?php if ($can_access('products')): ?>
-                    <a class="navbar-item <?= $active_group === 'catalog' ? 'is-active' : '' ?>" href="/admin/products">
+                    <a class="navbar-item <?= $active_group === 'catalog' ? 'is-active' : '' ?>" href="<?= url('/admin/products') ?>">
                         <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
                     </a>
                     <?php endif; ?>
                     <?php if ($can_access('blog') || $can_access('cases')): ?>
-                    <a class="navbar-item <?= $active_group === 'content' ? 'is-active' : '' ?>" href="/admin/posts">
+                    <a class="navbar-item <?= $active_group === 'content' ? 'is-active' : '' ?>" href="<?= url('/admin/posts') ?>">
                         <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                     </a>
                     <?php endif; ?>
                     
                     <?php if ($user_role === 'admin'): ?>
-                    <a class="navbar-item <?= $active_group === 'staff' ? 'is-active' : '' ?>" href="/admin/staff">
+                    <a class="navbar-item <?= $active_group === 'staff' ? 'is-active' : '' ?>" href="<?= url('/admin/staff') ?>">
                         <span class="icon mr-1"><i class="fas fa-users"></i></span>员工管理
                     </a>
                     <?php endif; ?>
 
                     <?php if ($can_access('settings')): ?>
-                    <a class="navbar-item <?= $current_path === '/admin/settings' ? 'is-active' : '' ?>" href="/admin/settings">
+                    <a class="navbar-item <?= $current_path === '/admin/settings' ? 'is-active' : '' ?>" href="<?= url('/admin/settings') ?>">
                         <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
                     </a>
                     <?php endif; ?>
@@ -81,14 +85,14 @@
                             <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
                         </a>
                         <div class="navbar-dropdown is-right">
-                            <a class="navbar-item" href="/admin/profile">
+                            <a class="navbar-item" href="<?= url('/admin/profile') ?>">
                                 <span class="icon mr-2"><i class="fas fa-id-card"></i></span>个人资料
                             </a>
-                            <a class="navbar-item" href="/" target="_blank">
+                            <a class="navbar-item" href="<?= url('/') ?>" target="_blank">
                                 <span class="icon mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
                             </a>
                             <hr class="navbar-divider">
-                            <a class="navbar-item has-text-danger" href="/admin/logout">
+                            <a class="navbar-item has-text-danger" href="<?= url('/admin/logout') ?>">
                                 <span class="icon mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
                             </a>
                         </div>
@@ -103,37 +107,37 @@
     <nav class="admin-subnav">
         <div class="container admin-subnav-container">
             <?php if ($active_group === 'catalog'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'is-active' : '' ?>" href="/admin/products">
+                <a class="navbar-item <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'is-active' : '' ?>" href="<?= url('/admin/products') ?>">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>产品列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/product-categories') ? 'is-active' : '' ?>" href="/admin/product-categories">
+                <a class="navbar-item <?= str_contains($current_path, '/admin/product-categories') ? 'is-active' : '' ?>" href="<?= url('/admin/product-categories') ?>">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>产品分类
                 </a>
             <?php elseif ($active_group === 'content'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'is-active' : '' ?>" href="/admin/posts">
+                <a class="navbar-item <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'is-active' : '' ?>" href="<?= url('/admin/posts') ?>">
                     <span class="icon mr-1"><i class="fas fa-newspaper"></i></span>文章管理
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/post-categories') ? 'is-active' : '' ?>" href="/admin/post-categories">
+                <a class="navbar-item <?= str_contains($current_path, '/admin/post-categories') ? 'is-active' : '' ?>" href="<?= url('/admin/post-categories') ?>">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>文章分类
                 </a>
-                <a class="navbar-item <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'is-active' : '' ?>" href="/admin/cases">
+                <a class="navbar-item <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'is-active' : '' ?>" href="<?= url('/admin/cases') ?>">
                     <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/media') ? 'is-active' : '' ?>" href="/admin/media">
+                <a class="navbar-item <?= str_contains($current_path, '/admin/media') ? 'is-active' : '' ?>" href="<?= url('/admin/media') ?>">
                     <span class="icon mr-1"><i class="fas fa-photo-video"></i></span>媒体库
                 </a>
             <?php elseif ($active_group === 'inbox'): ?>
-                <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="/admin/messages">
+                <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="<?= url('/admin/messages') ?>">
                     <span class="icon mr-1"><i class="fas fa-comment-dots"></i></span>联系留言
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/inquiries') ? 'is-active' : '' ?>" href="/admin/inquiries">
+                <a class="navbar-item <?= str_contains($current_path, '/inquiries') ? 'is-active' : '' ?>" href="<?= url('/admin/inquiries') ?>">
                     <span class="icon mr-1"><i class="fas fa-file-invoice"></i></span>询单管理
                 </a>
             <?php elseif ($active_group === 'staff'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/staff' ? 'is-active' : '' ?>" href="/admin/staff">
+                <a class="navbar-item <?= $current_path === '/admin/staff' ? 'is-active' : '' ?>" href="<?= url('/admin/staff') ?>">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>员工列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/create') ? 'is-active' : '' ?>" href="/admin/staff/create">
+                <a class="navbar-item <?= str_contains($current_path, '/create') ? 'is-active' : '' ?>" href="<?= url('/admin/staff/create') ?>">
                     <span class="icon mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                 </a>
             <?php endif; ?>
