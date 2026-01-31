@@ -1,8 +1,14 @@
 <section class="hero is-info is-bold brand-gradient">
     <div class="hero-body">
         <div class="container">
-            <h1 class="title"><?= h($title) ?></h1>
-            <p class="subtitle mt-2"><?= h(t('case_interest')) ?></p>
+            <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+                <ul>
+                    <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
+                    <li class="is-active"><a href="<?= url('/cases') ?>" aria-current="page"><?= h(t('cases')) ?></a></li>
+                </ul>
+            </nav>
+            <h1 class="title is-3"><?= h($title) ?></h1>
+            <p class="subtitle is-6 mt-2"><?= h(t('case_interest')) ?></p>
         </div>
     </div>
 </section>

@@ -30,7 +30,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
 ?>
 
 <!-- 产品列表顶部 Hero -->
-<section class="hero is-light is-small">
+<section class="hero is-danger">
     <div class="hero-body">
         <div class="container">
             <!-- 面包屑导航 -->
