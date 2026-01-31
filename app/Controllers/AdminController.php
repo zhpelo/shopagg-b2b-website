@@ -37,8 +37,12 @@ class AdminController extends Controller {
         $this->messageModel = new Message();
         $this->userModel = new User();
         
-        // Auth check
+        // Auth check（兼容子目录：先去掉 base path 再比较）
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
+        if ($basePath !== '' && strpos($path, $basePath) === 0) {
+            $path = substr($path, strlen($basePath)) ?: '/';
+        }
         if ($path !== '/admin/login' && !isset($_SESSION['admin_user'])) {
             $this->redirect('/admin/login');
         }
