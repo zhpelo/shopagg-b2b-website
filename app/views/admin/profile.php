@@ -38,7 +38,7 @@
 
     <!-- 右侧：编辑表单 -->
     <div class="column is-8 animate-in delay-2">
-        <form method="post" action="/admin/profile/update" class="modern-form">
+        <form method="post" action="<?= url('/admin/profile/update') ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             
             <div class="admin-card" style="padding: 2rem;">

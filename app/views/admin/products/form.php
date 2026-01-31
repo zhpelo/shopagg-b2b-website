@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<form method="post" action="<?= h($action) ?>" enctype="multipart/form-data" id="product-form" class="modern-form">
+<form method="post" action="<?= h(url($action)) ?>" enctype="multipart/form-data" id="product-form" class="modern-form">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
     <div class="columns">

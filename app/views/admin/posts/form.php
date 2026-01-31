@@ -24,7 +24,7 @@ $categories = $categories ?? [];
     </div>
 </div>
 
-<form method="post" action="<?= h($action) ?>" class="modern-form">
+<form method="post" action="<?= h(url($action)) ?>" class="modern-form">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
     <div class="columns">

@@ -34,7 +34,7 @@ $tabs = [
     <?php endforeach; ?>
 </div>
 
-<form method="post" action="/admin/settings" class="modern-form">
+<form method="post" action="<?= url('/admin/settings') ?>" class="modern-form">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="tab" value="<?= h($tab) ?>">
 

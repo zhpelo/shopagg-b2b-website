@@ -34,7 +34,7 @@ $currentId = (int)($category['id'] ?? 0);
 
 <div class="columns">
     <div class="column is-7 animate-in delay-1">
-        <form method="post" action="<?= h($action) ?>" class="modern-form">
+        <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             
             <div class="admin-card" style="padding: 2rem;">
