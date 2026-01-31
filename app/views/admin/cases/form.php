@@ -21,7 +21,7 @@ $isEdit = isset($item);
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="<?= h(dirname($action)) ?>" class="button is-white">
+            <a href="<?= url('/admin/cases') ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -86,6 +86,31 @@ $isEdit = isset($item);
         </div>
 
         <div class="column is-4">
+            <!-- 封面图片 -->
+            <div class="admin-card mb-5 animate-in delay-1" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-image"></i></span>
+                    封面图片
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input type="hidden" name="cover" id="case-cover-input" value="<?= h($item['cover'] ?? '') ?>">
+                        <div id="case-cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
+                            <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
+                                <img id="case-cover-preview" src="<?= h($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+                            </figure>
+                            <button type="button" id="case-cover-clear-btn" class="button is-small is-light is-danger mt-2">清除封面</button>
+                        </div>
+                        <div class="buttons">
+                            <button type="button" id="case-cover-select-btn" class="button is-light">
+                                <span class="icon"><i class="fas fa-image"></i></span>
+                                <span>从媒体库选择</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 发布 -->
             <div class="admin-card mb-5 animate-in delay-1" style="padding: 1.5rem;">
                 <div class="section-title" style="font-size: 1rem;">
@@ -105,7 +130,7 @@ $isEdit = isset($item);
                     <span><?= $isEdit ? '保存修改' : '发布' . h($label) ?></span>
                 </button>
                 
-                <a href="<?= h(dirname($action)) ?>" class="button is-light is-fullwidth mt-2">
+                <a href="<?= url('/admin/cases') ?>" class="button is-light is-fullwidth mt-2">
                     <span class="icon"><i class="fas fa-times"></i></span>
                     <span>取消</span>
                 </a>
@@ -157,3 +182,31 @@ $isEdit = isset($item);
         </div>
     </div>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var coverInput = document.getElementById('case-cover-input');
+    var coverPreview = document.getElementById('case-cover-preview');
+    var coverPreviewWrap = document.getElementById('case-cover-preview-wrap');
+    var coverSelectBtn = document.getElementById('case-cover-select-btn');
+    var coverClearBtn = document.getElementById('case-cover-clear-btn');
+    if (coverInput && coverSelectBtn) {
+        coverSelectBtn.addEventListener('click', function() {
+            if (typeof openMediaLibrary === 'function') {
+                openMediaLibrary(function(url) {
+                    coverInput.value = url;
+                    if (coverPreview) coverPreview.src = url;
+                    if (coverPreviewWrap) coverPreviewWrap.classList.remove('is-hidden');
+                }, false);
+            }
+        });
+    }
+    if (coverClearBtn && coverInput && coverPreview && coverPreviewWrap) {
+        coverClearBtn.addEventListener('click', function() {
+            coverInput.value = '';
+            coverPreview.src = '';
+            coverPreviewWrap.classList.add('is-hidden');
+        });
+    }
+});
+</script>

@@ -54,8 +54,11 @@
                 <tr>
                     <td>
                         <div class="is-flex is-align-items-center">
-                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #00d1b2 0%, #48c774 100%); border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <?php $cover = $row['cover'] ?? ''; ?>
+                            <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . h($cover) . ') center/cover' : 'linear-gradient(135deg, #00d1b2 0%, #48c774 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                <?php if (!$cover): ?>
                                 <span class="icon has-text-white"><i class="fas fa-file-alt"></i></span>
+                                <?php endif; ?>
                             </div>
                             <div>
                                 <strong><?= h($row['title']) ?></strong>

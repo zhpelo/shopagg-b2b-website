@@ -120,6 +120,25 @@ $categories = $categories ?? [];
                     </div>
                 </div>
 
+                <div class="field">
+                    <label class="label">封面图片</label>
+                    <div class="control">
+                        <input type="hidden" name="cover" id="cover-input" value="<?= h($item['cover'] ?? '') ?>">
+                        <div id="cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
+                            <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
+                                <img id="cover-preview" src="<?= h($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+                            </figure>
+                            <button type="button" id="cover-clear-btn" class="button is-small is-light is-danger mt-2">清除封面</button>
+                        </div>
+                        <div class="buttons">
+                            <button type="button" id="post-cover-select-btn" class="button is-light">
+                                <span class="icon"><i class="fas fa-image"></i></span>
+                                <span>从媒体库选择</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <hr style="margin: 1.5rem 0;">
                 
                 <div class="buttons">
@@ -181,43 +200,39 @@ $categories = $categories ?? [];
     </div>
 </form>
 
-<!-- Quill Editor -->
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var quill = new Quill('#editor-container', {
-        theme: 'snow',
-        placeholder: '开始撰写文章内容...',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'align': [] }],
-                ['blockquote', 'code-block'],
-                ['link', 'image'],
-                ['clean']
-            ]
-        }
-    });
+    // Quill 由 layout 统一初始化在 #quill-editor，此处仅做封面等本页逻辑
 
-    // 设置初始内容
-    var initialContent = <?= json_encode($item['content'] ?? '') ?>;
-    if (initialContent) {
-        quill.root.innerHTML = initialContent;
+    // 封面：从媒体库选择（单选）
+    var coverInput = document.getElementById('cover-input');
+    var coverPreview = document.getElementById('cover-preview');
+    var coverPreviewWrap = document.getElementById('cover-preview-wrap');
+    var coverSelectBtn = document.getElementById('post-cover-select-btn');
+    var coverClearBtn = document.getElementById('cover-clear-btn');
+    if (coverInput && coverSelectBtn) {
+        coverSelectBtn.addEventListener('click', function() {
+            if (typeof openMediaLibrary === 'function') {
+                openMediaLibrary(function(url) {
+                    coverInput.value = url;
+                    if (coverPreview) coverPreview.src = url;
+                    if (coverPreviewWrap) coverPreviewWrap.classList.remove('is-hidden');
+                }, false);
+            }
+        });
     }
-
-    // 表单提交时同步内容
-    document.querySelector('form').addEventListener('submit', function() {
-        document.getElementById('content-input').value = quill.root.innerHTML;
-    });
+    if (coverClearBtn && coverInput && coverPreview && coverPreviewWrap) {
+        coverClearBtn.addEventListener('click', function() {
+            coverInput.value = '';
+            coverPreview.src = '';
+            coverPreviewWrap.classList.add('is-hidden');
+        });
+    }
 });
 </script>
 
 <style>
-#editor-container {
+#quill-editor {
     font-size: 16px;
     line-height: 1.8;
 }

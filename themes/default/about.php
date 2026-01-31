@@ -177,8 +177,3 @@
         </div>
     </div>
 </section>
-
-<style>
-.table.is-borderless td, .table.is-borderless th { border: none; }
-.tabs.is-boxed li.is-active a { background-color: #fff; border-bottom-color: #d65a53; border-bottom-width: 2px; color: #333; font-weight: bold; }
-</style>

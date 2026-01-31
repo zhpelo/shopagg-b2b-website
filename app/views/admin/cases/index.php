@@ -58,8 +58,11 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
                 <tr>
                     <td>
                         <div class="is-flex is-align-items-center">
-                            <div style="width: 44px; height: 44px; background: <?= $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <?php $cover = $row['cover'] ?? ''; ?>
+                            <div style="width: 44px; height: 44px; background: <?= $cover ? 'url(' . h($cover) . ') center/cover' : $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                <?php if (!$cover): ?>
                                 <span class="icon has-text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
+                                <?php endif; ?>
                             </div>
                             <div>
                                 <strong><?= h($row['title']) ?></strong>

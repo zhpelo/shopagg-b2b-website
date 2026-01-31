@@ -24,11 +24,12 @@ class PostModel extends BaseModel {
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO posts (title, slug, summary, content, category_id, status, seo_title, seo_keywords, seo_description, created_at, updated_at) VALUES (:t, :s, :sum, :c, :cid, :st, :seot, :seok, :seod, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO posts (title, slug, summary, content, cover, category_id, status, seo_title, seo_keywords, seo_description, created_at, updated_at) VALUES (:t, :s, :sum, :c, :cover, :cid, :st, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
+        $stmt->bindValue(':cover', $data['cover'] ?? '');
         $stmt->bindValue(':cid', (int)($data['category_id'] ?? 0));
         $stmt->bindValue(':st', $data['status'] ?? 'active');
         $stmt->bindValue(':seot', $data['seo_title'] ?? '');
@@ -41,11 +42,12 @@ class PostModel extends BaseModel {
     }
 
     public function update(int $id, array $data): void {
-        $stmt = $this->db->prepare("UPDATE posts SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE posts SET title=:t, slug=:s, summary=:sum, content=:c, cover=:cover, category_id=:cid, status=:st, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
+        $stmt->bindValue(':cover', $data['cover'] ?? '');
         $stmt->bindValue(':cid', (int)($data['category_id'] ?? 0));
         $stmt->bindValue(':st', $data['status'] ?? 'active');
         $stmt->bindValue(':seot', $data['seo_title'] ?? '');

@@ -637,11 +637,11 @@ class AdminController extends Controller {
     // --- Cases ---
     public function caseList(): void {
         $items = $this->caseModel->getList();
-        $this->renderAdmin('案例管理', $this->renderView('admin/crud/index', ['items' => $items, 'label' => '案例', 'base' => '/admin/cases']));
+        $this->renderAdmin('案例管理', $this->renderView('admin/cases/index', ['items' => $items, 'label' => '案例', 'base' => '/admin/cases']));
     }
 
     public function caseCreate(): void {
-        $this->renderAdmin('新建案例', $this->renderView('admin/crud/form', ['action' => '/admin/cases/create', 'label' => '案例']));
+        $this->renderAdmin('新建案例', $this->renderView('admin/cases/form', ['action' => '/admin/cases/create', 'label' => '案例']));
     }
 
     public function caseStore(): void {
@@ -655,7 +655,7 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $item = $this->caseModel->getById($id);
         if (!$item) $this->redirect('/admin/cases');
-        $this->renderAdmin('编辑案例', $this->renderView('admin/crud/form', ['action' => '/admin/cases/edit?id='.$id, 'item' => $item, 'label' => '案例']));
+        $this->renderAdmin('编辑案例', $this->renderView('admin/cases/form', ['action' => '/admin/cases/edit?id='.$id, 'item' => $item, 'label' => '案例']));
     }
 
     public function caseUpdate(): void {
@@ -732,6 +732,7 @@ class AdminController extends Controller {
             'slug' => $slug,
             'summary' => trim((string)($_POST['summary'] ?? '')),
             'content' => trim((string)($_POST['content'] ?? '')),
+            'cover' => trim((string)($_POST['cover'] ?? '')),
             'category_id' => (int)($_POST['category_id'] ?? 0),
             'status' => trim((string)($_POST['status'] ?? 'active')),
             'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
@@ -749,6 +750,7 @@ class AdminController extends Controller {
             'slug' => $slug,
             'summary' => trim((string)($_POST['summary'] ?? '')),
             'content' => trim((string)($_POST['content'] ?? '')),
+            'cover' => trim((string)($_POST['cover'] ?? '')),
             'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
             'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
             'seo_description' => trim((string)($_POST['seo_description'] ?? '')),

@@ -77,10 +77,11 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
                         <div class="box soft-card mb-5 p-5">
                             <div class="columns">
                                 <?php if (!empty($item['cover'])): ?>
+                                    <?php $coverSrc = (strpos($item['cover'], 'http') === 0 || strpos($item['cover'], '//') === 0) ? $item['cover'] : url($item['cover']); ?>
                                     <div class="column is-4">
                                         <a href="<?= h($item['url']) ?>">
                                             <figure class="image is-3by2">
-                                                <img src="<?= h($item['cover']) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 6px; object-fit: cover;">
+                                                <img src="<?= h($coverSrc) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 6px; object-fit: cover;">
                                             </figure>
                                         </a>
                                     </div>
@@ -148,18 +149,3 @@ function renderCategoryList($items, $currentCategoryId, $level = 0) {
         </div>
     </div>
 </section>
-
-<style>
-.panel-block.is-active {
-    background: linear-gradient(135deg, rgba(72, 199, 116, 0.1) 0%, rgba(0, 209, 178, 0.1) 100%);
-    border-left: 3px solid #48c774;
-    color: #48c774;
-    font-weight: 600;
-}
-.panel-block:hover:not(.is-active) {
-    background: #f5f5f5;
-}
-.panel-heading {
-    font-weight: 600;
-}
-</style>

@@ -14,10 +14,11 @@
                 <div class="column is-6">
                     <div class="card soft-card">
                         <?php if (!empty($item['cover'])): ?>
+                            <?php $coverSrc = (strpos($item['cover'], 'http') === 0 || strpos($item['cover'], '//') === 0) ? $item['cover'] : url($item['cover']); ?>
                             <div class="card-image">
                                 <a href="<?= h($item['url']) ?>">
                                     <figure class="image is-16by9">
-                                        <img src="<?= h($item['cover']) ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover;">
+                                        <img src="<?= h($coverSrc) ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover;">
                                     </figure>
                                 </a>
                             </div>

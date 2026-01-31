@@ -1,24 +1,80 @@
-<!-- 1. Hero Section -->
-<section class="hero is-large brand-gradient is-relative">
-  <div class="hero-body">
-    <div class="container">
-      <div class="columns is-vcentered">
-        <div class="column is-7">
-          <h1 class="title is-1 has-text-white mb-5" style="line-height: 1.2;">
-            <?= h($site['tagline'] ?: h(t('home_ready_title'))) ?>
-          </h1>
-          <p class="subtitle is-4 has-text-grey-light mb-6">
-            <?= h(($site['company_bio'] ?? '') ?: h(t('home_ready_desc'))) ?>
-          </p>
-          <div class="buttons">
-            <a class="button is-link is-large px-6" href="<?= url('/products') ?>"><?= h(t('nav_products')) ?></a>
-            <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
+<?php
+$products = $products ?? [];
+$carouselProducts = array_slice($products, 0, 3);
+$defaultCover = $site['og_image'] ?? 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80';
+$defaultTitle = $site['tagline'] ?? t('home_ready_title');
+$defaultDesc = $site['company_bio'] ?? t('home_ready_desc');
+if (empty($carouselProducts)) {
+    $carouselProducts = [['cover' => $defaultCover, 'title' => $defaultTitle, 'summary' => $defaultDesc, 'url' => url('/products')]];
+}
+?>
+<!-- 1. Hero 轮播：最新 3 个产品（产品展示 + 产品主题 + 产品卖点） -->
+<section class="hero hero-carousel is-large is-relative" style="min-height: 480px;">
+  <div class="hero-carousel-inner">
+    <?php foreach ($carouselProducts as $i => $p): ?>
+      <?php
+        $cover = $p['cover'] ?? $defaultCover;
+        $coverSrc = (strpos($cover, 'http') === 0 || strpos($cover, '//') === 0) ? $cover : url($cover);
+        $slideUrl = $p['url'] ?? url('/products');
+      ?>
+    <div class="hero-carousel-slide <?= $i === 0 ? 'is-active' : '' ?>" data-index="<?= $i ?>" style="background-image: url('<?= h($coverSrc) ?>');">
+      <div class="hero-carousel-overlay"></div>
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column is-7">
+              <h1 class="title is-1 has-text-white mb-5" style="line-height: 1.2; text-shadow: 0 1px 3px rgba(0,0,0,.3);">
+                <?= h($p['title'] ?? $defaultTitle) ?>
+              </h1>
+              <p class="subtitle is-4 has-text-grey-light mb-6" style="text-shadow: 0 1px 2px rgba(0,0,0,.2); max-width: 32rem;">
+                <?= h(!empty($p['summary']) ? mb_substr(strip_tags($p['summary']), 0, 120) . (mb_strlen(strip_tags($p['summary'])) > 120 ? '...' : '') : $defaultDesc) ?>
+              </p>
+              <div class="buttons">
+                <a class="button is-link is-large px-6" href="<?= h($slideUrl) ?>"><?= h(t('btn_view_details') ?: '查看产品') ?></a>
+                <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <?php endforeach; ?>
   </div>
+  <?php if (count($carouselProducts) > 1): ?>
+  <div class="hero-carousel-arrows">
+    <button type="button" class="hero-carousel-btn" aria-label="<?= h(t('carousel_prev') ?: '上一张') ?>" data-dir="prev"><i class="fas fa-chevron-left"></i></button>
+    <button type="button" class="hero-carousel-btn" aria-label="<?= h(t('carousel_next') ?: '下一张') ?>" data-dir="next"><i class="fas fa-chevron-right"></i></button>
+  </div>
+  <div class="hero-carousel-dots">
+    <?php foreach ($carouselProducts as $i => $p): ?>
+    <button type="button" class="hero-carousel-dot <?= $i === 0 ? 'is-active' : '' ?>" data-index="<?= $i ?>" aria-label="<?= h(t('carousel_go') ?: '第') . ($i+1) ?>张"></button>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
 </section>
+<script>
+(function(){
+  var section = document.querySelector('.hero-carousel');
+  if (!section) return;
+  var slides = section.querySelectorAll('.hero-carousel-slide');
+  var dots = section.querySelectorAll('.hero-carousel-dot');
+  if (slides.length <= 1) return;
+  var total = slides.length;
+  var current = 0;
+  function go(to) {
+    current = ((to % total) + total) % total;
+    slides.forEach(function(s, i){ s.classList.toggle('is-active', i === current); });
+    dots.forEach(function(d, i){ d.classList.toggle('is-active', i === current); });
+  }
+  section.querySelectorAll('.hero-carousel-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ go(current + (this.dataset.dir === 'next' ? 1 : -1)); });
+  });
+  dots.forEach(function(dot, i){ dot.addEventListener('click', function(){ go(i); }); });
+  var t = setInterval(function(){ go(current + 1); }, 5000);
+  section.addEventListener('mouseenter', function(){ clearInterval(t); });
+  section.addEventListener('mouseleave', function(){ t = setInterval(function(){ go(current + 1); }, 5000); });
+})();
+</script>
 
 <!-- 2. Value Proposition (Trust Section) -->
 <section class="section py-6" style="background: #fff; margin-top: -50px; position: relative; z-index: 5;">

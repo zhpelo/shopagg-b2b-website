@@ -1,0 +1,202 @@
+/**
+ * Default theme - 从模版内联样式提取
+ */
+
+/* ========== 全局 / header ========== */
+body {
+  background: #f9fafb;
+}
+.brand-gradient {
+  background: linear-gradient(120deg, #0f172a, #1e293b);
+}
+.soft-card {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.tagline {
+  opacity: 0.7;
+}
+.navbar-logo {
+  color: #1e293b;
+  font-size: 500;
+  padding: 5px;
+}
+
+/* ========== Hero 轮播 (home) ========== */
+.hero-carousel {
+  overflow: hidden;
+}
+.hero-carousel-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+}
+.hero-carousel-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #1e293b;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+.hero-carousel-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+.hero-carousel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(15, 23, 42, 0.4) 100%);
+  z-index: 0;
+}
+.hero-carousel-slide .hero-body {
+  position: relative;
+  z-index: 1;
+}
+.hero-carousel-arrows {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-carousel-btn {
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.hero-carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.hero-carousel-dots {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+.hero-carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.hero-carousel-dot.is-active {
+  background: #fff;
+}
+
+/* ========== 首页区块 ========== */
+.section-trust {
+  background: #fff;
+  margin-top: -50px;
+  position: relative;
+  z-index: 5;
+}
+.border-none {
+  border: none;
+}
+.section-why-us {
+  background-color: #fcfcfc;
+}
+.card-flex {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.card-content-flex {
+  flex-grow: 1;
+}
+.column-divider {
+  border-left: 1px solid #f0f0f0;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 3em;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.img-cover {
+  object-fit: cover;
+}
+.card-footer-none {
+  border-top: none;
+  padding: 0 1.5rem 1.5rem;
+}
+.list-unstyled {
+  list-style-type: none;
+  margin-left: 0;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* ========== 文章列表侧栏 panel (绿色) ========== */
+.panel.is-link .panel-block.is-active {
+  background: linear-gradient(135deg, rgba(72, 199, 116, 0.1) 0%, rgba(0, 209, 178, 0.1) 100%);
+  border-left: 3px solid #48c774;
+  color: #48c774;
+  font-weight: 600;
+}
+.panel.is-link .panel-block:hover:not(.is-active) {
+  background: #f5f5f5;
+}
+.panel.is-link .panel-heading {
+  font-weight: 600;
+}
+
+/* ========== 产品列表侧栏 panel (橙色) ========== */
+.panel.is-warning .panel-block.is-active {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%);
+  border-left: 3px solid #ffc107;
+  color: #fd7e14;
+  font-weight: 600;
+}
+.panel.is-warning .panel-block:hover:not(.is-active) {
+  background: #f5f5f5;
+}
+.panel.is-warning .panel-heading {
+  font-weight: 600;
+}
+
+/* ========== About 关于我们 ========== */
+.table.is-borderless td,
+.table.is-borderless th {
+  border: none;
+}
+.tabs.is-boxed li.is-active a {
+  background-color: #fff;
+  border-bottom-color: #d65a53;
+  border-bottom-width: 2px;
+  color: #333;
+  font-weight: bold;
+}

@@ -151,18 +151,3 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
         </div>
     </div>
 </section>
-
-<style>
-.panel-block.is-active {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%);
-    border-left: 3px solid #ffc107;
-    color: #fd7e14;
-    font-weight: 600;
-}
-.panel-block:hover:not(.is-active) {
-    background: #f5f5f5;
-}
-.panel-heading {
-    font-weight: 600;
-}
-</style>
