@@ -97,7 +97,7 @@ $isEdit = isset($item);
                         <input type="hidden" name="cover" id="case-cover-input" value="<?= h($item['cover'] ?? '') ?>">
                         <div id="case-cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
                             <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
-                                <img id="case-cover-preview" src="<?= h($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+                                <img id="case-cover-preview" src="<?= asset_url(h($item['cover'] ?? '')) ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
                             </figure>
                             <button type="button" id="case-cover-clear-btn" class="button is-small is-light is-danger mt-2">清除封面</button>
                         </div>

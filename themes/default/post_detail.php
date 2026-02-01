@@ -41,9 +41,8 @@ $category = $category ?? null;
                 </header>
 
                 <?php if (!empty($item['cover'])): ?>
-                    <?php $coverSrc = (strpos($item['cover'], 'http') === 0 || strpos($item['cover'], '//') === 0) ? $item['cover'] : url($item['cover']); ?>
                     <figure class="image mb-6">
-                        <img src="<?= h($coverSrc) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 8px;">
+                        <img src="<?= asset_url(h($item['cover'])) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 8px;">
                     </figure>
                 <?php endif; ?>
 

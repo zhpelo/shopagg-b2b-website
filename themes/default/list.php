@@ -8,7 +8,7 @@
                         <?php if (!empty($show_image) && !empty($item['cover'])): ?>
                             <div class="card-image">
                                 <figure class="image is-1by1">
-                                    <img src="<?= h($item['cover']) ?>" alt="<?= h($item['title']) ?>">
+                                    <img src="<?= asset_url(h($item['cover'])) ?>" alt="<?= h($item['title']) ?>">
                                 </figure>
                             </div>
                         <?php endif; ?>

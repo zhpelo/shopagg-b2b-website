@@ -32,7 +32,7 @@
                 <a href="<?= url('/') ?>">
                     <div class="navbar-logo">
                         <?php if (!empty($site['logo'])): ?>
-                            <img src="<?= h($site['logo']) ?>" alt="<?= h($site['name']) ?>" style="height: 36px; max-height: 36px;">
+                            <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 36px; max-height: 36px;">
                         <?php else: ?>
                             <h1 class="is-size-5"><?= h($site['name']) ?></h1>
                         <?php endif; ?>

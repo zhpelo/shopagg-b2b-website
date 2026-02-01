@@ -54,7 +54,7 @@
                             $images = json_decode($row['images_json'] ?? '[]', true);
                             $cover = !empty($images) ? $images[0] : null;
                             ?>
-                            <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . h($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                 <?php if (!$cover): ?>
                                 <span class="icon has-text-white"><i class="fas fa-box"></i></span>
                                 <?php endif; ?>

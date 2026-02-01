@@ -118,7 +118,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                 <div class="card-image">
                                     <a href="<?= h($item['url']) ?>">
                                         <figure class="image is-1by1">
-                                            <img src="<?= h($item['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover;">
+                                            <img src="<?= asset_url(h($item['cover'] ?: '/assets/no-image.png')) ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover;">
                                         </figure>
                                     </a>
                                 </div>

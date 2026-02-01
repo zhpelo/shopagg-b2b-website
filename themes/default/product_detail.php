@@ -21,7 +21,7 @@ $category = $category ?? null;
                     <div class="box soft-card">
                         <div class="carousel">
                             <figure class="image is-1by1">
-                                <img id="product-carousel-image" src="<?= h($images[0]) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
+                                <img id="product-carousel-image" src="<?= asset_url(h($images[0])) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
                             </figure>
                             <div class="buttons is-centered" style="margin-top:12px">
                                 <button class="button is-light" id="carousel-prev"><?= h(t('carousel_prev')) ?></button>
@@ -32,7 +32,7 @@ $category = $category ?? null;
                             <?php foreach ($images as $idx => $img): ?>
                                 <div class="column is-3">
                                     <figure class="image is-1by1">
-                                        <img class="carousel-thumb" data-index="<?= (int)$idx ?>" src="<?= h($img) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
+                                        <img class="carousel-thumb" data-index="<?= (int)$idx ?>" src="<?= asset_url(h($img)) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
                                     </figure>
                                 </div>
                             <?php endforeach; ?>
@@ -229,7 +229,7 @@ $category = $category ?? null;
         <div class="modal-background"></div>
         <div class="modal-content">
             <p class="image">
-                <img id="lightbox-image" src="<?= h($images[0]) ?>" alt="<?= h($item['title']) ?>">
+                <img id="lightbox-image" src="<?= asset_url(h($images[0])) ?>" alt="<?= h($item['title']) ?>">
             </p>
         </div>
         <button class="modal-close is-large" aria-label="close"></button>

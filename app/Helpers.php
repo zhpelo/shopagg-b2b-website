@@ -159,3 +159,9 @@ function normalize_price_tiers(array $post): array {
     return $tiers;
 }
 
+/** 生成带 base path 的资源 URL，用于二级目录部署，支持外部 URL */
+function asset_url(string $path): string {
+    if (empty($path)) return '';
+    if (strpos($path, 'http') === 0 || strpos($path, '//') === 0) return $path;
+    return url($path);
+}

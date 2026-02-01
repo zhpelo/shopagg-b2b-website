@@ -125,7 +125,7 @@
         <?php foreach ($files as $file): ?>
         <div class="media-grid-item" data-name="<?= h(strtolower($file['name'])) ?>">
             <div class="media-thumb" onclick="showMediaDetail(<?= htmlspecialchars(json_encode($file), ENT_QUOTES, 'UTF-8') ?>)">
-                <img src="<?= h($file['path']) ?>" alt="<?= h($file['name']) ?>" loading="lazy">
+                <img src="<?= asset_url(h($file['path'])) ?>" alt="<?= h($file['name']) ?>" loading="lazy">
                 <div class="media-overlay">
                     <span class="icon"><i class="fas fa-search-plus"></i></span>
                 </div>
@@ -158,7 +158,7 @@
                 <tr data-name="<?= h(strtolower($file['name'])) ?>">
                     <td>
                         <figure class="image is-48x48" style="cursor: pointer;" onclick="showMediaDetail(<?= htmlspecialchars(json_encode($file), ENT_QUOTES, 'UTF-8') ?>)">
-                            <img src="<?= h($file['path']) ?>" alt="<?= h($file['name']) ?>" style="object-fit: cover; border-radius: 6px;">
+                            <img src="<?= asset_url(h($file['path'])) ?>" alt="<?= h($file['name']) ?>" style="object-fit: cover; border-radius: 6px;">
                         </figure>
                     </td>
                     <td>

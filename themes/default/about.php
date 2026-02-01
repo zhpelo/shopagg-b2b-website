@@ -125,7 +125,7 @@
                         ?>
                             <div class="column is-3">
                                 <figure class="image is-4by3 mb-2">
-                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: cover; border: 1px solid #eee; border-radius: 2px;">
+                                    <img src="<?= asset_url(h($item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: cover; border: 1px solid #eee; border-radius: 2px;">
                                 </figure>
                                 <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>
@@ -148,7 +148,7 @@
                         ?>
                             <div class="column is-3">
                                 <figure class="image is-4by3 mb-2">
-                                    <img src="<?= h($item['img']) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: contain; background: #fafafa; border: 1px solid #eee; border-radius: 2px; padding: 5px;">
+                                    <img src="<?= asset_url(h($item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: contain; background: #fafafa; border: 1px solid #eee; border-radius: 2px; padding: 5px;">
                                 </figure>
                                 <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>

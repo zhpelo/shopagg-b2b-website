@@ -21,9 +21,8 @@
             <!-- 左侧详情 -->
             <div class="column is-8">
                 <?php if (!empty($item['cover'])): ?>
-                    <?php $coverSrc = (strpos($item['cover'], 'http') === 0 || strpos($item['cover'], '//') === 0) ? $item['cover'] : url($item['cover']); ?>
                     <figure class="image mb-5" style="border-radius: 8px; overflow: hidden;">
-                        <img src="<?= h($coverSrc) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; object-fit: cover;">
+                        <img src="<?= asset_url(h($item['cover'])) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; object-fit: cover;">
                     </figure>
                 <?php endif; ?>
                 <div class="box soft-card p-6">

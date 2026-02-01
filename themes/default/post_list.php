@@ -81,11 +81,10 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
                             <div class="box soft-card mb-5 p-5">
                                 <div class="columns">
                                     <?php if (!empty($item['cover'])): ?>
-                                        <?php $coverSrc = (strpos($item['cover'], 'http') === 0 || strpos($item['cover'], '//') === 0) ? $item['cover'] : url($item['cover']); ?>
                                         <div class="column is-4">
                                             <a href="<?= h($item['url']) ?>">
                                                 <figure class="image is-3by2">
-                                                    <img src="<?= h($coverSrc) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 6px; object-fit: cover;">
+                                                    <img src="<?= asset_url($item['cover']) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 6px; object-fit: cover;">
                                                 </figure>
                                             </a>
                                         </div>

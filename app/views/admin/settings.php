@@ -107,7 +107,7 @@ $tabs = [
                             <input type="hidden" name="site_logo" id="site_logo" value="<?= h($settings['site_logo'] ?? '') ?>">
                             <div class="logo-preview-box" onclick="openMediaLibrary(url => { document.getElementById('site_logo').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 200px; height: 80px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
                                 <?php if (!empty($settings['site_logo'])): ?>
-                                    <img src="<?= h($settings['site_logo']) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                    <img src="<?= asset_url(h($settings['site_logo'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                 <?php else: ?>
                                     <div class="has-text-centered has-text-grey-light">
                                         <span class="icon is-large"><i class="fas fa-image fa-2x"></i></span>
@@ -124,7 +124,7 @@ $tabs = [
                             <input type="hidden" name="site_favicon" id="site_favicon" value="<?= h($settings['site_favicon'] ?? '') ?>">
                             <div class="favicon-preview-box" onclick="openMediaLibrary(url => { document.getElementById('site_favicon').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 80px; height: 80px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
                                 <?php if (!empty($settings['site_favicon'])): ?>
-                                    <img src="<?= h($settings['site_favicon']) ?>" style="max-width: 48px; max-height: 48px; object-fit: contain;">
+                                    <img src="<?= asset_url(h($settings['site_favicon'])) ?>" style="max-width: 48px; max-height: 48px; object-fit: contain;">
                                 <?php else: ?>
                                     <div class="has-text-centered has-text-grey-light">
                                         <span class="icon"><i class="fas fa-star fa-lg"></i></span>
@@ -168,7 +168,7 @@ $tabs = [
                     <input type="hidden" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>">
                     <div class="og-image-preview-box" onclick="openMediaLibrary(url => { document.getElementById('og_image').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })" style="width: 200px; height: 105px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; transition: all 0.2s; overflow: hidden;">
                         <?php if (!empty($settings['og_image'])): ?>
-                            <img src="<?= h($settings['og_image']) ?>" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                            <img src="<?= asset_url(h($settings['og_image'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: cover;">
                         <?php else: ?>
                             <div class="has-text-centered has-text-grey-light">
                                 <span class="icon is-large"><i class="fas fa-share-alt fa-2x"></i></span>
@@ -420,7 +420,7 @@ $tabs = [
                                 <input type="hidden" name="show_img[]" value="<?= h($item['img']) ?>">
                                 <div class="media-preview <?= empty($item['img']) ? 'is-empty' : '' ?>" onclick="selectMediaPreview(this)">
                                     <?php if (!empty($item['img'])): ?>
-                                        <img src="<?= h($item['img']) ?>" alt="">
+                                        <img src="<?= asset_url(h($item['img'])) ?>" alt="">
                                     <?php else: ?>
                                         <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
                                     <?php endif; ?>
@@ -464,7 +464,7 @@ $tabs = [
                                 <input type="hidden" name="cert_img[]" value="<?= h($item['img']) ?>">
                                 <div class="media-preview <?= empty($item['img']) ? 'is-empty' : '' ?>" onclick="selectMediaPreview(this)">
                                     <?php if (!empty($item['img'])): ?>
-                                        <img src="<?= h($item['img']) ?>" alt="">
+                                        <img src="<?= asset_url(h($item['img'])) ?>" alt="">
                                     <?php else: ?>
                                         <span class="icon has-text-grey-light"><i class="fas fa-image fa-2x"></i></span>
                                     <?php endif; ?>

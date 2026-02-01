@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card-image">
                             <a href="<?= h($p['url']) ?>">
                                 <figure class="image is-1by1">
-                                    <img src="<?= h($p['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($p['title']) ?>" style="object-fit: cover;">
+                                    <img src="<?= asset_url($p['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($p['title']) ?>" style="object-fit: cover;">
                                 </figure>
                             </a>
                         </div>
@@ -177,8 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="section py-6">
     <div class="container">
         <div class="has-text-centered mb-6">
-            <h2 class="title is-3"><?= h(t('section_success_cases')) ?></h2>
-            <p class="subtitle is-6 has-text-grey"><?= h(t('home_global')) ?></p>
+            <h2 class="title is-3"><?= t('section_success_cases') ?></h2>
+            <p class="subtitle is-6 has-text-grey"><?= t('home_global') ?></p>
         </div>
         <div class="columns is-multiline">
             <?php foreach ($cases as $c): ?>
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card soft-card overflow-hidden">
                             <div class="card-image">
                                 <figure class="image is-3by2">
-                                    <img src="<?= h($c['cover'] ?: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
+                                    <img src="<?= asset_url($c['cover'] ?: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
                                 </figure>
                             </div>
                             <div class="card-content p-4">
