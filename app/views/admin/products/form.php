@@ -58,7 +58,7 @@
                     <div id="media-container" class="mb-4">
                         <?php foreach ($images as $img): ?>
                             <div class="media-item" data-url="<?= h($img) ?>">
-                                <img src="<?= h($img) ?>">
+                                <img src="<?= h(url($img)) ?>">
                                 <input type="hidden" name="images[]" value="<?= h($img) ?>">
                                 <button type="button" class="delete is-small remove-media"></button>
                             </div>
@@ -323,13 +323,18 @@ document.addEventListener("DOMContentLoaded", function() {
     }));
 
     function addMediaItem(url) {
-        if (mediaContainer.querySelector(`input[value="${url}"]`)) return;
+        const exists = [].some.call(mediaContainer.querySelectorAll('input[name="images[]"]'), function(inp) { return inp.value === url; });
+        if (exists) return;
+        const basePath = window.APP_BASE_PATH || '';
+        const imgSrc = basePath + url;
+        const safeUrl = url.replace(/"/g, '&quot;');
+        const safeImgSrc = imgSrc.replace(/"/g, '&quot;');
         const div = document.createElement('div');
         div.className = 'media-item';
         div.dataset.url = url;
         div.innerHTML = `
-            <img src="${url}">
-            <input type="hidden" name="images[]" value="${url}">
+            <img src="${safeImgSrc}">
+            <input type="hidden" name="images[]" value="${safeUrl}">
             <button type="button" class="delete is-small remove-media"></button>
         `;
         mediaContainer.insertBefore(div, gridAddBtn);
@@ -364,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const formData = new FormData();
                 formData.append('image', file);
                 formData.append('csrf', '<?= csrf_token() ?>');
-                return fetch('/admin/upload-image', { method: 'POST', body: formData }).then(r => r.json());
+                return fetch((window.APP_BASE_PATH || '') + '/admin/upload-image', { method: 'POST', body: formData }).then(r => r.json());
             });
 
             try {
