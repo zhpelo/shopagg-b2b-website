@@ -238,14 +238,16 @@ async function fetchMediaLibrary() {
             container.innerHTML = '<div class="column is-12 has-text-centered p-6"><span class="icon is-large has-text-grey-light"><i class="fas fa-images fa-2x"></i></span><p class="mt-3 has-text-grey">暂无媒体文件</p></div>';
             return;
         }
+        const basePath = window.APP_BASE_PATH || '';
         files.forEach(file => {
+            const imgSrc = basePath + file;
             const col = document.createElement('div');
             col.className = 'column is-2-desktop is-3-tablet is-4-mobile';
             col.innerHTML = `
-                <div class="card media-select-item" data-url="${file}" style="cursor: pointer; border: 4px solid transparent; border-radius: 12px; overflow:hidden; transition: all 0.2s;">
+                <div class="card media-select-item" data-url="${file.replace(/"/g, '&quot;')}" style="cursor: pointer; border: 4px solid transparent; border-radius: 12px; overflow:hidden; transition: all 0.2s;">
                     <div class="card-image">
                         <figure class="image is-1by1">
-                            <img src="${file}" style="object-fit: cover;">
+                            <img src="${imgSrc.replace(/"/g, '&quot;')}" style="object-fit: cover;">
                         </figure>
                     </div>
                 </div>
