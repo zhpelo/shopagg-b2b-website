@@ -32,7 +32,7 @@ if (empty($carouselProducts)) {
                                         <?= h(!empty($p['summary']) ? mb_substr(strip_tags($p['summary']), 0, 120) . (mb_strlen(strip_tags($p['summary'])) > 120 ? '...' : '') : $defaultDesc) ?>
                                     </p>
                                     <div class="buttons">
-                                        <a class="button is-link is-large px-6" href="<?= h($slideUrl) ?>"><?= h(t('btn_view_details') ?: '查看产品') ?></a>
+                                        <a class="button is-link is-large px-6" href="<?= h($slideUrl) ?>"><?= h(t('view_details') ?: '查看产品') ?></a>
                                         <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
                                     </div>
                                 </div>

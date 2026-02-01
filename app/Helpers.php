@@ -174,3 +174,17 @@ function process_rich_text(string $html): string {
         return str_replace('src="' . $src . '"', 'src="' . $newSrc . '"', $matches[0]);
     }, $html);
 }
+
+/** 规范化富文本内容中的图片URL，移除 base path 前缀，用于保存到数据库 */
+function normalize_rich_text(string $html): string {
+    $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
+    if ($basePath === '') return $html;
+    return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', function($matches) use ($basePath) {
+        $src = $matches[1];
+        if (strpos($src, $basePath) === 0) {
+            $newSrc = substr($src, strlen($basePath));
+            return str_replace('src="' . $src . '"', 'src="' . $newSrc . '"', $matches[0]);
+        }
+        return $matches[0];
+    }, $html);
+}
