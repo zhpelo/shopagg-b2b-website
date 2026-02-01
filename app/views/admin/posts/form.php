@@ -126,7 +126,7 @@ $categories = $categories ?? [];
                         <input type="hidden" name="cover" id="cover-input" value="<?= h($item['cover'] ?? '') ?>">
                         <div id="cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
                             <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
-                                <img id="cover-preview" src="<?= h($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+                                <img id="cover-preview" src="<?= asset_url($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
                             </figure>
                             <button type="button" id="cover-clear-btn" class="button is-small is-light is-danger mt-2">清除封面</button>
                         </div>

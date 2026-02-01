@@ -20,7 +20,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
             </div>
         </div>
         <div class="level-right header-actions">
-            <a href="<?= h($base) ?>/create" class="button is-white">
+            <a href="<?= url("/admin/cases/create") ?>" class="button is-white">
                 <span class="icon"><i class="fas fa-plus"></i></span>
                 <span>新建<?= h($label) ?></span>
             </a>
@@ -34,7 +34,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
     <div class="empty-state">
         <span class="icon"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
         <p>暂无<?= h($label) ?>记录</p>
-        <a href="<?= h($base) ?>/create" class="button is-primary mt-4">
+        <a href="<?= url('/admin/cases/create') ?>" class="button is-primary mt-4">
             <span class="icon"><i class="fas fa-plus"></i></span>
             <span>创建第一个<?= h($label) ?></span>
         </a>
@@ -59,7 +59,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
                     <td>
                         <div class="is-flex is-align-items-center">
                             <?php $cover = $row['cover'] ?? ''; ?>
-                            <div style="width: 44px; height: 44px; background: <?= $cover ? 'url(' . h($cover) . ') center/cover' : $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 44px; height: 44px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                 <?php if (!$cover): ?>
                                 <span class="icon has-text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
                                 <?php endif; ?>
@@ -85,11 +85,11 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
                     </td>
                     <td>
                         <div class="buttons are-small" style="gap: 0.5rem;">
-                            <a href="<?= h($base) ?>/edit?id=<?= (int)$row['id'] ?>" class="button is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/admin/cases/edit?id='. intval($row['id']) ) ?>" class="button is-light" style="border-radius: 8px;">
                                 <span class="icon"><i class="fas fa-edit"></i></span>
                                 <span>编辑</span>
                             </a>
-                            <a href="<?= h($base) ?>/delete?id=<?= (int)$row['id'] ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该<?= h($label) ?>吗？此操作不可恢复。')">
+                            <a href="<?= url('/admin/cases/delete?id='. intval($row['id']) ) ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该<?= h($label) ?>吗？此操作不可恢复。')">
                                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
                             </a>
                         </div>
