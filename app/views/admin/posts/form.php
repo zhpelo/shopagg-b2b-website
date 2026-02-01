@@ -67,7 +67,7 @@ $categories = $categories ?? [];
                 <div class="field">
                     <label class="label">文章内容</label>
                     <div class="control">
-                        <textarea id="content-input" name="content" style="display:none"><?= h($item['content'] ?? '') ?></textarea>
+                        <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         <div id="quill-editor" style="min-height:400px; background:#fff; border-radius: 0 0 10px 10px;"></div>
                     </div>
                 </div>

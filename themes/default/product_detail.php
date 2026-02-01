@@ -129,9 +129,9 @@ $category = $category ?? null;
         </div>
 
         <article class="box soft-card">
-                    <h2 class="title is-4"><?= h(t('detail_intro')) ?></h2>
-                    <div><?= $item['content'] ?></div>
-                </article>
+            <h2 class="title is-4"><?= h(t('detail_intro')) ?></h2>
+            <div><?= process_rich_text($item['content']) ?></div>
+        </article>
     </div>
 </section>
 <?php if (!empty($inquiry_form)): ?>

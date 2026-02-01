@@ -165,3 +165,12 @@ function asset_url(string $path): string {
     if (strpos($path, 'http') === 0 || strpos($path, '//') === 0) return $path;
     return url($path);
 }
+
+/** 处理富文本内容中的图片URL，使其兼容子目录部署 */
+function process_rich_text(string $html): string {
+    return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', function($matches) {
+        $src = $matches[1];
+        $newSrc = asset_url($src);
+        return str_replace('src="' . $src . '"', 'src="' . $newSrc . '"', $matches[0]);
+    }, $html);
+}

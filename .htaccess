@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   # 根目录部署保持 RewriteBase / ；若放在二级目录（如 /b2bwebsite/），请改为：RewriteBase /b2bwebsite/
-  RewriteBase /
+  RewriteBase /b2bwebsite/
 
   # Keep existing files/directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]

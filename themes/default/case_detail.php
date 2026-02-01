@@ -28,7 +28,7 @@
                 <div class="box soft-card p-6">
                     <h2 class="title is-4 mb-5"><?= h(t('case_details')) ?></h2>
                     <article class="content">
-                        <?= $item['content'] ?>
+                        <?= process_rich_text($item['content']) ?>
                     </article>
                 </div>
             </div>

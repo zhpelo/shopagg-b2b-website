@@ -49,7 +49,7 @@ $category = $category ?? null;
                 <!-- 文章内容 -->
                 <div class="box soft-card p-6">
                     <article class="content is-medium">
-                        <?= $item['content'] ?>
+                        <?= process_rich_text($item['content']) ?>
                     </article>
                 </div>
 

@@ -40,7 +40,7 @@
                 <div class="field">
                     <label class="label">产品描述</label>
                     <div class="control">
-                        <textarea id="content-input" name="content" style="display:none"><?= h($product['content'] ?? '') ?></textarea>
+                        <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($product['content'] ?? '')) ?></textarea>
                         <div id="quill-editor" style="height:300px; background:#fff; border-radius: 0 0 10px 10px;"></div>
                     </div>
                 </div>
