@@ -1,11 +1,16 @@
 <?php
 $products = $products ?? [];
-$carouselProducts = array_slice($products, 0, 3);
+// 只获取有横幅图片的商品
+$carouselProducts = array_filter($products, function($p) {
+    return !empty($p['banner_image']);
+});
+// 如果没有足够的横幅图片商品，则取前3个有横幅图片的商品
+$carouselProducts = array_slice($carouselProducts, 0, 3);
 $defaultCover = $site['og_image'] ?? 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80';
 $defaultTitle = $site['tagline'] ?? t('home_ready_title');
 $defaultDesc = $site['company_bio'] ?? t('home_ready_desc');
 if (empty($carouselProducts)) {
-    $carouselProducts = [['cover' => $defaultCover, 'title' => $defaultTitle, 'summary' => $defaultDesc, 'url' => url('/products')]];
+    $carouselProducts = [['banner_image' => $defaultCover, 'title' => $defaultTitle, 'summary' => $defaultDesc, 'url' => url('/products')]];
 }
 ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -15,8 +20,8 @@ if (empty($carouselProducts)) {
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
                 <?php
-                $cover = $p['cover'] ?? $defaultCover;
-                $coverSrc = (strpos($cover, 'http') === 0 || strpos($cover, '//') === 0) ? $cover : url($cover);
+                $cover = $p['banner_image'] ?? $defaultCover;
+                $coverSrc = (strpos($cover, 'http') === 0 || strpos($cover, '//') === 0) ? $cover : asset_url($cover);
                 $slideUrl = $p['url'] ?? url('/products');
                 ?>
                 <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= h($coverSrc) ?>');">

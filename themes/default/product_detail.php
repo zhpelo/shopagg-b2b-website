@@ -16,6 +16,15 @@ $category = $category ?? null;
             </ul>
         </nav>
 
+        <!-- 横幅图片 -->
+        <?php if (!empty($item['banner_image'])): ?>
+            <div class="mb-5">
+                <div class="box soft-card" style="padding: 0; overflow: hidden;">
+                    <img src="<?= asset_url(h($item['banner_image'])) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; height: auto; max-height: 400px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="columns mb-5">
             <div class="column is-6">
                 <?php if (!empty($images)): ?>

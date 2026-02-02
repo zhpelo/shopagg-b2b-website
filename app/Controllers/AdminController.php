@@ -374,6 +374,7 @@ class AdminController extends Controller {
             'product_type' => trim((string)($_POST['product_type'] ?? '')),
             'vendor' => trim((string)($_POST['vendor'] ?? '')),
             'tags' => trim((string)($_POST['tags'] ?? '')),
+            'banner_image' => trim((string)($_POST['banner_image'] ?? '')),
             'images_json' => json_encode(array_values(array_unique(array_filter($images)))),
             'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
             'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),

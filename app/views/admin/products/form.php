@@ -77,18 +77,43 @@
                         <div class="file is-centered">
                             <label class="file-label">
                                 <input class="file-input" type="file" name="new_images[]" multiple accept="image/*" id="file-upload-input">
-                                <span class="file-cta button is-light" style="height: auto; padding: 12px 24px; border-radius: 10px;">
+                                <span class="file-cta button is-light" style="padding: 10px 20px; border-radius: 10px;background-color: #fff;">
                                     <span class="file-icon"><i class="fas fa-upload"></i></span>
                                     <span class="file-label has-text-weight-semibold">上传新文件</span>
                                 </span>
                             </label>
                         </div>
-                        <button type="button" class="button is-light open-media-library-btn has-text-weight-semibold ml-2" style="height: auto; padding: 12px 24px; border-radius: 10px;">
+                        <button type="button" class="button is-light open-media-library-btn has-text-weight-semibold ml-2" style="padding: 10px 20px; border-radius: 10px; background-color: #fff;">
                             <span class="icon"><i class="fas fa-photo-video"></i></span>
                             <span>选择现有文件</span>
                         </button>
                     </div>
                     <p class="is-size-7 has-text-grey mt-3">支持 JPG、PNG、GIF、WebP 格式图片</p>
+                </div>
+            </div>
+
+            <!-- 横幅图片 -->
+            <div class="admin-card mb-5 animate-in delay-2" style="padding: 2rem;">
+                <div class="section-title">
+                    <span class="icon-box primary"><i class="fas fa-image"></i></span>
+                    横幅图片
+                </div>
+                <p class="is-size-7 has-text-grey mb-4">选择一张图片作为商品页面的横幅展示（可选）</p>
+                
+                <div id="banner-preview" class="mb-4" style="<?= empty($product['banner_image']) ? 'display: none;' : '' ?>">
+                    <div class="banner-image-container" style="position: relative; display: inline-block;">
+                        <img id="banner-image" src="<?= h(url($product['banner_image'] ?? '')) ?>" alt="横幅图片" style="max-width: 300px; max-height: 200px; border-radius: 8px; border: 2px solid #e5e7eb;">
+                        <button type="button" class="delete is-small" id="remove-banner" style="position: absolute; top: 8px; right: 8px;"></button>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="banner_image" id="banner-input" value="<?= h($product['banner_image'] ?? '') ?>">
+                
+                <div id="banner-placeholder" class="media-placeholder" style="<?= !empty($product['banner_image']) ? 'display: none;' : '' ?>">
+                    <button type="button" class="button is-light open-banner-library-btn" style="padding: 10px 20px; border-radius: 10px;  background-color: #fff;">
+                        <span class="icon is-large"><i class="fas fa-plus"></i></span>
+                        <p class="has-text-weight-semibold">选择横幅图片</p>
+                    </button>
                 </div>
             </div>
 
@@ -346,6 +371,38 @@ document.addEventListener("DOMContentLoaded", function() {
             checkMediaState();
         }
     });
+
+    // 4. 横幅图片选择
+    const bannerInput = document.getElementById('banner-input');
+    const bannerPreview = document.getElementById('banner-preview');
+    const bannerImage = document.getElementById('banner-image');
+    const bannerPlaceholder = document.getElementById('banner-placeholder');
+    const removeBannerBtn = document.getElementById('remove-banner');
+    const openBannerBtns = document.querySelectorAll('.open-banner-library-btn');
+
+    openBannerBtns.forEach(btn => btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openMediaLibrary(function(url) {
+            setBannerImage(url);
+        }, false);
+    }));
+
+    function setBannerImage(url) {
+        const basePath = window.APP_BASE_PATH || '';
+        const imgSrc = basePath + url;
+        bannerInput.value = url;
+        bannerImage.src = imgSrc;
+        bannerPreview.style.display = 'block';
+        bannerPlaceholder.style.display = 'none';
+    }
+
+    if (removeBannerBtn) {
+        removeBannerBtn.addEventListener('click', () => {
+            bannerInput.value = '';
+            bannerPreview.style.display = 'none';
+            bannerPlaceholder.style.display = 'block';
+        });
+    }
 
     // 3. 本地上传预览
     const fileInput = document.getElementById('file-upload-input');

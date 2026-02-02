@@ -22,7 +22,7 @@
     <?php endif; ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= url('/themes/default/style.css') ?>">
+    <link rel="stylesheet" href="<?= url('/themes/' . $currentTheme . '/style.css') ?>">
 </head>
 
 <body>

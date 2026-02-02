@@ -10,7 +10,14 @@ abstract class Controller {
             $themePath = APP_ROOT . '/themes/default';
         }
 
+        // 自动加载主题的 functions.php
+        $functionsFile = $themePath . '/functions.php';
+        if (is_file($functionsFile)) {
+            include_once $functionsFile;
+        }
+
         extract($data, EXTR_SKIP);
+        $currentTheme = $theme; // 将主题名称传递给视图
         include $themePath . '/header.php';
         $viewFile = $themePath . '/' . $view . '.php';
         if (is_file($viewFile)) {
