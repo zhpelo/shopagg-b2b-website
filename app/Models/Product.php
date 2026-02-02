@@ -39,8 +39,8 @@ class Product extends BaseModel {
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at) 
-            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, banner_image, seo_title, seo_keywords, seo_description, created_at, updated_at)
+            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :bi, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -51,6 +51,7 @@ class Product extends BaseModel {
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
         $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
+        $stmt->bindValue(':bi', $data['banner_image'] ?? '');
         $stmt->bindValue(':seot', $data['seo_title'] ?? '');
         $stmt->bindValue(':seok', $data['seo_keywords'] ?? '');
         $stmt->bindValue(':seod', $data['seo_description'] ?? '');
@@ -61,7 +62,7 @@ class Product extends BaseModel {
     }
 
     public function update(int $id, array $data): void {
-        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, banner_image=:bi, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -72,6 +73,7 @@ class Product extends BaseModel {
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
         $stmt->bindValue(':imgs', $data['images_json'] ?? '[]');
+        $stmt->bindValue(':bi', $data['banner_image'] ?? '');
         $stmt->bindValue(':seot', $data['seo_title'] ?? '');
         $stmt->bindValue(':seok', $data['seo_keywords'] ?? '');
         $stmt->bindValue(':seod', $data['seo_description'] ?? '');
@@ -127,12 +129,40 @@ class Product extends BaseModel {
 
     public function getByCategory(int $categoryId, int $limit = 0): array {
         $query = "SELECT products.*, product_categories.name AS category_name
-            FROM products 
+            FROM products
             LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.category_id = :cid AND products.status = 'active'
             ORDER BY products.id DESC";
         if ($limit > 0) $query .= " LIMIT $limit";
         $items = $this->fetchAll($query, [':cid' => $categoryId]);
+        foreach ($items as &$item) {
+            $images = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $images[0] ?? '';
+        }
+        return $items;
+    }
+
+    public function getLatest(int $limit = 6): array {
+        $query = "SELECT products.*, product_categories.name AS category_name
+            FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE products.status = 'active'
+            ORDER BY products.id DESC
+            LIMIT :limit";
+        $items = $this->fetchAll($query, [':limit' => $limit]);
+        foreach ($items as &$item) {
+            $images = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $images[0] ?? '';
+        }
+        return $items;
+    }
+
+    public function getFeatured(int $limit = 6): array {
+        $query = "SELECT products.*, product_categories.name AS category_name
+            FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE products.status = 'active' AND products.banner_image IS NOT NULL AND products.banner_image != ''
+            ORDER BY products.id DESC
+            LIMIT :limit";
+        $items = $this->fetchAll($query, [':limit' => $limit]);
         foreach ($items as &$item) {
             $images = json_decode((string)($item['images_json'] ?? '[]'), true);
             $item['cover'] = $images[0] ?? '';

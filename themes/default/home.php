@@ -1,14 +1,14 @@
 <?php
 $products = $products ?? [];
-// 只获取有横幅图片的商品
-$carouselProducts = array_filter($products, function($p) {
-    return !empty($p['banner_image']);
-});
-// 如果没有足够的横幅图片商品，则取前3个有横幅图片的商品
-$carouselProducts = array_slice($carouselProducts, 0, 3);
+// 使用优化的轮播产品获取函数
+$carouselProducts = get_carousel_products(3);
+
+// 默认轮播内容（当没有产品时使用）
 $defaultCover = $site['og_image'] ?? 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80';
 $defaultTitle = $site['tagline'] ?? t('home_ready_title');
 $defaultDesc = $site['company_bio'] ?? t('home_ready_desc');
+
+// 如果没有轮播产品，使用默认内容
 if (empty($carouselProducts)) {
     $carouselProducts = [['banner_image' => $defaultCover, 'title' => $defaultTitle, 'summary' => $defaultDesc, 'url' => url('/products')]];
 }

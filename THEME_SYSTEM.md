@@ -78,14 +78,66 @@ function render_product_card(array $product): void {
 - **助手函数**: `url()`, `asset_url()`, `h()`, `process_rich_text()` 等
 - **全局变量**: `$currentTheme` (当前主题名称)
 
-## 最佳实践
+## 性能优化
 
-1. **函数命名**: 使用主题前缀，如 `theme_render_product_card()`
-2. **错误处理**: 在数据库查询时添加适当的错误处理
-3. **性能优化**: 缓存频繁查询的结果
-4. **代码复用**: 将通用逻辑提取到 functions.php 中
-5. **样式组织**: 在 style.css 中使用主题特定的 CSS 类前缀
+### 数据库查询优化
+- **直接数据库过滤**: 在数据库层面过滤数据，而不是在 PHP 中使用 `array_filter`
+- **限制查询数量**: 使用 `LIMIT` 子句避免查询过多数据
+- **索引优化**: 确保相关字段有适当的数据库索引
 
-## 向后兼容性
+### 缓存策略
+- **静态缓存**: 在函数中使用 `static` 变量缓存单次请求内的重复查询
+- **数据预处理**: 在数据库查询时就格式化数据结构，避免在模板中重复处理
 
-现有的主题仍然可以工作，但建议迁移到新的结构以获得更好的可维护性。
+### 示例：优化的轮播产品获取
+```php
+function get_carousel_products(int $limit = 3): array {
+    static $cache = null; // 单次请求缓存
+
+    if ($cache !== null) {
+        return $cache;
+    }
+
+    $productModel = new \App\Models\Product();
+
+    // 1. 优先获取有横幅图片的产品
+    $featuredProducts = $productModel->getFeatured($limit);
+
+    // 2. 补充最新产品（避免重复）
+    if (count($featuredProducts) < $limit) {
+        $remaining = $limit - count($featuredProducts);
+        $excludeIds = array_column($featuredProducts, 'id');
+
+        $latestProducts = $productModel->getLatest($remaining + 10);
+        foreach ($latestProducts as $product) {
+            if (count($featuredProducts) >= $limit) break;
+            if (!in_array($product['id'], $excludeIds)) {
+                $featuredProducts[] = $product;
+            }
+        }
+    }
+
+    // 3. 格式化数据结构
+    $carouselProducts = [];
+    foreach ($featuredProducts as $product) {
+        $carouselProducts[] = [
+            'id' => $product['id'],
+            'title' => $product['title'],
+            'summary' => $product['summary'],
+            'banner_image' => $product['banner_image'],
+            'url' => url('/product/' . $product['id']),
+            'image' => $product['cover']
+        ];
+    }
+
+    $cache = $carouselProducts;
+    return $carouselProducts;
+}
+```
+
+### 最佳实践
+1. **避免 N+1 查询**: 使用 JOIN 而不是循环查询
+2. **分页加载**: 对于大数据集，使用分页而不是一次性加载所有数据
+3. **延迟加载**: 只在需要时加载数据
+4. **缓存层**: 考虑添加 Redis 或 Memcached 缓存层
+5. **查询优化**: 使用 EXPLAIN 分析查询性能

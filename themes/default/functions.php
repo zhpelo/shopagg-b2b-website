@@ -47,6 +47,57 @@ if (!function_exists('get_post_categories')) {
     }
 }
 
+// 获取轮播产品（性能优化版）
+// 优先获取有横幅图片的产品，不足时补充最新产品
+if (!function_exists('get_carousel_products')) {
+    function get_carousel_products(int $limit = 3): array {
+        static $cache = null; // 简单静态缓存，避免重复查询
+
+        if ($cache !== null) {
+            return $cache;
+        }
+
+        $productModel = new \App\Models\Product();
+
+        // 1. 首先获取有横幅图片的产品
+        $featuredProducts = $productModel->getFeatured($limit);
+
+        // 2. 如果不够数量，补充最新产品（排除已有横幅图片的产品）
+        if (count($featuredProducts) < $limit) {
+            $remaining = $limit - count($featuredProducts);
+            $excludeIds = array_column($featuredProducts, 'id');
+
+            $latestProducts = $productModel->getLatest($remaining + 10); // 多取一些用于过滤
+
+            foreach ($latestProducts as $product) {
+                if (count($featuredProducts) >= $limit) break;
+                if (!in_array($product['id'], $excludeIds)) {
+                    $featuredProducts[] = $product;
+                }
+            }
+        }
+
+        // 3. 确保不超过限制数量
+        $featuredProducts = array_slice($featuredProducts, 0, $limit);
+
+        // 4. 格式化数据为轮播所需结构
+        $carouselProducts = [];
+        foreach ($featuredProducts as $product) {
+            $carouselProducts[] = [
+                'id' => $product['id'],
+                'title' => $product['title'],
+                'summary' => $product['summary'],
+                'banner_image' => $product['banner_image'],
+                'url' => url('/product/' . $product['id']),
+                'image' => $product['cover'] // 备用图片
+            ];
+        }
+
+        $cache = $carouselProducts;
+        return $carouselProducts;
+    }
+}
+
 // 示例：渲染产品卡片
 if (!function_exists('render_product_card')) {
     function render_product_card(array $product): void {
