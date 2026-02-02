@@ -47,6 +47,7 @@ class Database {
             'vendor' => 'TEXT',
             'tags' => 'TEXT',
             'images_json' => 'TEXT',
+            'banner_image' => 'TEXT',
             'seo_title' => 'TEXT',
             'seo_keywords' => 'TEXT',
             'seo_description' => 'TEXT',
