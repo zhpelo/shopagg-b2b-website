@@ -1,6 +1,7 @@
 <?php
 $category = $category ?? null;
 ?>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <section class="section">
     <div class="container">
         <!-- 面包屑导航 -->
@@ -19,23 +20,27 @@ $category = $category ?? null;
             <div class="column is-6">
                 <?php if (!empty($images)): ?>
                     <div class="box soft-card">
-                        <div class="carousel">
-                            <figure class="image is-1by1">
-                                <img id="product-carousel-image" src="<?= asset_url(h($images[0])) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
-                            </figure>
-                            <div class="buttons is-centered" style="margin-top:12px">
-                                <button class="button is-light" id="carousel-prev"><?= h(t('carousel_prev')) ?></button>
-                                <button class="button is-light" id="carousel-next"><?= h(t('carousel_next')) ?></button>
+                        <!-- Swiper 主图 -->
+                        <div class="swiper main-swiper" style="width: 100%; ">
+                            <div class="swiper-wrapper">
+                                <?php foreach ($images as $img): ?>
+                                    <div class="swiper-slide">
+                                        <img src="<?= asset_url(h($img)) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;">
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
                         </div>
-                        <div class="columns is-multiline" style="margin-top:10px">
-                            <?php foreach ($images as $idx => $img): ?>
-                                <div class="column is-3">
-                                    <figure class="image is-1by1">
-                                        <img class="carousel-thumb" data-index="<?= (int)$idx ?>" src="<?= asset_url(h($img)) ?>" alt="<?= h($item['title']) ?>" style="cursor:zoom-in; object-fit:cover; width:100%; height:100%">
-                                    </figure>
-                                </div>
-                            <?php endforeach; ?>
+                        <!-- Swiper 缩略图 -->
+                        <div class="swiper thumbs-swiper" style="width: 100%; height: 100px; margin-top: 10px;">
+                            <div class="swiper-wrapper">
+                                <?php foreach ($images as $img): ?>
+                                    <div class="swiper-slide" style="width: 25%; height: 100%;">
+                                        <img src="<?= asset_url(h($img)) ?>" alt="<?= h($item['title']) ?>" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -229,37 +234,51 @@ $category = $category ?? null;
         <div class="modal-background"></div>
         <div class="modal-content">
             <p class="image">
-                <img id="lightbox-image" src="<?= asset_url(h($images[0])) ?>" alt="<?= h($item['title']) ?>">
+                <img id="lightbox-image" src="" alt="<?= h($item['title']) ?>">
             </p>
         </div>
         <button class="modal-close is-large" aria-label="close"></button>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         (function() {
-            const images = <?= json_encode($images, JSON_UNESCAPED_UNICODE) ?>;
-            let current = 0;
-            const main = document.getElementById("product-carousel-image");
-            const prev = document.getElementById("carousel-prev");
-            const next = document.getElementById("carousel-next");
-            const thumbs = document.querySelectorAll(".carousel-thumb");
+            const images = <?= json_encode(array_map(fn($img) => asset_url($img), $images), JSON_UNESCAPED_UNICODE) ?>;
             const lightbox = document.getElementById("image-lightbox");
             const lightboxImage = document.getElementById("lightbox-image");
 
-            function show(index) {
-                current = (index + images.length) % images.length;
-                if (main) main.src = images[current];
-            }
-            if (prev) prev.addEventListener("click", () => show(current - 1));
-            if (next) next.addEventListener("click", () => show(current + 1));
-            thumbs.forEach(el => {
-                el.addEventListener("click", () => show(parseInt(el.dataset.index || "0", 10)));
+            // 初始化缩略图 Swiper
+            const thumbsSwiper = new Swiper('.thumbs-swiper', {
+                spaceBetween: 10,
+                slidesPerView: 4,
+                freeMode: true,
+                watchSlidesProgress: true,
             });
-            if (main && lightbox && lightboxImage) {
-                main.addEventListener("click", () => {
-                    lightboxImage.src = images[current];
-                    lightbox.classList.add("is-active");
+
+            // 初始化主图 Swiper
+            const mainSwiper = new Swiper('.main-swiper', {
+                spaceBetween: 10,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                thumbs: {
+                    swiper: thumbsSwiper,
+                },
+            });
+
+            // 点击主图打开 lightbox
+            mainSwiper.slides.forEach((slide, index) => {
+                slide.addEventListener('click', () => {
+                    if (lightboxImage) {
+                        lightboxImage.src = images[index];
+                        lightbox.classList.add('is-active');
+                    }
                 });
-                lightbox.addEventListener("click", () => lightbox.classList.remove("is-active"));
+            });
+
+            // 关闭 lightbox
+            if (lightbox) {
+                lightbox.addEventListener('click', () => lightbox.classList.remove('is-active'));
             }
 
             // Inquiry Modal
