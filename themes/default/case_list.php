@@ -1,3 +1,10 @@
+<?php
+/**
+ * 页面模板：案例列表
+ * 作用：展示客户成功案例列表与摘要信息。
+ * 变量：$items（案例列表）、$title（页面标题）。
+ */
+?>
 <section class="hero is-info is-bold brand-gradient">
     <div class="hero-body">
         <div class="container">

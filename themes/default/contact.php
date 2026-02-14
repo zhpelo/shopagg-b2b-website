@@ -1,3 +1,11 @@
+<?php
+/**
+ * 页面模板：联系我们
+ * 作用：展示联系信息与询盘表单，便于客户快速提交需求。
+ * 变量：$site（站点设置，包含联系方式与公司简介）。
+ * 注意：表单提交到 /contact 并包含 CSRF 校验。
+ */
+?>
 <section class="section contact-section">
     <div class="container">
         <div class="columns">

@@ -1,3 +1,11 @@
+<?php
+/**
+ * 页面模板：通用列表
+ * 作用：用于文章/案例等列表页的统一卡片布局展示。
+ * 变量：$title（页面标题）、$items（列表数据）、$show_image/$show_category（展示控制）。
+ * 注意：$items 需包含 title/url/summary 字段。
+ */
+?>
 <section class="section">
     <div class="container">
         <h1 class="title is-3"><?= h($title) ?></h1>

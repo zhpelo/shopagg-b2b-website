@@ -1,3 +1,11 @@
+<?php
+/**
+ * 页面模板：关于我们
+ * 作用：展示企业概况、资质数据、贸易能力与公司展示/证书。
+ * 变量：$site（站点设置，包含公司信息与展示图片JSON）。
+ * 注意：展示数据来自后台设置的 company_* 与 company_show_json/company_certificates_json。
+ */
+?>
 <section class="section">
     <div class="container">
         <section class="section about-hero">

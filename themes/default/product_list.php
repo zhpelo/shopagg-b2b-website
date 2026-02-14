@@ -1,4 +1,10 @@
 <?php
+/**
+ * 页面模板：产品列表
+ * 作用：展示产品分类筛选与产品列表内容。
+ * 变量：$categories（分类树）、$current_category（当前分类）、$items（产品列表）。
+ * 注意：包含分类树递归渲染函数。
+ */
 $categories = $categories ?? [];
 $currentCategory = $current_category ?? null;
 

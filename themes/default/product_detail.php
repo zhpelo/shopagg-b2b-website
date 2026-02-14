@@ -1,4 +1,10 @@
 <?php
+/**
+ * 页面模板：产品详情
+ * 作用：展示产品图片、参数、询盘入口与相关信息。
+ * 变量：$item（产品数据）、$images（图片列表）、$category（分类数据）。
+ * 注意：包含 Swiper 轮播依赖。
+ */
 $category = $category ?? null;
 ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">

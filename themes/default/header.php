@@ -1,3 +1,11 @@
+<?php
+/**
+ * 模板片段：站点头部
+ * 作用：输出 HTML 头部、SEO/OG 元信息、全站导航与语言切换入口。
+ * 变量：$site（站点设置）、$seo（SEO信息）、$currentTheme（主题名）、$languages/$lang（语言配置）。
+ * 注意：由布局模板自动引入，不应独立渲染。
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 

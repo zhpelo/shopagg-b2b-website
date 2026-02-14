@@ -1,3 +1,11 @@
+<?php
+/**
+ * 模板片段：站点底部
+ * 作用：输出公司信息、社交媒体链接、版权信息与全站脚本。
+ * 变量：$site（站点设置）。
+ * 注意：由布局模板自动引入，不应独立渲染。
+ */
+?>
 </main>
 <footer class="footer footer-modern">
     <div class="container">

@@ -1,3 +1,10 @@
+<?php
+/**
+ * 页面模板：案例详情
+ * 作用：展示单个案例的详情内容与侧边信息。
+ * 变量：$item（案例数据）。
+ */
+?>
 <!-- 案例顶部 Hero -->
 <section class="hero is-link is-bold brand-gradient">
     <div class="hero-body">

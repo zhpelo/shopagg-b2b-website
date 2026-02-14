@@ -2,8 +2,6 @@
  * Default theme - 从模版内联样式提取
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@400;500;600&display=swap');
-
 /* ========== 全局 / header ========== */
 body {
   background: #f9fafb;

@@ -1,4 +1,9 @@
 <?php
+/**
+ * 页面模板：文章详情
+ * 作用：展示文章正文、时间、分类等信息。
+ * 变量：$item（文章数据）、$category（分类数据）。
+ */
 $category = $category ?? null;
 ?>
 <section class="section">

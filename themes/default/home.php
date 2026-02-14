@@ -1,4 +1,10 @@
 <?php
+/**
+ * 页面模板：首页
+ * 作用：展示轮播产品、优势卖点、精选产品、公司亮点、成功案例与CTA。
+ * 变量：$products（产品列表）、$cases（案例列表）、$site（站点设置）。
+ * 依赖：get_carousel_products() 获取轮播数据。
+ */
 $products = $products ?? [];
 // 使用优化的轮播产品获取函数
 $carouselProducts = get_carousel_products(3);

@@ -1,3 +1,11 @@
+<?php
+/**
+ * 页面模板：感谢页面
+ * 作用：展示表单提交成功的确认提示与后续引导。
+ * 用途：用于联系表单/询盘提交后的反馈页。
+ * 变量：无特殊变量依赖。
+ */
+?>
 <section class="section">
     <div class="container">
         <div class="columns is-centered">

@@ -1,4 +1,10 @@
 <?php
+/**
+ * 页面模板：文章列表
+ * 作用：展示文章分类筛选、文章列表与侧边栏。
+ * 变量：$categories（分类树）、$current_category（当前分类）、$items（文章列表）。
+ * 注意：包含分类树递归渲染函数。
+ */
 $categories = $categories ?? [];
 $currentCategory = $current_category ?? null;
 

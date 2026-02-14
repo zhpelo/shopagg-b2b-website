@@ -6,26 +6,55 @@ namespace App\Core;
 abstract class Controller {
     protected function render(string $theme, string $view, array $data = []): void {
         $themePath = APP_ROOT . '/themes/' . $theme;
+        $defaultThemePath = APP_ROOT . '/themes/default';
+        
         if (!is_dir($themePath)) {
-            $themePath = APP_ROOT . '/themes/default';
+            $themePath = $defaultThemePath;
         }
 
-        // 自动加载主题的 functions.php
+        // 自动加载主题的 functions.php（优先当前主题，回退到默认主题）
         $functionsFile = $themePath . '/functions.php';
+        if (!is_file($functionsFile)) {
+            $functionsFile = $defaultThemePath . '/functions.php';
+        }
         if (is_file($functionsFile)) {
             include_once $functionsFile;
         }
 
         extract($data, EXTR_SKIP);
         $currentTheme = $theme; // 将主题名称传递给视图
-        include $themePath . '/header.php';
+
+        // 加载视图文件（优先当前主题，回退到默认主题）
         $viewFile = $themePath . '/' . $view . '.php';
-        if (is_file($viewFile)) {
-            include $viewFile;
-        } else {
-            echo "<p>Missing view: $view</p>";
+        if (!is_file($viewFile)) {
+            $viewFile = $defaultThemePath . '/' . $view . '.php';
         }
-        include $themePath . '/footer.php';
+        
+        if (is_file($viewFile)) {
+            ob_start();
+            include $viewFile;
+            $pageContent = ob_get_clean();
+        } else {
+            $pageContent = "<p>Missing view: $view</p>";
+        }
+        // 回退方案：加载 header 和 footer（优先当前主题，回退到默认主题）
+        $headerFile = $themePath . '/header.php';
+        if (!is_file($headerFile)) {
+            $headerFile = $defaultThemePath . '/header.php';
+        }
+        
+        $footerFile = $themePath . '/footer.php';
+        if (!is_file($footerFile)) {
+            $footerFile = $defaultThemePath . '/footer.php';
+        }
+        
+        if (is_file($headerFile)) {
+            include $headerFile;
+        }
+        echo $pageContent;
+        if (is_file($footerFile)) {
+            include $footerFile;
+        }
     }
 
     protected function json(array $data, int $status = 200): void {
