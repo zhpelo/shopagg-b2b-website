@@ -128,4 +128,5 @@ return [
     'form_message_label' => '留言内容',
     'contact_title' => '联系我们',
     'contact_message' => '发送留言',
+    'related_products' => '相关产品',
 ];

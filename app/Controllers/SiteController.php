@@ -74,11 +74,32 @@ class SiteController extends BaseController {
             $category = $categoryModel->getById((int)$item['category_id']);
         }
         
+        // 获取相关产品（同分类或最新产品）
+        $relatedProducts = [];
+        if (!empty($item['category_id'])) {
+            $relatedProducts = $productModel->getByCategory((int)$item['category_id'], 6);
+            // 排除当前产品
+            $relatedProducts = array_filter($relatedProducts, fn($p) => $p['id'] !== $item['id']);
+            $relatedProducts = array_slice($relatedProducts, 0, 4);
+        }
+        // 如果相关产品不足4个，补充最新产品
+        if (count($relatedProducts) < 4) {
+            $latest = $productModel->getList(6, true);
+            foreach ($latest as $p) {
+                if ($p['id'] !== $item['id'] && !in_array($p['id'], array_column($relatedProducts, 'id'))) {
+                    $relatedProducts[] = $p;
+                    if (count($relatedProducts) >= 4) break;
+                }
+            }
+        }
+        foreach ($relatedProducts as &$p) $p['url'] = url('/product/' . $p['slug']);
+        
         $this->renderSite('product_detail', [
             'item' => $item,
             'category' => $category,
             'images' => $item['images'] ?? [],
             'price_tiers' => $productModel->getPrices((int)$item['id']),
+            'related_products' => $relatedProducts,
             'whatsapp' => $this->siteData['site']['whatsapp'],
             'inquiry_form' => true,
             'seo' => [

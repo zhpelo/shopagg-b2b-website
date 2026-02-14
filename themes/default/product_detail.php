@@ -67,7 +67,7 @@ $category = $category ?? null;
             </div>
             <div class="column is-5">
                 <div class="box soft-card sticky-element">
-                    <h1 class="title is-3"><?= h($item['title']) ?></h1>
+                    <h1 class="title is-4"><?= h($item['title']) ?></h1>
                     <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
                         <span class=" has-text-grey">
                             <i class="far fa-calendar-alt mr-1"></i>
@@ -150,8 +150,44 @@ $category = $category ?? null;
 
                 </div>
             </div>
+
         </div>
 
+
+        <!-- 相关产品推荐 -->
+<?php if (!empty($related_products)): ?>
+<section class="section related-products-section">
+    <div class="container">
+        <h2 class="title is-3 has-text-centered mb-6">
+            <i class="fas fa-th-large mr-2"></i><?= t('related_products') ?>
+        </h2>
+        <div class="columns is-multiline">
+            <?php foreach ($related_products as $product): ?>
+
+            <div class="column is-3">
+                <a href="<?= h($product['url']) ?>">
+                    <div class="card related-product-card">
+                        <div class="card-image">
+                            <?php if (!empty($product['cover'])): ?>
+                                <img src="<?= asset_url(h($product['cover'])) ?>" alt="<?= h($product['title']) ?>">
+                            <?php else: ?>
+                                <img src="https://devtool.tech/api/placeholder/800/800?text=<?= urlencode("No image available") ?>" alt="<?= h($product['title']) ?>">
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-content">
+                        <p class="title is-6 has-text-dark"><?= h($product['title']) ?></p>
+                        <?php if (!empty($product['summary'])): ?>
+                        <p class="is-size-7 has-text-grey" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?= h($product['summary']) ?></p>
+                        <?php endif; ?>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
     </div>
 </section>

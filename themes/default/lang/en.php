@@ -128,4 +128,5 @@ return [
     'form_message_label' => 'Message',
     'contact_title' => 'Contact Us',
     'contact_message' => 'Send Message',
+    'related_products' => 'Related Products',
 ];
