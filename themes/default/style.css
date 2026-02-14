@@ -727,3 +727,10 @@ body {
   color: #333;
   font-weight: bold;
 }
+
+
+ .sticky-element {
+            position: -webkit-sticky; /* Safari 的兼容性前缀 */
+            position: sticky;
+            top: 10px; /* 距离顶部 10px 时开始 "粘住" */
+        }

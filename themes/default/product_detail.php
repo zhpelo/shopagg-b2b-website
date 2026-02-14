@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 页面模板：产品详情
  * 作用：展示产品图片、参数、询盘入口与相关信息。
@@ -32,9 +33,9 @@ $category = $category ?? null;
         <?php endif; ?>
 
         <div class="columns mb-5">
-            <div class="column is-6">
+            <div class="column is-7">
                 <?php if (!empty($images)): ?>
-                    <div class="box soft-card">
+                    <div class="box soft-card mb-6">
                         <!-- Swiper 主图 -->
                         <div class="swiper main-swiper" style="width: 100%; ">
                             <div class="swiper-wrapper">
@@ -59,10 +60,13 @@ $category = $category ?? null;
                         </div>
                     </div>
                 <?php endif; ?>
-                
+                <article class="box soft-card">
+                    <h2 class="title is-4"><?= h(t('detail_intro')) ?></h2>
+                    <div><?= process_rich_text($item['content']) ?></div>
+                </article>
             </div>
-            <div class="column is-6">
-                <div class="box soft-card">
+            <div class="column is-5">
+                <div class="box soft-card sticky-element">
                     <h1 class="title is-3"><?= h($item['title']) ?></h1>
                     <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
                         <span class=" has-text-grey">
@@ -148,10 +152,7 @@ $category = $category ?? null;
             </div>
         </div>
 
-        <article class="box soft-card">
-            <h2 class="title is-4"><?= h(t('detail_intro')) ?></h2>
-            <div><?= process_rich_text($item['content']) ?></div>
-        </article>
+
     </div>
 </section>
 <?php if (!empty($inquiry_form)): ?>
