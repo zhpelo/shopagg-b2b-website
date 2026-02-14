@@ -126,7 +126,7 @@ body {
 .hero-swiper-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(15, 23, 42, 0.4) 100%);
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.585) 0%, rgba(30, 41, 59, 0.5) 50%, rgba(15, 23, 42, 0.4) 100%);
   z-index: 0;
 }
 .hero-swiper-slide .hero-body {
@@ -197,7 +197,12 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 3em;
+}
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .line-clamp-3 {
   display: -webkit-box;

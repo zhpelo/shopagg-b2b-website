@@ -36,7 +36,7 @@
                         <?php else: ?>
                             <h1 class="is-size-5"><?= h($site['name']) ?></h1>
                         <?php endif; ?>
-                        <div class="tagline is-size-7"><?= h($site['tagline']) ?></div>
+                        <div class="tagline "><?= h($site['tagline']) ?></div>
                     </div>
                 </a>
                 <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-nav">

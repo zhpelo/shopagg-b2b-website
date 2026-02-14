@@ -18,10 +18,10 @@ $carouselProducts = get_carousel_products(3);
                         <div class="container">
                             <div class="columns is-vcentered">
                                 <div class="column is-7">
-                                    <h1 class="title is-1 has-text-white mb-5 hero-swiper-title">
+                                    <h1 class="title is-1 has-text-white mb-5 hero-swiper-title line-clamp-2">
                                         <?= h($p['title']) ?>
                                     </h1>
-                                    <p class="subtitle is-4 has-text-grey-light mb-6 hero-swiper-desc">
+                                    <p class="subtitle is-4 has-text-grey-light mb-6 hero-swiper-desc line-clamp-3">
                                         <?= h( mb_substr(strip_tags($p['summary']), 0, 120) ) ?>
                                     </p>
                                     <div class="buttons">
@@ -127,10 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             </a>
                         </div>
                         <div class="card-content" style="flex-grow: 1;">
-                            <h3 class="title is-5 mb-2">
+                            <h3 class="title is-5 mb-2 line-clamp-2">
                                 <a href="<?= h($p['url']) ?>" class="has-text-dark"><?= h($p['title']) ?></a>
                             </h3>
-                            <p class="content is-size-7 has-text-grey line-clamp-3">
+                            <p class="content  has-text-grey line-clamp-3">
                                 <?= h($p['summary']) ?>
                             </p>
                         </div>
@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="<?= url('/about') ?>" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
             </div>
             <div class="column is-6">
-                <figure class="image is-16by9 box p-0 overflow-hidden soft-card">
-                    <img src="<?= h($site['og_image'] ?? 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80') ?>" alt="Factory" style="object-fit: cover;">
+                <figure class="image is-16by9 box overflow-hidden soft-card">
+                    <img src="<?= asset_url($site['og_image'] ?? 'https://devtool.tech/api/placeholder/400/300') ?>" alt="Factory" style="object-fit: cover;">
                 </figure>
             </div>
         </div>
@@ -180,11 +180,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card soft-card overflow-hidden">
                             <div class="card-image">
                                 <figure class="image is-3by2">
-                                    <img src="<?= asset_url($c['cover'] ?: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
+                                    <img src="<?= asset_url($c['cover'] ?: 'https://devtool.tech/api/placeholder/400/300') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
                                 </figure>
                             </div>
                             <div class="card-content p-4">
-                                <h4 class="title is-6 mb-0"><?= h($c['title']) ?></h4>
+                                <h4 class="title is-6 mb-0 line-clamp-1"><?= h($c['title']) ?></h4>
                             </div>
                         </div>
                     </a>

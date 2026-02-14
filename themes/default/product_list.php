@@ -135,7 +135,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                     <p class="title is-5 mb-2">
                                         <a href="<?= h($item['url']) ?>" class="has-text-dark"><?= h($item['title']) ?></a>
                                     </p>
-                                    <p class="content is-size-7 has-text-grey line-clamp-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3em;">
+                                    <p class="content  has-text-grey line-clamp-2">
                                         <?= h($item['summary']) ?>
                                     </p>
                                 </div>

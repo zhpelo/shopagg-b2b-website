@@ -1,5 +1,5 @@
 </main>
-<footer class="footer">
+<footer class="footer has-background-white py-6 mt-6">
     <div class="container">
         <div class="columns">
             <div class="column is-5">
@@ -27,17 +27,17 @@
                 <div class="columns">
                     <div class="column">
                         <p class="has-text-weight-semibold"><?= h(t('footer_company')) ?></p>
-                        <p class="is-size-7"><?= h($site['company_address'] ?? '') ?></p>
+                        <p class=""><?= h($site['company_address'] ?? '') ?></p>
                     </div>
                     <div class="column">
                         <p class="has-text-weight-semibold"><?= h(t('footer_contact')) ?></p>
-                        <p class="is-size-7"><?= h($site['company_email'] ?? '') ?></p>
-                        <p class="is-size-7"><?= h($site['company_phone'] ?? '') ?></p>
+                        <p class=""><?= h($site['company_email'] ?? '') ?></p>
+                        <p class=""><?= h($site['company_phone'] ?? '') ?></p>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="has-text-grey is-size-7">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
+        <p class="has-text-grey ">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
     </div>
 </footer>
 <script>

@@ -17,7 +17,7 @@
                             <?php if (!empty($show_category)): ?>
                                 <span class="tag is-light"><?= h($item['category_name'] ?? '未分类') ?></span>
                             <?php endif; ?>
-                            <p class="content is-size-7"><?= h($item['summary']) ?></p>
+                            <p class="content "><?= h($item['summary']) ?></p>
                             <a class="button is-small is-link is-light" href="<?= h($item['url']) ?>"><?= h(t('list_read_more')) ?></a>
                         </div>
                     </div>

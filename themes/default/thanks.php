@@ -11,7 +11,7 @@
                         <?= h(t('thanks_desc')) ?>
                     </p>
                     <div class="notification is-info is-light mt-5">
-                        <p class="is-size-7"><strong><?= h(t('thanks_expected')) ?></strong></p>
+                        <p class=""><strong><?= h(t('thanks_expected')) ?></strong></p>
                     </div>
                     <div class="buttons is-centered mt-6">
                         <a class="button is-link" href="<?= url('/') ?>"><?= h(t('btn_back_home')) ?></a>

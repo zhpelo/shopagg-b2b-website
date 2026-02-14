@@ -91,7 +91,7 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
                                     <?php endif; ?>
                                     <div class="column">
                                         <div class="is-flex is-align-items-center mb-2" style="gap: 0.75rem;">
-                                            <span class="is-size-7 has-text-grey">
+                                            <span class=" has-text-grey">
                                                 <i class="far fa-calendar-alt mr-1"></i>
                                                 <?= format_date($item['created_at'], 'Y-m-d') ?>
                                             </span>

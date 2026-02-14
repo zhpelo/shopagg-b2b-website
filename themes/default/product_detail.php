@@ -59,7 +59,7 @@ $category = $category ?? null;
                 <div class="box soft-card">
                     <h1 class="title is-3"><?= h($item['title']) ?></h1>
                     <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
-                        <span class="is-size-7 has-text-grey">
+                        <span class=" has-text-grey">
                             <i class="far fa-calendar-alt mr-1"></i>
                             <?= format_date($item['created_at'], 'Y-m-d') ?>
                         </span>
@@ -86,7 +86,7 @@ $category = $category ?? null;
                                             <div class="has-text-weight-bold is-size-4" style="color: #333;">
                                                 <?= h($tier['currency']) ?>$<?= h((string)$tier['price']) ?>
                                             </div>
-                                            <div class="is-size-7 has-text-grey">
+                                            <div class=" has-text-grey">
                                                 <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> <?= h(t('product_pieces')) ?>
                                             </div>
                                         </div>
@@ -123,7 +123,7 @@ $category = $category ?? null;
                         </div>
                     </div>
 
-                    <div class="sample-info mt-4 is-size-7 has-text-grey-dark">
+                    <div class="sample-info mt-4  has-text-grey-dark">
                         <?= h(t('product_sample_tip')) ?> <span class="has-text-weight-bold">US$ <?= !empty($price_tiers) ? h($price_tiers[0]['currency']) . ' ' . h((string)($price_tiers[0]['price'] * 2)) : '50.00' ?>/<?= h(t('product_pieces')) ?></span> !
                         <a href="#inquiry" class="has-text-weight-bold is-underlined has-text-black" onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(t('product_sample_btn')) ?></a>
                     </div>
@@ -161,15 +161,15 @@ $category = $category ?? null;
                         <div class="mt-5">
                             <div class="is-flex is-align-items-center mb-3">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class="is-size-7"><?= h(t('home_iso')) ?></span>
+                                <span class=""><?= h(t('home_iso')) ?></span>
                             </div>
                             <div class="is-flex is-align-items-center mb-3">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class="is-size-7"><?= h(t('home_oem')) ?></span>
+                                <span class=""><?= h(t('home_oem')) ?></span>
                             </div>
                             <div class="is-flex is-align-items-center">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class="is-size-7"><?= h(t('home_global')) ?></span>
+                                <span class=""><?= h(t('home_global')) ?></span>
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@ $category = $category ?? null;
                             <div class="columns">
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label is-size-7"><?= h(t('form_name_full')) ?> *</label>
+                                        <label class="label "><?= h(t('form_name_full')) ?> *</label>
                                         <div class="control">
                                             <input class="input" name="name" required placeholder="<?= h(t('form_name_placeholder')) ?>">
                                         </div>
@@ -190,7 +190,7 @@ $category = $category ?? null;
                                 </div>
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label is-size-7"><?= h(t('form_email_full')) ?> *</label>
+                                        <label class="label "><?= h(t('form_email_full')) ?> *</label>
                                         <div class="control">
                                             <input class="input" name="email" type="email" required placeholder="<?= h(t('form_email_placeholder')) ?>">
                                         </div>
@@ -201,7 +201,7 @@ $category = $category ?? null;
                             <div class="columns">
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label is-size-7"><?= h(t('form_company')) ?></label>
+                                        <label class="label "><?= h(t('form_company')) ?></label>
                                         <div class="control">
                                             <input class="input" name="company" placeholder="<?= h(t('form_company_placeholder')) ?>">
                                         </div>
@@ -209,7 +209,7 @@ $category = $category ?? null;
                                 </div>
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label is-size-7"><?= h(t('form_quantity')) ?></label>
+                                        <label class="label "><?= h(t('form_quantity')) ?></label>
                                         <div class="control">
                                             <input class="input" name="quantity" placeholder="<?= h(t('form_qty_placeholder')) ?>">
                                         </div>
@@ -218,7 +218,7 @@ $category = $category ?? null;
                             </div>
 
                             <div class="field">
-                                <label class="label is-size-7"><?= h(t('form_requirements')) ?></label>
+                                <label class="label "><?= h(t('form_requirements')) ?></label>
                                 <div class="control">
                                     <textarea class="textarea" name="message" rows="3" placeholder="<?= h(t('form_req_placeholder')) ?>"></textarea>
                                 </div>

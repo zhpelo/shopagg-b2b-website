@@ -15,7 +15,7 @@
                         </div>
                         <div class="column is-7">
                             <table class="table is-fullwidth is-narrow is-borderless mt-0">
-                                <tbody class="is-size-7">
+                                <tbody class="">
                                     <tr>
                                         <td class="has-text-grey" width="40%"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_biz_type')) ?>:</td>
                                         <td><?= h($site['company_business_type'] ?? 'Trading Company') ?></td>
@@ -43,7 +43,7 @@
                                 </tbody>
                             </table>
                             <div class="is-divider my-2" style="border-top: 1px solid #f0f0f0;"></div>
-                            <div class="columns is-mobile is-size-7">
+                            <div class="columns is-mobile ">
                                 <div class="column">
                                     <span class="has-text-grey"><?= h(t('about_rating')) ?>:</span> <span class="has-text-weight-bold ml-1"><?= h($site['company_rating'] ?? '5.0/5') ?></span>
                                 </div>
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="content is-size-7 mt-4 has-text-justified">
+                    <div class="content  mt-4 has-text-justified">
                         <?= nl2br(h($site['company_bio'] ?? '')) ?>
                         <div class="mt-3"><a class="has-text-link"><?= h(t('btn_view_all')) ?> <i class="fas fa-chevron-down"></i></a></div>
                     </div>
@@ -63,9 +63,9 @@
                 <div class="mb-6 pt-5" style="border-top: 1px solid #f0f0f0;">
                     <div class="level mb-4">
                         <div class="level-left"><h3 class="title is-5"><?= h(t('about_gen_info')) ?></h3></div>
-                        <div class="level-right"><span class="is-size-7 has-text-grey">6 <?= h(t('about_sgs_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
+                        <div class="level-right"><span class=" has-text-grey">6 <?= h(t('about_sgs_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
                     </div>
-                    <table class="table is-fullwidth is-size-7">
+                    <table class="table is-fullwidth ">
                         <tbody>
                             <tr><td width="30%" class="has-text-grey"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_biz_type')) ?>:</td><td><?= h($site['company_business_type'] ?? '-') ?></td></tr>
                             <tr><td class="has-text-grey"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_main_products')) ?>:</td><td class="has-text-link"><?= h($site['company_main_products'] ?? '-') ?></td></tr>
@@ -82,9 +82,9 @@
                 <div class="mb-6 pt-5" style="border-top: 1px solid #f0f0f0;">
                     <div class="level mb-4">
                         <div class="level-left"><h3 class="title is-5"><?= h(t('about_trade_cap')) ?></h3></div>
-                        <div class="level-right"><span class="is-size-7 has-text-grey">7 <?= h(t('about_sgs_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
+                        <div class="level-right"><span class=" has-text-grey">7 <?= h(t('about_sgs_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
                     </div>
-                    <table class="table is-fullwidth is-size-7">
+                    <table class="table is-fullwidth ">
                         <tbody>
                             <tr><td width="30%" class="has-text-grey"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_main_markets')) ?>:</td><td><?= h($site['company_main_markets'] ?? '-') ?></td></tr>
                             <tr><td class="has-text-grey"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_trade_staff')) ?>:</td><td><?= h($site['company_trade_staff'] ?? '-') ?></td></tr>
@@ -102,9 +102,9 @@
                 <div class="mb-6 pt-5" style="border-top: 1px solid #f0f0f0;">
                     <div class="level mb-4">
                         <div class="level-left"><h3 class="title is-5"><?= h(t('about_rd_cap')) ?></h3></div>
-                        <div class="level-right"><span class="is-size-7 has-text-grey"><?= h(t('about_all_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
+                        <div class="level-right"><span class=" has-text-grey"><?= h(t('about_all_verified')) ?> <i class="fas fa-check-circle has-text-success"></i></span></div>
                     </div>
-                    <table class="table is-fullwidth is-size-7">
+                    <table class="table is-fullwidth ">
                         <tbody>
                             <tr><td width="30%" class="has-text-grey"><i class="fas fa-check has-text-success mr-2"></i><?= h(t('about_rd_engineers')) ?>:</td><td><?= h($site['company_rd_engineers'] ?? '-') ?></td></tr>
                         </tbody>
@@ -127,7 +127,7 @@
                                 <figure class="image is-4by3 mb-2">
                                     <img src="<?= asset_url(h($item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: cover; border: 1px solid #eee; border-radius: 2px;">
                                 </figure>
-                                <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
+                                <p class=" has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -150,7 +150,7 @@
                                 <figure class="image is-4by3 mb-2">
                                     <img src="<?= asset_url(h($item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>" style="object-fit: contain; background: #fafafa; border: 1px solid #eee; border-radius: 2px; padding: 5px;">
                                 </figure>
-                                <p class="is-size-7 has-text-centered"><?= h($item['title'] ?? '') ?></p>
+                                <p class=" has-text-centered"><?= h($item['title'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>

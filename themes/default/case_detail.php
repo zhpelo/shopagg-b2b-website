@@ -43,7 +43,7 @@
                     </div>
                     <hr>
                     <div class="content">
-                        <p class="is-size-7 has-text-grey"><?= h(t('case_interest')) ?></p>
+                        <p class=" has-text-grey"><?= h(t('case_interest')) ?></p>
                         <a href="<?= url('/contact') ?>" class="button is-link is-fullwidth"><?= h(t('cta_quote')) ?></a>
                     </div>
                 </div>
