@@ -8,7 +8,7 @@ $carouselProducts = get_carousel_products(3);
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <!-- 1. Hero 轮播（Swiper）：最新 3 个产品（产品展示 + 产品主题 + 产品卖点） -->
-<section class="hero hero-swiper is-large is-relative">
+<section class="hero hero-swiper is-large is-relative home-hero">
     <div class="swiper hero-swiper-container">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
@@ -24,7 +24,7 @@ $carouselProducts = get_carousel_products(3);
                                     <p class="subtitle is-4 has-text-grey-light mb-6 hero-swiper-desc line-clamp-3">
                                         <?= h( mb_substr(strip_tags($p['summary']), 0, 120) ) ?>
                                     </p>
-                                    <div class="buttons">
+                                    <div class="buttons hero-cta">
                                         <a class="button is-link is-large px-6" href="<?= $p['url'] ?>"><?= t('view_details')?></a>
                                         <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= t('nav_contact') ?></a>
                                     </div>
@@ -64,11 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php endif; ?>
 <!-- 2. Value Proposition (Trust Section) -->
-<section class="section py-6" style="background: #fff; margin-top: -50px; position: relative; z-index: 5;">
+<section class="section py-6 home-trust">
     <div class="container">
-        <div class="box soft-card py-6 border-none">
-            <div class="columns has-text-centered">
-                <div class="column">
+        <div class="box soft-card py-6 border-none home-trust-box">
+            <div class="columns has-text-centered home-trust-columns">
+                <div class="column home-trust-column">
                     <div class="px-4">
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-check-circle fa-2x"></i>
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="has-text-grey"><?= h(t('home_quality_desc')) ?></p>
                     </div>
                 </div>
-                <div class="column" style="border-left: 1px solid #f0f0f0;">
+                <div class="column home-trust-column">
                     <div class="px-4">
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-globe-americas fa-2x"></i>
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="has-text-grey"><?= h(t('home_logistics_desc')) ?></p>
                     </div>
                 </div>
-                <div class="column" style="border-left: 1px solid #f0f0f0;">
+                <div class="column home-trust-column">
                     <div class="px-4">
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-user-shield fa-2x"></i>
@@ -101,13 +101,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- 3. Featured Products Grid -->
-<section class="section">
+<section class="section home-products">
     <div class="container">
-        <div class="level mb-6">
+        <div class="level mb-6 home-section-head">
             <div class="level-left">
                 <div>
-                    <h2 class="title is-3 mb-2"><?= h(t('section_featured_products')) ?></h2>
-                    <p class="has-text-grey"><?= h(t('home_highlights')) ?></p>
+                    <h2 class="title is-3 mb-2 home-section-title"><?= h(t('section_featured_products')) ?></h2>
+                    <p class="has-text-grey home-section-subtitle"><?= h(t('home_highlights')) ?></p>
                 </div>
             </div>
             <div class="level-right">
@@ -118,19 +118,19 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="columns is-multiline">
             <?php foreach ($products as $p): ?>
                 <div class="column is-4">
-                    <div class="card soft-card h-100" style="display: flex; flex-direction: column; height: 100%;">
-                        <div class="card-image">
+                    <div class="card soft-card h-100 home-product-card">
+                        <div class="card-image home-product-image">
                             <a href="<?= h($p['url']) ?>">
                                 <figure class="image is-1by1">
                                     <img src="<?= asset_url($p['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($p['title']) ?>" style="object-fit: cover;">
                                 </figure>
                             </a>
                         </div>
-                        <div class="card-content" style="flex-grow: 1;">
-                            <h3 class="title is-5 mb-2 line-clamp-2">
+                        <div class="card-content home-product-content">
+                            <h3 class="title is-5 mb-2 line-clamp-2 home-product-title">
                                 <a href="<?= h($p['url']) ?>" class="has-text-dark"><?= h($p['title']) ?></a>
                             </h3>
-                            <p class="content  has-text-grey line-clamp-3">
+                            <p class="content has-text-grey line-clamp-3 home-product-summary">
                                 <?= h($p['summary']) ?>
                             </p>
                         </div>
@@ -142,12 +142,12 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- 4. Factory/Company Highlight (Why Us) -->
-<section class="section" style="background-color: #fcfcfc;">
+<section class="section home-why">
     <div class="container">
         <div class="columns is-vcentered">
             <div class="column is-6">
-                <h2 class="title is-3 mb-5"><?= h(t('home_why_us')) ?></h2>
-                <div class="content has-text-grey is-medium">
+                <h2 class="title is-3 mb-5 home-section-title"><?= h(t('home_why_us')) ?></h2>
+                <div class="content has-text-grey is-medium home-why-content">
                     <p><?= h($site['company_bio'] ?? '') ?></p>
                     <ul style="list-style-type: none; margin-left: 0;">
                         <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_iso')) ?></li>
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="<?= url('/about') ?>" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
             </div>
             <div class="column is-6">
-                <figure class="image is-16by9 box overflow-hidden soft-card">
+                <figure class="image is-16by9 box overflow-hidden soft-card home-why-media">
                     <img src="<?= asset_url($site['og_image'] ?? 'https://devtool.tech/api/placeholder/400/300') ?>" alt="Factory" style="object-fit: cover;">
                 </figure>
             </div>
@@ -167,17 +167,17 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- 5. Success Cases Banner -->
-<section class="section py-6">
+<section class="section py-6 home-cases">
     <div class="container">
         <div class="has-text-centered mb-6">
-            <h2 class="title is-3"><?= t('section_success_cases') ?></h2>
-            <p class="subtitle is-6 has-text-grey"><?= t('home_global') ?></p>
+            <h2 class="title is-3 home-section-title"><?= t('section_success_cases') ?></h2>
+            <p class="subtitle is-6 has-text-grey home-section-subtitle"><?= t('home_global') ?></p>
         </div>
         <div class="columns is-multiline">
             <?php foreach ($cases as $c): ?>
                 <div class="column is-4">
                     <a href="<?= h($c['url']) ?>">
-                        <div class="card soft-card overflow-hidden">
+                        <div class="card soft-card overflow-hidden home-case-card">
                             <div class="card-image">
                                 <figure class="image is-3by2">
                                     <img src="<?= asset_url($c['cover'] ?: 'https://devtool.tech/api/placeholder/400/300') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
@@ -195,9 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- 6. Bottom CTA -->
-<section class="section pb-6">
+<section class="section pb-6 home-cta">
     <div class="container">
-        <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card">
+        <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card home-cta-box">
             <h2 class="title is-3 has-text-white my-5"><?= h(t('home_ready_title')) ?></h2>
             <p class="is-5 has-text-grey-light mb-5"><?= h(t('home_ready_desc')) ?></p>
             <div class="buttons is-centered">

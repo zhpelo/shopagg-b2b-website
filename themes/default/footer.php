@@ -1,11 +1,11 @@
 </main>
-<footer class="footer has-background-white py-6 mt-6">
+<footer class="footer footer-modern">
     <div class="container">
-        <div class="columns">
+        <div class="columns footer-top">
             <div class="column is-5">
-                <h3 class="title is-5"><?= h($site['name']) ?></h3>
-                <p class="subtitle is-6 mb-4"><?= h($site['tagline']) ?></p>
-                <div class="buttons">
+                <h3 class="title is-5 footer-brand"><?= h($site['name']) ?></h3>
+                <p class="subtitle is-6 footer-tagline"><?= h($site['tagline']) ?></p>
+                <div class="footer-social">
                     <?php if (!empty($site['facebook'])): ?>
                         <a class="button is-light is-rounded" href="<?= h($site['facebook']) ?>" target="_blank" title="Facebook"><span class="icon"><i class="fab fa-facebook-f"></i></span></a>
                     <?php endif; ?>
@@ -26,18 +26,28 @@
             <div class="column is-7">
                 <div class="columns">
                     <div class="column">
-                        <p class="has-text-weight-semibold"><?= h(t('footer_company')) ?></p>
-                        <p class=""><?= h($site['company_address'] ?? '') ?></p>
-                    </div>
-                    <div class="column">
-                        <p class="has-text-weight-semibold"><?= h(t('footer_contact')) ?></p>
-                        <p class=""><?= h($site['company_email'] ?? '') ?></p>
-                        <p class=""><?= h($site['company_phone'] ?? '') ?></p>
+                        <p class="footer-title"><?= h(t('footer_contact')) ?></p>
+                        <div class="footer-links">
+                            <a href="mailto:<?= h($site['company_email'] ?? '') ?>" target="_blank">
+                                <span class="icon"><i class="fas fa-envelope"></i></span>
+                                <span><?= h($site['company_email'] ?? '') ?></span>
+                            </a>
+                            <a href="tel:<?= h($site['company_phone'] ?? '') ?>" target="_blank">
+                                <span class="icon"><i class="fas fa-phone"></i></span>
+                                <span><?= h($site['company_phone'] ?? '') ?></span>
+                            </a>
+                            <a href="https://goo.gl/maps/<?= h($site['company_address'] ?? '') ?>" target="_blank">
+                                <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                                <span><?= h($site['company_address'] ?? '') ?></span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="has-text-grey ">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
+        <div class="footer-bottom">
+            <p class="has-text-grey">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
+        </div>
     </div>
 </footer>
 <script>
