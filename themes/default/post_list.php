@@ -107,10 +107,10 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
                                                 </a>
                                             <?php endif; ?>
                                         </div>
-                                        <h2 class="title is-4 mb-3">
+                                        <h2 class="title is-4 mb-3 line-clamp-2">
                                             <a href="<?= h($item['url']) ?>" class="has-text-dark"><?= h($item['title']) ?></a>
                                         </h2>
-                                        <p class="content is-size-6 has-text-grey mb-4">
+                                        <p class="content is-size-6 has-text-grey mb-4 line-clamp-2">
                                             <?= h($item['summary']) ?>
                                         </p>
                                         <a href="<?= h($item['url']) ?>" class="has-text-link has-text-weight-bold"><?= h(t('post_read_full')) ?> &rarr;</a>
