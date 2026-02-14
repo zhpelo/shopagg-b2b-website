@@ -3,42 +3,30 @@ $products = $products ?? [];
 // 使用优化的轮播产品获取函数
 $carouselProducts = get_carousel_products(3);
 
-// 默认轮播内容（当没有产品时使用）
-$defaultCover = $site['og_image'] ?? 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80';
-$defaultTitle = $site['tagline'] ?? t('home_ready_title');
-$defaultDesc = $site['company_bio'] ?? t('home_ready_desc');
-
-// 如果没有轮播产品，使用默认内容
-if (empty($carouselProducts)) {
-    $carouselProducts = [['banner_image' => $defaultCover, 'title' => $defaultTitle, 'summary' => $defaultDesc, 'url' => url('/products')]];
-}
 ?>
+<?php if($carouselProducts): ?>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <!-- 1. Hero 轮播（Swiper）：最新 3 个产品（产品展示 + 产品主题 + 产品卖点） -->
 <section class="hero hero-swiper is-large is-relative">
     <div class="swiper hero-swiper-container">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
-                <?php
-                $cover = $p['banner_image'] ?? $defaultCover;
-                $coverSrc = (strpos($cover, 'http') === 0 || strpos($cover, '//') === 0) ? $cover : asset_url($cover);
-                $slideUrl = $p['url'] ?? url('/products');
-                ?>
-                <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= h($coverSrc) ?>');">
+                <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= h($p['banner_image']) ?>');">
                     <div class="hero-swiper-overlay"></div>
                     <div class="hero-body">
                         <div class="container">
                             <div class="columns is-vcentered">
                                 <div class="column is-7">
                                     <h1 class="title is-1 has-text-white mb-5 hero-swiper-title">
-                                        <?= h($p['title'] ?? $defaultTitle) ?>
+                                        <?= h($p['title']) ?>
                                     </h1>
                                     <p class="subtitle is-4 has-text-grey-light mb-6 hero-swiper-desc">
-                                        <?= h(!empty($p['summary']) ? mb_substr(strip_tags($p['summary']), 0, 120) . (mb_strlen(strip_tags($p['summary'])) > 120 ? '...' : '') : $defaultDesc) ?>
+                                        <?= h( mb_substr(strip_tags($p['summary']), 0, 120) ) ?>
                                     </p>
                                     <div class="buttons">
-                                        <a class="button is-link is-large px-6" href="<?= h($slideUrl) ?>"><?= h(t('view_details') ?: '查看产品') ?></a>
-                                        <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
+                                        <a class="button is-link is-large px-6" href="<?= $p['url'] ?>"><?= t('view_details')?></a>
+                                        <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= t('nav_contact') ?></a>
                                     </div>
                                 </div>
                             </div>
@@ -48,8 +36,8 @@ if (empty($carouselProducts)) {
             <?php endforeach; ?>
         </div>
         <?php if (count($carouselProducts) > 1): ?>
-        <div class="swiper-button-prev" aria-label="<?= h(t('carousel_prev') ?: '上一张') ?>"></div>
-        <div class="swiper-button-next" aria-label="<?= h(t('carousel_next') ?: '下一张') ?>"></div>
+        <div class="swiper-button-prev" aria-label="<?= t('carousel_prev') ?>"></div>
+        <div class="swiper-button-next" aria-label="<?= t('carousel_next') ?>"></div>
         <div class="swiper-pagination"></div>
         <?php endif; ?>
     </div>
@@ -70,11 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev'
         },
-        a11y: { prevSlideMessage: '<?= h(t('carousel_prev') ?: '上一张') ?>', nextSlideMessage: '<?= h(t('carousel_next') ?: '下一张') ?>' }
+        a11y: { prevSlideMessage: '<?= t('carousel_prev') ?>', nextSlideMessage: '<?= t('carousel_next') ?>' }
     });
 });
 </script>
-
+<?php endif; ?>
 <!-- 2. Value Proposition (Trust Section) -->
 <section class="section py-6" style="background: #fff; margin-top: -50px; position: relative; z-index: 5;">
     <div class="container">

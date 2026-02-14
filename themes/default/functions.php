@@ -88,7 +88,7 @@ if (!function_exists('get_carousel_products')) {
                 'title' => $product['title'],
                 'summary' => $product['summary'],
                 'banner_image' => $product['banner_image'],
-                'url' => url('/product/' . $product['id']),
+                'url' => url('/product/' . $product['slug']),
                 'image' => $product['cover'] // 备用图片
             ];
         }
@@ -115,7 +115,7 @@ if (!function_exists('render_product_card')) {
                     <p class="subtitle is-6"><?= h($product['description']) ?></p>
                 </div>
                 <footer class="card-footer">
-                    <a href="<?= url('/product/' . $product['id']) ?>" class="card-footer-item">查看详情</a>
+                    <a href="<?= url('/product/' . $product['slug']) ?>" class="card-footer-item">查看详情</a>
                 </footer>
             </div>
         </div>
