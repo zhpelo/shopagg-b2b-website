@@ -32,11 +32,11 @@
                 <a href="<?= url('/') ?>">
                     <div class="navbar-logo">
                         <?php if (!empty($site['logo'])): ?>
-                            <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 36px; max-height: 36px;">
+                            <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 60px;">
                         <?php else: ?>
                             <h1 class="is-size-5"><?= h($site['name']) ?></h1>
+                            <div class="tagline "><?= h($site['tagline']) ?></div>
                         <?php endif; ?>
-                        <div class="tagline "><?= h($site['tagline']) ?></div>
                     </div>
                 </a>
                 <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-nav">
