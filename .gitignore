@@ -1,8 +1,7 @@
 uploads/
 \#data/
 shopagg.html
-themes/qizhongshebei/
-themes/jixieshebei/
+themes/b2b-*
 .DS_Store
 .htaccess
 demo.html
