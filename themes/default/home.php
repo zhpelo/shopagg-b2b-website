@@ -18,7 +18,7 @@ $carouselProducts = get_carousel_products(3);
     <div class="swiper hero-swiper-container">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
-                <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= h($p['banner_image']) ?>');">
+                <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= asset_url($p['banner_image']) ?>');">
                     <div class="hero-swiper-overlay"></div>
                     <div class="hero-body">
                         <div class="container">
