@@ -204,17 +204,20 @@ function get_products(array $args = []): array {
     $productModel = new \App\Models\Product();
     
     if ($categoryId > 0) {
-        return $productModel->getByCategory($categoryId, $limit);
-    }
-    
-    // 如果需要更复杂的筛选（如 featured），这里可以扩展 Model 或直接调用 Model 的特定方法
-    // 目前简单映射到 getList 或 getFeatured
-    if (!empty($args['featured'])) {
-        return $productModel->getFeatured($limit);
+        $items = $productModel->getByCategory($categoryId, $limit);
+    } elseif (!empty($args['featured'])) {
+        // 如果需要更复杂的筛选（如 featured），这里可以扩展 Model 或直接调用 Model 的特定方法
+        $items = $productModel->getFeatured($limit);
+    } else {
+        // Default to latest
+        $items = $productModel->getList($limit, $activeOnly);
     }
 
-    // Default to latest
-    return $productModel->getList($limit, $activeOnly);
+    foreach ($items as &$item) {
+        $item['url'] = url('/product/' . ($item['slug'] ?? $item['id']));
+    }
+    
+    return $items;
 }
 
 /**
@@ -231,12 +234,17 @@ function get_posts(array $args = []): array {
     $postModel = new \App\Models\PostModel();
 
     if ($categoryId > 0) {
-        return $postModel->getByCategory($categoryId, $limit);
+        $items = $postModel->getByCategory($categoryId, $limit);
+    } else {
+        // 假设 PostModel 有一个类似 getLatest 的方法，或者复用 getList
+        $items = $postModel->getList($limit, $activeOnly);
     }
-    
-    // 假设 PostModel 有一个类似 getLatest 的方法，或者复用 getList
-    // PostModel::getList($limit, $activeOnly)
-    return $postModel->getList($limit, $activeOnly);
+
+    foreach ($items as &$item) {
+        $item['url'] = url('/blog/' . ($item['slug'] ?? $item['id']));
+    }
+
+    return $items;
 }
 
 /**
@@ -249,7 +257,13 @@ function get_cases(array $args = []): array {
     $limit = isset($args['limit']) ? (int)$args['limit'] : 6;
     
     $caseModel = new \App\Models\CaseModel();
-    return $caseModel->getList($limit);
+    $items = $caseModel->getList($limit);
+
+    foreach ($items as &$item) {
+        $item['url'] = url('/case/' . ($item['slug'] ?? $item['id']));
+    }
+
+    return $items;
 }
 
 /**
