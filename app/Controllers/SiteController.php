@@ -49,7 +49,7 @@ class SiteController extends BaseController {
         // 获取分类列表
         $categories = $categoryModel->getTree('product');
         
-        $title = $currentCategory ? $currentCategory['name'] : t('products');
+        $title = $currentCategory ? $currentCategory['name'] : 'All Products';
         
         $this->renderSite('product_list', [
             'title' => $title,
@@ -114,9 +114,9 @@ class SiteController extends BaseController {
         $items = (new CaseModel())->getList();
         foreach ($items as &$i) $i['url'] = url('/case/' . $i['slug']);
         $this->renderSite('case_list', [
-            'title' => t('cases'),
+            'title' => 'Cases',
             'items' => $items,
-            'seo' => ['title' => t('cases') . ' - ' . $this->siteData['site']['name']]
+            'seo' => ['title' => 'Cases - ' . $this->siteData['site']['name']]
         ]);
     }
 
@@ -152,7 +152,7 @@ class SiteController extends BaseController {
         // 获取分类列表（带文章数量）
         $categories = $categoryModel->getTree('post');
         
-        $title = $currentCategory ? $currentCategory['name'] : t('blog');
+        $title = $currentCategory ? $currentCategory['name'] : 'Blog';
         
         $this->renderSite('post_list', [
             'title' => $title,
