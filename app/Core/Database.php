@@ -13,7 +13,7 @@ class Database {
             $dbFile = APP_ROOT . '/#data/site.db';
             $isNew = !is_file($dbFile);
             if ($isNew) {
-                mkdir(APP_ROOT . '/#data/', 0755, true);
+                @mkdir(APP_ROOT . '/#data/', 0755, true);
             }
             self::$instance = new SQLite3($dbFile);
             self::$instance->exec('PRAGMA foreign_keys = ON;');
@@ -106,7 +106,6 @@ class Database {
                 slug TEXT UNIQUE NOT NULL,
                 summary TEXT,
                 content TEXT,
-                cover TEXT,
                 category_id INTEGER DEFAULT 0,
                 status TEXT DEFAULT 'active',
                 product_type TEXT,
@@ -170,14 +169,6 @@ class Database {
                 phone TEXT,
                 message TEXT,
                 created_at TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS product_images (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_id INTEGER NOT NULL,
-                url TEXT NOT NULL,
-                sort INTEGER NOT NULL DEFAULT 0,
-                created_at TEXT NOT NULL,
-                FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
             );
             CREATE TABLE IF NOT EXISTS product_categories (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

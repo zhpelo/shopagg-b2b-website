@@ -24,6 +24,7 @@ class Product extends BaseModel {
         $item = $this->fetchOne("SELECT * FROM products WHERE id = :id", [':id' => $id]);
         if ($item) {
             $item['images'] = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $item['images'][0] ?? '';
         }
         return $item;
     }
@@ -34,6 +35,7 @@ class Product extends BaseModel {
             WHERE products.slug = :s", [':s' => $slug]);
         if ($item) {
             $item['images'] = json_decode((string)($item['images_json'] ?? '[]'), true);
+            $item['cover'] = $item['images'][0] ?? '';
         }
         return $item;
     }
@@ -85,26 +87,6 @@ class Product extends BaseModel {
     public function delete(int $id): void {
         $stmt = $this->db->prepare("DELETE FROM products WHERE id = :id");
         $stmt->bindValue(':id', $id);
-        $stmt->execute();
-    }
-
-    public function getImages(int $productId): array {
-        return $this->fetchAll("SELECT * FROM product_images WHERE product_id = :pid ORDER BY sort ASC, id ASC", [':pid' => $productId]);
-    }
-
-    public function addImage(int $productId, string $url, int $sort = 0): void {
-        $stmt = $this->db->prepare("INSERT INTO product_images (product_id, url, sort, created_at) VALUES (:pid, :url, :s, :t)");
-        $stmt->bindValue(':pid', $productId);
-        $stmt->bindValue(':url', $url);
-        $stmt->bindValue(':s', $sort);
-        $stmt->bindValue(':t', gmdate('c'));
-        $stmt->execute();
-    }
-
-    public function deleteImage(int $imageId, int $productId): void {
-        $stmt = $this->db->prepare("DELETE FROM product_images WHERE id = :id AND product_id = :pid");
-        $stmt->bindValue(':id', $imageId);
-        $stmt->bindValue(':pid', $productId);
         $stmt->execute();
     }
 

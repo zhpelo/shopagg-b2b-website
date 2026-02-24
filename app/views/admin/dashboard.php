@@ -135,10 +135,6 @@
                 </div>
                 <div class="stat-value"><?= $counts['system_age_days'] ?></div>
                 <div class="stat-label">运行天数</div>
-                <div class="stat-badge neutral">
-                    <i class="fas fa-image mr-1"></i>
-                    <?= $counts['total_images'] ?> 媒体文件
-                </div>
             </div>
         </div>
     </div>

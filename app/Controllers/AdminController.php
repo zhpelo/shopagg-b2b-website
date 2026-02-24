@@ -119,12 +119,11 @@ class AdminController extends Controller {
                 (SELECT COUNT(*) FROM inquiries WHERE status = 'pending') AS pending_inquiries,
                 (SELECT COUNT(*) FROM product_categories WHERE type = 'product' OR type IS NULL) AS categories,
                 (SELECT COUNT(*) FROM product_categories WHERE type = 'post') AS post_categories,
-                (SELECT COUNT(*) FROM users) AS users,
-                (SELECT COUNT(*) FROM product_images) AS total_images",
+                (SELECT COUNT(*) FROM users) AS users",
             true
         );
         $counts = $row ? array_map('intval', $row) : array_fill_keys(
-            ['products', 'active_products', 'cases', 'posts', 'messages', 'inquiries', 'pending_inquiries', 'categories', 'post_categories', 'users', 'total_images'], 0
+            ['products', 'active_products', 'cases', 'posts', 'messages', 'inquiries', 'pending_inquiries', 'categories', 'post_categories', 'users'], 0
         );
 
         $today = date('Y-m-d');
