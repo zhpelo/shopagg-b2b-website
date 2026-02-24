@@ -34,7 +34,7 @@
             <div class="column is-7">
                 <div class="columns">
                     <div class="column">
-                        <p class="footer-title"><?= h(t('footer_contact')) ?></p>
+                        <p class="footer-title">Contact</p>
                         <div class="footer-links">
                             <a href="mailto:<?= h($site['company_email'] ?? '') ?>" target="_blank">
                                 <span class="icon"><i class="fas fa-envelope"></i></span>
@@ -54,7 +54,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p class="has-text-grey">© <?= date('Y') ?> <?= h($site['name']) ?>. <?= h(t('footer_rights')) ?></p>
+            <p class="has-text-grey">© <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.</p>
         </div>
     </div>
 </footer>

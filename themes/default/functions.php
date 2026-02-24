@@ -5,47 +5,16 @@ declare(strict_types=1);
  * 默认主题 - 主题内辅助函数
  * 此文件在每次渲染主题时自动加载，可以在此定义可重用的模板函数
  * 可以访问数据库模型和助手函数
+ * 
+ * 核心功能函数现在通过 app/Helpers.php 统一提供，包括:
+ * - get_products()
+ * - get_posts()
+ * - get_cases()
+ * - get_product_categories()
+ * - get_post_categories()
+ * - get_stylesheet_directory()
+ * - get_stylesheet_directory_uri()
  */
-
-// 示例：获取最新产品
-if (!function_exists('get_latest_products')) {
-    function get_latest_products(int $limit = 6): array {
-        $productModel = new \App\Models\Product();
-        return $productModel->getLatest($limit);
-    }
-}
-
-// 示例：获取特色产品（带横幅图片的）
-if (!function_exists('get_featured_products')) {
-    function get_featured_products(int $limit = 6): array {
-        $productModel = new \App\Models\Product();
-        return $productModel->getFeatured($limit);
-    }
-}
-
-// 示例：获取最新文章
-if (!function_exists('get_latest_posts')) {
-    function get_latest_posts(int $limit = 5): array {
-        $postModel = new \App\Models\PostModel();
-        return $postModel->getLatest($limit);
-    }
-}
-
-// 示例：获取产品分类
-if (!function_exists('get_product_categories')) {
-    function get_product_categories(): array {
-        $categoryModel = new \App\Models\Category();
-        return $categoryModel->getProductCategories();
-    }
-}
-
-// 示例：获取文章分类
-if (!function_exists('get_post_categories')) {
-    function get_post_categories(): array {
-        $categoryModel = new \App\Models\Category();
-        return $categoryModel->getPostCategories();
-    }
-}
 
 // 获取轮播产品（性能优化版）
 // 优先获取有横幅图片的产品，不足时补充最新产品
@@ -57,17 +26,14 @@ if (!function_exists('get_carousel_products')) {
             return $cache;
         }
 
-        $productModel = new \App\Models\Product();
-
-        // 1. 首先获取有横幅图片的产品
-        $featuredProducts = $productModel->getFeatured($limit);
+        $featuredProducts = get_products(['limit' => $limit, 'featured' => true]);
 
         // 2. 如果不够数量，补充最新产品（排除已有横幅图片的产品）
         if (count($featuredProducts) < $limit) {
             $remaining = $limit - count($featuredProducts);
             $excludeIds = array_column($featuredProducts, 'id');
 
-            $latestProducts = $productModel->getLatest($remaining + 10); // 多取一些用于过滤
+            $latestProducts = get_products(['limit' => $remaining + 10]); // 多取一些用于过滤
 
             foreach ($latestProducts as $product) {
                 if (count($featuredProducts) >= $limit) break;

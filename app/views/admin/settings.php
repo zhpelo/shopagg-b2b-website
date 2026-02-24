@@ -4,8 +4,7 @@ $tabs = [
     'company' => ['公司简介', 'building'],
     'trade' => ['贸易能力', 'globe'],
     'media' => ['公司展示', 'images'],
-    'contact' => ['联系方式', 'phone'],
-    'translations' => ['语言翻译', 'language']
+    'contact' => ['联系方式', 'phone']
 ];
 ?>
 
@@ -85,17 +84,9 @@ $tabs = [
                     </div>
                     <div class="column">
                         <div class="field">
-                            <label class="label">默认语言</label>
+                            <label class="label">禁用设置</label>
                             <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="default_lang">
-                                        <?php foreach ($available_langs as $l): ?>
-                                            <option value="<?= h($l) ?>" <?= ($settings['default_lang'] ?? 'en') === $l ? 'selected' : '' ?>>
-                                                <?= $l === 'zh' ? '中文 (zh)' : ($l === 'en' ? 'English (en)' : strtoupper($l)) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
+                                <p class="help">多语言功能已移除，默认使用英语</p>
                             </div>
                         </div>
                     </div>

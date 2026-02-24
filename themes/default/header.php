@@ -30,7 +30,7 @@
     <?php endif; ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= url('/themes/' . $currentTheme . '/style.css') ?>">
+    <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
 </head>
 
 <body>
@@ -42,8 +42,8 @@
                         <?php if (!empty($site['logo'])): ?>
                             <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 60px;">
                         <?php else: ?>
-                            <h1 class="is-size-5"><?= h($site['name']) ?></h1>
-                            <div class="tagline "><?= h($site['tagline']) ?></div>
+                            <h1 class="is-size-5"><?=  $site['name'] ?></h1>
+                            <div class="tagline "><?= $site['tagline'] ?></div>
                         <?php endif; ?>
                     </div>
                 </a>
@@ -55,22 +55,14 @@
             </div>
             <div id="main-nav" class="navbar-menu">
                 <div class="navbar-end">
-                    <a class="navbar-item" href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a>
-                    <a class="navbar-item" href="<?= url('/products') ?>"><?= h(t('nav_products')) ?></a>
-                    <a class="navbar-item" href="<?= url('/cases') ?>"><?= h(t('nav_cases')) ?></a>
-                    <a class="navbar-item" href="<?= url('/blog') ?>"><?= h(t('nav_blog')) ?></a>
-                    <a class="navbar-item" href="<?= url('/contact') ?>"><?= h(t('nav_contact')) ?></a>
-                    <a class="navbar-item" href="<?= url('/about') ?>"><?= h(t('nav_about')) ?></a>
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link"><?= h($languages[$lang] ?? $lang) ?></a>
-                        <div class="navbar-dropdown">
-                            <?php foreach ($languages as $code => $label): ?>
-                                <a class="navbar-item" href="<?= h(lang_switch_url($code)) ?>"><?= h($label) ?></a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
+                    <a class="navbar-item" href="<?= url('/') ?>">Home</a>
+                    <a class="navbar-item" href="<?= url('/products') ?>">Products</a>
+                    <a class="navbar-item" href="<?= url('/cases') ?>">Cases</a>
+                    <a class="navbar-item" href="<?= url('/blog') ?>">Blog</a>
+                    <a class="navbar-item" href="<?= url('/contact') ?>">Contact</a>
+                    <a class="navbar-item" href="<?= url('/about') ?>">About Us</a>
                     <div class="navbar-item">
-                        <a class="button is-link" href="<?= url('/contact') ?>"><?= h(t('cta_quote')) ?></a>
+                        <a class="button is-link" href="<?= url('/contact') ?>">Request Quote</a>
                     </div>
                 </div>
             </div>

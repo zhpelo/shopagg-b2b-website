@@ -11,8 +11,8 @@ $category = $category ?? null;
         <!-- 面包屑导航 -->
         <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
             <ul>
-                <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
-                <li><a href="<?= url('/blog') ?>"><?= h(t('blog')) ?></a></li>
+                <li><a href="<?= url('/') ?>">Home</a></li>
+                <li><a href="<?= url('/blog') ?>">Blog</a></li>
                 <?php if ($category): ?>
                 <li><a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
                 <?php endif; ?>
@@ -61,7 +61,7 @@ $category = $category ?? null;
                 <!-- 文章标签/分类信息 -->
                 <?php if ($category): ?>
                 <div class="mt-5 mb-5">
-                    <span class="has-text-grey mr-2"><?= h(t('post_category_label') ?? '分类：') ?></span>
+                    <span class="has-text-grey mr-2"><?= 'Category:' ?? '分类：' ?></span>
                     <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="tag is-medium is-link is-light">
                         <span class="icon is-small"><i class="fas fa-folder"></i></span>
                         <span><?= h($category['name']) ?></span>
@@ -76,18 +76,18 @@ $category = $category ?? null;
                             <?php if ($category): ?>
                             <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="button is-light mr-3">
                                 <span class="icon"><i class="fas fa-folder"></i></span>
-                                <span><?= h(t('post_more_in_category') ?? '更多同类文章') ?></span>
+                                <span><?= 'More in this category' ?? '更多同类文章' ?></span>
                             </a>
                             <?php endif; ?>
                             <a href="<?= url('/blog') ?>" class="button is-link is-light">
                                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                                <span><?= h(t('post_back_list')) ?></span>
+                                <span>Back to Blog List</span>
                             </a>
                         </div>
                         <div class="level-right">
                             <a href="<?= url('/contact') ?>" class="button is-primary">
                                 <span class="icon"><i class="fas fa-envelope"></i></span>
-                                <span><?= h(t('nav_contact')) ?></span>
+                                <span>Contact</span>
                             </a>
                         </div>
                     </div>

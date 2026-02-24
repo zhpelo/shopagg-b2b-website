@@ -31,8 +31,8 @@ $carouselProducts = get_carousel_products(3);
                                         <?= h( mb_substr(strip_tags($p['summary']), 0, 120) ) ?>
                                     </p>
                                     <div class="buttons hero-cta">
-                                        <a class="button is-link is-large px-6" href="<?= $p['url'] ?>"><?= t('view_details')?></a>
-                                        <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>"><?= t('nav_contact') ?></a>
+                                        <a class="button is-link is-large px-6" href="<?= $p['url'] ?>">View Details</a>
+                                        <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>">Contact</a>
                                     </div>
                                 </div>
                             </div>
@@ -42,8 +42,8 @@ $carouselProducts = get_carousel_products(3);
             <?php endforeach; ?>
         </div>
         <?php if (count($carouselProducts) > 1): ?>
-        <div class="swiper-button-prev" aria-label="<?= t('carousel_prev') ?>"></div>
-        <div class="swiper-button-next" aria-label="<?= t('carousel_next') ?>"></div>
+        <div class="swiper-button-prev" aria-label="Prev"></div>
+        <div class="swiper-button-next" aria-label="Next"></div>
         <div class="swiper-pagination"></div>
         <?php endif; ?>
     </div>
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev'
         },
-        a11y: { prevSlideMessage: '<?= t('carousel_prev') ?>', nextSlideMessage: '<?= t('carousel_next') ?>' }
+        a11y: { prevSlideMessage: 'Prev', nextSlideMessage: 'Next' }
     });
 });
 </script>
@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-check-circle fa-2x"></i>
                         </span>
-                        <h3 class="title is-5"><?= h(t('home_quality_title')) ?></h3>
-                        <p class="has-text-grey"><?= h(t('home_quality_desc')) ?></p>
+                        <h3 class="title is-5">Quality Assurance</h3>
+                        <p class="has-text-grey">ISO-aligned production with strict QC before shipment.</p>
                     </div>
                 </div>
                 <div class="column home-trust-column">
@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-globe-americas fa-2x"></i>
                         </span>
-                        <h3 class="title is-5"><?= h(t('home_logistics_title')) ?></h3>
-                        <p class="has-text-grey"><?= h(t('home_logistics_desc')) ?></p>
+                        <h3 class="title is-5">Global Logistics</h3>
+                        <p class="has-text-grey">On-time delivery with consolidated freight options.</p>
                     </div>
                 </div>
                 <div class="column home-trust-column">
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="icon is-large has-text-link mb-4">
                             <i class="fas fa-user-shield fa-2x"></i>
                         </span>
-                        <h3 class="title is-5"><?= h(t('home_support_title')) ?></h3>
-                        <p class="has-text-grey"><?= h(t('home_support_desc')) ?></p>
+                        <h3 class="title is-5">Dedicated Support</h3>
+                        <p class="has-text-grey">One-to-one account service for long-term buyers.</p>
                     </div>
                 </div>
             </div>
@@ -112,12 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="level mb-6 home-section-head">
             <div class="level-left">
                 <div>
-                    <h2 class="title is-3 mb-2 home-section-title"><?= h(t('section_featured_products')) ?></h2>
-                    <p class="has-text-grey home-section-subtitle"><?= h(t('home_highlights')) ?></p>
+                    <h2 class="title is-3 mb-2 home-section-title">Featured Products</h2>
+                    <p class="has-text-grey home-section-subtitle">Company Highlights</p>
                 </div>
             </div>
             <div class="level-right">
-                <a class="button is-link is-light" href="<?= url('/products') ?>"><?= h(t('btn_view_all')) ?> &rarr;</a>
+                <a class="button is-link is-light" href="<?= url('/products') ?>">View All &rarr;</a>
             </div>
         </div>
 
@@ -152,16 +152,16 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container">
         <div class="columns is-vcentered">
             <div class="column is-6">
-                <h2 class="title is-3 mb-5 home-section-title"><?= h(t('home_why_us')) ?></h2>
+                <h2 class="title is-3 mb-5 home-section-title">Why Choose Us</h2>
                 <div class="content has-text-grey is-medium home-why-content">
                     <p><?= h($site['company_bio'] ?? '') ?></p>
                     <ul style="list-style-type: none; margin-left: 0;">
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_iso')) ?></li>
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_oem')) ?></li>
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> <?= h(t('home_rd')) ?></li>
+                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> ISO Certified</li>
+                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> OEM & ODM</li>
+                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> R&D Team</li>
                     </ul>
                 </div>
-                <a href="<?= url('/about') ?>" class="button is-link is-outlined"><?= h(t('nav_about')) ?></a>
+                <a href="<?= url('/about') ?>" class="button is-link is-outlined">About Us</a>
             </div>
             <div class="column is-6">
                 <figure class="image is-16by9 box overflow-hidden soft-card home-why-media">
@@ -176,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="section py-6 home-cases">
     <div class="container">
         <div class="has-text-centered mb-6">
-            <h2 class="title is-3 home-section-title"><?= t('section_success_cases') ?></h2>
-            <p class="subtitle is-6 has-text-grey home-section-subtitle"><?= t('home_global') ?></p>
+            <h2 class="title is-3 home-section-title">Success Cases</h2>
+            <p class="subtitle is-6 has-text-grey home-section-subtitle">Global Presence</p>
         </div>
         <div class="columns is-multiline">
             <?php foreach ($cases as $c): ?>
@@ -204,10 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="section pb-6 home-cta">
     <div class="container">
         <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card home-cta-box">
-            <h2 class="title is-3 has-text-white my-5"><?= h(t('home_ready_title')) ?></h2>
-            <p class="is-5 has-text-grey-light mb-5"><?= h(t('home_ready_desc')) ?></p>
+            <h2 class="title is-3 has-text-white my-5">Ready to start your project?</h2>
+            <p class="is-5 has-text-grey-light mb-5">Contact us today for a professional quote and expert consultation.</p>
             <div class="buttons is-centered">
-                <a href="<?= url('/contact') ?>" class="button is-white is-large px-6"><?= h(t('cta_quote')) ?></a>
+                <a href="<?= url('/contact') ?>" class="button is-white is-large px-6">Request Quote</a>
                 <?php
                 $wa = $site['whatsapp'] ?? '';
                 $waDigits = preg_replace('/\D+/', '', $wa);
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ?>
                     <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" class="button is-success is-large px-6">
                         <span class="icon"><i class="fab fa-whatsapp"></i></span>
-                        <span><?= h(t('chat_now')) ?></span>
+                        <span>Chat Now</span>
                     </a>
                 <?php endif; ?>
             </div>

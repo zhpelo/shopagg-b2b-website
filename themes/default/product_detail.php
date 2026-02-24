@@ -14,8 +14,8 @@ $category = $category ?? null;
         <!-- 面包屑导航 -->
         <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
             <ul>
-                <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
-                <li><a href="<?= url('/products') ?>"><?= h(t('products')) ?></a></li>
+                <li><a href="<?= url('/') ?>">Home</a></li>
+                <li><a href="<?= url('/products') ?>">Products</a></li>
                 <?php if ($category): ?>
                     <li><a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
                 <?php endif; ?>
@@ -61,7 +61,7 @@ $category = $category ?? null;
                     </div>
                 <?php endif; ?>
                 <article class="box soft-card">
-                    <h2 class="title is-4"><?= h(t('detail_intro')) ?></h2>
+                    <h2 class="title is-4">Product Description</h2>
                     <div><?= process_rich_text($item['content']) ?></div>
                 </article>
             </div>
@@ -79,7 +79,7 @@ $category = $category ?? null;
                                 <span><?= h($category['name']) ?></span>
                             </a>
                         <?php else: ?>
-                            <span class="tag is-light"><?= h($item['category_name'] ?? t('product_uncategorized')) ?></span>
+                            <span class="tag is-light"><?= h($item['category_name'] ?? 'Uncategorized') ?></span>
                         <?php endif; ?>
                     </div>
 
@@ -97,7 +97,7 @@ $category = $category ?? null;
                                                 <?= h($tier['currency']) ?>$<?= h((string)$tier['price']) ?>
                                             </div>
                                             <div class=" has-text-grey">
-                                                <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> <?= h(t('product_pieces')) ?>
+                                                <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> Pieces
                                             </div>
                                         </div>
                                     </div>
@@ -112,7 +112,7 @@ $category = $category ?? null;
                         <div class="columns is-mobile is-variable is-2">
                             <div class="column">
                                 <button class="button is-danger is-medium is-fullwidth is-rounded has-text-weight-bold" id="open-inquiry-modal" style="background-color: #d65a53; border: none; height: 50px;">
-                                    <?= h(t('detail_send_inquiry')) ?>
+                                    Send Inquiry
                                 </button>
                             </div>
                             <div class="column">
@@ -127,15 +127,15 @@ $category = $category ?? null;
                                     <span class="icon" style="color:#fff;">
                                         <i class="fa-brands fa-whatsapp"></i>
                                     </span>
-                                    <span><?= h(t('chat_now')) ?></span>
+                                    <span>Chat Now</span>
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     <div class="sample-info mt-4  has-text-grey-dark">
-                        <?= h(t('product_sample_tip')) ?> <span class="has-text-weight-bold">US$ <?= !empty($price_tiers) ? h($price_tiers[0]['currency']) . ' ' . h((string)($price_tiers[0]['price'] * 2)) : '50.00' ?>/<?= h(t('product_pieces')) ?></span> !
-                        <a href="#inquiry" class="has-text-weight-bold is-underlined has-text-black" onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(t('product_sample_btn')) ?></a>
+                        Still deciding? Get samples of <span class="has-text-weight-bold">US$ <?= !empty($price_tiers) ? h($price_tiers[0]['currency']) . ' ' . h((string)($price_tiers[0]['price'] * 2)) : '50.00' ?>/Pieces</span> !
+                        <a href="#inquiry" class="has-text-weight-bold is-underlined has-text-black" onclick="document.getElementById('open-inquiry-modal').click(); return false;">Request Sample</a>
                     </div>
 
                     <!-- 同类产品链接 -->
@@ -143,7 +143,7 @@ $category = $category ?? null;
                         <div class="mt-5 pt-4" style="border-top: 1px solid #f0f0f0;">
                             <a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" class="button is-warning is-light is-small">
                                 <span class="icon"><i class="fas fa-folder"></i></span>
-                                <span><?= h(t('product_more_in_category') ?? '更多同类产品') ?></span>
+                                <span><?= 'More in this category' ?? '更多同类产品' ?></span>
                             </a>
                         </div>
                     <?php endif; ?>
@@ -159,7 +159,7 @@ $category = $category ?? null;
 <section class="section related-products-section">
     <div class="container">
         <h2 class="title is-3 has-text-centered mb-6">
-            <i class="fas fa-th-large mr-2"></i><?= t('related_products') ?>
+            <i class="fas fa-th-large mr-2"></i>Related Products
         </h2>
         <div class="columns is-multiline">
             <?php foreach ($related_products as $product): ?>
@@ -199,25 +199,25 @@ $category = $category ?? null;
                 <button class="delete is-pulled-right close-inquiry-modal" aria-label="close" style="position: absolute; right: 20px; top: 20px;"></button>
                 <div class="columns">
                     <div class="column is-4 is-hidden-mobile">
-                        <h2 class="title is-4"><?= h(t('cta_quote')) ?></h2>
-                        <p class="subtitle is-6 has-text-grey"><?= h(t('thanks_desc')) ?></p>
+                        <h2 class="title is-4">Request Quote</h2>
+                        <p class="subtitle is-6 has-text-grey">Thank you for your interest. Our team will review your requirements.</p>
                         <div class="mt-5">
                             <div class="is-flex is-align-items-center mb-3">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class=""><?= h(t('home_iso')) ?></span>
+                                <span class="">ISO Certified</span>
                             </div>
                             <div class="is-flex is-align-items-center mb-3">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class=""><?= h(t('home_oem')) ?></span>
+                                <span class="">OEM & ODM</span>
                             </div>
                             <div class="is-flex is-align-items-center">
                                 <span class="icon has-text-link mr-2"><i class="fas fa-check-circle"></i></span>
-                                <span class=""><?= h(t('home_global')) ?></span>
+                                <span class="">Global Presence</span>
                             </div>
                         </div>
                     </div>
                     <div class="column is-8-desktop is-12-mobile">
-                        <h2 class="title is-4 is-hidden-tablet"><?= h(t('cta_quote')) ?></h2>
+                        <h2 class="title is-4 is-hidden-tablet">Request Quote</h2>
                         <form method="post" action="<?= url('/inquiry') ?>">
                             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
                             <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
@@ -225,17 +225,17 @@ $category = $category ?? null;
                             <div class="columns">
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label "><?= h(t('form_name_full')) ?> *</label>
+                                        <label class="label ">Your Name *</label>
                                         <div class="control">
-                                            <input class="input" name="name" required placeholder="<?= h(t('form_name_placeholder')) ?>">
+                                            <input class="input" name="name" required placeholder="Full Name">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label "><?= h(t('form_email_full')) ?> *</label>
+                                        <label class="label ">Email Address *</label>
                                         <div class="control">
-                                            <input class="input" name="email" type="email" required placeholder="<?= h(t('form_email_placeholder')) ?>">
+                                            <input class="input" name="email" type="email" required placeholder="example@email.com">
                                         </div>
                                     </div>
                                 </div>
@@ -244,33 +244,33 @@ $category = $category ?? null;
                             <div class="columns">
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label "><?= h(t('form_company')) ?></label>
+                                        <label class="label ">Company</label>
                                         <div class="control">
-                                            <input class="input" name="company" placeholder="<?= h(t('form_company_placeholder')) ?>">
+                                            <input class="input" name="company" placeholder="Company Ltd.">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="field">
-                                        <label class="label "><?= h(t('form_quantity')) ?></label>
+                                        <label class="label ">Quantity Needed</label>
                                         <div class="control">
-                                            <input class="input" name="quantity" placeholder="<?= h(t('form_qty_placeholder')) ?>">
+                                            <input class="input" name="quantity" placeholder="e.g. 500 units">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="field">
-                                <label class="label "><?= h(t('form_requirements')) ?></label>
+                                <label class="label ">Requirements</label>
                                 <div class="control">
-                                    <textarea class="textarea" name="message" rows="3" placeholder="<?= h(t('form_req_placeholder')) ?>"></textarea>
+                                    <textarea class="textarea" name="message" rows="3" placeholder="Project requirements, customization, etc."></textarea>
                                 </div>
                             </div>
 
                             <div class="field mt-5">
                                 <button class="button is-link is-large is-fullwidth" type="submit">
                                     <span class="icon"><i class="fas fa-paper-plane"></i></span>
-                                    <span><?= h(t('btn_send_inquiry')) ?></span>
+                                    <span>Send My Inquiry</span>
                                 </button>
                             </div>
                         </form>

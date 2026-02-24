@@ -10,12 +10,12 @@
         <div class="container">
             <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
                 <ul>
-                    <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
-                    <li class="is-active"><a href="<?= url('/cases') ?>" aria-current="page"><?= h(t('cases')) ?></a></li>
+                    <li><a href="<?= url('/') ?>">Home</a></li>
+                    <li class="is-active"><a href="<?= url('/cases') ?>" aria-current="page">Cases</a></li>
                 </ul>
             </nav>
             <h1 class="title is-3"><?= h($title) ?></h1>
-            <p class="subtitle is-6 mt-2"><?= h(t('case_interest')) ?></p>
+            <p class="subtitle is-6 mt-2">If you are interested in this solution or have similar needs, please contact our expert team.</p>
         </div>
     </div>
 </section>
@@ -43,7 +43,7 @@
                                 <?= h($item['summary']) ?>
                             </p>
                             <div class="mt-4">
-                                <a href="<?= h($item['url']) ?>" class="button is-link is-light"><?= h(t('list_read_more')) ?> &rarr;</a>
+                                <a href="<?= h($item['url']) ?>" class="button is-link is-light">Read More &rarr;</a>
                             </div>
                         </div>
                     </div>

@@ -79,10 +79,10 @@ abstract class BaseController extends Controller {
     protected function renderSite(string $view, array $data = []): void {
         $theme = $this->siteData['site']['theme'];
         
-        // Add multi-language helpers to data
-        $lang = $_SESSION['lang'] ?? $this->siteData['site']['default_lang'];
+        // Default to English
+        $lang = 'en';
         $data['lang'] = $lang;
-        $data['languages'] = get_languages();
+        $data['languages'] = []; // Disable language switcher
         $data['site'] = $this->siteData['site'];
         
         // Merge SEO

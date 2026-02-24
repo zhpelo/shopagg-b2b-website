@@ -195,34 +195,11 @@ class AdminController extends Controller {
         $theme = $settings['theme'] ?? 'default';
         if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
         
-        // Scan for available languages in current theme
-        $langDir = APP_ROOT . "/themes/{$theme}/lang";
-        $availableLangs = [];
-        if (is_dir($langDir)) {
-            $files = glob("{$langDir}/*.php");
-            foreach ($files as $f) {
-                $availableLangs[] = basename($f, '.php');
-            }
-        }
-        if (empty($availableLangs)) $availableLangs = ['en'];
-
         $data = [
             'settings' => $settings,
             'tab' => $tab,
-            'available_langs' => $availableLangs,
             'available_themes' => $availableThemes
         ];
-
-        if ($tab === 'translations') {
-            $lang = $_GET['lang'] ?? ($availableLangs[0] ?? 'en');
-            $file = "{$langDir}/{$lang}.php";
-            $translations = [];
-            if (file_exists($file)) {
-                $translations = include $file;
-            }
-            $data['translations'] = $translations;
-            $data['current_edit_lang'] = $lang;
-        }
 
         $this->renderAdmin('系统设置', $this->renderView('admin/settings', $data));
     }
@@ -231,21 +208,6 @@ class AdminController extends Controller {
         csrf_check();
         $tab = $_POST['tab'] ?? 'general';
         
-        if ($tab === 'translations') {
-            $lang = $_POST['edit_lang'] ?? 'en';
-            $theme = $this->settingModel->get('theme', 'default');
-            $dir = APP_ROOT . "/themes/{$theme}/lang";
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
-            $file = "{$dir}/{$lang}.php";
-            
-            $newTranslations = $_POST['t'] ?? [];
-            $content = "<?php\nreturn " . var_export($newTranslations, true) . ";\n";
-            file_put_contents($file, $content);
-            
-            $this->redirect('/admin/settings?tab=translations&lang=' . $lang);
-            return;
-        }
-
         // Special handling for media tab JSON conversion
         if ($tab === 'media') {
             // Handle Company Show
@@ -275,7 +237,7 @@ class AdminController extends Controller {
         }
 
         $groups = [
-            'general' => ['site_name', 'site_tagline', 'theme', 'default_lang', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
+            'general' => ['site_name', 'site_tagline', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],
             'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
             'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube']

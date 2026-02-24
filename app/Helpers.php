@@ -12,34 +12,6 @@ function slugify(string $text): string {
     return $text === '' ? 'item' . time() : $text;
 }
 
-function t(string $key, ?string $lang = null): string {
-    global $current_lang;
-    static $translations = [];
-    
-    $lang = $lang ?? ($current_lang ?? 'en');
-    
-    if (!isset($translations[$lang])) {
-        $settingModel = new \App\Models\Setting();
-        $theme = $settingModel->get('theme', 'default');
-        $file = APP_ROOT . "/themes/{$theme}/lang/{$lang}.php";
-        if (file_exists($file)) {
-            $translations[$lang] = include $file;
-        } else {
-            $translations[$lang] = [];
-        }
-    }
-
-    if (isset($translations[$lang][$key])) {
-        return $translations[$lang][$key];
-    }
-    
-    // Fallback to English if not found in current lang
-    if ($lang !== 'en') {
-        return t($key, 'en');
-    }
-
-    return $key;
-}
 
 function csrf_token(): string {
     if (empty($_SESSION['csrf'])) {
@@ -187,4 +159,113 @@ function normalize_rich_text(string $html): string {
         }
         return $matches[0];
     }, $html);
+}
+
+// --- Theme Helper Functions ---
+
+/**
+ * 获取当前活动主题的服务器目录路径
+ * 例如: /var/www/html/themes/default/
+ */
+function get_stylesheet_directory(): string {
+    static $theme = null;
+    if ($theme === null) {
+        $settingModel = new \App\Models\Setting();
+        $theme = $settingModel->get('theme', 'default');
+    }
+    return APP_ROOT . '/themes/' . $theme;
+}
+
+/**
+ * 获取当前活动主题的 URL 地址
+ * 例如: https://yoursite.com/themes/default
+ */
+function get_stylesheet_directory_uri(): string {
+    static $themeURI = null;
+    if ($themeURI === null) {
+        $settingModel = new \App\Models\Setting();
+        $theme = $settingModel->get('theme', 'default');
+        $themeURI = base_url() . '/themes/' . $theme;
+    }
+    return $themeURI;
+}
+
+/**
+ * 获取产品列表
+ *
+ * @param array $args 参数支持: limit, category (id), active_only, orderby, order
+ * @return array
+ */
+function get_products(array $args = []): array {
+    $limit = isset($args['limit']) ? (int)$args['limit'] : 10;
+    $categoryId = isset($args['category']) ? (int)$args['category'] : 0;
+    $activeOnly = isset($args['status']) ? ($args['status'] === 'active') : true;
+
+    $productModel = new \App\Models\Product();
+    
+    if ($categoryId > 0) {
+        return $productModel->getByCategory($categoryId, $limit);
+    }
+    
+    // 如果需要更复杂的筛选（如 featured），这里可以扩展 Model 或直接调用 Model 的特定方法
+    // 目前简单映射到 getList 或 getFeatured
+    if (!empty($args['featured'])) {
+        return $productModel->getFeatured($limit);
+    }
+
+    // Default to latest
+    return $productModel->getList($limit, $activeOnly);
+}
+
+/**
+ * 获取文章列表
+ *
+ * @param array $args 参数支持: limit, category (id), type (post_type)
+ * @return array
+ */
+function get_posts(array $args = []): array {
+    $limit = isset($args['limit']) ? (int)$args['limit'] : 5;
+    $categoryId = isset($args['category']) ? (int)$args['category'] : 0;
+    $activeOnly = isset($args['status']) ? ($args['status'] === 'active') : true;
+
+    $postModel = new \App\Models\PostModel();
+
+    if ($categoryId > 0) {
+        return $postModel->getByCategory($categoryId, $limit);
+    }
+    
+    // 假设 PostModel 有一个类似 getLatest 的方法，或者复用 getList
+    // PostModel::getList($limit, $activeOnly)
+    return $postModel->getList($limit, $activeOnly);
+}
+
+/**
+ * 获取案例列表
+ *
+ * @param array $args 参数支持: limit
+ * @return array
+ */
+function get_cases(array $args = []): array {
+    $limit = isset($args['limit']) ? (int)$args['limit'] : 6;
+    
+    $caseModel = new \App\Models\CaseModel();
+    return $caseModel->getList($limit);
+}
+
+/**
+ * 获取产品分类列表 (Tree 结构)
+ * @return array
+ */
+function get_product_categories(): array {
+    $categoryModel = new \App\Models\Category();
+    return $categoryModel->getTree('product');
+}
+
+/**
+ * 获取文章分类列表 (Tree 结构)
+ * @return array
+ */
+function get_post_categories(): array {
+    $categoryModel = new \App\Models\Category();
+    return $categoryModel->getTree('post');
 }

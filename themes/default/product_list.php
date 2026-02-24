@@ -42,9 +42,9 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
             <!-- 面包屑导航 -->
             <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
                 <ul>
-                    <li><a href="<?= url('/') ?>"><?= h(t('nav_home')) ?></a></li>
+                    <li><a href="<?= url('/') ?>">Home</a></li>
                     <li class="<?= !$currentCategory ? 'is-active' : '' ?>">
-                        <a href="<?= url('/products') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>><?= h(t('products')) ?></a>
+                        <a href="<?= url('/products') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>>Products</a>
                     </li>
                     <?php if ($currentCategory): ?>
                     <li class="is-active"><a href="#" aria-current="page"><?= h($currentCategory['name']) ?></a></li>
@@ -57,7 +57,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                 <?php if ($currentCategory && !empty($currentCategory['description'])): ?>
                     <?= h($currentCategory['description']) ?>
                 <?php else: ?>
-                    <?= h(t('product_list_subtitle')) ?>
+                    Browse our full range of products.
                 <?php endif; ?>
             </p>
         </div>
@@ -73,13 +73,13 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                 <nav class="panel is-warning">
                     <p class="panel-heading" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); border: none;">
                         <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
-                        <?= h(t('product_categories') ?? '产品分类') ?>
+                        <?= 'Categories' ?? '产品分类' ?>
                     </p>
                     <a href="<?= url('/products') ?>" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
                         <span class="panel-icon">
                             <i class="fas fa-th-large" aria-hidden="true"></i>
                         </span>
-                        <?= h(t('product_all') ?? '全部产品') ?>
+                        <?= 'All Products' ?? '全部产品' ?>
                     </a>
                     <?php renderProductCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
                 </nav>
@@ -89,14 +89,14 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                 <div class="box mt-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                     <h3 class="title is-5 has-text-white mb-3">
                         <span class="icon mr-2"><i class="fas fa-file-invoice"></i></span>
-                        <?= h(t('product_quick_quote') ?? '快速询价') ?>
+                        <?= 'Quick Quote' ?? '快速询价' ?>
                     </h3>
                     <p class="mb-4 is-size-6" style="opacity: 0.9;">
-                        <?= h(t('product_quote_desc') ?? '找到心仪的产品了吗？立即发送询单获取报价。') ?>
+                        <?= 'Found what you need? Send an inquiry to get a quote now.' ?? '找到心仪的产品了吗？立即发送询单获取报价。' ?>
                     </p>
                     <a href="<?= url('/contact') ?>" class="button is-white is-outlined is-fullwidth">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
-                        <span><?= h(t('nav_contact')) ?></span>
+                        <span>Contact</span>
                     </a>
                 </div>
             </div>
@@ -108,11 +108,11 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                     <span class="icon is-large has-text-grey-light">
                         <i class="fas fa-box-open fa-3x"></i>
                     </span>
-                    <p class="mt-4 has-text-grey"><?= h(t('product_no_items') ?? '暂无产品') ?></p>
+                    <p class="mt-4 has-text-grey"><?= 'No products found' ?? '暂无产品' ?></p>
                     <?php if ($currentCategory): ?>
                     <a href="<?= url('/products') ?>" class="button is-warning is-light mt-4">
                         <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                        <span><?= h(t('product_view_all') ?? '查看所有产品') ?></span>
+                        <span><?= 'View All Products' ?? '查看所有产品' ?></span>
                     </a>
                     <?php endif; ?>
                 </div>
@@ -135,7 +135,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                             <?= h($item['category_name']) ?>
                                         </a>
                                         <?php else: ?>
-                                        <span class="tag is-light"><?= h(t('product_uncategorized')) ?></span>
+                                        <span class="tag is-light">Uncategorized</span>
                                         <?php endif; ?>
                                     </div>
                                     <p class="title is-5 mb-2">
@@ -146,7 +146,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                     </p>
                                 </div>
                                 <footer class="card-footer" style="border-top: none; padding: 0 1.5rem 1.5rem;">
-                                    <a href="<?= h($item['url']) ?>" class="button is-link is-outlined is-fullwidth is-small"><?= h(t('product_view_details')) ?></a>
+                                    <a href="<?= h($item['url']) ?>" class="button is-link is-outlined is-fullwidth is-small">View Details</a>
                                 </footer>
                             </div>
                         </div>
