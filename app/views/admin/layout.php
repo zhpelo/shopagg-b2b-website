@@ -392,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         const toolbarConfig = {
-            excludeKeys: []
+            excludeKeys: ['insertVideo', 'undo','redo','todo']
         };
 
         const toolbar = createToolbar({
