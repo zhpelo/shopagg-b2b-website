@@ -32,12 +32,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
-    <?= render_google_translate_head($site) ?>
-    
 </head>
 
 <body>
-    <?= render_google_translate_alert($site) ?>
     <nav class="navbar is-white is-spaced" role="navigation">
         <div class="container">
             <div class="navbar-brand">
@@ -65,7 +62,7 @@
                     <a class="navbar-item" href="<?= url('/blog') ?>">Blog</a>
                     <a class="navbar-item" href="<?= url('/contact') ?>">Contact</a>
                     <a class="navbar-item" href="<?= url('/about') ?>">About Us</a>
-                    <?= render_google_translate_nav_item($site, 'button is-white') ?>
+                    <?= get_google_translate_widget($site, 'button is-white') ?>
                     <div class="navbar-item">
                         <a class="button is-link" href="<?= url('/contact') ?>">Request Quote</a>
                     </div>

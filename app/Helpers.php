@@ -330,9 +330,9 @@ function is_google_translate_auto_browser(array $site = []): bool {
 }
 
 /**
- * 输出谷歌翻译所需的样式与脚本（放在 <head> 内）
+ * 输出谷歌翻译组件（样式/脚本/告警/按钮合一）
  */
-function render_google_translate_head(array $site = []): string {
+function get_google_translate_widget(array $site = [], string $buttonClass = 'button is-white', string $wrapperClass = 'navbar-item'): string {
     if (!is_google_translate_enabled($site)) {
         return '';
     }
@@ -340,6 +340,16 @@ function render_google_translate_head(array $site = []): string {
     $languageMap = get_google_translate_languages($site);
     $languageMapJson = json_encode($languageMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $autoTranslate = is_google_translate_auto_browser($site) ? 'true' : 'false';
+
+    $safeWrapperClass = h($wrapperClass);
+    $safeButtonClass = h($buttonClass);
+    $options = '';
+    foreach ($languageMap as $langCode => $langMeta) {
+        $options .= '<a href="javascript:void(0)" onclick="triggerGoogleTranslate(\'' . h($langCode) . '\')" class="lang-option dropdown-item">'
+            . '<span class="fi fi-' . h($langMeta['flag']) . '"></span>'
+            . '<span>' . h($langMeta['label']) . '</span>'
+            . '</a>';
+    }
 
     return <<<HTML
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
@@ -393,8 +403,7 @@ function render_google_translate_head(array $site = []): string {
     }
     .fi {
         width: 1.33em !important;
-        line-height: 1em !important;
-    }
+        line-height: 1em !important; }
     .translate-alert {
         display: none;
         position: fixed;
@@ -410,14 +419,17 @@ function render_google_translate_head(array $site = []): string {
     }
     .translate-alert.is-active { display: block; }
 </style>
+<div id="translate-network-alert" class="translate-alert">Google翻译服务无法正常访问，请检查您的网络环境</div>
 <script>
     var translationEnabled = true;
     var autoTranslateByBrowser = {$autoTranslate};
     var googleTranslateReady = false;
     var googleTranslateScriptLoaded = false;
+    var userRequestedTranslation = false;
     var languageMap = {$languageMapJson};
 
     function showTranslateError() {
+        if (!userRequestedTranslation && !getCookie('googtrans')) return;
         var alertEl = document.getElementById('translate-network-alert');
         if (alertEl) alertEl.classList.add('is-active');
     }
@@ -527,6 +539,7 @@ function render_google_translate_head(array $site = []): string {
 
     function triggerGoogleTranslate(langCode) {
         if (!languageMap[langCode]) langCode = 'en';
+        if (langCode !== 'en') userRequestedTranslation = true;
         updateCurrentLanguageUI(langCode);
 
         if (langCode === 'en') {
@@ -588,47 +601,18 @@ function render_google_translate_head(array $site = []): string {
         }
     });
 </script>
+<div class="{$safeWrapperClass}">
+    <div id="google_translate_element"></div>
+    <div class="lang-selector-wrapper">
+        <div class="{$safeButtonClass}" onclick="toggleLangDropdown()">
+            <span class="icon"><span id="current-language-flag" class="fi fi-us"></span></span>
+            <span id="current-language-text">English</span>
+            <span class="icon is-small"><i class="fa-solid fa-angle-down"></i></span>
+        </div>
+        <div class="lang-dropdown box" style="padding: 0.5rem;">
+            {$options}
+        </div>
+    </div>
+</div>
 HTML;
-}
-
-/**
- * 输出谷歌翻译告警条（放在 <body> 开头）
- */
-function render_google_translate_alert(array $site = []): string {
-    if (!is_google_translate_enabled($site)) {
-        return '';
-    }
-    return '<div id="translate-network-alert" class="translate-alert">Google翻译服务无法正常访问，请检查您的网络环境</div>';
-}
-
-/**
- * 输出谷歌翻译按钮（用于导航栏）
- */
-function render_google_translate_nav_item(array $site = [], string $buttonClass = 'button is-white', string $wrapperClass = 'navbar-item'): string {
-    if (!is_google_translate_enabled($site)) {
-        return '';
-    }
-
-    $languages = get_google_translate_languages($site);
-    $options = '';
-    foreach ($languages as $langCode => $langMeta) {
-        $options .= '<a href="javascript:void(0)" onclick="triggerGoogleTranslate(\'' . h($langCode) . '\')" class="lang-option dropdown-item">'
-            . '<span class="fi fi-' . h($langMeta['flag']) . '"></span>'
-            . '<span>' . h($langMeta['label']) . '</span>'
-            . '</a>';
-    }
-
-    return '<div class="' . h($wrapperClass) . '">'
-        . '<div id="google_translate_element"></div>'
-        . '<div class="lang-selector-wrapper">'
-        . '<div class="' . h($buttonClass) . '" onclick="toggleLangDropdown()">'
-        . '<span class="icon"><span id="current-language-flag" class="fi fi-us"></span></span>'
-        . '<span id="current-language-text">English</span>'
-        . '<span class="icon is-small"><i class="fa-solid fa-angle-down"></i></span>'
-        . '</div>'
-        . '<div class="lang-dropdown box" style="padding: 0.5rem;">'
-        . $options
-        . '</div>'
-        . '</div>'
-        . '</div>';
 }
