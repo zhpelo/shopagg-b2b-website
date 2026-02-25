@@ -68,7 +68,10 @@ $categories = $categories ?? [];
                     <label class="label">文章内容</label>
                     <div class="control">
                         <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
-                        <div id="quill-editor" style="min-height:400px; background:#fff; border-radius: 0 0 10px 10px;"></div>
+                        <div id="editor-wrapper">
+                            <div id="toolbar-container"></div>
+                            <div id="editor-container"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,7 +205,7 @@ $categories = $categories ?? [];
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Quill 由 layout 统一初始化在 #quill-editor，此处仅做封面等本页逻辑
+    // wangEditor 由 layout 统一初始化，此处仅做封面等本页逻辑
 
     // 封面：从媒体库选择（单选）
     var coverInput = document.getElementById('cover-input');
@@ -232,20 +235,19 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-#quill-editor {
+#editor-wrapper {
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+#toolbar-container {
+    border-bottom: 1px solid #dbdbdb;
+    background: #fafafa;
+}
+#editor-container {
+    min-height: 350px;
     font-size: 16px;
     line-height: 1.8;
-}
-.ql-toolbar.ql-snow {
-    border-radius: 8px 8px 0 0;
-    border-color: #dbdbdb;
-}
-.ql-container.ql-snow {
-    border-radius: 0 0 8px 8px;
-    border-color: #dbdbdb;
-}
-.ql-editor {
-    min-height: 350px;
 }
 </style>
 

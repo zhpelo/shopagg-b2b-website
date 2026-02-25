@@ -79,7 +79,10 @@ $isEdit = isset($item);
                 <div class="field">
                     <div class="control">
                         <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
-                        <div id="quill-editor" style="min-height: 400px; background: white;"></div>
+                        <div id="editor-wrapper">
+                            <div id="toolbar-container"></div>
+                            <div id="editor-container"></div>
+                        </div>
                     </div>
                 </div>
             </div>

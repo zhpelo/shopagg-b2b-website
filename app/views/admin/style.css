@@ -594,10 +594,10 @@ body {
 
 .media-placeholder .buttons { justify-content: center; margin-bottom: 10px; }
 
-/* ==================== Quill编辑器样式 ==================== */
-.ql-editor { font-size: 16px !important; min-height: 200px; }
-.ql-container { border-radius: 0 0 var(--border-radius-xs) var(--border-radius-xs); border-color: #e5e7eb; }
-.ql-toolbar { border-radius: var(--border-radius-xs) var(--border-radius-xs) 0 0; border-color: #e5e7eb; background: #f9fafb; }
+/* ==================== wangEditor 编辑器样式 ==================== */
+#editor-container { font-size: 16px !important; min-height: 200px; }
+#toolbar-container { border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+#editor-wrapper { border: 1px solid #e5e7eb; border-radius: var(--border-radius-xs); }
 
 /* ==================== 下拉菜单优化 ==================== */
 .dropdown-content {

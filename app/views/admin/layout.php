@@ -6,8 +6,25 @@
     <title><?= h($title) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
+    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= url('/app/views/admin/style.css') ?>">
+    <style>
+        #editor-wrapper {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #toolbar-container {
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafaf9;
+        }
+        #editor-container {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .w-e-toolbar { border: none !important; }
+        .w-e-text-container { border: none !important; }
+    </style>
     <script>window.APP_BASE_PATH = '<?= base_path() ?>';</script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
@@ -207,7 +224,7 @@
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
 <script>
 // 子目录部署：前端请求需带 base path
 window.APP_BASE_PATH = <?= json_encode(base_path()) ?>;
@@ -340,43 +357,61 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 1. Quill Editor
-    const editor = document.getElementById("quill-editor");
-    const input = document.getElementById("content-input");
-    if (editor && input) {
-        const quill = new Quill(editor, {
-            theme: "snow",
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'align': [] }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image'],
-                    ['clean']
-                ]
+    // wangEditor 编辑器初始化
+    const { createEditor, createToolbar } = window.wangEditor;
+    const editorContainer = document.getElementById('editor-container');
+    const toolbarContainer = document.getElementById('toolbar-container');
+    
+    if (editorContainer && toolbarContainer) {
+        const editorConfig = {
+            placeholder: '请输入内容...',
+            MENU_CONF: {
+                uploadImage: {
+                    // 自定义选择和上传图片，使用统一媒体库，隐藏网络图片上传
+                    customBrowseAndUpload(insertFn) {
+                        openMediaLibrary(function(urls) {
+                            // 单个选择返回单个图片，多个选择返回数组
+                            const imageUrls = Array.isArray(urls) ? urls : [urls];
+                            imageUrls.forEach(url => {
+                                // wangEditor 期望的格式：(url, alt, href)
+                                insertFn((window.APP_BASE_PATH || '') + url, '', '');
+                            });
+                        }, true); // true 表示多选
+                    },
+                    showUploadImg: false,
+                    showLinkImg: false
+                }
             }
-        });
-        quill.root.innerHTML = input.value || "";
-        const form = input.closest("form");
-        form.addEventListener("submit", function () {
-            input.value = quill.root.innerHTML;
+        };
+
+        const editor = createEditor({
+            selector: '#editor-container',
+            html: document.getElementById('content-input')?.value || '<p><br></p>',
+            config: editorConfig,
+            mode: 'simple'
         });
 
-        // 调用统一媒体库（支持多选图片）
-        const toolbar = quill.getModule("toolbar");
-        toolbar.addHandler("image", function () {
-            openMediaLibrary(function(urls) {
-                            const range = quill.getSelection(true);
-                let index = range ? range.index : 0;
-                urls.forEach(url => {
-                    quill.insertEmbed(index, "image", (window.APP_BASE_PATH || '') + url);
-                    index += 1;
-            });
-            }, true);
+        const toolbarConfig = {
+            excludeKeys: []
+        };
+
+        const toolbar = createToolbar({
+            editor,
+            selector: '#toolbar-container',
+            config: toolbarConfig,
+            mode: 'simple'
         });
+
+        // 表单提交时，同步编辑器内容到 hidden input
+        const form = document.getElementById('editor-container').closest('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const contentInput = document.getElementById('content-input');
+                if (contentInput) {
+                    contentInput.value = editor.getHtml();
+                }
+            });
+        }
     }
 
     // 2. Product Image Preview
