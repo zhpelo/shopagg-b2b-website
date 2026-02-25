@@ -283,3 +283,352 @@ function get_post_categories(): array {
     $categoryModel = new \App\Models\Category();
     return $categoryModel->getTree('post');
 }
+
+/**
+ * 谷歌翻译系统功能：返回可用语言配置
+ */
+function get_google_translate_languages(array $site = []): array {
+    $allLanguages = [
+        'en' => ['label' => 'English', 'flag' => 'us'],
+        'zh-CN' => ['label' => '简体中文', 'flag' => 'cn'],
+        'zh-TW' => ['label' => '繁體中文', 'flag' => 'tw'],
+        'ja' => ['label' => '日本語', 'flag' => 'jp'],
+        'ko' => ['label' => '한국어', 'flag' => 'kr'],
+        'es' => ['label' => 'Español', 'flag' => 'es'],
+        'fr' => ['label' => 'Français', 'flag' => 'fr'],
+        'de' => ['label' => 'Deutsch', 'flag' => 'de'],
+        'it' => ['label' => 'Italiano', 'flag' => 'it'],
+        'pt' => ['label' => 'Português', 'flag' => 'pt'],
+        'ru' => ['label' => 'Русский', 'flag' => 'ru'],
+        'ar' => ['label' => 'العربية', 'flag' => 'sa'],
+    ];
+
+    $configured = json_decode($site['translate_languages'] ?? '[]', true);
+    if (!is_array($configured) || empty($configured)) {
+        $configured = array_keys($allLanguages);
+    }
+    if (!in_array('en', $configured, true)) {
+        array_unshift($configured, 'en');
+    }
+
+    $enabled = [];
+    foreach ($configured as $code) {
+        if (isset($allLanguages[$code])) {
+            $enabled[$code] = $allLanguages[$code];
+        }
+    }
+
+    return !empty($enabled) ? $enabled : ['en' => $allLanguages['en']];
+}
+
+function is_google_translate_enabled(array $site = []): bool {
+    return ($site['translate_enabled'] ?? '1') === '1';
+}
+
+function is_google_translate_auto_browser(array $site = []): bool {
+    return ($site['translate_auto_browser'] ?? '0') === '1';
+}
+
+/**
+ * 输出谷歌翻译所需的样式与脚本（放在 <head> 内）
+ */
+function render_google_translate_head(array $site = []): string {
+    if (!is_google_translate_enabled($site)) {
+        return '';
+    }
+
+    $languageMap = get_google_translate_languages($site);
+    $languageMapJson = json_encode($languageMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $autoTranslate = is_google_translate_auto_browser($site) ? 'true' : 'false';
+
+    return <<<HTML
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+<style>
+    body > .skiptranslate { display: none; }
+    .goog-logo-link { display: none !important; }
+    .goog-te-gadget { color: transparent !important; }
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    a[href="https://translate.google.com"] { display: none !important; }
+    body { top: 0 !important; }
+    .goog-tooltip { display: none !important; }
+    .goog-te-gadget-simple { display: none !important; }
+
+    #google_translate_element {
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .lang-selector-wrapper { position: relative; display: inline-block; }
+    .lang-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 4px;
+        background: #fff;
+        border: 1px solid #dbdbdb;
+        border-radius: 4px;
+        box-shadow: 0 8px 16px rgba(10,10,10,0.1);
+        display: none;
+        z-index: 1000;
+        min-width: 150px;
+    }
+    .lang-dropdown.is-active { display: block; }
+    .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        color: #4a4a4a;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .lang-option:hover {
+        background-color: #f5f5f5;
+        color: #3273dc;
+    }
+    .fi {
+        width: 1.33em !important;
+        line-height: 1em !important;
+    }
+    .translate-alert {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10000;
+        background: #ffdd57;
+        color: #363636;
+        font-size: 14px;
+        padding: 8px 16px;
+        text-align: center;
+    }
+    .translate-alert.is-active { display: block; }
+</style>
+<script>
+    var translationEnabled = true;
+    var autoTranslateByBrowser = {$autoTranslate};
+    var googleTranslateReady = false;
+    var googleTranslateScriptLoaded = false;
+    var languageMap = {$languageMapJson};
+
+    function showTranslateError() {
+        var alertEl = document.getElementById('translate-network-alert');
+        if (alertEl) alertEl.classList.add('is-active');
+    }
+
+    function getCookie(name) {
+        var prefix = name + '=';
+        var parts = document.cookie.split(';');
+        for (var i = 0; i < parts.length; i++) {
+            var item = parts[i].trim();
+            if (item.indexOf(prefix) === 0) return item.substring(prefix.length);
+        }
+        return '';
+    }
+
+    function getCurrentLanguage() {
+        var cookie = getCookie('googtrans');
+        if (!cookie) return 'en';
+        var segments = cookie.split('/');
+        var lang = segments[segments.length - 1] || 'en';
+        return languageMap[lang] ? lang : 'en';
+    }
+
+    function updateCurrentLanguageUI(langCode) {
+        var lang = languageMap[langCode] ? langCode : 'en';
+        var langMeta = languageMap[lang];
+        var textEl = document.getElementById('current-language-text');
+        var flagEl = document.getElementById('current-language-flag');
+        if (textEl) textEl.textContent = langMeta.label;
+        if (flagEl) flagEl.className = 'fi fi-' + langMeta.flag;
+    }
+
+    function clearGoogleTranslateCookie() {
+        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        if (location.hostname && location.hostname.indexOf('.') > -1) {
+            document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=' + location.hostname + ';path=/';
+        }
+    }
+
+    function getTranslateSelect() {
+        return document.querySelector('select.goog-te-combo');
+    }
+
+    function markTranslateReady(maxRetry) {
+        var retry = typeof maxRetry === 'number' ? maxRetry : 20;
+        var timer = setInterval(function() {
+            if (getTranslateSelect()) {
+                googleTranslateReady = true;
+                clearInterval(timer);
+                return;
+            }
+            retry--;
+            if (retry <= 0) clearInterval(timer);
+        }, 250);
+    }
+
+    function setGoogleTranslateCookie(langCode) {
+        if (langCode === 'en') {
+            clearGoogleTranslateCookie();
+            return;
+        }
+        var value = '/en/' + langCode;
+        document.cookie = 'googtrans=' + value + ';path=/';
+        if (location.hostname && location.hostname.indexOf('.') > -1) {
+            document.cookie = 'googtrans=' + value + ';domain=' + location.hostname + ';path=/';
+        }
+    }
+
+    function googleTranslateElementInit() {
+        googleTranslateScriptLoaded = true;
+        var includedLanguages = Object.keys(languageMap).join(',');
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: includedLanguages,
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+        markTranslateReady(24);
+    }
+
+    function loadGoogleTranslateScript() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        script.onerror = function() { showTranslateError(); };
+        document.head.appendChild(script);
+
+        setTimeout(function() {
+            if (!googleTranslateScriptLoaded) showTranslateError();
+        }, 6000);
+    }
+
+    function detectBrowserLanguage() {
+        var browserLang = (navigator.language || navigator.userLanguage || 'en').trim();
+        if (languageMap[browserLang]) return browserLang;
+        var shortLang = browserLang.split('-')[0];
+        for (var code in languageMap) {
+            if (code.split('-')[0] === shortLang) return code;
+        }
+        return 'en';
+    }
+
+    function applyAutoTranslateByBrowserLanguage() {
+        if (!autoTranslateByBrowser || getCookie('googtrans')) return;
+        var target = detectBrowserLanguage();
+        if (target !== 'en') triggerGoogleTranslate(target);
+    }
+
+    function triggerGoogleTranslate(langCode) {
+        if (!languageMap[langCode]) langCode = 'en';
+        updateCurrentLanguageUI(langCode);
+
+        if (langCode === 'en') {
+            clearGoogleTranslateCookie();
+            var resetSelect = getTranslateSelect();
+            if (resetSelect) {
+                resetSelect.value = '';
+                resetSelect.dispatchEvent(new Event('change'));
+            }
+            location.reload();
+            return;
+        }
+
+        var select = getTranslateSelect();
+        if (select) {
+            select.value = langCode;
+            select.dispatchEvent(new Event('change'));
+        } else {
+            var attempts = 0;
+            var retryTimer = setInterval(function() {
+                var selectRetry = getTranslateSelect();
+                if (selectRetry) {
+                    selectRetry.value = langCode;
+                    selectRetry.dispatchEvent(new Event('change'));
+                    googleTranslateReady = true;
+                    clearInterval(retryTimer);
+                    return;
+                }
+                attempts++;
+                if (attempts >= 8) {
+                    clearInterval(retryTimer);
+                    setGoogleTranslateCookie(langCode);
+                    location.reload();
+                }
+            }, 250);
+        }
+
+        var dropdown = document.querySelector('.lang-dropdown');
+        if (dropdown) dropdown.classList.remove('is-active');
+    }
+
+    function toggleLangDropdown() {
+        var dropdown = document.querySelector('.lang-dropdown');
+        if (dropdown) dropdown.classList.toggle('is-active');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.lang-selector-wrapper')) {
+            var dropdown = document.querySelector('.lang-dropdown');
+            if (dropdown) dropdown.classList.remove('is-active');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCurrentLanguageUI(getCurrentLanguage());
+        loadGoogleTranslateScript();
+        if (autoTranslateByBrowser) {
+            setTimeout(function() { applyAutoTranslateByBrowserLanguage(); }, 600);
+        }
+    });
+</script>
+HTML;
+}
+
+/**
+ * 输出谷歌翻译告警条（放在 <body> 开头）
+ */
+function render_google_translate_alert(array $site = []): string {
+    if (!is_google_translate_enabled($site)) {
+        return '';
+    }
+    return '<div id="translate-network-alert" class="translate-alert">Google翻译服务无法正常访问，请检查您的网络环境</div>';
+}
+
+/**
+ * 输出谷歌翻译按钮（用于导航栏）
+ */
+function render_google_translate_nav_item(array $site = [], string $buttonClass = 'button is-white', string $wrapperClass = 'navbar-item'): string {
+    if (!is_google_translate_enabled($site)) {
+        return '';
+    }
+
+    $languages = get_google_translate_languages($site);
+    $options = '';
+    foreach ($languages as $langCode => $langMeta) {
+        $options .= '<a href="javascript:void(0)" onclick="triggerGoogleTranslate(\'' . h($langCode) . '\')" class="lang-option dropdown-item">'
+            . '<span class="fi fi-' . h($langMeta['flag']) . '"></span>'
+            . '<span>' . h($langMeta['label']) . '</span>'
+            . '</a>';
+    }
+
+    return '<div class="' . h($wrapperClass) . '">'
+        . '<div id="google_translate_element"></div>'
+        . '<div class="lang-selector-wrapper">'
+        . '<div class="' . h($buttonClass) . '" onclick="toggleLangDropdown()">'
+        . '<span class="icon"><span id="current-language-flag" class="fi fi-us"></span></span>'
+        . '<span id="current-language-text">English</span>'
+        . '<span class="icon is-small"><i class="fa-solid fa-angle-down"></i></span>'
+        . '</div>'
+        . '<div class="lang-dropdown box" style="padding: 0.5rem;">'
+        . $options
+        . '</div>'
+        . '</div>'
+        . '</div>';
+}

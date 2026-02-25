@@ -4,8 +4,32 @@ $tabs = [
     'company' => ['公司简介', 'building'],
     'trade' => ['贸易能力', 'globe'],
     'media' => ['公司展示', 'images'],
-    'contact' => ['联系方式', 'phone']
+    'contact' => ['联系方式', 'phone'],
+    'translate' => ['翻译设置', 'language']
 ];
+
+$translateLanguageOptions = [
+    'en' => 'English',
+    'zh-CN' => '简体中文',
+    'zh-TW' => '繁體中文',
+    'ja' => '日本語',
+    'ko' => '한국어',
+    'es' => 'Español',
+    'fr' => 'Français',
+    'de' => 'Deutsch',
+    'it' => 'Italiano',
+    'pt' => 'Português',
+    'ru' => 'Русский',
+    'ar' => 'العربية',
+];
+
+$selectedTranslateLanguages = json_decode($settings['translate_languages'] ?? '[]', true);
+if (!is_array($selectedTranslateLanguages) || empty($selectedTranslateLanguages)) {
+    $selectedTranslateLanguages = ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ar'];
+}
+if (!in_array('en', $selectedTranslateLanguages, true)) {
+    array_unshift($selectedTranslateLanguages, 'en');
+}
 ?>
 
 <!-- 页面头部 -->
@@ -633,49 +657,75 @@ $tabs = [
         </div>
     </div>
 
-    <?php elseif ($tab === 'translations'): ?>
-    <div class="admin-card animate-in delay-2" style="padding: 2rem;">
-        <div class="level mb-4">
-            <div class="level-left">
-                <div class="section-title mb-0">
+    <?php elseif ($tab === 'translate'): ?>
+    <div class="columns">
+        <div class="column is-8">
+            <div class="admin-card mb-5 animate-in delay-2" style="padding: 2rem;">
+                <div class="section-title">
                     <span class="icon-box primary"><i class="fas fa-language"></i></span>
-                    编辑语言包: <?= h($current_edit_lang) ?>
+                    前台翻译功能
                 </div>
-            </div>
-            <div class="level-right">
-                <div class="modern-tabs" style="margin-bottom: 0;">
-                    <?php foreach ($available_langs as $l): ?>
-                        <a href="<?= url('/admin/settings?tab=translations&lang=' . urlencode($l)) ?>" class="<?= $current_edit_lang === $l ? 'is-active' : '' ?>">
-                            <?= $l === 'zh' ? '中文' : ($l === 'en' ? 'English' : strtoupper($l)) ?>
-                        </a>
-                    <?php endforeach; ?>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">启用网页翻译</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="translate_enabled">
+                                        <option value="1" <?= ($settings['translate_enabled'] ?? '1') === '1' ? 'selected' : '' ?>>启用</option>
+                                        <option value="0" <?= ($settings['translate_enabled'] ?? '1') === '0' ? 'selected' : '' ?>>禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">根据浏览器语言自动翻译</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="translate_auto_browser">
+                                        <option value="0" <?= ($settings['translate_auto_browser'] ?? '0') === '0' ? 'selected' : '' ?>>关闭</option>
+                                        <option value="1" <?= ($settings['translate_auto_browser'] ?? '0') === '1' ? 'selected' : '' ?>>开启</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help">仅在用户尚未手动选择语言时生效</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">前台可选翻译语种</label>
+                    <input type="hidden" name="translate_languages[]" value="en">
+                    <div class="columns is-multiline">
+                        <?php foreach ($translateLanguageOptions as $langCode => $langLabel): ?>
+                            <div class="column is-4">
+                                <label class="checkbox" style="display: inline-flex; align-items: center; gap: .5rem;">
+                                    <input type="checkbox" name="translate_languages[]" value="<?= h($langCode) ?>" <?= in_array($langCode, $selectedTranslateLanguages, true) ? 'checked' : '' ?> <?= $langCode === 'en' ? 'disabled' : '' ?>>
+                                    <span><?= h($langLabel) ?> <?= $langCode === 'en' ? '(默认原文)' : '' ?></span>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <p class="help">English 固定保留，用于“英文不翻译（恢复原文）”。</p>
                 </div>
             </div>
         </div>
-        
-        <input type="hidden" name="edit_lang" value="<?= h($current_edit_lang) ?>">
-        
-        <div class="modern-table">
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">键名 (Key)</th>
-                        <th>翻译内容 (Value)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($translations as $key => $val): ?>
-                        <tr>
-                            <td>
-                                <code style="background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8125rem;"><?= h($key) ?></code>
-                            </td>
-                            <td>
-                                <input class="input" name="t[<?= h($key) ?>]" value="<?= h($val) ?>">
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+
+        <div class="column is-4">
+            <div class="admin-card animate-in delay-2" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box info"><i class="fas fa-info"></i></span>
+                    设置说明
+                </div>
+                <div class="content is-size-7 has-text-grey">
+                    <p><strong>启用网页翻译</strong>：控制前台是否显示翻译下拉框。</p>
+                    <p><strong>自动翻译</strong>：按浏览器语言自动切换（若不在可选语种内则保持英文）。</p>
+                    <p><strong>可选语种</strong>：控制前台下拉框中的语言列表。</p>
+                </div>
+            </div>
         </div>
     </div>
     <?php endif; ?>

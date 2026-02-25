@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 模板片段：站点头部
  * 作用：输出 HTML 头部、SEO/OG 元信息、全站导航与语言切换入口。
@@ -31,9 +32,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
+    <?= render_google_translate_head($site) ?>
+    
 </head>
 
 <body>
+    <?= render_google_translate_alert($site) ?>
     <nav class="navbar is-white is-spaced" role="navigation">
         <div class="container">
             <div class="navbar-brand">
@@ -42,7 +46,7 @@
                         <?php if (!empty($site['logo'])): ?>
                             <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 60px;">
                         <?php else: ?>
-                            <h1 class="is-size-5"><?=  $site['name'] ?></h1>
+                            <h1 class="is-size-5"><?= $site['name'] ?></h1>
                             <div class="tagline "><?= $site['tagline'] ?></div>
                         <?php endif; ?>
                     </div>
@@ -61,9 +65,11 @@
                     <a class="navbar-item" href="<?= url('/blog') ?>">Blog</a>
                     <a class="navbar-item" href="<?= url('/contact') ?>">Contact</a>
                     <a class="navbar-item" href="<?= url('/about') ?>">About Us</a>
+                    <?= render_google_translate_nav_item($site, 'button is-white') ?>
                     <div class="navbar-item">
                         <a class="button is-link" href="<?= url('/contact') ?>">Request Quote</a>
                     </div>
+
                 </div>
             </div>
         </div>

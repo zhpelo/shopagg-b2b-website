@@ -236,6 +236,27 @@ class AdminController extends Controller {
             return;
         }
 
+        if ($tab === 'translate') {
+            $enabled = ($_POST['translate_enabled'] ?? '0') === '1' ? '1' : '0';
+            $autoBrowser = ($_POST['translate_auto_browser'] ?? '0') === '1' ? '1' : '0';
+
+            $languages = $_POST['translate_languages'] ?? [];
+            if (!is_array($languages)) {
+                $languages = [];
+            }
+            $languages = array_values(array_unique(array_filter(array_map('trim', $languages))));
+            if (!in_array('en', $languages, true)) {
+                array_unshift($languages, 'en');
+            }
+
+            $this->settingModel->set('translate_enabled', $enabled);
+            $this->settingModel->set('translate_auto_browser', $autoBrowser);
+            $this->settingModel->set('translate_languages', json_encode($languages, JSON_UNESCAPED_UNICODE));
+
+            $this->redirect('/admin/settings?tab=translate');
+            return;
+        }
+
         $groups = [
             'general' => ['site_name', 'site_tagline', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],

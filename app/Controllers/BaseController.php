@@ -72,6 +72,11 @@ abstract class BaseController extends Controller {
                 'company_show_json' => $settings['company_show_json'] ?? '[]',
                 'company_certificates_json' => $settings['company_certificates_json'] ?? '[]',
                 'company_profile_images_json' => $settings['company_profile_images_json'] ?? '[]',
+
+                // Translate
+                'translate_enabled' => $settings['translate_enabled'] ?? '1',
+                'translate_languages' => $settings['translate_languages'] ?? '[]',
+                'translate_auto_browser' => $settings['translate_auto_browser'] ?? '0',
             ]
         ];
     }
