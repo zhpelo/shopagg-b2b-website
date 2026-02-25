@@ -77,6 +77,10 @@ abstract class BaseController extends Controller {
                 'translate_enabled' => $settings['translate_enabled'] ?? '1',
                 'translate_languages' => $settings['translate_languages'] ?? '[]',
                 'translate_auto_browser' => $settings['translate_auto_browser'] ?? '0',
+
+                // Custom code
+                'head_code' => $settings['head_code'] ?? '',
+                'footer_code' => $settings['footer_code'] ?? '',
             ]
         ];
     }

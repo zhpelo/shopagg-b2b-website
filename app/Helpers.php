@@ -330,6 +330,30 @@ function is_google_translate_auto_browser(array $site = []): bool {
 }
 
 /**
+ * 返回 head 自定义代码（原样输出）
+ */
+function get_head_code(): string {
+    static $cached = null;
+    if ($cached === null) {
+        $settingModel = new \App\Models\Setting();
+        $cached = (string)$settingModel->get('head_code', '');
+    }
+    return $cached;
+}
+
+/**
+ * 返回 footer 自定义代码（原样输出）
+ */
+function get_footer_code(): string {
+    static $cached = null;
+    if ($cached === null) {
+        $settingModel = new \App\Models\Setting();
+        $cached = (string)$settingModel->get('footer_code', '');
+    }
+    return $cached;
+}
+
+/**
  * 输出谷歌翻译组件（样式/脚本/告警/按钮合一）
  */
 function get_google_translate_widget(array $site = [], string $buttonClass = 'button is-white', string $wrapperClass = 'navbar-item'): string {

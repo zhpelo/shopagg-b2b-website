@@ -58,6 +58,7 @@
         </div>
     </div>
 </footer>
+<?= get_footer_code() ?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const burgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);

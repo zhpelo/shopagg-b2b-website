@@ -5,7 +5,8 @@ $tabs = [
     'trade' => ['贸易能力', 'globe'],
     'media' => ['公司展示', 'images'],
     'contact' => ['联系方式', 'phone'],
-    'translate' => ['翻译设置', 'language']
+    'translate' => ['翻译设置', 'language'],
+    'custom' => ['自定义代码', 'code']
 ];
 
 $translateLanguageOptions = [
@@ -724,6 +725,45 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
                     <p><strong>启用网页翻译</strong>：控制前台是否显示翻译下拉框。</p>
                     <p><strong>自动翻译</strong>：按浏览器语言自动切换（若不在可选语种内则保持英文）。</p>
                     <p><strong>可选语种</strong>：控制前台下拉框中的语言列表。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php elseif ($tab === 'custom'): ?>
+    <div class="columns">
+        <div class="column is-8">
+            <div class="admin-card mb-5 animate-in delay-2" style="padding: 2rem;">
+                <div class="section-title">
+                    <span class="icon-box primary"><i class="fas fa-code"></i></span>
+                    自定义代码
+                </div>
+                <div class="field">
+                    <label class="label">Head 自定义代码</label>
+                    <div class="control">
+                        <textarea class="textarea" name="head_code" rows="6" placeholder="例如：统计代码、验证代码、全站样式..."><?= h($settings['head_code'] ?? '') ?></textarea>
+                    </div>
+                    <p class="help">会插入到 &lt;head&gt; 末尾，请确保代码安全。</p>
+                </div>
+                <div class="field">
+                    <label class="label">Footer 自定义代码</label>
+                    <div class="control">
+                        <textarea class="textarea" name="footer_code" rows="6" placeholder="例如：脚本、像素追踪代码..."><?= h($settings['footer_code'] ?? '') ?></textarea>
+                    </div>
+                    <p class="help">会插入到 &lt;/body&gt; 前。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column is-4">
+            <div class="admin-card animate-in delay-2" style="padding: 1.5rem;">
+                <div class="section-title" style="font-size: 1rem;">
+                    <span class="icon-box info"><i class="fas fa-info"></i></span>
+                    设置说明
+                </div>
+                <div class="content is-size-7 has-text-grey">
+                    <p><strong>Head</strong>：用于统计/验证/全站样式等。</p>
+                    <p><strong>Footer</strong>：用于脚本或追踪代码。</p>
+                    <p>保存后会在前台模板中输出。</p>
                 </div>
             </div>
         </div>
