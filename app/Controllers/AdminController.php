@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
+use App\Core\AuthManager;
 use App\Models\Setting;
 use App\Models\Product;
 use App\Models\Category;
@@ -15,8 +16,18 @@ use App\Models\Message;
 use App\Models\User;
 use SQLite3;
 
+/**
+ * 后台管理控制器
+ * 
+ * 处理后台的产品、内容、消息、设置等全部管理功能
+ * 所有方法均受权限控制保护
+ */
 class AdminController extends Controller {
+    
+    // 数据库实例
     private SQLite3 $db;
+    
+    // 模型实例 - 缓存以减少创建开销
     private Setting $settingModel;
     private Product $productModel;
     private Category $categoryModel;
@@ -26,7 +37,11 @@ class AdminController extends Controller {
     private Message $messageModel;
     private User $userModel;
 
+    /**
+     * 构造函数 - 初始化模型和执行认证检查
+     */
     public function __construct() {
+        // 初始化数据库和所有模型
         $this->db = Database::getInstance();
         $this->settingModel = new Setting();
         $this->productModel = new Product();
@@ -37,71 +52,71 @@ class AdminController extends Controller {
         $this->messageModel = new Message();
         $this->userModel = new User();
         
-        // Auth check（兼容子目录：先去掉 base path 再比较）
-        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-        $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
-        if ($basePath !== '' && strpos($path, $basePath) === 0) {
-            $path = substr($path, strlen($basePath)) ?: '/';
-        }
-        if ($path !== '/admin/login' && !isset($_SESSION['admin_user'])) {
-            $this->redirect('/admin/login');
-        }
-
-        // Permission check
-        if (isset($_SESSION['admin_user'])) {
-            $this->checkPermission($path);
-        }
+        // 执行认证和授权检查
+        $this->performAuthChecks();
     }
 
-    private function checkPermission(string $path): void {
-        if ($_SESSION['admin_role'] === 'admin') return;
+    /**
+     * 执行认证和授权检查
+     * 
+     * @return void
+     */
+    private function performAuthChecks(): void {
+        // 获取规范化的请求路径
+        $path = AuthManager::normalizePath(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH));
 
-        $perms = $_SESSION['admin_permissions'] ?? [];
-        
-        $map = [
-            '/admin/products' => 'products',
-            '/admin/product-categories' => 'products',
-            '/admin/cases' => 'cases',
-            '/admin/posts' => 'blog',
-            '/admin/post-categories' => 'blog',
-            '/admin/messages' => 'inbox',
-            '/admin/inquiries' => 'inbox',
-            '/admin/settings' => 'settings',
-            '/admin/staff' => 'staff',
-        ];
-
-        foreach ($map as $prefix => $perm) {
-            if (str_starts_with($path, $prefix) && !in_array($perm, $perms)) {
-                $this->redirect('/admin');
+        // 检查是否有权访问该路由
+        if (!AuthManager::canAccessRoute($path)) {
+            // 未认证则重定向到登录页
+            if (!AuthManager::isAuthenticated()) {
+                $this->redirect('/admin/login');
             }
+            // 无权限则重定向到首页
+            $this->redirect('/admin');
         }
     }
 
-    // --- Auth ---
+    /**
+     * 显示登录页面
+     */
     public function login(): void {
-        if (isset($_SESSION['admin_user'])) {
+        if (AuthManager::isAuthenticated()) {
             $this->redirect('/admin');
         }
         $this->renderAdmin('登录', $this->renderView('admin/login'), false);
     }
 
+    /**
+     * 处理登录请求
+     * 
+     * @return void
+     */
     public function doLogin(): void {
         $username = trim((string)$_POST['username']);
         $password = (string)$_POST['password'];
+        
+        // 查询用户
         $user = $this->userModel->getByUsername($username);
+        
+        // 验证密码
         if ($user && password_verify($password, $user['password_hash'])) {
-            $_SESSION['admin_user'] = $user['username'];
-            $_SESSION['admin_user_id'] = $user['id'];
-            $_SESSION['admin_role'] = $user['role'];
-            $_SESSION['admin_permissions'] = array_filter(explode(',', $user['permissions'] ?? ''));
-            $_SESSION['admin_display_name'] = $user['display_name'] ?? $user['username'];
+            // 启动会话
+            AuthManager::startSession($user);
             $this->redirect('/admin');
         }
-        $this->renderAdmin('登录', '<div class="notification is-danger">登录失败</div>' . $this->renderView('admin/login'), false);
+        
+        // 登录失败
+        $errorHtml = '<div class="notification is-danger">登录失败，用户名或密码错误</div>';
+        $this->renderAdmin('登录', $errorHtml . $this->renderView('admin/login'), false);
     }
 
+    /**
+     * 处理登出请求
+     * 
+     * @return void
+     */
     public function logout(): void {
-        unset($_SESSION['admin_user']);
+        AuthManager::destroySession();
         $this->redirect('/admin/login');
     }
 

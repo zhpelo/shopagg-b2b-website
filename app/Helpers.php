@@ -1,10 +1,43 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * 全局辅助函数库
+ * 
+ * 包含系统运行所需的通用函数，按功能分类组织：
+ * - 安全函数（HTML转义、CSRF 防护）
+ * - URL 和路由函数（路径处理、二级目录支持）
+ * - 文件上传处理
+ * - 数据格式化函数
+ * - 主题和显示相关函数
+ * - 数据查询辅助函数
+ */
+
+// ============================================================================
+// 安全函数 - HTML 转义、输入验证、CSRF 防护
+// ============================================================================
+
+/**
+ * HTML 特殊字符转义
+ * 
+ * 防止 XSS 攻击，用于输出用户提交的任何内容
+ * 
+ * @param mixed $s 待转义的值
+ * @return string 转义后的 HTML 安全字符串
+ */
 function h($s): string {
     return htmlspecialchars((string)($s ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
+/**
+ * 生成 URL 友好的 slug
+ * 
+ * 将文本转换为合法的 URL 片段，移除特殊字符并转换为小写
+ * 示例：'Hello World!' => 'hello-world'
+ * 
+ * @param string $text 原始文本
+ * @return string URL 友好的文本
+ */
 function slugify(string $text): string {
     $text = strtolower(trim($text));
     $text = preg_replace('/[^a-z0-9]+/i', '-', $text);
@@ -12,7 +45,13 @@ function slugify(string $text): string {
     return $text === '' ? 'item' . time() : $text;
 }
 
-
+/**
+ * 获取或生成 CSRF 令牌
+ * 
+ * 跨站请求伪造（CSRF）防护令牌，在表单中必须包含此令牌
+ * 
+ * @return string CSRF 令牌
+ */
 function csrf_token(): string {
     if (empty($_SESSION['csrf'])) {
         $_SESSION['csrf'] = bin2hex(random_bytes(16));
@@ -20,6 +59,14 @@ function csrf_token(): string {
     return $_SESSION['csrf'];
 }
 
+/**
+ * 验证 CSRF 令牌
+ * 
+ * 在处理 POST 请求前调用此函数检查令牌有效性
+ * 若令牌无效则终止请求并返回 400 错误
+ * 
+ * @return void
+ */
 function csrf_check(): void {
     $token = $_POST['csrf'] ?? '';
     if (!$token || $token !== ($_SESSION['csrf'] ?? '')) {
@@ -29,11 +76,31 @@ function csrf_check(): void {
     }
 }
 
+// ============================================================================
+// URL 和路由函数 - 路径处理、二级目录支持
+// ============================================================================
+
+/**
+ * 获取应用 base path（用于二级目录部署）
+ * 
+ * 返回应用部署的子目录路径，如果应用在根目录部署则返回空字符串
+ * 示例：应用部署在 /app/myproject/ 则返回 '/app/myproject'
+ * 
+ * @return string Base path（不含尾部斜杠）
+ */
 function base_path(): string {
     return defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
 }
 
-/** 生成带 base path 的 URL，用于二级目录部署 */
+/**
+ * 生成应用内 URL 路径
+ * 
+ * 自动添加 base path，用于路由重定向和链接生成
+ * 示例：url('/admin') 在二级目录下返回 '/app/myproject/admin'
+ * 
+ * @param string $path 路由路径（以 / 开头）
+ * @return string 完整 URL 路径
+ */
 function url(string $path = ''): string {
     $base = base_path();
     if ($path === '' || $path === '/') {
@@ -42,17 +109,14 @@ function url(string $path = ''): string {
     return $base . ($path[0] === '/' ? $path : '/' . $path);
 }
 
-function lang_switch_url(string $lang): string {
-    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    $query = $_GET;
-    $query['lang'] = $lang;
-    return $path . '?' . http_build_query($query);
-}
-
-function get_languages(): array {
-    return ['en' => 'English', 'zh' => '中文'];
-}
-
+/**
+ * 获取完整的应用 URL（包含协议和域名）
+ * 
+ * 自动检测 HTTP/HTTPS 协议，用于生成绝对 URL
+ * 示例：返回 https://example.com/app/myproject
+ * 
+ * @return string 完整应用 URL
+ */
 function base_url(): string {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -60,6 +124,60 @@ function base_url(): string {
     return $scheme . '://' . $host . $base;
 }
 
+/**
+ * 生成资源 URL（支持外部 URL）
+ * 
+ * 自动添加 base path，但保留 HTTP/HTTPS URL 的原样
+ * 
+ * @param string $path 资源路径
+ * @return string 完整资源 URL
+ */
+function asset_url(string $path): string {
+    if (empty($path)) return '';
+    if (strpos($path, 'http') === 0 || strpos($path, '//') === 0) return $path;
+    return url($path);
+}
+
+/**
+ * 生成语言切换 URL
+ * 
+ * 保留当前请求参数，仅修改 lang 参数
+ * 
+ * @param string $lang 语言代码（如 'en'、'zh'）
+ * @return string 语言切换 URL
+ */
+function lang_switch_url(string $lang): string {
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $query = $_GET;
+    $query['lang'] = $lang;
+    return $path . '?' . http_build_query($query);
+}
+
+/**
+ * 获取支持的语言列表
+ * 
+ * @return array 语言代码 => 显示名称 的关联数组
+ */
+function get_languages(): array {
+    return ['en' => 'English', 'zh' => '中文'];
+}
+
+// ============================================================================
+// 文件上传处理
+// ============================================================================
+
+/**
+ * 规范化 $_FILES 数组格式
+ * 
+ * PHP 的 $_FILES 单个/多个文件上传时格式不一致，此函数统一为：
+ * [
+ *   ['name' => '...', 'type' => '...', 'tmp_name' => '...', 'error' => ..., 'size' => ...],
+ *   ...
+ * ]
+ * 
+ * @param array $files $_FILES 数组（如 $_FILES['images']）
+ * @return array 规范化后的文件列表
+ */
 function normalize_files_array(array $files): array {
     $normalized = [];
     $names = $files['name'] ?? [];
@@ -78,24 +196,80 @@ function normalize_files_array(array $files): array {
     return $normalized;
 }
 
+/**
+ * 保存上传的图片文件
+ * 
+ * 执行以下验证和处理：
+ * - 检查上传错误
+ * - 验证文件大小（最大 5MB）
+ * - 验证文件是否为有效图片（MIME 类型）
+ * - 验证图片格式（JPEG、PNG、GIF、WebP）
+ * - 保存到 /uploads/YYYYMM/ 目录
+ * 
+ * @param array $file 单个文件数组（来自 $_FILES）
+ * @return array [success: bool, message: string 或 path: string]
+ *   成功: [true, '/uploads/202501/img_xxx.jpg']
+ *   失败: [false, '错误信息']
+ */
 function save_uploaded_image(array $file): array {
-    if (!empty($file['error'])) return [false, '上传失败'];
+    if (!empty($file['error'])) {
+        return [false, '上传失败'];
+    }
+    
     $maxSize = 5 * 1024 * 1024;
-    if (($file['size'] ?? 0) > $maxSize) return [false, '图片过大，请小于 5MB'];
+    if (($file['size'] ?? 0) > $maxSize) {
+        return [false, '图片过大，请小于 5MB'];
+    }
+    
     $info = getimagesize($file['tmp_name']);
-    if ($info === false) return [false, '非法图片'];
+    if ($info === false) {
+        return [false, '非法图片'];
+    }
+    
+    // 验证 MIME 类型
     $mime = $info['mime'] ?? '';
-    $extMap = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
-    if (!isset($extMap[$mime])) return [false, '不支持的图片格式'];
+    $extMap = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'image/webp' => 'webp'
+    ];
+    
+    if (!isset($extMap[$mime])) {
+        return [false, '不支持的图片格式'];
+    }
+    
     $ext = $extMap[$mime];
     $subDir = '/uploads/' . date('Ym');
     $targetDir = APP_ROOT . $subDir;
-    if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
+    
+    // 创建目录
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true);
+    }
+    
+    // 移动文件
     $filename = uniqid('img_', true) . '.' . $ext;
-    if (!move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) return [false, '保存失败'];
+    if (!move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) {
+        return [false, '保存失败'];
+    }
+    
     return [true, $subDir . '/' . $filename];
 }
 
+// ============================================================================
+// 数据格式化和转换
+// ============================================================================
+
+/**
+ * 格式化日期时间
+ * 
+ * 安全的日期格式化，处理无效日期和 NULL 值
+ * 
+ * @param string|null $datetime 日期时间字符串（支持 MySQL 格式）
+ * @param string $format 输出格式（PHP date() 格式）
+ * @return string 格式化后的日期，或空字符串
+ */
 function format_date(?string $datetime, string $format = 'Y-m-d H:i:s'): string {
     if (empty($datetime)) return '';
     try {
@@ -106,20 +280,34 @@ function format_date(?string $datetime, string $format = 'Y-m-d H:i:s'): string 
     }
 }
 
+/**
+ * 规范化阶梯价格数据
+ * 
+ * 将表单提交的多行阶梯价格数据转换为结构化数组
+ * 
+ * @param array $post $_POST 数据（包含 price_min[]、price_max[]、price_value[]、price_currency[]）
+ * @return array 阶梯价格数组，每个元素包含 min_qty、max_qty、price、currency
+ */
 function normalize_price_tiers(array $post): array {
     $mins = $post['price_min'] ?? [];
     $maxs = $post['price_max'] ?? [];
     $prices = $post['price_value'] ?? [];
     $currencies = $post['price_currency'] ?? [];
+    
+    // 确保都是数组
     if (!is_array($mins)) $mins = [$mins];
     if (!is_array($maxs)) $maxs = [$maxs];
     if (!is_array($prices)) $prices = [$prices];
     if (!is_array($currencies)) $currencies = [$currencies];
+    
     $tiers = [];
     foreach ($mins as $idx => $minVal) {
         $min = (int)trim((string)$minVal);
         $priceRaw = trim((string)($prices[$idx] ?? ''));
+        
+        // 跳过无效行（最小数量为 0 或价格为空）
         if ($min <= 0 || $priceRaw === '') continue;
+        
         $maxRaw = trim((string)($maxs[$idx] ?? ''));
         $tiers[] = [
             'min_qty' => $min,
@@ -128,17 +316,22 @@ function normalize_price_tiers(array $post): array {
             'currency' => trim((string)($currencies[$idx] ?? 'USD')) ?: 'USD',
         ];
     }
+    
     return $tiers;
 }
 
-/** 生成带 base path 的资源 URL，用于二级目录部署，支持外部 URL */
-function asset_url(string $path): string {
-    if (empty($path)) return '';
-    if (strpos($path, 'http') === 0 || strpos($path, '//') === 0) return $path;
-    return url($path);
-}
+// ============================================================================
+// 富文本内容处理（支持二级目录部署）
+// ============================================================================
 
-/** 处理富文本内容中的图片URL，使其兼容子目录部署 */
+/**
+ * 处理富文本中的图片 URL 以适应二级目录部署
+ * 
+ * 在输出富文本内容时调用，确保图片 URL 包含 base path
+ * 
+ * @param string $html HTML 富文本内容
+ * @return string 处理后的 HTML，所有图片 src 添加了 base path
+ */
 function process_rich_text(string $html): string {
     return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', function($matches) {
         $src = $matches[1];
@@ -147,7 +340,14 @@ function process_rich_text(string $html): string {
     }, $html);
 }
 
-/** 规范化富文本内容中的图片URL，移除 base path 前缀，用于保存到数据库 */
+/**
+ * 规范化富文本中的图片 URL 以便存储到数据库
+ * 
+ * 在保存富文本内容时调用，移除 base path 前缀（便于跨设备迁移）
+ * 
+ * @param string $html HTML 富文本内容
+ * @return string 规范化后的 HTML，移除了 base path 前缀
+ */
 function normalize_rich_text(string $html): string {
     $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
     if ($basePath === '') return $html;
@@ -161,11 +361,14 @@ function normalize_rich_text(string $html): string {
     }, $html);
 }
 
-// --- Theme Helper Functions ---
+// ============================================================================
+// 主题和显示相关函数
+// ============================================================================
 
 /**
  * 获取当前活动主题的服务器目录路径
- * 例如: /var/www/html/themes/default/
+ * 
+ * @return string 主题目录的完整服务器路径，如 /var/www/html/themes/default/
  */
 function get_stylesheet_directory(): string {
     static $theme = null;
@@ -178,7 +381,8 @@ function get_stylesheet_directory(): string {
 
 /**
  * 获取当前活动主题的 URL 地址
- * 例如: https://yoursite.com/themes/default
+ * 
+ * @return string 主题目录的完整 URL，如 https://example.com/themes/default
  */
 function get_stylesheet_directory_uri(): string {
     static $themeURI = null;
