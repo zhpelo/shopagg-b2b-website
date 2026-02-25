@@ -425,6 +425,7 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
     var autoTranslateByBrowser = {$autoTranslate};
     var googleTranslateReady = false;
     var googleTranslateScriptLoaded = false;
+    var googleTranslateScriptRequested = false;
     var userRequestedTranslation = false;
     var languageMap = {$languageMapJson};
 
@@ -510,9 +511,13 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
     }
 
     function loadGoogleTranslateScript() {
+        if (googleTranslateScriptLoaded || googleTranslateScriptRequested) return;
+        googleTranslateScriptRequested = true;
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+
+        script.async = true;
         script.onerror = function() { showTranslateError(); };
         document.head.appendChild(script);
 
@@ -539,7 +544,10 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
 
     function triggerGoogleTranslate(langCode) {
         if (!languageMap[langCode]) langCode = 'en';
-        if (langCode !== 'en') userRequestedTranslation = true;
+        if (langCode !== 'en') {
+            userRequestedTranslation = true;
+            loadGoogleTranslateScript();
+        }
         updateCurrentLanguageUI(langCode);
 
         if (langCode === 'en') {
@@ -595,7 +603,9 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
 
     document.addEventListener('DOMContentLoaded', function() {
         updateCurrentLanguageUI(getCurrentLanguage());
-        loadGoogleTranslateScript();
+        if (getCookie('googtrans')) {
+            loadGoogleTranslateScript();
+        }
         if (autoTranslateByBrowser) {
             setTimeout(function() { applyAutoTranslateByBrowserLanguage(); }, 600);
         }
