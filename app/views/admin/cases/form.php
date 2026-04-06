@@ -78,10 +78,8 @@ $isEdit = isset($item);
                 
                 <div class="field">
                     <div class="control">
-                        <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         <div id="editor-wrapper">
-                            <div id="toolbar-container"></div>
-                            <div id="editor-container"></div>
+                            <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="420"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         </div>
                     </div>
                 </div>

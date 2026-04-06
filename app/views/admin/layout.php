@@ -6,24 +6,70 @@
     <title><?= h($title) ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.css">
     <link rel="stylesheet" href="<?= url('/app/views/admin/style.css') ?>">
     <style>
         #editor-wrapper {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
+            background: #fff;
             overflow: hidden;
         }
-        #toolbar-container {
+        #editor-wrapper .jodit-container:not(.jodit_inline) {
+            border: none;
+            border-radius: inherit;
+        }
+        #editor-wrapper .jodit-toolbar__box:not(:empty) {
             border-bottom: 1px solid #e5e7eb;
             background: #fafaf9;
         }
-        #editor-container {
-            height: 400px;
-            overflow-y: auto;
+        #editor-wrapper .jodit-workplace {
+            min-height: 300px;
         }
-        .w-e-toolbar { border: none !important; }
-        .w-e-text-container { border: none !important; }
+        #editor-wrapper .jodit-wysiwyg,
+        #editor-wrapper .jodit-source__mirror {
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        #editor-wrapper .jodit-status-bar {
+            border-top: 1px solid #e5e7eb;
+        }
+        .jodit_fullsize,
+        .jodit-container.jodit_fullsize {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            z-index: 100000 !important;
+            border-radius: 0 !important;
+            background: #fff !important;
+        }
+        .jodit_fullsize {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .jodit_fullsize .jodit-workplace {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+        .jodit_fullsize .jodit-wysiwyg,
+        .jodit_fullsize .jodit-source__mirror {
+            min-height: 100% !important;
+        }
+        .editor-fullscreen-active {
+            overflow: hidden !important;
+        }
+        .editor-fullscreen-host {
+            transform: none !important;
+            animation: none !important;
+            overflow: visible !important;
+            opacity: 1 !important;
+        }
+        html.jodit_fullsize-box_true,
+        body.jodit_fullsize-box_true {
+            overflow: hidden;
+        }
     </style>
     <script>window.APP_BASE_PATH = '<?= base_path() ?>';</script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -224,7 +270,7 @@
     </div>
 </footer>
 
-<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.js"></script>
 <script>
 // 子目录部署：前端请求需带 base path
 window.APP_BASE_PATH = <?= json_encode(base_path()) ?>;
@@ -357,61 +403,93 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // wangEditor 编辑器初始化
-    const { createEditor, createToolbar } = window.wangEditor;
-    const editorContainer = document.getElementById('editor-container');
-    const toolbarContainer = document.getElementById('toolbar-container');
-    
-    if (editorContainer && toolbarContainer) {
-        const editorConfig = {
-            placeholder: '请输入内容...',
-            MENU_CONF: {
-                uploadImage: {
-                    // 自定义选择和上传图片，使用统一媒体库，隐藏网络图片上传
-                    customBrowseAndUpload(insertFn) {
-                        openMediaLibrary(function(urls) {
-                            // 单个选择返回单个图片，多个选择返回数组
-                            const imageUrls = Array.isArray(urls) ? urls : [urls];
-                            imageUrls.forEach(url => {
-                                // wangEditor 期望的格式：(url, alt, href)
-                                insertFn((window.APP_BASE_PATH || '') + url, '', '');
-                            });
-                        }, true); // true 表示多选
-                    },
-                    showUploadImg: false,
-                    showLinkImg: false
-                }
+    // Jodit 编辑器初始化
+    const editorInputs = document.querySelectorAll('.js-rich-editor');
+
+    if (editorInputs.length && window.Jodit) {
+        const normalizeMediaUrl = (url) => {
+            if (!url) return '';
+            if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:')) {
+                return url;
             }
+
+            return `${window.APP_BASE_PATH || ''}${url}`;
         };
 
-        const editor = createEditor({
-            selector: '#editor-container',
-            html: document.getElementById('content-input')?.value || '<p><br></p>',
-            config: editorConfig,
-            mode: 'simple'
-        });
+        editorInputs.forEach((input) => {
+            const editorHeight = parseInt(input.dataset.editorHeight || '', 10);
+            const editor = Jodit.make(input, {
+                height: Number.isFinite(editorHeight) && editorHeight > 0 ? editorHeight : 400,
+                minHeight: 260,
+                globalFullSize: false,
+                toolbarAdaptive: false,
+                toolbarSticky: false,
+                askBeforePasteHTML: false,
+                askBeforePasteFromWord: false,
+                showCharsCounter: false,
+                showWordsCounter: false,
+                showXPathInStatusbar: false,
+                beautifyHTML: false,
+                imageDefaultWidth: null,
+                buttons: [
+                    'source', '|',
+                    'bold', 'italic', 'underline', 'strikethrough', '|',
+                    'ul', 'ol', 'outdent', 'indent', '|',
+                    'font', 'fontsize', 'brush', 'paragraph', '|',
+                    'image', 'mediaLibrary', 'link', 'table', '|',
+                    'align', 'undo', 'redo', '|',
+                    'hr', 'eraser', 'fullsize'
+                ],
+                controls: {
+                    mediaLibrary: {
+                        name: 'mediaLibrary',
+                        tooltip: '从媒体库插入图片',
+                        text: '图库',
+                        exec: function(instance) {
+                            if (typeof openMediaLibrary !== 'function') {
+                                return;
+                            }
 
-        const toolbarConfig = {
-            excludeKeys: ['insertVideo', 'undo','redo','todo']
-        };
-
-        const toolbar = createToolbar({
-            editor,
-            selector: '#toolbar-container',
-            config: toolbarConfig,
-            mode: 'simple'
-        });
-
-        // 表单提交时，同步编辑器内容到 hidden input
-        const form = document.getElementById('editor-container').closest('form');
-        if (form) {
-            form.addEventListener('submit', function() {
-                const contentInput = document.getElementById('content-input');
-                if (contentInput) {
-                    contentInput.value = editor.getHtml();
+                            if (instance.s && typeof instance.s.save === 'function') {
+                                instance.s.save();
+                            }
+                            openMediaLibrary(function(urls) {
+                                const imageUrls = (Array.isArray(urls) ? urls : [urls]).map(normalizeMediaUrl).filter(Boolean);
+                                if (instance.s && typeof instance.s.restore === 'function') {
+                                    instance.s.restore();
+                                }
+                                imageUrls.forEach((url) => {
+                                    instance.s.insertImage(url);
+                                });
+                                instance.synchronizeValues();
+                            }, true);
+                        }
+                    }
                 }
             });
-        }
+
+            const fullscreenHostElements = [];
+            let current = input.parentElement;
+            while (current && current !== document.body) {
+                fullscreenHostElements.push(current);
+                current = current.parentElement;
+            }
+
+            editor.e.on('toggleFullSize', (isFullSize) => {
+                document.documentElement.classList.toggle('editor-fullscreen-active', isFullSize);
+                document.body.classList.toggle('editor-fullscreen-active', isFullSize);
+                fullscreenHostElements.forEach((element) => {
+                    element.classList.toggle('editor-fullscreen-host', isFullSize);
+                });
+            });
+
+            const form = input.closest('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    editor.synchronizeValues();
+                });
+            }
+        });
     }
 
     // 2. Product Image Preview

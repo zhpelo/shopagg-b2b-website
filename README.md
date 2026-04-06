@@ -30,7 +30,7 @@
 - **零依赖** - 纯 PHP 实现，无需 Composer
 - **SQLite3** - 轻量数据库，无需安装 MySQL
 - **响应式 UI** - Bulma CSS 框架，适配移动端
-- **富文本编辑** - wangEditor 集成，自定义媒体库支持
+- **富文本编辑** - Jodit Editor 集成，自定义媒体库支持
 - **SEO 友好** - 伪静态路由、Sitemap、Robots.txt
 - **安全性** - CSRF 防护、密码加密、权限控制
 

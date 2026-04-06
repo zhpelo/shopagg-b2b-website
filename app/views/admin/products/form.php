@@ -40,10 +40,8 @@
                 <div class="field">
                     <label class="label">产品描述</label>
                     <div class="control">
-                        <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($product['content'] ?? '')) ?></textarea>
                         <div id="editor-wrapper">
-                            <div id="toolbar-container"></div>
-                            <div id="editor-container" style="height: 300px;"></div>
+                            <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="300"><?= h(process_rich_text($product['content'] ?? '')) ?></textarea>
                         </div>
                     </div>
                 </div>

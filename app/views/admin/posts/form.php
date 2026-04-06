@@ -67,10 +67,8 @@ $categories = $categories ?? [];
                 <div class="field">
                     <label class="label">文章内容</label>
                     <div class="control">
-                        <textarea id="content-input" name="content" style="display:none"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         <div id="editor-wrapper">
-                            <div id="toolbar-container"></div>
-                            <div id="editor-container"></div>
+                            <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="420"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -205,7 +203,7 @@ $categories = $categories ?? [];
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // wangEditor 由 layout 统一初始化，此处仅做封面等本页逻辑
+    // Jodit 由 layout 统一初始化，此处仅做封面等本页逻辑
 
     // 封面：从媒体库选择（单选）
     var coverInput = document.getElementById('cover-input');
@@ -233,21 +231,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<style>
-#editor-wrapper {
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
-    overflow: hidden;
-}
-#toolbar-container {
-    border-bottom: 1px solid #dbdbdb;
-    background: #fafafa;
-}
-#editor-container {
-    min-height: 350px;
-    font-size: 16px;
-    line-height: 1.8;
-}
-</style>
-
