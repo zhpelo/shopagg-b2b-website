@@ -187,6 +187,25 @@ class SiteController extends BaseController {
         ]);
     }
 
+    public function pageDetail(string $slug): void {
+        $postModel = new PostModel();
+        $item = $postModel->getBySlug($slug, 'page');
+
+        if (!$item || ($item['status'] ?? 'active') !== 'active') {
+            $this->notFound();
+            return;
+        }
+
+        $this->renderSite('page_detail', [
+            'item' => $item,
+            'seo' => [
+                'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
+                'description' => $item['seo_description'] ?: ($item['summary'] ?: $this->siteData['site']['tagline']),
+                'keywords' => $item['seo_keywords'] ?? '',
+            ]
+        ]);
+    }
+
     public function about(): void {
         $this->renderSite('about', [
             'seo' => ['title' => 'About Us - ' . $this->siteData['site']['name']]
@@ -243,6 +262,8 @@ class SiteController extends BaseController {
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/case/' . $r['slug'];
         $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'post'");  // 只索引已发布文章
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/blog/' . $r['slug'];
+        $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'page'");
+        while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/page/' . $r['slug'];
 
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
         foreach ($urls as $u) echo "  <url><loc>" . h($u) . "</loc></url>\n";

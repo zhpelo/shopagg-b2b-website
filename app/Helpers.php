@@ -450,7 +450,7 @@ function get_posts(array $args = []): array {
     foreach ($items as &$item) {
         $prefix = match ($type) {
             'case' => '/case/',
-            'page' => '/',
+            'page' => '/page/',
             default => '/blog/',
         };
         $item['url'] = url($prefix . ($item['slug'] ?? $item['id']));

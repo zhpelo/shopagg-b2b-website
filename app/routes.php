@@ -18,6 +18,7 @@ function register_routes(Router $router): void {
     $router->add('GET', '/case/:slug', [SiteController::class, 'caseDetail']);
     $router->add('GET', '/blog', [SiteController::class, 'blog']);
     $router->add('GET', '/blog/:slug', [SiteController::class, 'blogDetail']);
+    $router->add('GET', '/page/:slug', [SiteController::class, 'pageDetail']);
     $router->add('GET', '/about', [SiteController::class, 'about']);
     $router->add('GET', '/contact', [SiteController::class, 'contact']);
     $router->add('POST', '/contact', [SiteController::class, 'contact']);

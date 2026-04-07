@@ -907,7 +907,7 @@ class AdminController extends Controller {
                 'create_url' => '/admin/pages/create',
                 'edit_url' => '/admin/pages/edit',
                 'delete_url' => '/admin/pages/delete',
-                'preview_base' => null,
+                'preview_base' => '/page/',
                 'icon' => 'file-lines',
                 'header_style' => 'background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); box-shadow: 0 10px 40px rgba(99, 102, 241, 0.28);',
                 'accent_text_class' => 'text-indigo-600',
