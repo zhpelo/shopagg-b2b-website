@@ -16,6 +16,44 @@ declare(strict_types=1);
  * - get_stylesheet_directory_uri()
  */
 
+/**
+ * 获取占位图片URL
+ * @param int $width 图片宽度
+ * @param int $height 图片高度
+ * @param string $text 显示文字
+ * @return string 占位图片URL
+ */
+if (!function_exists('placeholder_url')) {
+    function placeholder_url(int $width = 800, int $height = 300, string $text = ''): string {
+        $url = "https://devtool.tech/api/placeholder/{$width}/{$height}";
+        $params = [];
+        if ($text) {
+            $params['text'] = urlencode($text);
+        }
+        if ($params) {
+            $url .= '?' . http_build_query($params);
+        }
+        return $url;
+    }
+}
+
+/**
+ * 获取图片URL（优先使用实际图片，否则返回占位图）
+ * @param string|null $image 实际图片路径
+ * @param int $width 占位图宽度
+ * @param int $height 占位图高度
+ * @param string $text 占位图文字
+ * @return string 图片URL
+ */
+if (!function_exists('get_image_url')) {
+    function get_image_url(?string $image, int $width = 800, int $height = 300, string $text = ''): string {
+        if (!empty($image)) {
+            return asset_url($image);
+        }
+        return placeholder_url($width, $height, $text);
+    }
+}
+
 // 获取轮播产品（性能优化版）
 // 优先获取有横幅图片的产品，不足时补充最新产品
 if (!function_exists('get_carousel_products')) {

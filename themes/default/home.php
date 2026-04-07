@@ -18,7 +18,7 @@ $carouselProducts = get_carousel_products(3);
             <?php foreach ($carouselProducts as $p): ?>
                 <div class="swiper-slide relative">
                     <!-- Background Image -->
-                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?= asset_url($p['banner_image']) ?>');"></div>
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?= get_image_url($p['banner_image'] ?? null, 1200, 560, 'Product Banner') ?>');"></div>
                     <!-- Overlay -->
                     <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/50 to-gray-900/40"></div>
                     <!-- Content -->
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <?php foreach ($products as $p): ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                     <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
-                        <img src="<?= asset_url($p['cover'] ?: '/assets/no-image.png') ?>" 
+                        <img src="<?= get_image_url($p['cover'] ?? null, 400, 400, h($p['title'])) ?>" 
                              alt="<?= h($p['title']) ?>" 
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                     </a>
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= asset_url($site['og_image'] ?? 'https://devtool.tech/api/placeholder/600/400') ?>" 
+                    <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Factory') ?>" 
                          alt="Factory" 
                          class="w-full h-auto object-cover">
                 </div>
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="<?= h($c['url']) ?>" class="group">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
                         <div class="aspect-[3/2] overflow-hidden">
-                            <img src="<?= asset_url($c['cover'] ?: 'https://devtool.tech/api/placeholder/400/300') ?>" 
+                            <img src="<?= get_image_url($c['cover'] ?? null, 600, 400, h($c['title'])) ?>" 
                                  alt="<?= h($c['title']) ?>" 
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         </div>

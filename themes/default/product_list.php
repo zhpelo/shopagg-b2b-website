@@ -119,7 +119,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                         <?php foreach ($items as $item): ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
                                 <a href="<?= h($item['url']) ?>" class="block aspect-square overflow-hidden bg-gray-100">
-                                    <img src="<?= asset_url(h($item['cover'] ?: '/assets/no-image.png')) ?>" 
+                                    <img src="<?= get_image_url($item['cover'] ?? null, 400, 400, h($item['title'])) ?>" 
                                          alt="<?= h($item['title']) ?>" 
                                          class="w-full h-full object-cover hover:scale-105 transition-transform">
                                 </a>

@@ -181,7 +181,7 @@ $category = $category ?? null;
                                      alt="<?= h($product['title']) ?>" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                             <?php else: ?>
-                                <img src="https://devtool.tech/api/placeholder/400/400?text=<?= urlencode("No image") ?>" 
+                                <img src="<?= placeholder_url(400, 400, 'No Image') ?>" 
                                      alt="<?= h($product['title']) ?>" 
                                      class="w-full h-full object-cover">
                             <?php endif; ?>

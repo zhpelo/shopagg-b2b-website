@@ -42,7 +42,7 @@
             </div>
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= ($site['og_image'] ? $site['og_image'] : 'https://devtool.tech/api/placeholder/600/400') ?>" 
+                    <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Company Overview') ?>" 
                          alt="Company Overview" 
                          class="w-full h-auto">
                 </div>
@@ -62,7 +62,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                         <div class="lg:col-span-2">
                             <figure class="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
-                                <img src="<?= ($site['og_image'] ? $site['og_image'] : 'https://devtool.tech/api/placeholder/400/300') ?>" 
+                                <img src="<?= get_image_url($site['og_image'] ?? null, 400, 300, 'Company Profile') ?>" 
                                      alt="Company Profile" 
                                      class="w-full h-full object-cover">
                             </figure>
