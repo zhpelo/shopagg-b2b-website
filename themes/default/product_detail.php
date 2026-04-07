@@ -26,17 +26,6 @@ $category = $category ?? null;
             </ol>
         </nav>
 
-        <!-- Banner Image -->
-        <?php if (!empty($item['banner_image'])): ?>
-            <div class="mb-8">
-                <div class="rounded-xl overflow-hidden shadow-lg">
-                    <img src="<?= asset_url(h($item['banner_image'])) ?>" 
-                         alt="<?= h($item['title']) ?>" 
-                         class="w-full h-auto max-h-96 object-cover">
-                </div>
-            </div>
-        <?php endif; ?>
-
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Left: Images & Description -->
             <div class="lg:w-7/12">

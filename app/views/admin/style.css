@@ -692,7 +692,7 @@ video {
 .media-library-file-row,
 .media-library-folder-row {
     display: grid;
-    grid-template-columns: 46px minmax(220px, 2fr) 90px minmax(130px, 1.1fr) 100px 120px;
+    grid-template-columns: 46px minmax(220px, 2fr) 90px minmax(130px, 1.1fr) 120px;
     gap: 0.75rem;
     align-items: center;
 }
@@ -752,6 +752,16 @@ video {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.media-library-file-col.check .media-library-select-toggle {
+    position: static;
+    top: auto;
+    left: auto;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .media-library-file-col.name {
