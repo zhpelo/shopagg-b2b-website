@@ -24,17 +24,7 @@ use SQLite3;
  * 所有方法均受权限控制保护
  */
 class AdminController extends Controller {
-    private const SETTINGS_TABS = [
-        'general' => '基础设置',
-        'company' => '公司简介',
-        'trade' => '贸易能力',
-        'media' => '公司展示',
-        'contact' => '联系方式',
-        'translate' => '翻译设置',
-        'custom' => '自定义代码',
-    ];
 
-    
     // 数据库实例
     private SQLite3 $db;
     
@@ -210,11 +200,25 @@ class AdminController extends Controller {
     }
 
     private function normalizeSettingsTab(string $tab): string {
-        return array_key_exists($tab, self::SETTINGS_TABS) ? $tab : 'general';
+        return in_array($tab, ['general', 'company', 'trade', 'media', 'contact', 'translate', 'custom'], true)
+            ? $tab
+            : 'general';
     }
 
     private function settingsPath(string $tab): string {
         return '/admin/settings-' . $this->normalizeSettingsTab($tab);
+    }
+
+    private function settingsTitle(string $tab): string {
+        return match ($this->normalizeSettingsTab($tab)) {
+            'company' => '公司简介',
+            'trade' => '贸易能力',
+            'media' => '公司展示',
+            'contact' => '联系方式',
+            'translate' => '翻译设置',
+            'custom' => '自定义代码',
+            default => '基础设置',
+        };
     }
 
     private function resolveSettingsTab(): string {
@@ -277,7 +281,7 @@ class AdminController extends Controller {
             'selectedTranslateLanguages' => $selectedTranslateLanguages,
         ];
 
-        $this->renderAdmin('系统设置 - ' . (self::SETTINGS_TABS[$tab] ?? '基础设置'), $this->renderView('admin/settings/page', $data));
+        $this->renderAdmin('系统设置 - ' . $this->settingsTitle($tab), $this->renderView('admin/settings/page', $data));
     }
 
     public function saveSettings(): void {
