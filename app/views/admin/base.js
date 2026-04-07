@@ -639,6 +639,15 @@ ${iconHtml}
             modal.classList.remove('flex');
             modal.classList.add('hidden');
         }
+
+        const scrollbarWidth = document.body.dataset.mediaLibraryScrollbarWidth || '';
+        document.documentElement.classList.remove('media-library-modal-open');
+        document.body.classList.remove('media-library-modal-open');
+        document.body.style.paddingRight = '';
+
+        if (scrollbarWidth !== '') {
+            delete document.body.dataset.mediaLibraryScrollbarWidth;
+        }
     }
 
     function openMediaLibrary(callback, multi = false, options = {}) {
@@ -690,6 +699,12 @@ ${iconHtml}
             confirmBtn.disabled = true;
             confirmBtn.textContent = multi ? '插入所选' : '插入';
         }
+
+        const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+        document.body.dataset.mediaLibraryScrollbarWidth = String(scrollbarWidth);
+        document.documentElement.classList.add('media-library-modal-open');
+        document.body.classList.add('media-library-modal-open');
+        document.body.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : '';
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');

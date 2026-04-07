@@ -300,7 +300,10 @@ video {
 }
 
 .media-library-body {
-    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 1rem;
 }
 
 .media-library-toolbar {
@@ -308,7 +311,6 @@ video {
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: space-between;
-    margin-bottom: 1rem;
 }
 
 .media-library-toolbar-main {
@@ -526,6 +528,8 @@ video {
 .media-library-window {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
     gap: 0.9rem;
 }
 
@@ -534,7 +538,7 @@ video {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
-    padding: 0.8rem 1rem;
+    padding: 0.4rem 1rem;
 }
 
 .media-library-window-nav {
@@ -552,7 +556,8 @@ video {
 .media-library-window-main {
     display: grid;
     grid-template-columns: 220px minmax(0, 1fr) 290px;
-    min-height: 560px;
+    flex: 1;
+    min-height: 0;
     max-height: calc(100vh - 18rem);
     border: 1px solid #e5e7eb;
     border-radius: 16px;
@@ -675,6 +680,8 @@ video {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
+    height: 100%;
     background: #fff;
 }
 
@@ -711,7 +718,10 @@ video {
 .media-library-file-list {
     display: flex;
     flex-direction: column;
-    min-height: 420px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .media-library-file-list.is-tiles {
@@ -1476,6 +1486,11 @@ body.login-page {
 }
 
 .editor-fullscreen-active {
+    overflow: hidden !important;
+}
+
+html.media-library-modal-open,
+body.media-library-modal-open {
     overflow: hidden !important;
 }
 

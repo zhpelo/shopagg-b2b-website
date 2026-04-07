@@ -194,66 +194,66 @@
     <div class="fixed inset-0 z-[80] hidden items-center justify-center p-4" id="media-library-modal">
         <div class="absolute inset-0 bg-slate-950/60" data-media-modal-close></div>
         <div class="media-library-modal-card relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
-            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-4">
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-2">
                 <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-photo-video"></i></span>
                     媒体库
                 </p>
-                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700" aria-label="关闭媒体库" data-media-modal-close>
+                <button type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700" aria-label="关闭媒体库" data-media-modal-close>
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </header>
-            <section class="media-library-body overflow-auto">
+            <section class="media-library-body flex-1 min-h-0 overflow-hidden">
                 <div class="media-library-window">
                     <div class="media-library-window-nav">
                         <div class="flex items-center gap-2">
-                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-back-btn" disabled>
+                            <button type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-back-btn" disabled>
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
                             </button>
-                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-forward-btn" disabled>
+                            <button type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-forward-btn" disabled>
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
                             </button>
-                            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-up-btn">
+                            <button type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-up-btn">
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-level-up-alt"></i></span>
                             </button>
                         </div>
                         <div class="media-library-toolbar-main">
                             <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500" aria-label="breadcrumbs" id="media-library-breadcrumbs"></nav>
-                            <p class="mt-2 text-xs text-slate-500" id="media-library-directory-label">/uploads</p>
+                            <p class="text-xs text-slate-500" id="media-library-directory-label">/uploads</p>
                         </div>
                     </div>
                     <div class="media-library-toolbar">
                         <div class="media-library-toolbar-buttons flex flex-wrap items-center justify-end gap-3">
-                            <label class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:bg-sky-100">
+                            <label class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-100">
                                 <input class="hidden" type="file" id="media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-upload"></i></span>
                                 <span>上传文件</span>
                             </label>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-new-folder-btn">
+                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-new-folder-btn">
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder-plus"></i></span>
                                 <span>新建文件夹</span>
                             </button>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-bulk-delete-btn" disabled>
+                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-bulk-delete-btn" disabled>
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash"></i></span>
                                 <span id="media-library-bulk-delete-label">删除</span>
                             </button>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-400" disabled>
+                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-400" disabled>
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-i-cursor"></i></span>
                                 <span>重命名</span>
                             </button>
-                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-refresh-btn">
+                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-refresh-btn">
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-sync-alt"></i></span>
                                 <span>刷新</span>
                             </button>
                         </div>
                         <div class="media-library-filter-bar flex flex-1 flex-wrap items-stretch gap-3">
-                            <input class="min-w-[240px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
-                            <select id="media-library-type-filter" class="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                            <input class="min-w-[240px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
+                            <select id="media-library-type-filter" class="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
                                 <option value="image">图片</option>
                                 <option value="all">全部媒体</option>
                                 <option value="video">视频</option>
                             </select>
-                            <select id="media-library-sort-filter" class="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                            <select id="media-library-sort-filter" class="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
                                 <option value="date_desc">最新上传</option>
                                 <option value="date_asc">最早上传</option>
                                 <option value="name_asc">文件名 A-Z</option>
@@ -273,7 +273,6 @@
                     <div id="media-library-status" class="media-library-status hidden"></div>
                     <div class="media-library-window-main">
                         <aside class="media-library-tree-panel">
-                            <div class="media-library-pane-title">文件夹</div>
                             <div id="media-library-tree"></div>
                         </aside>
                         <section class="media-library-files-panel">
@@ -354,9 +353,9 @@
                     </div>
                 </div>
             </section>
-            <footer class="media-library-footer flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
-                <button type="button" class="hidden items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700" id="confirm-media-selection">确认选择</button>
-                <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" data-media-modal-close>取消</button>
+            <footer class="media-library-footer flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-2">
+                <button type="button" class="hidden items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" id="confirm-media-selection">确认选择</button>
+                <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" data-media-modal-close>取消</button>
             </footer>
         </div>
     </div>
