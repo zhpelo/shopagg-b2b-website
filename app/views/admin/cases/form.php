@@ -29,7 +29,7 @@ $isEdit = isset($item);
  </div>
 </div>
 
-<form method="post" action="<?= h(url($action)) ?>" class="modern-form">
+<form method="post" action="<?= h(url($action)) ?>">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <div class="grid gap-6 xl:grid-cols-12">
@@ -40,33 +40,23 @@ $isEdit = isset($item);
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-info-circle"></i></span>
  基本信息
  </div>
- 
+
  <div class="grid gap-4 md:grid-cols-12">
- <div class="md:col-span-8">
- <div class="field">
- <label class="label">标题</label>
- <div class="control">
- <input class="input" name="title" value="<?= h($item['title'] ?? '') ?>" placeholder="输入<?= h($label) ?>标题" required>
+ <label class="block space-y-2 md:col-span-8">
+ <span class="text-sm font-medium text-slate-700">标题</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="title" value="<?= h($item['title'] ?? '') ?>" placeholder="输入<?= h($label) ?>标题" required>
+ </label>
+ <label class="block space-y-2 md:col-span-4">
+ <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="auto-generate">
+ <span class="text-xs text-slate-500">留空自动生成</span>
+ </label>
  </div>
- </div>
- </div>
- <div class="md:col-span-4">
- <div class="field">
- <label class="label">别名 (Slug)</label>
- <div class="control">
- <input class="input" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="auto-generate">
- </div>
- <p class="help">留空自动生成</p>
- </div>
- </div>
- </div>
- 
- <div class="field">
- <label class="label">摘要</label>
- <div class="control">
- <textarea class="textarea" name="summary" rows="3" placeholder="简短描述<?= h($label) ?>内容"><?= h($item['summary'] ?? '') ?></textarea>
- </div>
- </div>
+
+ <label class="mt-4 block space-y-2">
+ <span class="text-sm font-medium text-slate-700">摘要</span>
+ <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="summary" rows="3" placeholder="简短描述<?= h($label) ?>内容"><?= h($item['summary'] ?? '') ?></textarea>
+ </label>
  </div>
 
  <!-- 内容编辑器 -->
@@ -75,13 +65,9 @@ $isEdit = isset($item);
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-edit"></i></span>
  详细内容
  </div>
- 
- <div class="field">
- <div class="control">
+
  <div id="editor-wrapper">
  <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="420"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
- </div>
- </div>
  </div>
  </div>
  </div>
@@ -93,12 +79,11 @@ $isEdit = isset($item);
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-image"></i></span>
  封面图片
  </div>
- <div class="field">
- <div class="control">
+ <div class="space-y-3">
  <input type="hidden" name="cover" id="case-cover-input" value="<?= h($item['cover'] ?? '') ?>">
- <div id="case-cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
- <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
- <img id="case-cover-preview" src="<?= asset_url(h($item['cover'] ?? '')) ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+ <div id="case-cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'hidden' : '' ?>">
+ <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+ <img id="case-cover-preview" src="<?= asset_url(h($item['cover'] ?? '')) ?>" alt="封面预览" class="aspect-[3/2] w-full object-cover">
  </figure>
  <button type="button" id="case-cover-clear-btn" class="mt-2 inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-100">清除封面</button>
  </div>
@@ -110,7 +95,6 @@ $isEdit = isset($item);
  </div>
  </div>
  </div>
- </div>
 
  <!-- 发布 -->
  <div class="admin-card mb-5" style="padding: 1.5rem;">
@@ -119,8 +103,8 @@ $isEdit = isset($item);
  发布
  </div>
  
- <div class="content is-size-7 has-text-grey mb-4">
- <p>
+ <div class="mb-4 text-xs leading-6 text-slate-500">
+ <p class="flex items-center gap-2">
  <span class="icon is-small"><i class="far fa-clock"></i></span>
  <?= $isEdit ? '上次修改: ' . format_date($item['updated_at'] ?? $item['created_at']) : '准备发布新' . h($label) ?>
  </p>
@@ -143,25 +127,21 @@ $isEdit = isset($item);
  <span class="icon-box success"><i class="fas fa-search"></i></span>
  SEO 设置
  </div>
- <p class="is-size-7 has-text-grey mb-3">留空则使用标题和摘要</p>
- 
- <div class="field">
- <label class="label is-size-7">SEO 标题</label>
- <div class="control">
- <input class="input" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
- </div>
- </div>
- <div class="field">
- <label class="label is-size-7">SEO 关键词</label>
- <div class="control">
- <input class="input" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
- </div>
- </div>
- <div class="field">
- <label class="label is-size-7">SEO 描述</label>
- <div class="control">
- <textarea class="textarea" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
- </div>
+ <p class="mb-3 text-xs text-slate-500">留空则使用标题和摘要</p>
+
+ <div class="space-y-4">
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 标题</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
+ </label>
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 关键词</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
+ </label>
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 描述</span>
+ <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
+ </label>
  </div>
  </div>
 
@@ -171,8 +151,8 @@ $isEdit = isset($item);
  <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
  写作提示
  </div>
- <div class="content is-size-7 has-text-grey">
- <ul style="margin-left: 0;">
+ <div class="text-xs leading-6 text-slate-500">
+ <ul class="list-disc space-y-1 pl-5">
  <li>使用清晰简洁的标题</li>
  <li>摘要建议控制在 150 字以内</li>
  <li>可以在编辑器中插入图片</li>
@@ -197,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
  openMediaLibrary(function(url) {
  coverInput.value = url;
  if (coverPreview) coverPreview.src = url;
- if (coverPreviewWrap) coverPreviewWrap.classList.remove('is-hidden');
+ if (coverPreviewWrap) coverPreviewWrap.classList.remove('hidden');
  }, false);
  }
  });
@@ -206,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
  coverClearBtn.addEventListener('click', function() {
  coverInput.value = '';
  coverPreview.src = '';
- coverPreviewWrap.classList.add('is-hidden');
+ coverPreviewWrap.classList.add('hidden');
  });
  }
 });

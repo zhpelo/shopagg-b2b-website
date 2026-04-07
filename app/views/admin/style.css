@@ -57,132 +57,12 @@ video {
     margin-inline: auto;
 }
 
-.label,
-.help {
-    margin: 0;
-}
-
-.field {
-    margin-bottom: 1rem;
-}
-
-.field.has-addons {
-    display: flex;
-    align-items: stretch;
-    gap: 0.625rem;
-}
-
-.field.has-addons .control {
-    margin-bottom: 0;
-}
-
-.control {
-    position: relative;
-}
-
-.control.is-expanded {
-    flex: 1 1 auto;
-}
-
-.control.has-icons-left .input,
-.control.has-icons-left .textarea {
-    padding-left: 2.75rem;
-}
-
-.control.has-icons-left .icon.is-left {
-    position: absolute;
-    top: 50%;
-    left: 0.9rem;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    pointer-events: none;
-    z-index: 1;
-}
-
 .label {
     display: block;
     margin-bottom: 0.5rem;
     color: #334155;
     font-size: 0.875rem;
     font-weight: 600;
-}
-
-.help {
-    display: block;
-    margin-top: 0.4rem;
-    color: #64748b;
-    font-size: 0.75rem;
-    line-height: 1.4;
-}
-
-.input,
-.textarea,
-.select select {
-    display: block;
-    width: 100%;
-    min-height: 2.75rem;
-    padding: 0.7rem 0.9rem;
-    border: 1px solid #cbd5e1;
-    border-radius: var(--border-radius-xs);
-    background: #fff;
-    color: #0f172a;
-    font-size: 0.9375rem;
-    line-height: 1.5;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.input::placeholder,
-.textarea::placeholder {
-    color: #94a3b8;
-}
-
-.textarea {
-    min-height: 7rem;
-    resize: vertical;
-}
-
-.input:focus,
-.textarea:focus,
-.select select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
-}
-
-.input:disabled,
-.textarea:disabled,
-.select select:disabled,
-.button:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
-.select {
-    position: relative;
-    display: block;
-    width: 100%;
-}
-
-.select::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 0.95rem;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-right: 2px solid #64748b;
-    border-bottom: 2px solid #64748b;
-    transform: translateY(-65%) rotate(45deg);
-    pointer-events: none;
-}
-
-.select select {
-    appearance: none;
-    padding-right: 2.5rem;
-}
-
-.select.is-fullwidth {
-    width: 100%;
 }
 
 .icon {
@@ -515,66 +395,71 @@ video {
     overflow: hidden;
 }
 
-.modern-table .table {
+.modern-table .table-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 72px);
+}
+
+.modern-table table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-bottom: 0;
 }
 
-.modern-table .table thead th {
-    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-    border-bottom: 2px solid #e2e8f0;
-    color: #475569;
-    font-weight: 600;
-    font-size: 0.8125rem;
+.modern-table table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,245,249,0.98) 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #dbe4f0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(148,163,184,0.12);
+    color: #334155;
+    font-weight: 700;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.08em;
     padding: 1rem 1.25rem;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
-.modern-table .table tbody td {
+.modern-table table thead th:first-child {
+    padding-left: 1.35rem;
+}
+
+.modern-table table thead th:last-child {
+    padding-right: 1.35rem;
+}
+
+.modern-table table tbody td {
     padding: 1rem 1.25rem;
     vertical-align: middle;
     border-bottom: 1px solid #f1f5f9;
 }
 
-.modern-table .table tbody tr:hover {
+.modern-table table tbody td:first-child {
+    padding-left: 1.35rem;
+}
+
+.modern-table table tbody td:last-child {
+    padding-right: 1.35rem;
+}
+
+.modern-table table tbody tr:hover {
     background: #f8fafc;
 }
 
-.modern-table .table tbody tr:last-child td {
+.modern-table table tbody tr:last-child td {
     border-bottom: none;
 }
 
 .table-container { overflow-x: auto; }
 
-/* ==================== 统一表单样式 ==================== */
-.modern-form .field .label {
-    font-weight: 600;
-    color: #374151;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.modern-form .input,
-.modern-form .textarea,
-.modern-form .select select {
-    border-radius: var(--border-radius-xs);
-    border: 2px solid #e5e7eb;
-    box-shadow: none;
-    transition: all 0.2s ease;
-    font-size: 0.9375rem;
-}
-
-.modern-form .input:focus,
-.modern-form .textarea:focus,
-.modern-form .select select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.modern-form .input:hover,
-.modern-form .textarea:hover,
-.modern-form .select select:hover {
-    border-color: #d1d5db;
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 /* ==================== 统一按钮样式 ==================== */
@@ -1513,44 +1398,6 @@ body.login-page {
 .login-logo p {
     color: #94a3b8;
     font-size: 0.875rem;
-}
-
-.login-form .field {
-    margin-bottom: 1.25rem;
-}
-
-.login-form .label {
-    font-weight: 600;
-    color: #374151;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.login-form .input {
-    border-radius: 12px;
-    border: 2px solid #e5e7eb;
-    padding: 0.875rem 1rem;
-    font-size: 1rem;
-    transition: all 0.2s;
-    height: auto;
-}
-
-.login-form .input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-}
-
-.login-form .input::placeholder {
-    color: #9ca3af;
-}
-
-.login-form .control.has-icons-left .icon {
-    color: #9ca3af;
-    height: 100%;
-}
-
-.login-form .control.has-icons-left .input {
-    padding-left: 2.75rem;
 }
 
 .login-btn {

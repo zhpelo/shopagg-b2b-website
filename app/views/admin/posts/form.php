@@ -24,7 +24,7 @@ $categories = $categories ?? [];
  </div>
 </div>
 
-<form method="post" action="<?= h(url($action)) ?>" class="modern-form">
+<form method="post" action="<?= h(url($action)) ?>">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <div class="grid gap-6 xl:grid-cols-12">
@@ -35,38 +35,32 @@ $categories = $categories ?? [];
  <span class="icon-box success"><i class="fas fa-file-alt"></i></span>
  文章内容
  </div>
- 
- <div class="field">
- <label class="label">文章标题 <span class="has-text-danger">*</span></label>
- <div class="control has-icons-left">
- <input class="input is-medium" name="title" value="<?= h($item['title'] ?? '') ?>" required placeholder="输入文章标题">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-heading"></i>
- </span>
- </div>
- </div>
- 
- <div class="field">
- <label class="label">别名 (Slug)</label>
- <div class="control has-icons-left">
- <input class="input" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="article-slug">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-link"></i>
- </span>
- </div>
- <p class="help has-text-grey">用于URL的标识符，留空则自动生成</p>
- </div>
 
- <div class="field">
- <label class="label">文章摘要</label>
- <div class="control">
- <textarea class="textarea" name="summary" rows="3" placeholder="输入文章摘要（用于列表展示和SEO）"><?= h($item['summary'] ?? '') ?></textarea>
- </div>
- </div>
- 
- <div class="field">
- <label class="label">文章内容</label>
- <div class="control">
+ <div class="space-y-5">
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">文章标题 <span class="text-rose-500">*</span></span>
+ <span class="relative block">
+ <i class="fas fa-heading pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-base text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="title" value="<?= h($item['title'] ?? '') ?>" required placeholder="输入文章标题">
+ </span>
+ </label>
+
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
+ <span class="relative block">
+ <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="article-slug">
+ </span>
+ <span class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</span>
+ </label>
+
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">文章摘要</span>
+ <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="summary" rows="3" placeholder="输入文章摘要（用于列表展示和 SEO）"><?= h($item['summary'] ?? '') ?></textarea>
+ </label>
+
+ <div class="space-y-2">
+ <label class="text-sm font-medium text-slate-700" for="content-input">文章内容</label>
  <div id="editor-wrapper">
  <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="420"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
  </div>
@@ -83,12 +77,13 @@ $categories = $categories ?? [];
  <span class="icon-box info"><i class="fas fa-cog"></i></span>
  发布设置
  </div>
- 
- <div class="field">
- <label class="label">文章分类</label>
- <div class="control has-icons-left">
- <div class="select is-fullwidth">
- <select name="category_id">
+
+ <div class="space-y-5">
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">文章分类</span>
+ <span class="relative block">
+ <i class="fas fa-folder pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <select class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="category_id">
  <option value="0">未分类</option>
  <?php foreach ($categories as $cat): ?>
  <option value="<?= (int)$cat['id'] ?>" <?= ((int)($item['category_id'] ?? 0) === (int)$cat['id']) ? 'selected' : '' ?>>
@@ -96,38 +91,28 @@ $categories = $categories ?? [];
  </option>
  <?php endforeach; ?>
  </select>
- </div>
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-folder"></i>
  </span>
- </div>
- <p class="help">
- <a href="<?= url('/admin/post-categories') ?>" target="_blank" class="has-text-link">
- <i class="fas fa-plus-circle"></i> 管理文章分类
+ <a href="<?= url('/admin/post-categories') ?>" target="_blank" class="inline-flex items-center gap-2 text-xs font-medium text-emerald-600 transition hover:text-emerald-700">
+ <i class="fas fa-plus-circle text-[11px]"></i>
+ <span>管理文章分类</span>
  </a>
- </p>
- </div>
+ </label>
 
- <div class="field">
- <label class="label">发布状态</label>
- <div class="control">
- <div class="select is-fullwidth">
- <select name="status">
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">发布状态</span>
+ <select class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="status">
  <option value="draft" <?= ($item['status'] ?? '') === 'draft' ? 'selected' : '' ?>>📝 草稿</option>
  <option value="active" <?= ($item['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>✅ 已发布</option>
  <option value="inactive" <?= ($item['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>⬇️ 已下架</option>
  </select>
- </div>
- </div>
- </div>
+ </label>
 
- <div class="field">
- <label class="label">封面图片</label>
- <div class="control">
+ <div class="space-y-2">
+ <label class="text-sm font-medium text-slate-700" for="cover-input">封面图片</label>
  <input type="hidden" name="cover" id="cover-input" value="<?= h($item['cover'] ?? '') ?>">
- <div id="cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'is-hidden' : '' ?>">
- <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
- <img id="cover-preview" src="<?= asset_url($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
+ <div id="cover-preview-wrap" class="mb-3 <?= empty($item['cover'] ?? '') ? 'hidden' : '' ?>">
+ <figure class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+ <img id="cover-preview" src="<?= asset_url($item['cover'] ?? '') ?>" alt="封面预览" class="aspect-[3/2] w-full object-cover">
  </figure>
  <button type="button" id="cover-clear-btn" class="mt-2 inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-100">清除封面</button>
  </div>
@@ -160,25 +145,21 @@ $categories = $categories ?? [];
  <span class="icon-box success"><i class="fas fa-search"></i></span>
  SEO 设置
  </div>
- <p class="is-size-7 has-text-grey mb-3">留空则使用文章标题和摘要</p>
- 
- <div class="field">
- <label class="label is-size-7">SEO 标题</label>
- <div class="control">
- <input class="input" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
- </div>
- </div>
- <div class="field">
- <label class="label is-size-7">SEO 关键词</label>
- <div class="control">
- <input class="input" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
- </div>
- </div>
- <div class="field">
- <label class="label is-size-7">SEO 描述</label>
- <div class="control">
- <textarea class="textarea" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
- </div>
+ <p class="mb-3 text-xs text-slate-500">留空则使用文章标题和摘要</p>
+
+ <div class="space-y-4">
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 标题</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
+ </label>
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 关键词</span>
+ <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
+ </label>
+ <label class="block space-y-2">
+ <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 描述</span>
+ <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
+ </label>
  </div>
  </div>
 
@@ -188,8 +169,8 @@ $categories = $categories ?? [];
  <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
  写作提示
  </div>
- <div class="content is-size-7">
- <ul>
+ <div class="text-xs leading-6 text-slate-500">
+ <ul class="list-disc space-y-1 pl-5">
  <li>标题应简洁明了，便于读者理解</li>
  <li>摘要会显示在文章列表中</li>
  <li>使用分类帮助读者找到相关内容</li>
@@ -217,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
  openMediaLibrary(function(url) {
  coverInput.value = url;
  if (coverPreview) coverPreview.src = url;
- if (coverPreviewWrap) coverPreviewWrap.classList.remove('is-hidden');
+ if (coverPreviewWrap) coverPreviewWrap.classList.remove('hidden');
  }, false);
  }
  });
@@ -226,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
  coverClearBtn.addEventListener('click', function() {
  coverInput.value = '';
  coverPreview.src = '';
- coverPreviewWrap.classList.add('is-hidden');
+ coverPreviewWrap.classList.add('hidden');
  });
  }
 });

@@ -269,7 +269,7 @@
  </div>
  <div class="media-library-toolbar-main">
  <nav class="breadcrumb is-small mb-0" aria-label="breadcrumbs" id="media-library-breadcrumbs"></nav>
- <p class="is-size-7 has-text-grey mt-2" id="media-library-directory-label">/uploads</p>
+ <p class="mt-2 text-xs text-slate-500" id="media-library-directory-label">/uploads</p>
  </div>
  </div>
  <div class="media-library-toolbar">
@@ -300,22 +300,14 @@
  <span>刷新</span>
  </button>
  </div>
- <div class="field has-addons mb-0 media-library-filter-bar">
- <div class="control is-expanded">
- <input class="input" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
- </div>
- <div class="control">
- <div class="select">
- <select id="media-library-type-filter">
+ <div class="media-library-filter-bar flex flex-1 flex-wrap items-stretch gap-3">
+ <input class="min-w-[240px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
+ <select id="media-library-type-filter" class="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
  <option value="image">图片</option>
  <option value="all">全部媒体</option>
  <option value="video">视频</option>
  </select>
- </div>
- </div>
- <div class="control">
- <div class="select">
- <select id="media-library-sort-filter">
+ <select id="media-library-sort-filter" class="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
  <option value="date_desc">最新上传</option>
  <option value="date_asc">最早上传</option>
  <option value="name_asc">文件名 A-Z</option>
@@ -325,16 +317,14 @@
  </select>
  </div>
  </div>
- </div>
- </div>
- <div id="upload-progress-container" class="mb-4 is-hidden">
- <div class="is-size-7 mb-1 is-flex is-justify-content-between">
+ <div id="upload-progress-container" class="mb-4 hidden">
+ <div class="mb-1 flex items-center justify-between text-xs text-slate-500">
  <span id="upload-status-text">正在上传...</span>
  <span id="upload-progress-percent">0%</span>
  </div>
- <progress id="overall-progress" class="progress is-info is-small" value="0" max="100" style="border-radius: 50px;">0%</progress>
+ <progress id="overall-progress" class="h-2 w-full overflow-hidden rounded-full" value="0" max="100">0%</progress>
  </div>
- <div id="media-library-status" class="media-library-status is-hidden"></div>
+ <div id="media-library-status" class="media-library-status hidden"></div>
  <div class="media-library-window-main">
  <aside class="media-library-tree-panel">
  <div class="media-library-pane-title">文件夹</div>
@@ -350,7 +340,7 @@
  <span class="icon"><i class="fas fa-th-large"></i></span>
  </button>
  </div>
- <p class="is-size-7 has-text-grey" id="media-library-current-mode-label">列表视图</p>
+ <p class="text-xs text-slate-500" id="media-library-current-mode-label">列表视图</p>
  </div>
  <div class="media-library-file-header" id="media-library-file-header">
  <div class="media-library-file-col check">
@@ -372,7 +362,7 @@
  <p class="mt-3">选择一个媒体文件后，这里会显示预览和详情。</p>
  </div>
  </div>
- <div class="media-library-details is-hidden" id="media-library-details-panel">
+ <div class="media-library-details hidden" id="media-library-details-panel">
  <div class="media-library-details-preview" id="media-library-details-preview"></div>
  <div class="media-library-detail-row">
  <span>标题</span>
@@ -402,15 +392,11 @@
  <span>上传时间</span>
  <strong id="media-details-date"></strong>
  </div>
- <div class="field">
- <label class="label is-size-7">路径</label>
- <div class="field has-addons">
- <div class="control is-expanded">
- <input class="input is-small" type="text" readonly id="media-details-path">
- </div>
- <div class="control">
+ <div class="space-y-2">
+ <label class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400" for="media-details-path">路径</label>
+ <div class="flex items-center gap-2">
+ <input class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none" type="text" readonly id="media-details-path">
  <button type="button" class="button is-small is-info" id="media-details-copy-btn">复制</button>
- </div>
  </div>
  </div>
  </div>
@@ -431,8 +417,8 @@
 </div>
 
 <footer class="footer has-background-white py-4" style="border-top: 1px solid #e5e7eb;">
- <div class="container has-text-centered">
- <p class="is-size-7 has-text-grey">
+ <div class="container text-center">
+ <p class="text-xs text-slate-500">
  &copy; <?= date('Y') ?> SHOPAGG B2B Management Platform. Powered by <a href="https://www.shopagg.com" target="_blank" style="color: #667eea;">SHOPAGG</a>.
  </p>
  </div>
@@ -592,7 +578,7 @@ function renderLibraryStatus(message = '', type = 'info') {
  if (!status) return;
 
  if (!message) {
- status.className = 'media-library-status is-hidden';
+ status.className = 'media-library-status hidden';
  status.textContent = '';
  return;
  }
@@ -608,14 +594,14 @@ function updateMediaDetails(item) {
  if (!emptyPanel || !detailsPanel || !preview) return;
 
  if (!item) {
- emptyPanel.classList.remove('is-hidden');
- detailsPanel.classList.add('is-hidden');
+ emptyPanel.classList.remove('hidden');
+ detailsPanel.classList.add('hidden');
  preview.innerHTML = '';
  return;
  }
 
- emptyPanel.classList.add('is-hidden');
- detailsPanel.classList.remove('is-hidden');
+ emptyPanel.classList.add('hidden');
+ detailsPanel.classList.remove('hidden');
 
  const itemUrl = normalizeMediaSelectionUrl(item.public_path || item.url || '');
  if (item.type === 'video') {
@@ -785,7 +771,7 @@ function updateMediaLibraryViewMode() {
  if (listBtn) listBtn.classList.toggle('is-active', mediaLibraryState.view === 'list');
  if (tilesBtn) tilesBtn.classList.toggle('is-active', mediaLibraryState.view === 'tiles');
  if (list) list.classList.toggle('is-tiles', mediaLibraryState.view === 'tiles');
- if (header) header.classList.toggle('is-hidden', mediaLibraryState.view === 'tiles');
+ if (header) header.classList.toggle('hidden', mediaLibraryState.view === 'tiles');
  if (label) label.textContent = mediaLibraryState.view === 'tiles' ? '缩略图视图' : '列表视图';
 }
 
@@ -1099,7 +1085,7 @@ async function fetchMediaLibrary() {
  renderMediaLibrary(payload);
  } catch (err) {
  container.innerHTML = `
- <div class="media-library-empty has-text-danger">
+ <div class="media-library-empty text-rose-600">
  <span class="icon is-large"><i class="fas fa-exclamation-circle"></i></span>
  <p class="mt-3">${escapeHtmlAttr(err.message || '加载失败')}</p>
  </div>
@@ -1317,7 +1303,7 @@ document.addEventListener("DOMContentLoaded", function () {
  const progressPercent = document.getElementById('upload-progress-percent');
  const statusText = document.getElementById('upload-status-text');
 
- progressContainer.classList.remove('is-hidden');
+ progressContainer.classList.remove('hidden');
  overallProgress.value = 0;
  progressPercent.innerText = '0%';
  
@@ -1356,11 +1342,11 @@ document.addEventListener("DOMContentLoaded", function () {
  xhr.send(formData);
  });
 
- progressContainer.classList.add('is-hidden');
+ progressContainer.classList.add('hidden');
  renderLibraryStatus('媒体上传成功', 'success');
  fetchMediaLibrary();
  } catch (err) {
- progressContainer.classList.add('is-hidden');
+ progressContainer.classList.add('hidden');
  renderLibraryStatus(err.message || '上传失败', 'danger');
  }
  this.value = '';

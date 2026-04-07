@@ -29,7 +29,7 @@
  
  <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
  <div class="flex items-center justify-center">
- <span class="icon has-text-grey-light mr-2"><i class="far fa-calendar-alt"></i></span>
+ <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-slate-400"><i class="far fa-calendar-alt"></i></span>
  <span class="text-xs text-slate-500">创建于 <?= format_date($user['created_at'] ?? '') ?: '未知' ?></span>
  </div>
  </div>
@@ -38,7 +38,7 @@
 
  <!-- 右侧：编辑表单 -->
  <div class="xl:col-span-8">
- <form method="post" action="<?= url('/admin/profile/update') ?>" class="modern-form">
+ <form method="post" action="<?= url('/admin/profile/update') ?>">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <div class="admin-card" style="padding: 2rem;">
@@ -46,49 +46,43 @@
  <span class="icon-box primary"><i class="fas fa-edit"></i></span>
  编辑资料
  </div>
- 
- <div class="field">
- <label class="label">用户名</label>
- <div class="control has-icons-left">
- <input class="input" type="text" value="<?= h($user['username']) ?>" readonly disabled style="background: #f8fafc;">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-user"></i>
- </span>
- </div>
- <p class="help has-text-grey">用户名创建后不可修改</p>
- </div>
 
- <div class="field">
- <label class="label">显示名称</label>
- <div class="control has-icons-left">
- <input class="input" type="text" name="display_name" value="<?= h($user['display_name']) ?>" required placeholder="输入您的显示名称">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-id-badge"></i>
+ <div class="space-y-5">
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">用户名</span>
+ <span class="relative block">
+ <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-700 outline-none" type="text" value="<?= h($user['username']) ?>" readonly disabled>
  </span>
- </div>
- <p class="help has-text-grey">此名称将在后台界面中显示</p>
- </div>
+ <span class="text-xs text-slate-500">用户名创建后不可修改</span>
+ </label>
 
- <div class="field">
- <label class="label">修改密码</label>
- <div class="control has-icons-left">
- <input class="input" type="password" name="password" placeholder="输入新密码（留空则不修改）">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-lock"></i>
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">显示名称</span>
+ <span class="relative block">
+ <i class="fas fa-id-badge pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name']) ?>" required placeholder="输入您的显示名称">
  </span>
- </div>
- <p class="help has-text-grey">如需修改密码请输入新密码，否则留空</p>
- </div>
+ <span class="text-xs text-slate-500">此名称将在后台界面中显示</span>
+ </label>
 
- <div class="field">
- <label class="label">账户角色</label>
- <div class="control has-icons-left">
- <input class="input" type="text" value="<?= $user['role'] === 'admin' ? '管理员' : '普通员工' ?>" readonly disabled style="background: #f8fafc;">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-shield-alt"></i>
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">修改密码</span>
+ <span class="relative block">
+ <i class="fas fa-lock pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" placeholder="输入新密码（留空则不修改）">
  </span>
- </div>
- <p class="help has-text-grey">角色权限由管理员分配</p>
+ <span class="text-xs text-slate-500">如需修改密码请输入新密码，否则留空</span>
+ </label>
+
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">账户角色</span>
+ <span class="relative block">
+ <i class="fas fa-shield-alt pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-700 outline-none" type="text" value="<?= $user['role'] === 'admin' ? '管理员' : '普通员工' ?>" readonly disabled>
+ </span>
+ <span class="text-xs text-slate-500">角色权限由管理员分配</span>
+ </label>
  </div>
 
  <hr style="margin: 1.5rem 0;">

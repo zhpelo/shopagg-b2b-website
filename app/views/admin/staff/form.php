@@ -21,7 +21,7 @@
 
 <div class="grid gap-6 xl:grid-cols-12">
  <div class="xl:col-span-8">
- <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
+ <form method="post" action="<?= h(url($action)) ?>">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <!-- 基本信息 -->
@@ -30,50 +30,41 @@
  <span class="icon-box primary"><i class="fas fa-user"></i></span>
  基本信息
  </div>
- 
+
  <div class="grid gap-4 md:grid-cols-2">
- <div>
- <div class="field">
- <label class="label">用户名</label>
- <div class="control has-icons-left">
- <input class="input" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required <?= isset($user) ? 'readonly style="background: #f8fafc;"' : 'placeholder="输入登录用户名"' ?>>
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-user"></i>
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">用户名</span>
+ <span class="relative block">
+ <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required <?= isset($user) ? 'readonly style="background: #f8fafc;"' : 'placeholder="输入登录用户名"' ?>>
  </span>
- </div>
  <?php if (isset($user)): ?>
- <p class="help has-text-grey">用户名创建后不可修改</p>
+ <span class="text-xs text-slate-500">用户名创建后不可修改</span>
  <?php else: ?>
- <p class="help has-text-grey">用于登录后台系统</p>
+ <span class="text-xs text-slate-500">用于登录后台系统</span>
  <?php endif; ?>
- </div>
- </div>
- <div>
- <div class="field">
- <label class="label">显示名称</label>
- <div class="control has-icons-left">
- <input class="input" type="text" name="display_name" value="<?= h($user['display_name'] ?? '') ?>" required placeholder="输入显示名称">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-id-badge"></i>
+ </label>
+
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">显示名称</span>
+ <span class="relative block">
+ <i class="fas fa-id-badge pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name'] ?? '') ?>" required placeholder="输入显示名称">
  </span>
- </div>
- <p class="help has-text-grey">在后台界面中显示的名称</p>
- </div>
- </div>
+ <span class="text-xs text-slate-500">在后台界面中显示的名称</span>
+ </label>
  </div>
 
- <div class="field">
- <label class="label">密码</label>
- <div class="control has-icons-left">
- <input class="input" type="password" name="password" <?= isset($user) ? '' : 'required' ?> placeholder="<?= isset($user) ? '留空则不修改密码' : '输入登录密码' ?>">
- <span class="icon is-left has-text-grey-light">
- <i class="fas fa-lock"></i>
+ <label class="mt-4 block space-y-2">
+ <span class="text-sm font-medium text-slate-700">密码</span>
+ <span class="relative block">
+ <i class="fas fa-lock pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" <?= isset($user) ? '' : 'required' ?> placeholder="<?= isset($user) ? '留空则不修改密码' : '输入登录密码' ?>">
  </span>
- </div>
  <?php if (isset($user)): ?>
- <p class="help has-text-grey">如需修改密码请输入新密码，否则留空</p>
+ <span class="text-xs text-slate-500">如需修改密码请输入新密码，否则留空</span>
  <?php endif; ?>
- </div>
+ </label>
  </div>
 
  <!-- 角色和权限 -->
@@ -83,22 +74,18 @@
  角色和权限
  </div>
 
- <div class="field">
- <label class="label">账户角色</label>
- <div class="control">
- <div class="select is-fullwidth">
- <select name="role">
+ <div class="space-y-5">
+ <label class="block space-y-2">
+ <span class="text-sm font-medium text-slate-700">账户角色</span>
+ <select name="role" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100">
  <option value="staff" <?= ($user['role'] ?? 'staff') === 'staff' ? 'selected' : '' ?>>普通员工</option>
  <option value="admin" <?= ($user['role'] ?? '') === 'admin' ? 'selected' : '' ?>>管理员</option>
  </select>
- </div>
- </div>
- <p class="help has-text-grey">管理员拥有所有权限</p>
- </div>
+ <span class="text-xs text-slate-500">管理员拥有所有权限</span>
+ </label>
 
- <div class="field">
- <label class="label">访问权限</label>
- <div class="control">
+ <div class="space-y-2">
+ <div class="text-sm font-medium text-slate-700">访问权限</div>
  <div class="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
  <?php 
  $available_perms = [
@@ -121,8 +108,8 @@
  </div>
  <?php endforeach; ?>
  </div>
+ <p class="mt-3 text-xs text-slate-500">选择该员工可以访问的后台功能模块（管理员角色自动拥有所有权限）</p>
  </div>
- <p class="help has-text-grey mt-3">选择该员工可以访问的后台功能模块（管理员角色自动拥有所有权限）</p>
  </div>
  </div>
 
@@ -147,8 +134,8 @@
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  权限说明
  </div>
- <div class="content is-size-7">
- <ul style="margin-left: 0;">
+ <div class="text-xs leading-6 text-slate-500">
+ <ul class="list-disc space-y-1 pl-5">
  <li><strong>产品管理</strong>：添加、编辑、删除产品和分类</li>
  <li><strong>案例管理</strong>：添加、编辑、删除客户案例</li>
  <li><strong>内容管理</strong>：发布和管理博客文章</li>
