@@ -37,42 +37,38 @@ $currentId = (int)($category['id'] ?? 0);
         <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             
-            <div class="admin-card" style="padding: 2rem;">
+            <div class="admin-card p-8">
                 <div class="section-title">
                     <span class="icon-box <?= $isPost ? 'success' : 'warning' ?>"><i class="fas <?= $icon ?>"></i></span>
                     分类信息
                 </div>
-                
-                <div class="field">
-                    <label class="label">分类名称 <span class="has-text-danger">*</span></label>
-                    <div class="control has-icons-left">
-                        <input class="input" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称">
-                        <span class="icon is-left has-text-grey-light">
-                            <i class="fas fa-tag"></i>
-                        </span>
-                    </div>
-                    <p class="help has-text-grey">分类的显示名称</p>
-                </div>
-                
-                <div class="field">
-                    <label class="label">别名 (Slug)</label>
-                    <div class="control has-icons-left">
-                        <input class="input" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug">
-                        <span class="icon is-left has-text-grey-light">
-                            <i class="fas fa-link"></i>
-                        </span>
-                    </div>
-                    <p class="help has-text-grey">用于URL的标识符，留空则自动生成</p>
-                </div>
 
-                <div class="field">
-                    <label class="label">父级分类</label>
-                    <div class="control has-icons-left">
-                        <div class="select is-fullwidth">
-                            <select name="parent_id">
+                <div class="space-y-5">
+                    <label class="block space-y-2">
+                        <span class="text-sm font-medium text-slate-700">分类名称 <span class="text-rose-500">*</span></span>
+                        <span class="relative block">
+                            <i class="fas fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称">
+                        </span>
+                        <p class="text-xs text-slate-500">分类的显示名称</p>
+                    </label>
+
+                    <label class="block space-y-2">
+                        <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
+                        <span class="relative block">
+                            <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug">
+                        </span>
+                        <p class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</p>
+                    </label>
+
+                    <label class="block space-y-2">
+                        <span class="text-sm font-medium text-slate-700">父级分类</span>
+                        <span class="relative block">
+                            <i class="fas fa-sitemap pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                            <select class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="parent_id">
                                 <option value="0">无（顶级分类）</option>
                                 <?php foreach ($parentCategories as $pc): 
-                                    // 不能选择自己或自己的子分类作为父分类
                                     if ($currentId > 0 && (int)$pc['id'] === $currentId) continue;
                                 ?>
                                 <option value="<?= (int)$pc['id'] ?>" <?= $currentParentId === (int)$pc['id'] ? 'selected' : '' ?>>
@@ -80,23 +76,18 @@ $currentId = (int)($category['id'] ?? 0);
                                 </option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
-                        <span class="icon is-left has-text-grey-light">
-                            <i class="fas fa-sitemap"></i>
                         </span>
-                    </div>
-                    <p class="help has-text-grey">选择父级分类以创建多级分类结构</p>
+                        <p class="text-xs text-slate-500">选择父级分类以创建多级分类结构</p>
+                    </label>
+
+                    <label class="block space-y-2">
+                        <span class="text-sm font-medium text-slate-700">分类描述</span>
+                        <textarea class="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="description" rows="3" placeholder="输入分类描述（可选）"><?= h($category['description'] ?? '') ?></textarea>
+                        <p class="text-xs text-slate-500">简短描述该分类的内容</p>
+                    </label>
                 </div>
 
-                <div class="field">
-                    <label class="label">分类描述</label>
-                    <div class="control">
-                        <textarea class="textarea" name="description" rows="3" placeholder="输入分类描述（可选）"><?= h($category['description'] ?? '') ?></textarea>
-                    </div>
-                    <p class="help has-text-grey">简短描述该分类的内容</p>
-                </div>
-
-                <hr style="margin: 1.5rem 0;">
+                <div class="my-6 h-px bg-slate-200"></div>
                 
                 <div class="flex flex-wrap gap-3">
                     <button type="submit" class="inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25 text-slate-900' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
@@ -113,19 +104,22 @@ $currentId = (int)($category['id'] ?? 0);
     </div>
     
     <div class="animate-in delay-2 xl:col-span-5">
-        <div class="admin-card" style="padding: 1.5rem;">
+        <div class="admin-card p-6">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-info-circle"></i></span>
                 分类说明
             </div>
-            <div class="content is-size-7">
-                <p><strong>多级分类：</strong></p>
-                <ul>
-                    <li>可以选择父级分类来创建层级结构</li>
-                    <li>支持无限层级嵌套</li>
-                    <li>删除父分类时，子分类会自动提升到上一级</li>
-                </ul>
-                <p class="mt-4"><strong>当前分类类型：</strong></p>
+            <div class="space-y-4 text-sm leading-6 text-slate-600">
+                <div>
+                    <p class="font-semibold text-slate-800">多级分类：</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5">
+                        <li>可以选择父级分类来创建层级结构</li>
+                        <li>支持无限层级嵌套</li>
+                        <li>删除父分类时，子分类会自动提升到上一级</li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="font-semibold text-slate-800">当前分类类型：</p>
                 <p>
                     <?php if ($isPost): ?>
                     <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
@@ -141,6 +135,7 @@ $currentId = (int)($category['id'] ?? 0);
                     <br><small class="mt-2 block text-slate-500">用于组织产品目录</small>
                     <?php endif; ?>
                 </p>
+                </div>
             </div>
         </div>
     </div>
