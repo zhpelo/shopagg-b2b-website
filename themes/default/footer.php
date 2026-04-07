@@ -8,6 +8,175 @@
 ?>
 </main>
 
+<?php
+$whatsappValue = trim((string)($site['whatsapp'] ?? ''));
+$whatsappDigits = preg_replace('/\D+/', '', $whatsappValue);
+$whatsappHref = '';
+if ($whatsappValue !== '') {
+    if (preg_match('#^https?://#i', $whatsappValue)) {
+        $whatsappHref = $whatsappValue;
+    } elseif ($whatsappDigits !== '') {
+        $whatsappHref = 'https://wa.me/' . $whatsappDigits;
+    }
+}
+
+$floatingContacts = [];
+if (!empty($site['company_phone'])) {
+    $floatingContacts[] = [
+        'label' => 'Phone',
+        'value' => $site['company_phone'],
+        'href' => 'tel:' . $site['company_phone'],
+        'icon' => 'fas fa-phone',
+        'theme' => 'phone'
+    ];
+}
+if (!empty($site['company_email'])) {
+    $floatingContacts[] = [
+        'label' => 'Email',
+        'value' => $site['company_email'],
+        'href' => 'mailto:' . $site['company_email'],
+        'icon' => 'fas fa-envelope',
+        'theme' => 'email'
+    ];
+}
+if ($whatsappHref !== '') {
+    $floatingContacts[] = [
+        'label' => 'WhatsApp',
+        'value' => $whatsappValue,
+        'href' => $whatsappHref,
+        'icon' => 'fab fa-whatsapp',
+        'theme' => 'whatsapp'
+    ];
+}
+if (!empty($site['company_address'])) {
+    $floatingContacts[] = [
+        'label' => 'Address',
+        'value' => $site['company_address'],
+        'href' => 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($site['company_address']),
+        'icon' => 'fas fa-location-dot',
+        'theme' => 'address'
+    ];
+}
+
+$floatingSocialLinks = [];
+$socialMap = [
+    'facebook' => ['Facebook', 'fab fa-facebook-f'],
+    'instagram' => ['Instagram', 'fab fa-instagram'],
+    'twitter' => ['Twitter', 'fab fa-twitter'],
+    'linkedin' => ['LinkedIn', 'fab fa-linkedin-in'],
+    'youtube' => ['YouTube', 'fab fa-youtube'],
+];
+foreach ($socialMap as $key => [$label, $icon]) {
+    if (!empty($site[$key])) {
+        $floatingSocialLinks[] = [
+            'label' => $label,
+            'icon' => $icon,
+            'href' => $site[$key],
+            'theme' => $key
+        ];
+    }
+}
+
+$hasFloatingContact = !empty($floatingContacts) || !empty($floatingSocialLinks);
+?>
+
+<?php if ($hasFloatingContact): ?>
+<aside class="site-float-contact" data-float-contact>
+    <button
+        type="button"
+        class="site-float-contact__toggle"
+        data-float-contact-toggle
+        aria-expanded="false"
+        aria-controls="site-float-contact-panel"
+    >
+        <i class="fas fa-comments"></i>
+        <span>Contact</span>
+    </button>
+
+    <div class="site-float-contact__panel" id="site-float-contact-panel">
+        <div class="site-float-contact__eyebrow">Global Contact</div>
+        <h3 class="site-float-contact__title">Talk to our team</h3>
+        <p class="site-float-contact__desc">Quick access to your configured contact details and social channels.</p>
+
+        <?php if ($floatingContacts): ?>
+            <div class="site-float-contact__group">
+                <?php foreach ($floatingContacts as $item): ?>
+                    <a
+                        href="<?= h($item['href']) ?>"
+                        class="site-float-contact__item site-float-contact__item--<?= h($item['theme']) ?>"
+                        <?= str_starts_with($item['href'], 'http') ? 'target="_blank" rel="noopener noreferrer"' : '' ?>
+                    >
+                        <span class="site-float-contact__icon"><i class="<?= h($item['icon']) ?>"></i></span>
+                        <span class="site-float-contact__meta">
+                            <span class="site-float-contact__label"><?= h($item['label']) ?></span>
+                            <span class="site-float-contact__value"><?= h($item['value']) ?></span>
+                        </span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($floatingSocialLinks): ?>
+            <div class="site-float-contact__social">
+                <?php foreach ($floatingSocialLinks as $item): ?>
+                    <a
+                        href="<?= h($item['href']) ?>"
+                        class="site-float-contact__social-link site-float-contact__social-link--<?= h($item['theme']) ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="<?= h($item['label']) ?>"
+                        title="<?= h($item['label']) ?>"
+                    >
+                        <span class="site-float-contact__social-icon"><i class="<?= h($item['icon']) ?>"></i></span>
+                        <span class="site-float-contact__social-text"><?= h($item['label']) ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <a href="<?= url('/contact') ?>" class="site-float-contact__cta">Send Inquiry</a>
+    </div>
+</aside>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const widget = document.querySelector('[data-float-contact]');
+    const toggle = document.querySelector('[data-float-contact-toggle]');
+    if (!widget || !toggle) return;
+
+    const closeWidget = () => {
+        widget.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+    };
+
+    const openWidget = () => {
+        widget.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+    };
+
+    toggle.addEventListener('click', function () {
+        if (widget.classList.contains('is-open')) {
+            closeWidget();
+        } else {
+            openWidget();
+        }
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!widget.contains(event.target) && window.innerWidth < 1024) {
+            closeWidget();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeWidget();
+        }
+    });
+});
+</script>
+<?php endif; ?>
+
 <!-- Footer -->
 <footer class="bg-white border-t border-gray-200 mt-16">
     <div class="container mx-auto px-4 lg:px-8">
