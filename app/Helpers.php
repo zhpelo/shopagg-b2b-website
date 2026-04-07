@@ -68,7 +68,10 @@ function csrf_token(): string {
  * @return void
  */
 function csrf_check(): void {
-    $token = $_POST['csrf'] ?? '';
+    $token = $_POST['csrf']
+        ?? $_SERVER['HTTP_X_CSRF_TOKEN']
+        ?? $_SERVER['HTTP_X_CSRF']
+        ?? '';
     if (!$token || $token !== ($_SESSION['csrf'] ?? '')) {
         http_response_code(400);
         echo 'Invalid CSRF token';

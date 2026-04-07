@@ -16,8 +16,10 @@ class Database {
                 @mkdir(APP_ROOT . '/#data/', 0755, true);
             }
             self::$instance = new SQLite3($dbFile);
+            self::$instance->busyTimeout(5000);
             self::$instance->exec('PRAGMA foreign_keys = ON;');
             self::$instance->exec('PRAGMA journal_mode = WAL;');
+            self::$instance->exec('PRAGMA busy_timeout = 5000;');
             if ($isNew) {
                 self::initSchema(self::$instance);
             }
@@ -41,6 +43,30 @@ class Database {
     }
 
     private static function ensureColumns(SQLite3 $db): void {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS media_files (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                original_name TEXT NOT NULL,
+                storage_name TEXT NOT NULL,
+                title TEXT,
+                alt_text TEXT,
+                directory TEXT NOT NULL DEFAULT '',
+                public_path TEXT NOT NULL UNIQUE,
+                media_type TEXT NOT NULL DEFAULT 'image',
+                mime_type TEXT,
+                extension TEXT,
+                size INTEGER NOT NULL DEFAULT 0,
+                width INTEGER NOT NULL DEFAULT 0,
+                height INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_media_files_directory ON media_files(directory);
+            CREATE INDEX IF NOT EXISTS idx_media_files_media_type ON media_files(media_type);
+            CREATE INDEX IF NOT EXISTS idx_media_files_created_at ON media_files(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_media_files_original_name ON media_files(original_name);
+        ");
+
         self::addColumnsIfMissing($db, 'products', [
             'status' => 'TEXT DEFAULT "active"',
             'product_type' => 'TEXT',
@@ -64,7 +90,7 @@ class Database {
             'permissions' => 'TEXT',
             'display_name' => 'TEXT',
         ]);
-        $db->exec("UPDATE users SET role = 'admin' WHERE username = 'admin'");
+        $db->exec("UPDATE users SET role = 'admin' WHERE username = 'admin' AND (role IS NULL OR role != 'admin')");
         self::addColumnsIfMissing($db, 'product_categories', [
             'parent_id' => 'INTEGER DEFAULT 0',
             'type' => 'TEXT DEFAULT "product"',
@@ -191,6 +217,29 @@ class Database {
                 created_at TEXT NOT NULL,
                 FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
             );
+            CREATE TABLE IF NOT EXISTS media_files (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                original_name TEXT NOT NULL,
+                storage_name TEXT NOT NULL,
+                title TEXT,
+                alt_text TEXT,
+                directory TEXT NOT NULL DEFAULT '',
+                public_path TEXT NOT NULL UNIQUE,
+                media_type TEXT NOT NULL DEFAULT 'image',
+                mime_type TEXT,
+                extension TEXT,
+                size INTEGER NOT NULL DEFAULT 0,
+                width INTEGER NOT NULL DEFAULT 0,
+                height INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+        ");
+        $db->exec("
+            CREATE INDEX IF NOT EXISTS idx_media_files_directory ON media_files(directory);
+            CREATE INDEX IF NOT EXISTS idx_media_files_media_type ON media_files(media_type);
+            CREATE INDEX IF NOT EXISTS idx_media_files_created_at ON media_files(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_media_files_original_name ON media_files(original_name);
         ");
 
         // Seed default admin
@@ -223,4 +272,3 @@ class Database {
         }
     }
 }
-

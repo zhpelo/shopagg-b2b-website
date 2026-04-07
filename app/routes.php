@@ -95,7 +95,12 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/profile', [AdminController::class, 'profile']);
     $router->add('POST', '/admin/profile/update', [AdminController::class, 'profileUpdate']);
     $router->add('GET', '/admin/media', [AdminController::class, 'mediaList']);
-    $router->add('GET', '/admin/media/delete', [AdminController::class, 'mediaDelete']);
+    $router->add('GET', '/admin/media/connector', [AdminController::class, 'mediaConnector']);
+    $router->add('POST', '/admin/media/delete', [AdminController::class, 'mediaDelete']);
+    $router->add('POST', '/admin/media/upload', [AdminController::class, 'mediaUpload']);
+    $router->add('POST', '/admin/media/folder/create', [AdminController::class, 'mediaFolderCreate']);
+    $router->add('POST', '/admin/media/folder/delete', [AdminController::class, 'mediaFolderDelete']);
+    $router->add('POST', '/admin/media/connector', [AdminController::class, 'mediaConnector']);
     $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
     $router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
 }

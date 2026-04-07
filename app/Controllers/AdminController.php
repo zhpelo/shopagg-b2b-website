@@ -6,6 +6,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Database;
 use App\Core\AuthManager;
+use App\Core\MediaManager;
 use App\Models\Setting;
 use App\Models\Product;
 use App\Models\Category;
@@ -36,6 +37,7 @@ class AdminController extends Controller {
     private Inquiry $inquiryModel;
     private Message $messageModel;
     private User $userModel;
+    private MediaManager $mediaManager;
 
     /**
      * 构造函数 - 初始化模型和执行认证检查
@@ -51,6 +53,7 @@ class AdminController extends Controller {
         $this->inquiryModel = new Inquiry();
         $this->messageModel = new Message();
         $this->userModel = new User();
+        $this->mediaManager = new MediaManager();
         
         // 执行认证和授权检查
         $this->performAuthChecks();
@@ -381,122 +384,231 @@ class AdminController extends Controller {
     }
 
     public function mediaLibrary(): void {
-        $dir = APP_ROOT . '/uploads';
-        $files = [];
-        if (is_dir($dir)) {
-            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
-            foreach ($it as $file) {
-                if ($file->isDir()) continue;
-                if (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file->getFilename())) {
-                    $path = str_replace('\\', '/', $file->getPathname());
-                    $uploadsPos = strpos($path, '/uploads/');
-                    if ($uploadsPos !== false) {
-                        $files[] = substr($path, $uploadsPos);
-                    }
-                }
-            }
+        $this->ensureMediaAccess(true);
+        $directory = (string)($_GET['dir'] ?? '');
+        $search = trim((string)($_GET['search'] ?? ''));
+        $type = trim((string)($_GET['type'] ?? 'all'));
+        $sort = trim((string)($_GET['sort'] ?? 'date_desc'));
+
+        try {
+            $this->json($this->mediaManager->getLibraryPayload($directory, $search, $type, $sort));
+        } catch (\RuntimeException $e) {
+            $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
         }
-        // Sort by newest first
-        usort($files, function($a, $b) {
-            return filemtime(APP_ROOT . $b) <=> filemtime(APP_ROOT . $a);
-        });
-        $this->json($files);
     }
 
     // --- Media Management (媒体库管理) ---
     public function mediaList(): void {
-        $dir = APP_ROOT . '/uploads';
-        $files = [];
-        $totalSize = 0;
-        
-        if (is_dir($dir)) {
-            $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS));
-            foreach ($it as $file) {
-                if ($file->isDir()) continue;
-                $filename = $file->getFilename();
-                $filesize = $file->getSize();
-                $totalSize += $filesize;
-                
-                if (preg_match('/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i', $filename)) {
-                    $path = str_replace('\\', '/', $file->getPathname());
-                    $uploadsPos = strpos($path, '/uploads/');
-                    if ($uploadsPos !== false) {
-                        $relativePath = substr($path, $uploadsPos);
-                        $files[] = [
-                            'path' => $relativePath,
-                            'name' => $filename,
-                            'size' => $filesize,
-                            'size_formatted' => $this->formatBytes($filesize),
-                            'mtime' => $file->getMTime(),
-                            'date' => date('Y-m-d H:i', $file->getMTime()),
-                            'width' => 0,
-                            'height' => 0,
-                        ];
-                    }
-                }
-            }
+        $this->ensureMediaAccess();
+        $directory = (string)($_GET['dir'] ?? '');
+        $search = trim((string)($_GET['search'] ?? ''));
+        $type = trim((string)($_GET['type'] ?? 'all'));
+        $sort = trim((string)($_GET['sort'] ?? 'date_desc'));
+
+        try {
+            $listing = $this->mediaManager->listDirectory($directory, $search, $type, $sort);
+            $summary = $this->mediaManager->summarize();
+
+            $this->renderAdmin('媒体库管理', $this->renderView('admin/media/index', [
+                'listing' => $listing,
+                'summary' => $summary,
+                'filters' => [
+                    'search' => $search,
+                    'type' => $type,
+                    'sort' => $sort,
+                ],
+            ]));
+        } catch (\RuntimeException $e) {
+            $this->redirect('/admin/media?error=' . urlencode($e->getMessage()));
         }
-        
-        // Sort by newest first
-        usort($files, function($a, $b) {
-            return $b['mtime'] <=> $a['mtime'];
-        });
-        
-        // Get image dimensions (do this after sorting to limit processing)
-        foreach ($files as &$f) {
-            $fullPath = APP_ROOT . $f['path'];
-            if (file_exists($fullPath)) {
-                $info = @getimagesize($fullPath);
-                if ($info) {
-                    $f['width'] = $info[0];
-                    $f['height'] = $info[1];
-                }
-            }
-        }
-        
-        $this->renderAdmin('媒体库管理', $this->renderView('admin/media/index', [
-            'files' => $files,
-            'total_size' => $totalSize,
-            'total_size_formatted' => $this->formatBytes($totalSize),
-            'total_count' => count($files),
-        ]));
     }
-    
+
     public function mediaDelete(): void {
-        $path = $_GET['path'] ?? '';
-        
-        if (empty($path)) {
-            $this->redirect('/admin/media?error=无效的文件路径');
-            return;
+        $this->ensureMediaAccess();
+        csrf_check();
+        $directory = (string)($_POST['dir'] ?? '');
+        $selectedPaths = $_POST['paths'] ?? [];
+        if (!is_array($selectedPaths)) {
+            $selectedPaths = [$selectedPaths];
         }
-        
-        // Security: ensure path is within uploads directory
-        $fullPath = realpath(APP_ROOT . $path);
-        $uploadsDir = realpath(APP_ROOT . '/uploads');
-        
-        if ($fullPath === false || $uploadsDir === false || strpos($fullPath, $uploadsDir) !== 0) {
-            $this->redirect('/admin/media?error=无效的文件路径');
-            return;
-        }
-        
-        if (file_exists($fullPath) && is_file($fullPath)) {
-            if (unlink($fullPath)) {
-                $this->redirect('/admin/media?success=文件已删除');
+        $selectedPaths = array_values(array_filter(array_map('strval', $selectedPaths)));
+
+        try {
+            $message = '文件已删除';
+            if ($selectedPaths !== []) {
+                $result = $this->mediaManager->deleteFiles($selectedPaths);
+                $message = '已删除 ' . $result['deleted_count'] . ' 个文件';
+                if ($result['errors'] !== []) {
+                    $message .= '，部分文件删除失败';
+                }
             } else {
-                $this->redirect('/admin/media?error=删除失败');
+                $singlePath = trim((string)($_POST['path'] ?? ''));
+                if ($singlePath === '') {
+                    throw new \RuntimeException('请选择要删除的文件');
+                }
+                $this->mediaManager->deleteFile($singlePath);
             }
-        } else {
-            $this->redirect('/admin/media?error=文件不存在');
+
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->successResponse([
+                    'messages' => [$message],
+                ]));
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->mediaManager->normalizeDirectory($directory)) . '&success=' . urlencode($message));
+        } catch (\RuntimeException $e) {
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&error=' . urlencode($e->getMessage()));
         }
     }
-    
-    private function formatBytes(int $bytes, int $precision = 2): string {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow(1024, $pow);
-        return round($bytes, $precision) . ' ' . $units[$pow];
+
+    public function mediaFolderCreate(): void
+    {
+        $this->ensureMediaAccess();
+        csrf_check();
+        $directory = (string)($_POST['dir'] ?? '');
+
+        try {
+            $folder = $this->mediaManager->createFolder($directory, (string)($_POST['folder_name'] ?? ''));
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->successResponse([
+                    'folder' => $folder,
+                    'messages' => ['文件夹已创建'],
+                ]));
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&success=' . urlencode('文件夹已创建'));
+        } catch (\RuntimeException $e) {
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function mediaFolderDelete(): void
+    {
+        $this->ensureMediaAccess();
+        csrf_check();
+
+        try {
+            $this->mediaManager->deleteFolder((string)($_POST['directory'] ?? ''));
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->successResponse([
+                    'messages' => ['文件夹已删除'],
+                ]));
+            }
+            $parentDirectory = dirname($this->safeMediaDirectory((string)($_POST['directory'] ?? '')));
+            $parentDirectory = $parentDirectory === '.' ? '' : $parentDirectory;
+            $this->redirect('/admin/media?dir=' . urlencode($parentDirectory) . '&success=' . urlencode('文件夹已删除'));
+        } catch (\RuntimeException $e) {
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory((string)($_POST['parent_dir'] ?? ''))) . '&error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function mediaUpload(): void
+    {
+        $this->ensureMediaAccess();
+        csrf_check();
+        $directory = (string)($_POST['dir'] ?? '');
+
+        try {
+            $files = $this->collectUploadedFiles($_FILES);
+            $result = $this->mediaManager->uploadFiles($files, $directory, false);
+            $message = '成功上传 ' . count($result['uploaded']) . ' 个文件';
+            if ($result['messages'] !== []) {
+                $message .= '，部分文件失败';
+            }
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->successResponse([
+                    'directory' => $result['directory'],
+                    'uploaded' => $result['uploaded'],
+                    'messages' => array_merge([$message], $result['messages']),
+                ]));
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&success=' . urlencode($message));
+        } catch (\RuntimeException $e) {
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
+            }
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function mediaConnector(): void
+    {
+        $this->ensureMediaAccess(true);
+        $action = trim((string)($_REQUEST['action'] ?? 'files'));
+        $directory = (string)($_REQUEST['path'] ?? '');
+        $mods = $_REQUEST['mods'] ?? [];
+        $onlyImages = is_array($mods) ? !empty($mods['onlyImages']) : false;
+
+        try {
+            switch ($action) {
+                case 'files':
+                    $this->json($this->mediaManager->connectorResponse($directory, 'files', $onlyImages));
+                    return;
+
+                case 'folders':
+                    $this->json($this->mediaManager->connectorResponse($directory, 'folders'));
+                    return;
+
+                case 'permissions':
+                    $this->json($this->mediaManager->permissionsResponse());
+                    return;
+
+                case 'folderCreate':
+                    csrf_check();
+                    $this->json($this->mediaManager->successResponse([
+                        'messages' => ['文件夹已创建'],
+                    ] + $this->mediaManager->createFolder($directory, (string)($_REQUEST['name'] ?? ''))));
+                    return;
+
+                case 'fileRemove':
+                    csrf_check();
+                    $path = trim((string)($_REQUEST['path'] ?? ''));
+                    $name = trim((string)($_REQUEST['name'] ?? ''));
+                    $target = ($path === '' || $path === '/') ? $name : trim($path, '/') . '/' . $name;
+                    $this->mediaManager->deleteFile($target);
+                    $this->json($this->mediaManager->successResponse([
+                        'messages' => ['文件已删除'],
+                    ]));
+                    return;
+
+                case 'folderRemove':
+                    csrf_check();
+                    $path = trim((string)($_REQUEST['path'] ?? ''));
+                    $name = trim((string)($_REQUEST['name'] ?? ''));
+                    $target = ($path === '' || $path === '/') ? $name : trim($path, '/') . '/' . $name;
+                    $this->mediaManager->deleteFolder($target);
+                    $this->json($this->mediaManager->successResponse([
+                        'messages' => ['文件夹已删除'],
+                    ]));
+                    return;
+
+                case 'fileUpload':
+                    csrf_check();
+                    $files = $this->collectUploadedFiles($_FILES);
+                    $result = $this->mediaManager->uploadFiles($files, $directory, false);
+                    $this->json($this->mediaManager->uploadConnectorResponse($result));
+                    return;
+
+                case 'getLocalFileByUrl':
+                    $file = $this->mediaManager->getPublicPathFromUrl((string)($_REQUEST['url'] ?? ''));
+                    if ($file === null) {
+                        throw new \RuntimeException('文件不存在');
+                    }
+                    $this->json($this->mediaManager->successResponse($file));
+                    return;
+            }
+
+            $this->json($this->mediaManager->errorResponse('不支持的操作'));
+        } catch (\RuntimeException $e) {
+            $this->json($this->mediaManager->errorResponse($e->getMessage()));
+        }
     }
 
     private function handleProductPrices(int $productId): void {
@@ -846,11 +958,102 @@ class AdminController extends Controller {
 
     // --- AJAX ---
     public function uploadImage(): void {
+        $this->ensureMediaAccess(true);
         csrf_check();
-        if (!isset($_FILES['image'])) $this->json(['error' => '未选择文件'], 400);
-        [$ok, $result] = save_uploaded_image($_FILES['image']);
-        if (!$ok) $this->json(['error' => $result], 400);
-        $this->json(['url' => $result]);
+        try {
+            $files = $this->collectUploadedFiles($_FILES);
+            $result = $this->mediaManager->uploadFiles($files, null, true);
+            $first = $result['uploaded'][0] ?? null;
+            if ($first === null) {
+                throw new \RuntimeException('上传失败');
+            }
+
+            $this->json([
+                'url' => $first['public_path'],
+                'item' => $first,
+            ]);
+        } catch (\RuntimeException $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    private function wantsJsonResponse(): bool
+    {
+        if ((string)($_REQUEST['response_format'] ?? '') === 'json') {
+            return true;
+        }
+
+        $requestedWith = strtolower((string)($_SERVER['HTTP_X_REQUESTED_WITH'] ?? ''));
+        if ($requestedWith === 'xmlhttprequest') {
+            return true;
+        }
+
+        $accept = strtolower((string)($_SERVER['HTTP_ACCEPT'] ?? ''));
+        return str_contains($accept, 'application/json');
+    }
+
+    private function ensureMediaAccess(bool $json = false): void
+    {
+        if ($_SESSION['admin_role'] === 'admin') {
+            return;
+        }
+
+        $allowedPermissions = ['products', 'blog', 'cases', 'settings'];
+        $userPermissions = array_filter(explode(',', (string)($_SESSION['admin_permissions'] ?? '')));
+
+        foreach ($allowedPermissions as $permission) {
+            if (in_array($permission, $userPermissions, true)) {
+                return;
+            }
+        }
+
+        if ($json) {
+            $this->json(['success' => false, 'data' => ['messages' => ['无权访问媒体库']]], 403);
+        }
+
+        $this->redirect('/admin');
+    }
+
+    private function safeMediaDirectory(string $directory): string
+    {
+        try {
+            return $this->mediaManager->normalizeDirectory($directory);
+        } catch (\RuntimeException) {
+            return '';
+        }
+    }
+
+    private function collectUploadedFiles(array $uploadedFiles): array
+    {
+        $collected = [];
+        foreach ($uploadedFiles as $fileSpec) {
+            $this->flattenUploadedFileSpec($fileSpec, $collected);
+        }
+
+        return $collected;
+    }
+
+    private function flattenUploadedFileSpec(array $fileSpec, array &$collected): void
+    {
+        $name = $fileSpec['name'] ?? null;
+        if (is_array($name)) {
+            foreach (array_keys($name) as $key) {
+                $this->flattenUploadedFileSpec([
+                    'name' => $fileSpec['name'][$key] ?? '',
+                    'type' => $fileSpec['type'][$key] ?? '',
+                    'tmp_name' => $fileSpec['tmp_name'][$key] ?? '',
+                    'error' => $fileSpec['error'][$key] ?? UPLOAD_ERR_NO_FILE,
+                    'size' => $fileSpec['size'][$key] ?? 0,
+                ], $collected);
+            }
+            return;
+        }
+
+        if (($fileSpec['name'] ?? '') === '') {
+            return;
+        }
+
+        $collected[] = $fileSpec;
     }
 
     // --- Staff Management ---
