@@ -111,7 +111,7 @@
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-edit"></i></span>
                                         <span>编辑</span>
                                     </a>
-                                    <a href="<?= url('/admin/posts/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" onclick="return confirm('确定要删除该文章吗？此操作不可恢复。')">
+                                    <a href="<?= url('/admin/posts/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要删除该文章吗？此操作不可恢复。">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
                                     </a>
                                 </div>

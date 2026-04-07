@@ -255,7 +255,7 @@ $statusButtonClasses = [
             <a
                 href="<?= url('/admin/inquiries/delete?id=' . (int)$inquiry['id']) ?>"
                 class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100"
-                onclick="return confirm('确定要删除此询单吗？此操作不可恢复。')">
+                data-confirm-message="确定要删除此询单吗？此操作不可恢复。">
                 <i class="fas fa-trash text-xs"></i>
                 <span>删除此询单</span>
             </a>

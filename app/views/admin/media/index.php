@@ -124,7 +124,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 <?php if (isset($_GET['success'])): ?>
     <div class="flex items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-sm">
         <span><?= h($_GET['success']) ?></span>
-        <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-emerald-500 transition hover:bg-emerald-100" onclick="this.parentElement.remove()">
+        <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-emerald-500 transition hover:bg-emerald-100" data-dismiss-parent>
             <i class="fas fa-times text-xs"></i>
         </button>
     </div>
@@ -133,7 +133,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 <?php if (isset($_GET['error'])): ?>
     <div class="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 shadow-sm">
         <span><?= h($_GET['error']) ?></span>
-        <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-rose-500 transition hover:bg-rose-100" onclick="this.parentElement.remove()">
+        <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-rose-500 transition hover:bg-rose-100" data-dismiss-parent>
             <i class="fas fa-times text-xs"></i>
         </button>
     </div>
@@ -168,10 +168,10 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <span class="inline-flex h-5 w-5 items-center justify-center explorer-app-icon"><i class="fas fa-photo-video"></i></span>
             <strong class="explorer-app-title">媒体库</strong>
             <div class="explorer-nav-buttons flex items-center gap-2">
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" onclick="history.back()">
+                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" data-history-nav="back">
                     <i class="fas fa-arrow-left text-xs"></i>
                 </button>
-                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" onclick="history.forward()">
+                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" data-history-nav="forward">
                     <i class="fas fa-arrow-right text-xs"></i>
                 </button>
                 <a href="<?= h($buildMediaUrl($parentDir)) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50">
@@ -298,8 +298,9 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                     <div
                         class="explorer-file-row"
                         data-file-path="<?= h($file['public_path']) ?>"
-                        onclick='selectExplorerFile(<?= json_encode([
+                        data-explorer-file='<?= h(json_encode([
                                                         'name' => $file['original_name'] ?: $file['name'],
+                                                        'path' => $file['public_path'],
                                                         'url' => asset_url($file['public_path']),
                                                         'type' => $file['type'],
                                                         'size' => $file['size_formatted'],
@@ -307,8 +308,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                                                         'dimensions' => $file['dimensions'] ?? '',
                                                         'storage_name' => $file['storage_name'] ?? '',
                                                         'directory' => $file['directory'] ?? '',
-                                                    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>)'>
-                        <label class="explorer-check-cell" onclick="event.stopPropagation()">
+                                                    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>'>
+                        <label class="explorer-check-cell" >
                             <input type="checkbox" class="js-page-media-checkbox" name="paths[]" form="media-bulk-delete-form" value="<?= h($file['public_path']) ?>">
                         </label>
                         <div class="explorer-name-cell">
@@ -329,11 +330,11 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                         <div><?= $file['is_video'] ? '视频' : ($file['is_image'] ? '图片' : '文件') ?></div>
                         <div><?= h($file['size_formatted']) ?></div>
                         <div><?= h($file['date']) ?></div>
-                        <div class="explorer-actions" onclick="event.stopPropagation()">
-                            <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700" onclick="copyMediaPath('<?= h($file['public_path']) ?>')">
+                        <div class="explorer-actions" >
+                            <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700" data-copy-path="<?= h($file['public_path']) ?>">
                                 <i class="fas fa-copy text-xs"></i>
                             </button>
-                            <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-600" onclick="submitSingleMediaDelete('<?= h($file['public_path']) ?>')">
+                            <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-600" data-delete-path="<?= h($file['public_path']) ?>">
                                 <i class="fas fa-trash text-xs"></i>
                             </button>
                         </div>
@@ -379,7 +380,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                         <label class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">路径</label>
                         <div class="flex gap-2">
                             <input class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 outline-none" id="explorerPreviewPath" type="text" readonly>
-                            <button type="button" class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-sky-600" onclick="copyMediaPath(document.getElementById('explorerPreviewPath').value)">
+                            <button type="button" class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-sky-600" data-copy-target="#explorerPreviewPath">
                                 复制
                             </button>
                         </div>
@@ -397,551 +398,3 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     </div>
 </div>
 
-<style>
-    .explorer-shell {
-        padding: 0;
-        overflow: hidden;
-    }
-
-    .explorer-topbar,
-    .explorer-toolbar,
-    .explorer-statusbar {
-        border-bottom: 1px solid #e5e7eb;
-        background: linear-gradient(180deg, #fafcff 0%, #f8fafc 100%);
-    }
-
-    .explorer-topbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
-    }
-
-    .explorer-topbar-left {
-        display: flex;
-        align-items: center;
-        gap: 0.9rem;
-    }
-
-    .explorer-app-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        background: #dbeafe;
-        color: #2563eb;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .explorer-app-title {
-        font-size: 1rem;
-        color: #0f172a;
-    }
-
-    .explorer-breadcrumbs {
-        flex: 1;
-        min-width: 280px;
-    }
-
-    .explorer-toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.9rem 1.25rem;
-    }
-
-    .explorer-filter-bar {
-        min-width: 380px;
-        flex: 1;
-    }
-
-    .explorer-main {
-        display: grid;
-        grid-template-columns: 250px minmax(0, 1fr) 310px;
-        min-height: 720px;
-    }
-
-    .explorer-sidebar,
-    .explorer-content,
-    .explorer-preview-pane {
-        min-width: 0;
-    }
-
-    .explorer-sidebar,
-    .explorer-preview-pane {
-        background: #f8fafc;
-    }
-
-    .explorer-sidebar {
-        border-right: 1px solid #e5e7eb;
-    }
-
-    .explorer-preview-pane {
-        border-left: 1px solid #e5e7eb;
-        padding: 1rem;
-    }
-
-    .explorer-pane-title {
-        font-size: 0.78rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #64748b;
-        margin-bottom: 0.9rem;
-    }
-
-    .explorer-tree {
-        padding: 1rem;
-    }
-
-    .explorer-tree-root,
-    .explorer-tree-link {
-        display: flex;
-        align-items: center;
-        gap: 0.55rem;
-        border-radius: 10px;
-        color: #1e293b;
-        padding: 0.45rem 0.65rem;
-        margin-bottom: 0.2rem;
-    }
-
-    .explorer-tree-root:hover,
-    .explorer-tree-link:hover {
-        background: #e8eefc;
-    }
-
-    .explorer-tree-root.is-current,
-    .explorer-tree-node.is-current>.explorer-tree-link {
-        background: #dbeafe;
-        color: #1d4ed8;
-        font-weight: 600;
-    }
-
-    .explorer-tree-list {
-        margin: 0;
-        padding-left: 0.85rem;
-    }
-
-    .explorer-tree-node {
-        list-style: none;
-    }
-
-    .explorer-tree-node.is-ancestor>.explorer-tree-link {
-        background: rgba(219, 234, 254, 0.55);
-    }
-
-    .explorer-content {
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .explorer-location-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.55rem;
-        padding: 0.85rem 1.1rem;
-        border-bottom: 1px solid #e5e7eb;
-        color: #475569;
-        font-size: 0.92rem;
-    }
-
-    .explorer-folder-strip {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        padding: 1rem 1.1rem 0;
-    }
-
-    .explorer-folder-chip {
-        min-width: 150px;
-        border: 1px solid #dbe4f0;
-        border-radius: 12px;
-        background: #f8fafc;
-        color: #1e293b;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        padding: 0.7rem 0.85rem;
-    }
-
-    .explorer-folder-chip>span:first-child {
-        color: #f59e0b;
-    }
-
-    .explorer-folder-chip small {
-        margin-left: auto;
-        color: #64748b;
-    }
-
-    .explorer-file-header,
-    .explorer-file-row {
-        display: grid;
-        grid-template-columns: 54px minmax(260px, 2fr) 110px minmax(150px, 1.2fr) 110px 140px 110px;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .explorer-file-header {
-        padding: 0.75rem 1.1rem;
-        margin-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-        border-bottom: 1px solid #e5e7eb;
-        background: #f8fafc;
-        color: #475569;
-        font-size: 0.78rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
-
-    .explorer-file-list {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .explorer-file-row {
-        padding: 0.8rem 1.1rem;
-        border-bottom: 1px solid #eef2f7;
-        transition: background 0.18s ease;
-        cursor: pointer;
-    }
-
-    .explorer-file-row:hover,
-    .explorer-file-row.is-active {
-        background: #eef5ff;
-    }
-
-    .explorer-check-cell {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .explorer-name-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        min-width: 0;
-    }
-
-    .explorer-thumb {
-        width: 46px;
-        height: 46px;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #f1f5f9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        flex-shrink: 0;
-    }
-
-    .explorer-thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .explorer-name-meta {
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.18rem;
-    }
-
-    .explorer-name-meta strong,
-    .explorer-name-meta span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .explorer-name-meta span {
-        color: #64748b;
-        font-size: 0.75rem;
-    }
-
-    .explorer-actions {
-        display: flex;
-        gap: 0.4rem;
-        justify-content: flex-end;
-    }
-
-    .explorer-preview-empty,
-    .explorer-preview-panel {
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        background: #fff;
-    }
-
-    .explorer-preview-empty {
-        min-height: 520px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        text-align: center;
-        padding: 1.5rem;
-    }
-
-    .explorer-preview-panel {
-        padding: 1rem;
-    }
-
-    .explorer-preview-box {
-        aspect-ratio: 4 / 3;
-        border-radius: 14px;
-        background: #f8fafc;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-
-    .explorer-preview-box img,
-    .explorer-preview-box video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .explorer-preview-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .explorer-meta-row {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .explorer-meta-row span {
-        font-size: 0.74rem;
-        color: #64748b;
-    }
-
-    .explorer-meta-row strong {
-        color: #0f172a;
-        word-break: break-word;
-    }
-
-    .explorer-statusbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 1.1rem;
-        padding: 0.75rem 1.1rem;
-        border-top: 1px solid #e5e7eb;
-        border-bottom: none;
-        color: #475569;
-        font-size: 0.84rem;
-    }
-
-    .explorer-empty-state {
-        padding: 3rem 1.5rem;
-        text-align: center;
-        color: #94a3b8;
-    }
-
-    @media screen and (max-width: 1200px) {
-        .explorer-main {
-            grid-template-columns: 220px minmax(0, 1fr);
-        }
-
-        .explorer-preview-pane {
-            grid-column: 1 / -1;
-            border-left: none;
-            border-top: 1px solid #e5e7eb;
-        }
-    }
-
-    @media screen and (max-width: 900px) {
-        .explorer-main {
-            grid-template-columns: 1fr;
-        }
-
-        .explorer-sidebar {
-            border-right: none;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .explorer-file-header,
-        .explorer-file-row {
-            grid-template-columns: 44px minmax(180px, 1.7fr) 100px 120px 100px 120px 90px;
-            font-size: 0.84rem;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        .explorer-toolbar {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .explorer-filter-bar {
-            min-width: 0;
-        }
-
-        .explorer-file-header {
-            display: none;
-        }
-
-        .explorer-file-row {
-            grid-template-columns: 36px minmax(0, 1fr) 88px;
-        }
-
-        .explorer-file-row>div:nth-child(3),
-        .explorer-file-row>div:nth-child(4),
-        .explorer-file-row>div:nth-child(5),
-        .explorer-file-row>div:nth-child(6) {
-            display: none;
-        }
-
-        .explorer-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
-
-<script>
-    let currentExplorerFile = null;
-
-    function copyMediaPath(path) {
-        navigator.clipboard.writeText(path).then(() => {
-            alert('已复制：' + path);
-        });
-    }
-
-    function setExplorerSelectedCount() {
-        const selected = Array.from(document.querySelectorAll('.js-page-media-checkbox:checked'));
-        const label = document.getElementById('page-media-selected-count');
-        const deleteButton = document.getElementById('page-media-delete-btn');
-        const deleteLabel = document.getElementById('page-media-delete-label');
-        const toggleAll = document.getElementById('page-media-toggle-all');
-        const allItems = document.querySelectorAll('.js-page-media-checkbox');
-
-        if (label) {
-            label.textContent = `已选择 ${selected.length} 个文件`;
-        }
-        if (deleteButton) {
-            deleteButton.disabled = selected.length === 0;
-        }
-        if (deleteLabel) {
-            deleteLabel.textContent = selected.length > 0 ? `删除 (${selected.length})` : '删除';
-        }
-        if (toggleAll) {
-            toggleAll.checked = allItems.length > 0 && selected.length === allItems.length;
-        }
-    }
-
-    function selectExplorerFile(file) {
-        currentExplorerFile = file || null;
-        document.querySelectorAll('.explorer-file-row').forEach((row) => {
-            row.classList.toggle('is-active', row.dataset.filePath === (file?.path || ''));
-        });
-
-        const empty = document.getElementById('explorerPreviewEmpty');
-        const panel = document.getElementById('explorerPreviewPanel');
-        const box = document.getElementById('explorerPreviewBox');
-        if (!empty || !panel || !box || !file) {
-            return;
-        }
-
-        empty.classList.add('hidden');
-        panel.classList.remove('hidden');
-
-        if (file.type === 'video') {
-            box.innerHTML = `<video controls playsinline preload="metadata"><source src="${file.url}"></video>`;
-        } else {
-            box.innerHTML = `<img src="${file.url}" alt="">`;
-        }
-
-        document.getElementById('explorerPreviewName').textContent = file.name || '';
-        document.getElementById('explorerPreviewStorage').textContent = file.storage_name || '';
-        document.getElementById('explorerPreviewType').textContent = file.type === 'video' ? '视频' : (file.type === 'image' ? '图片' : '文件');
-        // document.getElementById('explorerPreviewDirectory').textContent = file.directory ? `/uploads/${file.directory}` : '/uploads';
-        document.getElementById('explorerPreviewSize').textContent = [file.size || '', file.dimensions || ''].filter(Boolean).join(' · ') || '-';
-        document.getElementById('explorerPreviewDate').textContent = file.date || '';
-        document.getElementById('explorerPreviewPath').value = file.path || '';
-    }
-
-    function submitSingleMediaDelete(path) {
-        if (!window.confirm('确定删除这个文件吗？')) {
-            return;
-        }
-
-        const form = document.getElementById('single-media-delete-form');
-        const input = document.getElementById('single-media-delete-path');
-        if (!form || !input) return;
-        input.value = path || '';
-        form.submit();
-    }
-
-    function submitPageBulkDelete() {
-        const selected = Array.from(document.querySelectorAll('.js-page-media-checkbox:checked'));
-        if (!selected.length) {
-            return;
-        }
-
-        if (!window.confirm(`确定删除选中的 ${selected.length} 个文件吗？此操作无法撤销。`)) {
-            return;
-        }
-
-        document.getElementById('media-bulk-delete-form')?.submit();
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.js-page-media-checkbox').forEach((checkbox) => {
-            checkbox.addEventListener('change', function(event) {
-                event.stopPropagation();
-                setExplorerSelectedCount();
-            });
-        });
-
-        document.getElementById('page-media-toggle-all')?.addEventListener('change', function() {
-            document.querySelectorAll('.js-page-media-checkbox').forEach((checkbox) => {
-                checkbox.checked = this.checked;
-            });
-            setExplorerSelectedCount();
-        });
-
-        document.getElementById('page-media-delete-btn')?.addEventListener('click', submitPageBulkDelete);
-
-        document.getElementById('page-media-upload-btn')?.addEventListener('click', function() {
-            document.getElementById('page-media-upload-input')?.click();
-        });
-
-        document.getElementById('page-media-upload-input')?.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                document.getElementById('page-media-upload-form')?.submit();
-            }
-        });
-
-        document.getElementById('page-media-new-folder-btn')?.addEventListener('click', function() {
-            const name = window.prompt('请输入新文件夹名称');
-            if (!name) {
-                return;
-            }
-
-            const folderInput = document.getElementById('page-media-create-folder-name');
-            if (!folderInput) return;
-            folderInput.value = name.trim();
-            document.getElementById('page-media-create-folder-form')?.submit();
-        });
-
-        setExplorerSelectedCount();
-    });
-</script>

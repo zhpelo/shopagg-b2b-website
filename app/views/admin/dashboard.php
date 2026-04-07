@@ -7,7 +7,7 @@
 <!-- 核心数据统计 -->
 <div class="mb-6">
     <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center bg-indigo-50 text-indigo-600">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-indigo-600">
             <i class="fas fa-chart-pie"></i>
         </span>
         核心数据
@@ -75,7 +75,7 @@
 <!-- 客户互动统计 -->
 <div class="mb-6">
     <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center bg-rose-50 text-rose-600">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-rose-600">
             <i class="fas fa-users"></i>
         </span>
         客户互动
@@ -143,7 +143,7 @@
 <!-- 活动统计 -->
 <div class="mb-6">
     <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center bg-sky-50 text-sky-600">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-sky-600">
             <i class="fas fa-chart-line"></i>
         </span>
         活动统计
@@ -231,7 +231,7 @@
 <!-- 30天趋势图 -->
 <div class="mb-6">
     <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center bg-emerald-50 text-emerald-600">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-emerald-600">
             <i class="fas fa-chart-bar"></i>
         </span>
         近30天趋势
@@ -285,7 +285,7 @@
 <!-- 快捷操作 -->
 <div class="mb-5">
     <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center bg-amber-50 text-amber-700">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-amber-700">
             <i class="fas fa-bolt"></i>
         </span>
         快捷操作

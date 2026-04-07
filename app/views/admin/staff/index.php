@@ -101,7 +101,7 @@
  <span>编辑</span>
  </a>
  <?php if ($user['id'] !== (int)$_SESSION['admin_user_id']): ?>
- <a href="<?= url('/admin/staff/delete?id=' . (int)$user['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" onclick="return confirm('确定要删除该员工吗？此操作不可恢复。')">
+ <a href="<?= url('/admin/staff/delete?id=' . (int)$user['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要删除该员工吗？此操作不可恢复。">
  <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
  </a>
  <?php endif; ?>

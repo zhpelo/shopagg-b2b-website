@@ -43,7 +43,7 @@
                 <div class="space-y-3">
                     <label class="text-sm font-medium text-slate-700">网站 Logo</label>
                     <input type="hidden" name="site_logo" id="site_logo" value="<?= h($settings['site_logo'] ?? '') ?>">
-                    <div class="logo-preview-box flex h-24 w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" onclick="openMediaLibrary(url => { document.getElementById('site_logo').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })">
+                    <div class="logo-preview-box flex h-24 w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" data-media-picker-target="site_logo" data-media-picker-fit="contain">
                         <?php if (!empty($settings['site_logo'])): ?>
                             <img src="<?= asset_url(h($settings['site_logo'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                         <?php else: ?>
@@ -59,7 +59,7 @@
                 <div class="space-y-3">
                     <label class="text-sm font-medium text-slate-700">网站 Favicon</label>
                     <input type="hidden" name="site_favicon" id="site_favicon" value="<?= h($settings['site_favicon'] ?? '') ?>">
-                    <div class="favicon-preview-box flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" onclick="openMediaLibrary(url => { document.getElementById('site_favicon').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })">
+                    <div class="favicon-preview-box flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" data-media-picker-target="site_favicon" data-media-picker-fit="contain">
                         <?php if (!empty($settings['site_favicon'])): ?>
                             <img src="<?= asset_url(h($settings['site_favicon'])) ?>" style="max-width: 48px; max-height: 48px; object-fit: contain;">
                         <?php else: ?>
@@ -102,7 +102,7 @@
                 <div class="space-y-3">
                     <label class="text-sm font-medium text-slate-700">OG Image (社交分享图)</label>
                     <input type="hidden" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>">
-                    <div class="og-image-preview-box flex h-[105px] w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-emerald-300 hover:bg-emerald-50/40" onclick="openMediaLibrary(url => { document.getElementById('og_image').value = url; this.innerHTML = '<img src=\'' + url + '\'>'; })">
+                    <div class="og-image-preview-box flex h-[105px] w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-emerald-300 hover:bg-emerald-50/40" data-media-picker-target="og_image" data-media-picker-fit="cover">
                         <?php if (!empty($settings['og_image'])): ?>
                             <img src="<?= asset_url(h($settings['og_image'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: cover;">
                         <?php else: ?>

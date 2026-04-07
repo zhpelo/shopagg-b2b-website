@@ -148,7 +148,7 @@
             <a
                 href="<?= url('/admin/messages/delete?id=' . (int)$message['id']) ?>"
                 class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100"
-                onclick="return confirm('确定要删除此留言吗？此操作不可恢复。')">
+                data-confirm-message="确定要删除此留言吗？此操作不可恢复。">
                 <i class="fas fa-trash text-xs"></i>
                 <span>删除此留言</span>
             </a>

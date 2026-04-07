@@ -182,33 +182,3 @@ $categories = $categories ?? [];
     </div>
 </form>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Jodit 由 layout 统一初始化，此处仅做封面等本页逻辑
-
-        // 封面：从媒体库选择（单选）
-        var coverInput = document.getElementById('cover-input');
-        var coverPreview = document.getElementById('cover-preview');
-        var coverPreviewWrap = document.getElementById('cover-preview-wrap');
-        var coverSelectBtn = document.getElementById('post-cover-select-btn');
-        var coverClearBtn = document.getElementById('cover-clear-btn');
-        if (coverInput && coverSelectBtn) {
-            coverSelectBtn.addEventListener('click', function() {
-                if (typeof openMediaLibrary === 'function') {
-                    openMediaLibrary(function(url) {
-                        coverInput.value = url;
-                        if (coverPreview) coverPreview.src = url;
-                        if (coverPreviewWrap) coverPreviewWrap.classList.remove('hidden');
-                    }, false);
-                }
-            });
-        }
-        if (coverClearBtn && coverInput && coverPreview && coverPreviewWrap) {
-            coverClearBtn.addEventListener('click', function() {
-                coverInput.value = '';
-                coverPreview.src = '';
-                coverPreviewWrap.classList.add('hidden');
-            });
-        }
-    });
-</script>

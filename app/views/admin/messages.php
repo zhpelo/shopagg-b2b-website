@@ -15,7 +15,7 @@
 
 <?php if (isset($_GET['success'])): ?>
     <div class="relative rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800 shadow-sm">
-        <button type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition hover:bg-emerald-200" onclick="this.parentElement.remove()" aria-label="关闭提示">
+        <button type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition hover:bg-emerald-200" data-dismiss-parent aria-label="关闭提示">
             <i class="fas fa-times text-xs"></i>
         </button>
         <?= h($_GET['success']) ?>
@@ -89,7 +89,7 @@
                                     <a href="<?= url('/admin/messages/detail?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 transition hover:bg-cyan-100" title="查看详情">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-eye"></i></span>
                                     </a>
-                                    <a href="<?= url('/admin/messages/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" title="删除" onclick="return confirm('确定要删除此留言吗？')">
+                                    <a href="<?= url('/admin/messages/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" title="删除" data-confirm-message="确定要删除此留言吗？">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash"></i></span>
                                     </a>
                                 </div>

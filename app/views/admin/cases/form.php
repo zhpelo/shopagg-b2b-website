@@ -164,30 +164,3 @@ $isEdit = isset($item);
     </div>
 </form>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var coverInput = document.getElementById('case-cover-input');
-        var coverPreview = document.getElementById('case-cover-preview');
-        var coverPreviewWrap = document.getElementById('case-cover-preview-wrap');
-        var coverSelectBtn = document.getElementById('case-cover-select-btn');
-        var coverClearBtn = document.getElementById('case-cover-clear-btn');
-        if (coverInput && coverSelectBtn) {
-            coverSelectBtn.addEventListener('click', function() {
-                if (typeof openMediaLibrary === 'function') {
-                    openMediaLibrary(function(url) {
-                        coverInput.value = url;
-                        if (coverPreview) coverPreview.src = url;
-                        if (coverPreviewWrap) coverPreviewWrap.classList.remove('hidden');
-                    }, false);
-                }
-            });
-        }
-        if (coverClearBtn && coverInput && coverPreview && coverPreviewWrap) {
-            coverClearBtn.addEventListener('click', function() {
-                coverInput.value = '';
-                coverPreview.src = '';
-                coverPreviewWrap.classList.add('hidden');
-            });
-        }
-    });
-</script>

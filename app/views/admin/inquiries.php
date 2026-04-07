@@ -21,7 +21,7 @@
 
 <?php if (isset($_GET['success'])): ?>
     <div class="relative rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800 shadow-sm">
-        <button type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition hover:bg-emerald-200" onclick="this.parentElement.remove()" aria-label="关闭提示">
+        <button type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition hover:bg-emerald-200" data-dismiss-parent aria-label="关闭提示">
             <i class="fas fa-times text-xs"></i>
         </button>
         <?= h($_GET['success']) ?>
@@ -162,7 +162,7 @@
                                                 标记为已关闭
                                             </a>
                                             <div class="my-1 h-px bg-slate-200"></div>
-                                            <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" onclick="return confirm('确定要删除此询单吗？')">
+                                            <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" data-confirm-message="确定要删除此询单吗？">
                                                 <span class="inline-flex h-4 w-4 items-center justify-center mr-2"><i class="fas fa-trash"></i></span>
                                                 删除询单
                                             </a>
