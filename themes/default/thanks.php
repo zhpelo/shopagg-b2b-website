@@ -6,25 +6,36 @@
  * 变量：无特殊变量依赖。
  */
 ?>
-<section class="section">
-    <div class="container">
-        <div class="columns is-centered">
-            <div class="column is-6 has-text-centered">
-                <div class="box soft-card p-6">
-                    <span class="icon is-large has-text-success mb-4">
-                        <i class="fas fa-check-circle fa-3x"></i>
-                    </span>
-                    <h1 class="title is-3">Inquiry Sent Successfully!</h1>
-                    <p class="subtitle is-6 has-text-grey mt-2">
-                        Thank you for your interest. Our team will review your requirements.
+<section class="py-12 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="max-w-xl mx-auto text-center">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 lg:p-12">
+                <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                    <i class="fas fa-check-circle text-4xl"></i>
+                </div>
+                
+                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Inquiry Sent Successfully!</h1>
+                <p class="text-gray-600 mb-6">
+                    Thank you for your interest. Our team will review your requirements and get back to you soon.
+                </p>
+                
+                <div class="bg-blue-50 rounded-xl p-4 mb-8">
+                    <p class="text-blue-800 font-medium">
+                        Expected Response Time: We usually reply within 24 hours during business days.
                     </p>
-                    <div class="notification is-info is-light mt-5">
-                        <p class=""><strong>Expected Response Time: We usually reply within 24 hours during business days.</strong></p>
-                    </div>
-                    <div class="buttons is-centered mt-6">
-                        <a class="button is-link" href="<?= url('/') ?>">Back to Home</a>
-                        <a class="button is-light" href="<?= url('/products') ?>">View More Products</a>
-                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="<?= url('/') ?>" 
+                       class="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
+                        <i class="fas fa-home mr-2"></i>
+                        Back to Home
+                    </a>
+                    <a href="<?= url('/products') ?>" 
+                       class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-box mr-2"></i>
+                        View More Products
+                    </a>
                 </div>
             </div>
         </div>

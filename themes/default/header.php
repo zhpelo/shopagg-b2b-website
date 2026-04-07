@@ -8,7 +8,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= h($lang ?? 'en') ?>">
 
 <head>
     <meta charset="UTF-8">
@@ -29,47 +29,92 @@
         <link rel="icon" type="image/x-icon" href="<?= h($site['favicon']) ?>">
         <link rel="shortcut icon" href="<?= h($site['favicon']) ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
     <?= get_head_code() ?>
 </head>
 
-<body>
-    <nav class="navbar is-white is-spaced" role="navigation">
-        <div class="container">
-            <div class="navbar-brand">
-                <a href="<?= url('/') ?>">
-                    <div class="navbar-logo">
-                        <?php if (!empty($site['logo'])): ?>
-                            <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" style="height: 60px;">
-                        <?php else: ?>
-                            <h1 class="is-size-5"><?= $site['name'] ?></h1>
-                            <div class="tagline "><?= $site['tagline'] ?></div>
-                        <?php endif; ?>
-                    </div>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="<?= url('/') ?>" class="flex items-center">
+                    <?php if (!empty($site['logo'])): ?>
+                        <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" class="h-12 lg:h-14">
+                    <?php else: ?>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900"><?= $site['name'] ?></h1>
+                            <div class="text-sm text-gray-500"><?= $site['tagline'] ?></div>
+                        </div>
+                    <?php endif; ?>
                 </a>
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-nav">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                </a>
-            </div>
-            <div id="main-nav" class="navbar-menu">
-                <div class="navbar-end">
-                    <a class="navbar-item" href="<?= url('/') ?>">Home</a>
-                    <a class="navbar-item" href="<?= url('/products') ?>">Products</a>
-                    <a class="navbar-item" href="<?= url('/cases') ?>">Cases</a>
-                    <a class="navbar-item" href="<?= url('/blog') ?>">Blog</a>
-                    <a class="navbar-item" href="<?= url('/contact') ?>">Contact</a>
-                    <a class="navbar-item" href="<?= url('/about') ?>">About Us</a>
-                    <?= get_google_translate_widget($site, 'button is-white') ?>
-                    <div class="navbar-item">
-                        <a class="button is-link" href="<?= url('/contact') ?>">Request Quote</a>
-                    </div>
 
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="<?= url('/') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Home</a>
+                    <a href="<?= url('/products') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Products</a>
+                    <a href="<?= url('/cases') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Cases</a>
+                    <a href="<?= url('/blog') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Blog</a>
+                    <a href="<?= url('/contact') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Contact</a>
+                    <a href="<?= url('/about') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">About Us</a>
+                    <?= get_google_translate_widget($site, 'px-4 py-2 text-gray-700') ?>
+                    <a href="<?= url('/contact') ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
+                        Request Quote
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-700 hover:text-brand-600 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-100">
+                <div class="py-4 space-y-2">
+                    <a href="<?= url('/') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Home</a>
+                    <a href="<?= url('/products') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Products</a>
+                    <a href="<?= url('/cases') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Cases</a>
+                    <a href="<?= url('/blog') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Blog</a>
+                    <a href="<?= url('/contact') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Contact</a>
+                    <a href="<?= url('/about') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">About Us</a>
+                    <div class="px-4 pt-2">
+                        <a href="<?= url('/contact') ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
+                            Request Quote
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
     <main>

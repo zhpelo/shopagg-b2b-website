@@ -6,92 +6,91 @@
  */
 $category = $category ?? null;
 ?>
-<section class="section">
-    <div class="container">
-        <!-- 面包屑导航 -->
-        <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
-            <ul>
-                <li><a href="<?= url('/') ?>">Home</a></li>
-                <li><a href="<?= url('/blog') ?>">Blog</a></li>
+<section class="py-8">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="text-sm mb-6" aria-label="breadcrumb">
+            <ol class="flex items-center space-x-2 text-gray-500">
+                <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
+                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                <li><a href="<?= url('/blog') ?>" class="hover:text-brand-600">Blog</a></li>
                 <?php if ($category): ?>
-                <li><a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"><?= h($category['name']) ?></a></li>
+                    <li><i class="fas fa-chevron-right text-xs"></i></li>
+                    <li><a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="hover:text-brand-600"><?= h($category['name']) ?></a></li>
                 <?php endif; ?>
-                <li class="is-active"><a href="#" aria-current="page"><?= h($item['title']) ?></a></li>
-            </ul>
+                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                <li class="text-gray-900 font-medium"><?= h($item['title']) ?></li>
+            </ol>
         </nav>
 
-        <div class="columns is-centered">
-            <div class="column is-8">
-                <!-- 文章头部 -->
-                <header class="mb-6">
-                    <h1 class="title is-2 mb-4"><?= h($item['title']) ?></h1>
-                    <div class="level is-mobile">
-                        <div class="level-left">
-                            <div class="level-item">
-                                <span class="icon-text has-text-grey">
-                                    <span class="icon"><i class="far fa-calendar"></i></span>
-                                    <span><?= format_date($item['created_at'], 'Y-m-d') ?></span>
-                                </span>
-                            </div>
-                            <?php if ($category): ?>
-                            <div class="level-item">
-                                <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="tag is-link is-light">
-                                    <span class="icon is-small"><i class="fas fa-folder"></i></span>
-                                    <span><?= h($category['name']) ?></span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </header>
-
-                <?php if (!empty($item['cover'])): ?>
-                    <figure class="image mb-6">
-                        <img src="<?= asset_url(h($item['cover'])) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 8px;">
-                    </figure>
-                <?php endif; ?>
-
-                <!-- 文章内容 -->
-                <div class="box soft-card p-6">
-                    <article class="content is-medium">
-                        <?= process_rich_text($item['content']) ?>
-                    </article>
+        <div class="max-w-4xl mx-auto">
+            <!-- Article Header -->
+            <header class="mb-8">
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"><?= h($item['title']) ?></h1>
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                    <span class="flex items-center">
+                        <i class="far fa-calendar mr-2"></i>
+                        <?= format_date($item['created_at'], 'Y-m-d') ?>
+                    </span>
+                    <?php if ($category): ?>
+                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                           class="inline-flex items-center px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
+                            <i class="fas fa-folder mr-1"></i>
+                            <?= h($category['name']) ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
+            </header>
 
-                <!-- 文章标签/分类信息 -->
-                <?php if ($category): ?>
-                <div class="mt-5 mb-5">
-                    <span class="has-text-grey mr-2"><?= 'Category:' ?? '分类：' ?></span>
-                    <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="tag is-medium is-link is-light">
-                        <span class="icon is-small"><i class="fas fa-folder"></i></span>
-                        <span><?= h($category['name']) ?></span>
+            <!-- Featured Image -->
+            <?php if (!empty($item['cover'])): ?>
+                <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
+                    <img src="<?= asset_url(h($item['cover'])) ?>" 
+                         alt="<?= h($item['title']) ?>" 
+                         class="w-full h-auto">
+                </figure>
+            <?php endif; ?>
+
+            <!-- Article Content -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-10 mb-8">
+                <article class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-brand-600 hover:prose-a:text-brand-700">
+                    <?= process_rich_text($item['content']) ?>
+                </article>
+            </div>
+
+            <!-- Category Tag -->
+            <?php if ($category): ?>
+                <div class="mb-8">
+                    <span class="text-gray-500 mr-2">Category:</span>
+                    <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                       class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-full font-medium hover:bg-brand-200 transition-colors">
+                        <i class="fas fa-folder mr-2"></i>
+                        <?= h($category['name']) ?>
                     </a>
                 </div>
-                <?php endif; ?>
+            <?php endif; ?>
 
-                <!-- 底部操作 -->
-                <div class="mt-6 pt-5" style="border-top: 1px solid #eee;">
-                    <div class="level">
-                        <div class="level-left">
-                            <?php if ($category): ?>
-                            <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="button is-light mr-3">
-                                <span class="icon"><i class="fas fa-folder"></i></span>
-                                <span><?= 'More in this category' ?? '更多同类文章' ?></span>
-                            </a>
-                            <?php endif; ?>
-                            <a href="<?= url('/blog') ?>" class="button is-link is-light">
-                                <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                                <span>Back to Blog List</span>
-                            </a>
-                        </div>
-                        <div class="level-right">
-                            <a href="<?= url('/contact') ?>" class="button is-primary">
-                                <span class="icon"><i class="fas fa-envelope"></i></span>
-                                <span>Contact</span>
-                            </a>
-                        </div>
-                    </div>
+            <!-- Bottom Actions -->
+            <div class="flex flex-wrap justify-between items-center py-6 border-t border-gray-200 gap-4">
+                <div class="flex flex-wrap gap-3">
+                    <?php if ($category): ?>
+                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                           class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-folder mr-2"></i>
+                            More in this category
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?= url('/blog') ?>" 
+                       class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-lg font-medium hover:bg-brand-200 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Blog List
+                    </a>
                 </div>
+                <a href="<?= url('/contact') ?>" 
+                   class="inline-flex items-center px-6 py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contact
+                </a>
             </div>
         </div>
     </div>

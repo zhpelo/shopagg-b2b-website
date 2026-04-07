@@ -64,49 +64,56 @@ if (!function_exists('get_carousel_products')) {
     }
 }
 
-// 示例：渲染产品卡片
+// 渲染产品卡片 - Tailwind 版本
 if (!function_exists('render_product_card')) {
     function render_product_card(array $product): void {
         $image = !empty($product['banner_image']) ? $product['banner_image'] : $product['image'];
         ?>
-        <div class="column is-4">
-            <div class="card">
-                <div class="card-image">
-                    <figure class="image is-4by3">
-                        <img src="<?= asset_url(h($image)) ?>" alt="<?= h($product['name']) ?>">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <p class="title is-4"><?= h($product['name']) ?></p>
-                    <p class="subtitle is-6"><?= h($product['description']) ?></p>
-                </div>
-                <footer class="card-footer">
-                    <a href="<?= url('/product/' . $product['slug']) ?>" class="card-footer-item">查看详情</a>
-                </footer>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
+            <a href="<?= url('/product/' . $product['slug']) ?>" class="block aspect-square overflow-hidden bg-gray-100">
+                <img src="<?= asset_url(h($image)) ?>" 
+                     alt="<?= h($product['name']) ?>" 
+                     class="w-full h-full object-cover hover:scale-105 transition-transform">
+            </a>
+            <div class="p-5 flex-grow flex flex-col">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">
+                    <a href="<?= url('/product/' . $product['slug']) ?>" class="hover:text-brand-600 transition-colors">
+                        <?= h($product['name']) ?>
+                    </a>
+                </h3>
+                <p class="text-gray-600 text-sm flex-grow line-clamp-3"><?= h($product['description']) ?></p>
+                <a href="<?= url('/product/' . $product['slug']) ?>" 
+                   class="mt-4 block w-full text-center px-4 py-2 border border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors">
+                    查看详情
+                </a>
             </div>
         </div>
         <?php
     }
 }
 
-// 示例：渲染文章卡片
+// 渲染文章卡片 - Tailwind 版本
 if (!function_exists('render_post_card')) {
     function render_post_card(array $post): void {
         ?>
-        <div class="column is-4">
-            <div class="card">
-                <div class="card-content">
-                    <p class="title is-4"><a href="<?= url('/post/' . $post['id']) ?>"><?= h($post['title']) ?></a></p>
-                    <p class="subtitle is-6">
-                        <time datetime="<?= h($post['created_at']) ?>"><?= date('Y-m-d', strtotime($post['created_at'])) ?></time>
-                    </p>
-                    <div class="content">
-                        <?= process_rich_text($post['content'], 150) ?>
-                    </div>
-                </div>
-                <footer class="card-footer">
-                    <a href="<?= url('/post/' . $post['id']) ?>" class="card-footer-item">阅读更多</a>
-                </footer>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-5">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">
+                    <a href="<?= url('/post/' . $post['id']) ?>" class="hover:text-brand-600 transition-colors">
+                        <?= h($post['title']) ?>
+                    </a>
+                </h3>
+                <p class="text-sm text-gray-500 mb-3">
+                    <i class="far fa-calendar-alt mr-1"></i>
+                    <?= date('Y-m-d', strtotime($post['created_at'])) ?>
+                </p>
+                <p class="text-gray-600 text-sm line-clamp-3 mb-4">
+                    <?= process_rich_text($post['content'], 150) ?>
+                </p>
+                <a href="<?= url('/post/' . $post['id']) ?>" 
+                   class="inline-flex items-center text-brand-600 font-medium hover:text-brand-700 transition-colors">
+                    阅读更多 →
+                </a>
             </div>
         </div>
         <?php

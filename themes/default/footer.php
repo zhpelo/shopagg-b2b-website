@@ -7,70 +7,101 @@
  */
 ?>
 </main>
-<footer class="footer footer-modern">
-    <div class="container">
-        <div class="columns footer-top">
-            <div class="column is-5">
-                <h3 class="title is-5 footer-brand"><?= h($site['name']) ?></h3>
-                <p class="subtitle is-6 footer-tagline"><?= h($site['tagline']) ?></p>
-                <div class="footer-social">
+
+<!-- Footer -->
+<footer class="bg-white border-t border-gray-200 mt-16">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Footer Top -->
+        <div class="py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Brand Info -->
+            <div class="lg:col-span-5">
+                <h3 class="text-xl font-bold text-gray-900 mb-2"><?= h($site['name']) ?></h3>
+                <p class="text-gray-500 mb-6"><?= h($site['tagline']) ?></p>
+                <div class="flex space-x-3">
                     <?php if (!empty($site['facebook'])): ?>
-                        <a class="button is-light is-rounded" href="<?= h($site['facebook']) ?>" target="_blank" title="Facebook"><span class="icon"><i class="fab fa-facebook-f"></i></span></a>
+                        <a href="<?= h($site['facebook']) ?>" target="_blank" title="Facebook" 
+                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
                     <?php endif; ?>
                     <?php if (!empty($site['instagram'])): ?>
-                        <a class="button is-light is-rounded" href="<?= h($site['instagram']) ?>" target="_blank" title="Instagram"><span class="icon"><i class="fab fa-instagram"></i></span></a>
+                        <a href="<?= h($site['instagram']) ?>" target="_blank" title="Instagram"
+                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     <?php endif; ?>
                     <?php if (!empty($site['twitter'])): ?>
-                        <a class="button is-light is-rounded" href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+                        <a href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"
+                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                            <i class="fab fa-twitter"></i>
+                        </a>
                     <?php endif; ?>
                     <?php if (!empty($site['linkedin'])): ?>
-                        <a class="button is-light is-rounded" href="<?= h($site['linkedin']) ?>" target="_blank" title="LinkedIn"><span class="icon"><i class="fab fa-linkedin-in"></i></span></a>
+                        <a href="<?= h($site['linkedin']) ?>" target="_blank" title="LinkedIn"
+                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
                     <?php endif; ?>
                     <?php if (!empty($site['youtube'])): ?>
-                        <a class="button is-light is-rounded" href="<?= h($site['youtube']) ?>" target="_blank" title="YouTube"><span class="icon"><i class="fab fa-youtube"></i></span></a>
+                        <a href="<?= h($site['youtube']) ?>" target="_blank" title="YouTube"
+                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="column is-7">
-                <div class="columns">
-                    <div class="column">
-                        <p class="footer-title">Contact</p>
-                        <div class="footer-links">
-                            <a href="mailto:<?= h($site['company_email'] ?? '') ?>" target="_blank">
-                                <span class="icon"><i class="fas fa-envelope"></i></span>
-                                <span><?= h($site['company_email'] ?? '') ?></span>
-                            </a>
-                            <a href="tel:<?= h($site['company_phone'] ?? '') ?>" target="_blank">
-                                <span class="icon"><i class="fas fa-phone"></i></span>
-                                <span><?= h($site['company_phone'] ?? '') ?></span>
-                            </a>
-                            <a href="https://goo.gl/maps/<?= h($site['company_address'] ?? '') ?>" target="_blank">
-                                <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-                                <span><?= h($site['company_address'] ?? '') ?></span>
-                            </a>
+
+            <!-- Contact Info -->
+            <div class="lg:col-span-7">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-4">Contact</h4>
+                        <div class="space-y-3">
+                            <?php if (!empty($site['company_email'])): ?>
+                                <a href="mailto:<?= h($site['company_email']) ?>" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-envelope w-5 mr-2"></i>
+                                    <span><?= h($site['company_email']) ?></span>
+                                </a>
+                            <?php endif; ?>
+                            <?php if (!empty($site['company_phone'])): ?>
+                                <a href="tel:<?= h($site['company_phone']) ?>" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-phone w-5 mr-2"></i>
+                                    <span><?= h($site['company_phone']) ?></span>
+                                </a>
+                            <?php endif; ?>
+                            <?php if (!empty($site['company_address'])): ?>
+                                <a href="https://goo.gl/maps/<?= h($site['company_address']) ?>" target="_blank" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-map-marker-alt w-5 mr-2"></i>
+                                    <span><?= h($site['company_address']) ?></span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Links -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-4">Quick Links</h4>
+                        <div class="space-y-2">
+                            <a href="<?= url('/products') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Products</a>
+                            <a href="<?= url('/cases') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Cases</a>
+                            <a href="<?= url('/blog') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Blog</a>
+                            <a href="<?= url('/about') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">About Us</a>
+                            <a href="<?= url('/contact') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Contact</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p class="has-text-grey">© <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.</p>
+
+        <!-- Footer Bottom -->
+        <div class="py-6 border-t border-gray-100">
+            <p class="text-center text-gray-500 text-sm">
+                © <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.
+            </p>
         </div>
     </div>
 </footer>
-<?= get_footer_code() ?>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const burgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-        burgers.forEach(el => {
-            el.addEventListener('click', () => {
-                const target = document.getElementById(el.dataset.target);
-                el.classList.toggle('is-active');
-                if (target) target.classList.toggle('is-active');
-            });
-        });
-    });
-</script>
-</body>
 
+<?= get_footer_code() ?>
+</body>
 </html>

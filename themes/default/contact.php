@@ -6,89 +6,127 @@
  * 注意：表单提交到 /contact 并包含 CSRF 校验。
  */
 ?>
-<section class="section contact-section">
-    <div class="container">
-        <div class="columns">
-            <div class="column is-5">
-                <div class="contact-info-card">
-                    <p class="contact-eyebrow">Contact</p>
-                    <h1 class="title is-3 contact-title">Contact Us</h1>
-                    <p class="subtitle is-6 contact-subtitle"><?= h($site['company_bio'] ?? '') ?></p>
-                    <div class="content contact-details">
-                        <p><span class="icon"><i class="fas fa-map-marker-alt"></i></span><strong>Address:</strong> <?= h($site['company_address'] ?? '') ?></p>
-                        <p><span class="icon"><i class="fas fa-envelope"></i></span><strong>Email:</strong> <?= h($site['company_email'] ?? '') ?></p>
-                        <p><span class="icon"><i class="fas fa-phone"></i></span><strong>Phone:</strong> <?= h($site['company_phone'] ?? '') ?></p>
+<section class="py-12 lg:py-16 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 min-h-screen">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Contact Info -->
+            <div class="lg:w-5/12">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Contact</p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-3">Contact Us</h1>
+                    <p class="text-gray-600 mb-8"><?= h($site['company_bio'] ?? '') ?></p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <?php if (!empty($site['company_address'])): ?>
+                            <a href="https://goo.gl/maps/<?= h($site['company_address']) ?>" target="_blank" 
+                               class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
+                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                                <div>
+                                    <span class="block text-sm text-gray-500">Address</span>
+                                    <span class="font-medium"><?= h($site['company_address']) ?></span>
+                                </div>
+                            </a>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($site['company_email'])): ?>
+                            <a href="mailto:<?= h($site['company_email']) ?>" 
+                               class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
+                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <div>
+                                    <span class="block text-sm text-gray-500">Email</span>
+                                    <span class="font-medium"><?= h($site['company_email']) ?></span>
+                                </div>
+                            </a>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($site['company_phone'])): ?>
+                            <a href="tel:<?= h($site['company_phone']) ?>" 
+                               class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
+                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                    <i class="fas fa-phone"></i>
+                                </span>
+                                <div>
+                                    <span class="block text-sm text-gray-500">Phone</span>
+                                    <span class="font-medium"><?= h($site['company_phone']) ?></span>
+                                </div>
+                            </a>
+                        <?php endif; ?>
                     </div>
-                    <div class="contact-highlights">
-                        <div class="contact-highlight">
-                            <span class="contact-highlight-label">Avg. Response Time</span>
-                            <span class="contact-highlight-value"><?= h($site['company_response_time'] ?? '≤24h') ?></span>
+
+                    <!-- Highlights -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Avg. Response Time</span>
+                            <span class="font-bold text-gray-900"><?= h($site['company_response_time'] ?? '≤24h') ?></span>
                         </div>
-                        <div class="contact-highlight">
-                            <span class="contact-highlight-label">Main Markets</span>
-                            <span class="contact-highlight-value"><?= h($site['company_main_markets'] ?? '-') ?></span>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Markets</span>
+                            <span class="font-bold text-gray-900"><?= h($site['company_main_markets'] ?? '-') ?></span>
                         </div>
                     </div>
+
                     <?php
                         $waDigits = preg_replace('/\D+/', '', $site['whatsapp'] ?? '');
                     ?>
                     <?php if (!empty($waDigits)): ?>
-                        <a class="button is-success is-fullwidth" href="https://wa.me/<?= h($waDigits) ?>" target="_blank">
-                            <span class="icon"><i class="fab fa-whatsapp"></i></span>
-                            <span>Chat Now</span>
+                        <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" 
+                           class="block w-full text-center px-6 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors shadow-md">
+                            <i class="fab fa-whatsapp mr-2"></i>
+                            Chat Now
                         </a>
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="column is-7">
-                <div class="box soft-card contact-form-card">
-                    <h2 class="title is-5 mb-4">Send Message</h2>
-                    <p class="has-text-grey mb-5 contact-form-desc">Project requirements, customization, etc.</p>
-                    <form method="post" action="<?= url('/contact') ?>" class="contact-form">
+
+            <!-- Contact Form -->
+            <div class="lg:w-7/12">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Send Message</h2>
+                    <p class="text-gray-500 mb-8">Project requirements, customization, etc.</p>
+                    
+                    <form method="post" action="<?= url('/contact') ?>">
                         <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-                        <div class="columns">
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">Name</label>
-                                    <div class="control">
-                                        <input class="input" name="name" required placeholder="Full Name">
-                                    </div>
-                                </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <input type="text" name="name" required placeholder="Full Name"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                             </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">Email</label>
-                                    <div class="control">
-                                        <input class="input" name="email" type="email" required placeholder="example@email.com">
-                                    </div>
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" name="email" required placeholder="example@email.com"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                             </div>
                         </div>
-                        <div class="columns">
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">Company</label>
-                                    <div class="control">
-                                        <input class="input" name="company" placeholder="Company Ltd.">
-                                    </div>
-                                </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                                <input type="text" name="company" placeholder="Company Ltd."
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                             </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">Phone</label>
-                                    <div class="control">
-                                        <input class="input" name="phone">
-                                    </div>
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                <input type="tel" name="phone"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                             </div>
                         </div>
-                        <div class="field">
-                            <label class="label">Message</label>
-                            <div class="control">
-                                <textarea class="textarea" name="message" rows="6" required placeholder="Project requirements, customization, etc."></textarea>
-                            </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <textarea name="message" rows="6" required placeholder="Project requirements, customization, etc."
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors resize-none"></textarea>
                         </div>
-                        <button class="button is-link is-medium" type="submit">Send Message</button>
+                        
+                        <button type="submit" 
+                                class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
+                            Send Message
+                        </button>
                     </form>
                 </div>
             </div>

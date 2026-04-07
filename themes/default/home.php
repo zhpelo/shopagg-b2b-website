@@ -6,35 +6,37 @@
  * 依赖：get_carousel_products() 获取轮播数据。
  */
 $products = $products ?? [];
-// 使用优化的轮播产品获取函数
 $carouselProducts = get_carousel_products(3);
-
 ?>
-<?php if($carouselProducts): ?>
 
+<?php if($carouselProducts): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-<!-- 1. Hero 轮播（Swiper）：最新 3 个产品（产品展示 + 产品主题 + 产品卖点） -->
-<section class="hero hero-swiper is-large is-relative home-hero">
-    <div class="swiper hero-swiper-container">
+<!-- Hero 轮播 -->
+<section class="relative min-h-[480px] lg:min-h-[560px] overflow-hidden">
+    <div class="swiper hero-swiper w-full h-full">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
-                <div class="swiper-slide hero-swiper-slide" style="background-image: url('<?= asset_url($p['banner_image']) ?>');">
-                    <div class="hero-swiper-overlay"></div>
-                    <div class="hero-body">
-                        <div class="container">
-                            <div class="columns is-vcentered">
-                                <div class="column is-7">
-                                    <h1 class="title is-1 has-text-white mb-5 hero-swiper-title line-clamp-2">
-                                        <?= h($p['title']) ?>
-                                    </h1>
-                                    <p class="subtitle is-4 has-text-grey-light mb-6 hero-swiper-desc line-clamp-3">
-                                        <?= h( mb_substr(strip_tags($p['summary']), 0, 120) ) ?>
-                                    </p>
-                                    <div class="buttons hero-cta">
-                                        <a class="button is-link is-large px-6" href="<?= $p['url'] ?>">View Details</a>
-                                        <a class="button is-white is-outlined is-large px-6" href="<?= url('/contact') ?>">Contact</a>
-                                    </div>
-                                </div>
+                <div class="swiper-slide relative">
+                    <!-- Background Image -->
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?= asset_url($p['banner_image']) ?>');"></div>
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/50 to-gray-900/40"></div>
+                    <!-- Content -->
+                    <div class="relative z-10 container mx-auto px-4 lg:px-8 h-full flex items-center py-20">
+                        <div class="max-w-2xl">
+                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight line-clamp-2">
+                                <?= h($p['title']) ?>
+                            </h1>
+                            <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
+                                <?= h(mb_substr(strip_tags($p['summary']), 0, 120)) ?>
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <a href="<?= $p['url'] ?>" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg">
+                                    View Details
+                                </a>
+                                <a href="<?= url('/contact') ?>" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors">
+                                    Contact
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -42,18 +44,18 @@ $carouselProducts = get_carousel_products(3);
             <?php endforeach; ?>
         </div>
         <?php if (count($carouselProducts) > 1): ?>
-        <div class="swiper-button-prev" aria-label="Prev"></div>
-        <div class="swiper-button-next" aria-label="Next"></div>
-        <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev !w-12 !h-12 !bg-white/20 !rounded-full !text-white hover:!bg-white/35 transition-colors after:!text-sm after:!font-bold"></div>
+            <div class="swiper-button-next !w-12 !h-12 !bg-white/20 !rounded-full !text-white hover:!bg-white/35 transition-colors after:!text-sm after:!font-bold"></div>
+            <div class="swiper-pagination"></div>
         <?php endif; ?>
     </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var el = document.querySelector('.hero-swiper-container');
+    const el = document.querySelector('.hero-swiper');
     if (!el || el.querySelectorAll('.swiper-slide').length === 0) return;
-    new Swiper('.hero-swiper-container', {
+    new Swiper('.hero-swiper', {
         effect: 'fade',
         fadeEffect: { crossFade: true },
         loop: el.querySelectorAll('.swiper-slide').length > 1,
@@ -69,77 +71,66 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
-<!-- 2. Value Proposition (Trust Section) -->
-<section class="section py-6 home-trust">
-    <div class="container">
-        <div class="box soft-card py-6 border-none home-trust-box">
-            <div class="columns has-text-centered home-trust-columns">
-                <div class="column home-trust-column">
-                    <div class="px-4">
-                        <span class="icon is-large has-text-link mb-4">
-                            <i class="fas fa-check-circle fa-2x"></i>
-                        </span>
-                        <h3 class="title is-5">Quality Assurance</h3>
-                        <p class="has-text-grey">ISO-aligned production with strict QC before shipment.</p>
+
+<!-- Value Proposition -->
+<section class="relative z-10 -mt-12 px-4">
+    <div class="container mx-auto max-w-6xl">
+        <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                        <i class="fas fa-check-circle text-2xl"></i>
                     </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Quality Assurance</h3>
+                    <p class="text-gray-500 text-sm">ISO-aligned production with strict QC before shipment.</p>
                 </div>
-                <div class="column home-trust-column">
-                    <div class="px-4">
-                        <span class="icon is-large has-text-link mb-4">
-                            <i class="fas fa-globe-americas fa-2x"></i>
-                        </span>
-                        <h3 class="title is-5">Global Logistics</h3>
-                        <p class="has-text-grey">On-time delivery with consolidated freight options.</p>
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                        <i class="fas fa-globe-americas text-2xl"></i>
                     </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Global Logistics</h3>
+                    <p class="text-gray-500 text-sm">On-time delivery with consolidated freight options.</p>
                 </div>
-                <div class="column home-trust-column">
-                    <div class="px-4">
-                        <span class="icon is-large has-text-link mb-4">
-                            <i class="fas fa-user-shield fa-2x"></i>
-                        </span>
-                        <h3 class="title is-5">Dedicated Support</h3>
-                        <p class="has-text-grey">One-to-one account service for long-term buyers.</p>
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                        <i class="fas fa-user-shield text-2xl"></i>
                     </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Dedicated Support</h3>
+                    <p class="text-gray-500 text-sm">One-to-one account service for long-term buyers.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 3. Featured Products Grid -->
-<section class="section home-products">
-    <div class="container">
-        <div class="level mb-6 home-section-head">
-            <div class="level-left">
-                <div>
-                    <h2 class="title is-3 mb-2 home-section-title">Featured Products</h2>
-                    <p class="has-text-grey home-section-subtitle">Company Highlights</p>
-                </div>
+<!-- Featured Products -->
+<section class="py-16 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <!-- Section Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-gray-200">
+            <div>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Featured Products</h2>
+                <p class="text-gray-500">Company Highlights</p>
             </div>
-            <div class="level-right">
-                <a class="button is-link is-light" href="<?= url('/products') ?>">View All &rarr;</a>
-            </div>
+            <a href="<?= url('/products') ?>" class="mt-4 sm:mt-0 px-6 py-2.5 bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors">
+                View All →
+            </a>
         </div>
 
-        <div class="columns is-multiline">
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($products as $p): ?>
-                <div class="column is-4">
-                    <div class="card soft-card h-100 home-product-card">
-                        <div class="card-image home-product-image">
-                            <a href="<?= h($p['url']) ?>">
-                                <figure class="image is-1by1">
-                                    <img src="<?= asset_url($p['cover'] ?: '/assets/no-image.png') ?>" alt="<?= h($p['title']) ?>" style="object-fit: cover;">
-                                </figure>
-                            </a>
-                        </div>
-                        <div class="card-content home-product-content">
-                            <h3 class="title is-5 mb-2 line-clamp-2 home-product-title">
-                                <a href="<?= h($p['url']) ?>" class="has-text-dark"><?= h($p['title']) ?></a>
-                            </h3>
-                            <p class="content has-text-grey line-clamp-3 home-product-summary">
-                                <?= h($p['summary']) ?>
-                            </p>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                    <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
+                        <img src="<?= asset_url($p['cover'] ?: '/assets/no-image.png') ?>" 
+                             alt="<?= h($p['title']) ?>" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                    </a>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                            <a href="<?= h($p['url']) ?>" class="hover:text-brand-600 transition-colors"><?= h($p['title']) ?></a>
+                        </h3>
+                        <p class="text-gray-500 text-sm line-clamp-3 flex-grow"><?= h($p['summary']) ?></p>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -147,77 +138,103 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </section>
 
-<!-- 4. Factory/Company Highlight (Why Us) -->
-<section class="section home-why">
-    <div class="container">
-        <div class="columns is-vcentered">
-            <div class="column is-6">
-                <h2 class="title is-3 mb-5 home-section-title">Why Choose Us</h2>
-                <div class="content has-text-grey is-medium home-why-content">
-                    <p><?= h($site['company_bio'] ?? '') ?></p>
-                    <ul style="list-style-type: none; margin-left: 0;">
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> ISO Certified</li>
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> OEM & ODM</li>
-                        <li class="mb-2"><span class="icon has-text-success"><i class="fas fa-check"></i></span> R&D Team</li>
-                    </ul>
+<!-- Why Choose Us -->
+<section class="py-16 lg:py-20 bg-gradient-to-br from-slate-50 to-gray-100">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Why Choose Us</h2>
+                <div class="prose text-gray-600 mb-6">
+                    <p class="mb-4"><?= h($site['company_bio'] ?? '') ?></p>
                 </div>
-                <a href="<?= url('/about') ?>" class="button is-link is-outlined">About Us</a>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center text-gray-700">
+                        <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-check text-sm"></i>
+                        </span>
+                        ISO Certified
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-check text-sm"></i>
+                        </span>
+                        OEM & ODM
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-check text-sm"></i>
+                        </span>
+                        R&D Team
+                    </li>
+                </ul>
+                <a href="<?= url('/about') ?>" class="inline-flex items-center px-6 py-2.5 border-2 border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors">
+                    About Us
+                </a>
             </div>
-            <div class="column is-6">
-                <figure class="image is-16by9 box overflow-hidden soft-card home-why-media">
-                    <img src="<?= asset_url($site['og_image'] ?? 'https://devtool.tech/api/placeholder/400/300') ?>" alt="Factory" style="object-fit: cover;">
-                </figure>
+            <div class="relative">
+                <div class="rounded-2xl overflow-hidden shadow-2xl">
+                    <img src="<?= asset_url($site['og_image'] ?? 'https://devtool.tech/api/placeholder/600/400') ?>" 
+                         alt="Factory" 
+                         class="w-full h-auto object-cover">
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 5. Success Cases Banner -->
-<section class="section py-6 home-cases">
-    <div class="container">
-        <div class="has-text-centered mb-6">
-            <h2 class="title is-3 home-section-title">Success Cases</h2>
-            <p class="subtitle is-6 has-text-grey home-section-subtitle">Global Presence</p>
+<!-- Success Cases -->
+<section class="py-16 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">Success Cases</h2>
+            <p class="text-gray-500">Global Presence</p>
         </div>
-        <div class="columns is-multiline">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($cases as $c): ?>
-                <div class="column is-4">
-                    <a href="<?= h($c['url']) ?>">
-                        <div class="card soft-card overflow-hidden home-case-card">
-                            <div class="card-image">
-                                <figure class="image is-3by2">
-                                    <img src="<?= asset_url($c['cover'] ?: 'https://devtool.tech/api/placeholder/400/300') ?>" alt="<?= h($c['title']) ?>" style="object-fit: cover;">
-                                </figure>
-                            </div>
-                            <div class="card-content p-4">
-                                <h4 class="title is-6 mb-0 line-clamp-1"><?= h($c['title']) ?></h4>
-                            </div>
+                <a href="<?= h($c['url']) ?>" class="group">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+                        <div class="aspect-[3/2] overflow-hidden">
+                            <img src="<?= asset_url($c['cover'] ?: 'https://devtool.tech/api/placeholder/400/300') ?>" 
+                                 alt="<?= h($c['title']) ?>" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         </div>
-                    </a>
-                </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-900 line-clamp-1"><?= h($c['title']) ?></h4>
+                        </div>
+                    </div>
+                </a>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<!-- 6. Bottom CTA -->
-<section class="section pb-6 home-cta">
-    <div class="container">
-        <div class="box has-text-centered py-6 brand-gradient has-text-white border-none soft-card home-cta-box">
-            <h2 class="title is-3 has-text-white my-5">Ready to start your project?</h2>
-            <p class="is-5 has-text-grey-light mb-5">Contact us today for a professional quote and expert consultation.</p>
-            <div class="buttons is-centered">
-                <a href="<?= url('/contact') ?>" class="button is-white is-large px-6">Request Quote</a>
-                <?php
-                $wa = $site['whatsapp'] ?? '';
-                $waDigits = preg_replace('/\D+/', '', $wa);
-                if (!empty($waDigits)):
-                ?>
-                    <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" class="button is-success is-large px-6">
-                        <span class="icon"><i class="fab fa-whatsapp"></i></span>
-                        <span>Chat Now</span>
+<!-- Bottom CTA -->
+<section class="py-16 pb-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-8 lg:p-16 text-center">
+            <!-- Decorative gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <h2 class="text-2xl lg:text-4xl font-bold text-white mb-4">Ready to start your project?</h2>
+                <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">Contact us today for a professional quote and expert consultation.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="<?= url('/contact') ?>" class="px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg">
+                        Request Quote
                     </a>
-                <?php endif; ?>
+                    <?php
+                    $wa = $site['whatsapp'] ?? '';
+                    $waDigits = preg_replace('/\D+/', '', $wa);
+                    if (!empty($waDigits)):
+                    ?>
+                        <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" 
+                           class="px-8 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-lg inline-flex items-center gap-2">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                            Chat Now
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>

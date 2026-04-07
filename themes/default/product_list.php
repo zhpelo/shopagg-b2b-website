@@ -14,17 +14,15 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
     foreach ($items as $cat):
         $isActive = $currentCategoryId === (int)$cat['id'];
         $hasChildren = !empty($cat['children']);
-        $paddingLeft = 1 + ($level * 1.2);
+        $paddingLeft = 1 + ($level * 1);
 ?>
     <a href="<?= url('/products') ?>?category=<?= (int)$cat['id'] ?>" 
-       class="panel-block <?= $isActive ? 'is-active' : '' ?>" 
+       class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
        style="padding-left: <?= $paddingLeft ?>rem;">
         <?php if ($level > 0): ?>
-        <span class="has-text-grey-light mr-2">└</span>
+            <span class="text-gray-300 mr-2">└</span>
         <?php endif; ?>
-        <span class="panel-icon">
-            <i class="fas fa-<?= $hasChildren ? 'folder' : 'box' ?>" aria-hidden="true"></i>
-        </span>
+        <i class="fas fa-<?= $hasChildren ? 'folder' : 'box' ?> w-5 mr-2 <?= $isActive ? 'text-amber-500' : 'text-gray-400' ?>"></i>
         <?= h($cat['name']) ?>
     </a>
     <?php
@@ -35,123 +33,124 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
 }
 ?>
 
-<!-- 产品列表顶部 Hero -->
-<section class="hero is-danger">
-    <div class="hero-body">
-        <div class="container">
-            <!-- 面包屑导航 -->
-            <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
-                <ul>
-                    <li><a href="<?= url('/') ?>">Home</a></li>
-                    <li class="<?= !$currentCategory ? 'is-active' : '' ?>">
-                        <a href="<?= url('/products') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>>Products</a>
-                    </li>
-                    <?php if ($currentCategory): ?>
-                    <li class="is-active"><a href="#" aria-current="page"><?= h($currentCategory['name']) ?></a></li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
-            
-            <h1 class="title is-3"><?= h($title) ?></h1>
-            <p class="subtitle is-6 mt-2">
-                <?php if ($currentCategory && !empty($currentCategory['description'])): ?>
-                    <?= h($currentCategory['description']) ?>
-                <?php else: ?>
-                    Browse our full range of products.
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-rose-500 to-pink-600 text-white">
+    <div class="container mx-auto px-4 lg:px-8 py-12">
+        <!-- Breadcrumb -->
+        <nav class="text-sm mb-6" aria-label="breadcrumb">
+            <ol class="flex items-center space-x-2">
+                <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
+                <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
+                <li><a href="<?= url('/products') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>">Products</a></li>
+                <?php if ($currentCategory): ?>
+                    <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
+                    <li class="text-white font-medium"><?= h($currentCategory['name']) ?></li>
                 <?php endif; ?>
-            </p>
-        </div>
+            </ol>
+        </nav>
+        
+        <h1 class="text-3xl lg:text-4xl font-bold mb-3"><?= h($title) ?></h1>
+        <p class="text-white/90 max-w-2xl">
+            <?php if ($currentCategory && !empty($currentCategory['description'])): ?>
+                <?= h($currentCategory['description']) ?>
+            <?php else: ?>
+                Browse our full range of products.
+            <?php endif; ?>
+        </p>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="columns">
-            <!-- 左侧：分类侧边栏 -->
-            <div class="column is-3-desktop is-12-tablet">
+<section class="py-12">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full lg:w-64 flex-shrink-0">
                 <?php if (!empty($categories)): ?>
-                <nav class="panel is-warning">
-                    <p class="panel-heading" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); border: none;">
-                        <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
-                        <?= 'Categories' ?? '产品分类' ?>
-                    </p>
-                    <a href="<?= url('/products') ?>" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
-                        <span class="panel-icon">
-                            <i class="fas fa-th-large" aria-hidden="true"></i>
-                        </span>
-                        <?= 'All Products' ?? '全部产品' ?>
+                <!-- Categories -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="px-4 py-4 bg-gradient-to-r from-amber-400 to-orange-500">
+                        <h3 class="font-bold text-white flex items-center">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            Categories
+                        </h3>
+                    </div>
+                    <a href="<?= url('/products') ?>" 
+                       class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
+                        <i class="fas fa-th-large w-5 mr-2 <?= !$currentCategory ? 'text-amber-500' : 'text-gray-400' ?>"></i>
+                        All Products
                     </a>
                     <?php renderProductCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
-                </nav>
+                </div>
                 <?php endif; ?>
 
-                <!-- 快速询价卡片 -->
-                <div class="box mt-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3 class="title is-5 has-text-white mb-3">
-                        <span class="icon mr-2"><i class="fas fa-file-invoice"></i></span>
-                        <?= 'Quick Quote' ?? '快速询价' ?>
+                <!-- Quick Quote Card -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+                    <h3 class="font-bold text-lg mb-3 flex items-center">
+                        <i class="fas fa-file-invoice mr-2"></i>
+                        Quick Quote
                     </h3>
-                    <p class="mb-4 is-size-6" style="opacity: 0.9;">
-                        <?= 'Found what you need? Send an inquiry to get a quote now.' ?? '找到心仪的产品了吗？立即发送询单获取报价。' ?>
+                    <p class="text-white/90 text-sm mb-4">
+                        Found what you need? Send an inquiry to get a quote now.
                     </p>
-                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined is-fullwidth">
-                        <span class="icon"><i class="fas fa-envelope"></i></span>
-                        <span>Contact</span>
+                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Contact
                     </a>
                 </div>
-            </div>
+            </aside>
 
-            <!-- 右侧：产品列表 -->
-            <div class="column is-9-desktop is-12-tablet">
+            <!-- Product Grid -->
+            <div class="flex-1">
                 <?php if (empty($items)): ?>
-                <div class="box has-text-centered py-6">
-                    <span class="icon is-large has-text-grey-light">
-                        <i class="fas fa-box-open fa-3x"></i>
-                    </span>
-                    <p class="mt-4 has-text-grey"><?= 'No products found' ?? '暂无产品' ?></p>
-                    <?php if ($currentCategory): ?>
-                    <a href="<?= url('/products') ?>" class="button is-warning is-light mt-4">
-                        <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                        <span><?= 'View All Products' ?? '查看所有产品' ?></span>
-                    </a>
-                    <?php endif; ?>
-                </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 py-16 text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <i class="fas fa-box-open text-3xl"></i>
+                        </div>
+                        <p class="text-gray-500 mb-4">No products found</p>
+                        <?php if ($currentCategory): ?>
+                            <a href="<?= url('/products') ?>" class="inline-flex items-center px-6 py-2.5 bg-amber-100 text-amber-700 font-medium rounded-lg hover:bg-amber-200 transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                View All Products
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 <?php else: ?>
-                <div class="columns is-multiline">
-                    <?php foreach ($items as $item): ?>
-                        <div class="column is-4-desktop is-6-tablet">
-                            <div class="card soft-card h-100" style="display: flex; flex-direction: column; height: 100%;">
-                                <div class="card-image">
-                                    <a href="<?= h($item['url']) ?>">
-                                        <figure class="image is-1by1">
-                                            <img src="<?= asset_url(h($item['cover'] ?: '/assets/no-image.png')) ?>" alt="<?= h($item['title']) ?>" style="object-fit: cover;">
-                                        </figure>
-                                    </a>
-                                </div>
-                                <div class="card-content" style="flex-grow: 1;">
-                                    <div class="mb-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <?php foreach ($items as $item): ?>
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
+                                <a href="<?= h($item['url']) ?>" class="block aspect-square overflow-hidden bg-gray-100">
+                                    <img src="<?= asset_url(h($item['cover'] ?: '/assets/no-image.png')) ?>" 
+                                         alt="<?= h($item['title']) ?>" 
+                                         class="w-full h-full object-cover hover:scale-105 transition-transform">
+                                </a>
+                                <div class="p-5 flex-grow flex flex-col">
+                                    <div class="mb-3">
                                         <?php if (!empty($item['category_name'])): ?>
-                                        <a href="<?= url('/products') ?>?category=<?= (int)$item['category_id'] ?>" class="tag is-warning is-light">
-                                            <?= h($item['category_name']) ?>
-                                        </a>
+                                            <a href="<?= url('/products') ?>?category=<?= (int)$item['category_id'] ?>" 
+                                               class="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
+                                                <?= h($item['category_name']) ?>
+                                            </a>
                                         <?php else: ?>
-                                        <span class="tag is-light">Uncategorized</span>
+                                            <span class="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                                                Uncategorized
+                                            </span>
                                         <?php endif; ?>
                                     </div>
-                                    <p class="title is-5 mb-2">
-                                        <a href="<?= h($item['url']) ?>" class="has-text-dark"><?= h($item['title']) ?></a>
-                                    </p>
-                                    <p class="content  has-text-grey line-clamp-2">
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                                        <a href="<?= h($item['url']) ?>" class="hover:text-brand-600 transition-colors">
+                                            <?= h($item['title']) ?>
+                                        </a>
+                                    </h3>
+                                    <p class="text-gray-500 text-sm line-clamp-2 flex-grow mb-4">
                                         <?= h($item['summary']) ?>
                                     </p>
+                                    <a href="<?= h($item['url']) ?>" class="block w-full text-center px-4 py-2 border border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors text-sm">
+                                        View Details
+                                    </a>
                                 </div>
-                                <footer class="card-footer" style="border-top: none; padding: 0 1.5rem 1.5rem;">
-                                    <a href="<?= h($item['url']) ?>" class="button is-link is-outlined is-fullwidth is-small">View Details</a>
-                                </footer>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

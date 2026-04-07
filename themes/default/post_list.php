@@ -15,17 +15,15 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
     foreach ($items as $cat):
         $isActive = $currentCategoryId === (int)$cat['id'];
         $hasChildren = !empty($cat['children']);
-        $paddingLeft = 1 + ($level * 1.2);
+        $paddingLeft = 1 + ($level * 1);
 ?>
         <a href="<?= url('/blog') ?>?category=<?= (int)$cat['id'] ?>"
-            class="panel-block <?= $isActive ? 'is-active' : '' ?>"
-            style="padding-left: <?= $paddingLeft ?>rem;">
+           class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
+           style="padding-left: <?= $paddingLeft ?>rem;">
             <?php if ($level > 0): ?>
-                <span class="has-text-grey-light mr-2">└</span>
+                <span class="text-gray-300 mr-2">└</span>
             <?php endif; ?>
-            <span class="panel-icon">
-                <i class="fas fa-<?= $hasChildren ? 'folder' : 'file-alt' ?>" aria-hidden="true"></i>
-            </span>
+            <i class="fas fa-<?= $hasChildren ? 'folder' : 'file-alt' ?> w-5 mr-2 <?= $isActive ? 'text-emerald-500' : 'text-gray-400' ?>"></i>
             <?= h($cat['name']) ?>
         </a>
 <?php
@@ -36,125 +34,132 @@ function renderCategoryList($items, $currentCategoryId, $level = 0)
 }
 ?>
 
-<section class="hero is-warning">
-    <div class="hero-body">
-        <div class="container">
-            <!-- 面包屑导航 -->
-            <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
-                <ul>
-                    <li><a href="<?= url('/') ?>">Home</a></li>
-                    <li class="<?= !$currentCategory ? 'is-active' : '' ?>">
-                        <a href="<?= url('/blog') ?>" <?= !$currentCategory ? 'aria-current="page"' : '' ?>>Blog</a>
-                    </li>
-                    <?php if ($currentCategory): ?>
-                        <li class="is-active"><a href="#" aria-current="page"><?= h($currentCategory['name']) ?></a></li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
-            <h1 class="title is-3"><?= h($title) ?></h1>
-            <p class="subtitle is-6 mt-2"><?php if ($currentCategory): ?>
-                    <?= h($currentCategory['description'] ?? 'Get the latest industry insights and company news') ?>
-                <?php else: ?>
-                    Get the latest industry insights and company news
-                <?php endif; ?></p>
-        </div>
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+    <div class="container mx-auto px-4 lg:px-8 py-12">
+        <!-- Breadcrumb -->
+        <nav class="text-sm mb-6" aria-label="breadcrumb">
+            <ol class="flex items-center space-x-2">
+                <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
+                <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
+                <li><a href="<?= url('/blog') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>">Blog</a></li>
+                <?php if ($currentCategory): ?>
+                    <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
+                    <li class="text-white font-medium"><?= h($currentCategory['name']) ?></li>
+                <?php endif; ?>
+            </ol>
+        </nav>
+        
+        <h1 class="text-3xl lg:text-4xl font-bold mb-3"><?= h($title) ?></h1>
+        <p class="text-white/90 max-w-2xl">
+            <?php if ($currentCategory): ?>
+                <?= h($currentCategory['description'] ?? 'Get the latest industry insights and company news') ?>
+            <?php else: ?>
+                Get the latest industry insights and company news
+            <?php endif; ?>
+        </p>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-
-        <div class="columns">
-            <!-- 左侧：文章列表 -->
-            <div class="column is-8-desktop is-12-tablet">
-
+<section class="py-12">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Main Content: Article List -->
+            <div class="flex-1 lg:w-8/12">
                 <?php if (empty($items)): ?>
-                    <div class="box has-text-centered py-6">
-                        <span class="icon is-large has-text-grey-light">
-                            <i class="fas fa-file-alt fa-3x"></i>
-                        </span>
-                        <p class="mt-4 has-text-grey"><?= 'No articles found' ?? '暂无文章' ?></p>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 py-16 text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                            <i class="fas fa-file-alt text-3xl"></i>
+                        </div>
+                        <p class="text-gray-500 mb-4">No articles found</p>
                         <?php if ($currentCategory): ?>
-                            <a href="<?= url('/blog') ?>" class="button is-link is-light mt-4">
-                                <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                                <span><?= 'View All Articles' ?? '查看所有文章' ?></span>
+                            <a href="<?= url('/blog') ?>" class="inline-flex items-center px-6 py-2.5 bg-brand-100 text-brand-700 font-medium rounded-lg hover:bg-brand-200 transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                View All Articles
                             </a>
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
-                    <div class="post-items">
+                    <div class="space-y-6">
                         <?php foreach ($items as $item): ?>
-                            <div class="box soft-card mb-5 p-5">
-                                <div class="columns">
+                            <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                                <div class="flex flex-col md:flex-row">
                                     <?php if (!empty($item['cover'])): ?>
-                                        <div class="column is-4">
-                                            <a href="<?= h($item['url']) ?>">
-                                                <figure class="image is-3by2">
-                                                    <img src="<?= asset_url($item['cover']) ?>" alt="<?= h($item['title']) ?>" style="border-radius: 6px; object-fit: cover;">
-                                                </figure>
+                                        <div class="md:w-1/3 flex-shrink-0">
+                                            <a href="<?= h($item['url']) ?>" class="block h-48 md:h-full">
+                                                <img src="<?= asset_url($item['cover']) ?>" 
+                                                     alt="<?= h($item['title']) ?>" 
+                                                     class="w-full h-full object-cover">
                                             </a>
                                         </div>
                                     <?php endif; ?>
-                                    <div class="column">
-                                        <div class="is-flex is-align-items-center mb-2" style="gap: 0.75rem;">
-                                            <span class=" has-text-grey">
+                                    <div class="p-6 flex-grow">
+                                        <div class="flex flex-wrap items-center gap-3 mb-3 text-sm text-gray-500">
+                                            <span class="flex items-center">
                                                 <i class="far fa-calendar-alt mr-1"></i>
                                                 <?= format_date($item['created_at'], 'Y-m-d') ?>
                                             </span>
                                             <?php if (!empty($item['category_name'])): ?>
-                                                <a href="<?= url('/blog') ?>?category=<?= (int)$item['category_id'] ?>" class="tag is-link is-light is-small">
+                                                <a href="<?= url('/blog') ?>?category=<?= (int)$item['category_id'] ?>" 
+                                                   class="inline-flex items-center px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                                                     <?= h($item['category_name']) ?>
                                                 </a>
                                             <?php endif; ?>
                                         </div>
-                                        <h2 class="title is-4 mb-3 line-clamp-2">
-                                            <a href="<?= h($item['url']) ?>" class="has-text-dark"><?= h($item['title']) ?></a>
+                                        <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                                            <a href="<?= h($item['url']) ?>" class="hover:text-brand-600 transition-colors">
+                                                <?= h($item['title']) ?>
+                                            </a>
                                         </h2>
-                                        <p class="content is-size-6 has-text-grey mb-4 line-clamp-2">
+                                        <p class="text-gray-600 mb-4 line-clamp-2">
                                             <?= h($item['summary']) ?>
                                         </p>
-                                        <a href="<?= h($item['url']) ?>" class="has-text-link has-text-weight-bold">Read Full Article &rarr;</a>
+                                        <a href="<?= h($item['url']) ?>" class="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition-colors">
+                                            Read Full Article →
+                                        </a>
                                     </div>
                                 </div>
-                            </div>
+                            </article>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <!-- 右侧：分类侧边栏 -->
-            <div class="column is-4-desktop is-12-tablet">
+            <!-- Sidebar -->
+            <aside class="w-full lg:w-4/12 flex-shrink-0">
                 <?php if (!empty($categories)): ?>
-                    <nav class="panel is-link">
-                        <p class="panel-heading" style="background: linear-gradient(135deg, #48c774 0%, #00d1b2 100%); border: none;">
-                            <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
-                            <?= 'Categories' ?? '文章分类' ?>
-                        </p>
-                        <a href="<?= url('/blog') ?>" class="panel-block <?= !$currentCategory ? 'is-active' : '' ?>">
-                            <span class="panel-icon">
-                                <i class="fas fa-list" aria-hidden="true"></i>
-                            </span>
-                            <?= 'All Articles' ?? '全部文章' ?>
-                        </a>
-                        <?php renderCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
-                    </nav>
+                <!-- Categories -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div class="px-4 py-4 bg-gradient-to-r from-emerald-500 to-teal-600">
+                        <h3 class="font-bold text-white flex items-center">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            Categories
+                        </h3>
+                    </div>
+                    <a href="<?= url('/blog') ?>" 
+                       class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
+                        <i class="fas fa-list w-5 mr-2 <?= !$currentCategory ? 'text-emerald-500' : 'text-gray-400' ?>"></i>
+                        All Articles
+                    </a>
+                    <?php renderCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
+                </div>
                 <?php endif; ?>
 
-                <!-- 快速联系卡片 -->
-                <div class="box mt-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3 class="title is-5 has-text-white mb-3">
-                        <span class="icon mr-2"><i class="fas fa-headset"></i></span>
-                        <?= 'Need Help?' ?? '需要帮助？' ?>
+                <!-- Quick Contact Card -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+                    <h3 class="font-bold text-lg mb-3 flex items-center">
+                        <i class="fas fa-headset mr-2"></i>
+                        Need Help?
                     </h3>
-                    <p class="mb-4 is-size-6" style="opacity: 0.9;">
-                        <?= 'If you have any questions, feel free to contact our professional team.' ?? '如果您有任何问题，欢迎随时联系我们的专业团队。' ?>
+                    <p class="text-white/90 text-sm mb-4">
+                        If you have any questions, feel free to contact our professional team.
                     </p>
-                    <a href="<?= url('/contact') ?>" class="button is-white is-outlined is-fullwidth">
-                        <span class="icon"><i class="fas fa-envelope"></i></span>
-                        <span>Contact</span>
+                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Contact
                     </a>
                 </div>
-            </div>
+            </aside>
         </div>
     </div>
 </section>
