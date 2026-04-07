@@ -10,7 +10,6 @@ use App\Core\MediaManager;
 use App\Models\Setting;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\CaseModel;
 use App\Models\PostModel;
 use App\Models\Inquiry;
 use App\Models\Message;
@@ -32,7 +31,6 @@ class AdminController extends Controller {
     private Setting $settingModel;
     private Product $productModel;
     private Category $categoryModel;
-    private CaseModel $caseModel;
     private PostModel $postModel;
     private Inquiry $inquiryModel;
     private Message $messageModel;
@@ -48,7 +46,6 @@ class AdminController extends Controller {
         $this->settingModel = new Setting();
         $this->productModel = new Product();
         $this->categoryModel = new Category();
-        $this->caseModel = new CaseModel();
         $this->postModel = new PostModel();
         $this->inquiryModel = new Inquiry();
         $this->messageModel = new Message();
@@ -130,8 +127,9 @@ class AdminController extends Controller {
             "SELECT
                 (SELECT COUNT(*) FROM products) AS products,
                 (SELECT COUNT(*) FROM products WHERE status = 'active') AS active_products,
-                (SELECT COUNT(*) FROM cases) AS cases,
-                (SELECT COUNT(*) FROM posts) AS posts,
+                (SELECT COUNT(*) FROM posts WHERE post_type = 'case') AS cases,
+                (SELECT COUNT(*) FROM posts WHERE post_type = 'post') AS posts,
+                (SELECT COUNT(*) FROM posts WHERE post_type = 'page') AS pages,
                 (SELECT COUNT(*) FROM messages) AS messages,
                 (SELECT COUNT(*) FROM inquiries) AS inquiries,
                 (SELECT COUNT(*) FROM inquiries WHERE status = 'pending') AS pending_inquiries,
@@ -141,7 +139,7 @@ class AdminController extends Controller {
             true
         );
         $counts = $row ? array_map('intval', $row) : array_fill_keys(
-            ['products', 'active_products', 'cases', 'posts', 'messages', 'inquiries', 'pending_inquiries', 'categories', 'post_categories', 'users'], 0
+            ['products', 'active_products', 'cases', 'posts', 'pages', 'messages', 'inquiries', 'pending_inquiries', 'categories', 'post_categories', 'users'], 0
         );
 
         $today = date('Y-m-d');
@@ -807,106 +805,192 @@ class AdminController extends Controller {
         $this->redirect('/admin/post-categories');
     }
 
-    // --- Cases ---
-    public function caseList(): void {
-        $items = $this->caseModel->getList();
-        $this->renderAdmin('案例管理', $this->renderView('admin/cases/index', ['items' => $items, 'label' => '案例', 'base' => '/admin/cases']));
+    private function normalizeContentType(string $type): string
+    {
+        return in_array($type, ['post', 'case', 'page'], true) ? $type : 'post';
     }
 
-    public function caseCreate(): void {
-        $this->renderAdmin('新建案例', $this->renderView('admin/cases/form', ['action' => '/admin/cases/create', 'label' => '案例']));
+    private function contentConfig(string $type): array
+    {
+        $type = $this->normalizeContentType($type);
+
+        $configs = [
+            'post' => [
+                'type' => 'post',
+                'singular' => '文章',
+                'plural' => '文章',
+                'count_unit' => '篇',
+                'index_title' => '文章管理',
+                'form_create_title' => '新建文章',
+                'form_edit_title' => '编辑文章',
+                'index_url' => '/admin/posts',
+                'create_url' => '/admin/posts/create',
+                'edit_url' => '/admin/posts/edit',
+                'delete_url' => '/admin/posts/delete',
+                'preview_base' => '/blog/',
+                'icon' => 'newspaper',
+                'header_style' => 'background: linear-gradient(135deg, #00d1b2 0%, #48c774 100%); box-shadow: 0 10px 40px rgba(0, 209, 178, 0.3);',
+                'accent_text_class' => 'text-emerald-600',
+                'accent_soft_class' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+                'accent_focus_class' => 'focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100',
+                'primary_button_class' => 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25',
+                'show_categories' => true,
+                'category_manage_url' => '/admin/post-categories',
+                'category_manage_label' => '管理文章分类',
+                'list_empty_text' => '暂无文章',
+                'list_empty_action' => '创建第一篇文章',
+                'form_intro_create' => '创建新的博客文章',
+                'form_intro_edit' => '修改文章内容',
+                'content_section_title' => '文章内容',
+                'content_label' => '文章内容',
+                'summary_label' => '文章摘要',
+                'summary_placeholder' => '输入文章摘要（用于列表展示和 SEO）',
+                'slug_placeholder' => 'article-slug',
+                'cover_label' => '封面图片',
+                'publish_button_create' => '发布文章',
+                'tips' => [
+                    '标题应简洁明了，便于读者理解',
+                    '摘要会显示在文章列表中',
+                    '使用分类帮助读者找到相关内容',
+                    '草稿状态不会在前台显示',
+                ],
+            ],
+            'case' => [
+                'type' => 'case',
+                'singular' => '案例',
+                'plural' => '案例',
+                'count_unit' => '个',
+                'index_title' => '案例管理',
+                'form_create_title' => '新建案例',
+                'form_edit_title' => '编辑案例',
+                'index_url' => '/admin/cases',
+                'create_url' => '/admin/cases/create',
+                'edit_url' => '/admin/cases/edit',
+                'delete_url' => '/admin/cases/delete',
+                'preview_base' => '/case/',
+                'icon' => 'briefcase',
+                'header_style' => 'background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); box-shadow: 0 10px 40px rgba(6, 182, 212, 0.28);',
+                'accent_text_class' => 'text-cyan-700',
+                'accent_soft_class' => 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100',
+                'accent_focus_class' => 'focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100',
+                'primary_button_class' => 'bg-gradient-to-r from-cyan-500 to-emerald-500 shadow-lg shadow-cyan-500/25',
+                'show_categories' => false,
+                'category_manage_url' => null,
+                'category_manage_label' => '',
+                'list_empty_text' => '暂无案例',
+                'list_empty_action' => '创建第一个案例',
+                'form_intro_create' => '创建新的案例内容',
+                'form_intro_edit' => '修改案例内容',
+                'content_section_title' => '案例内容',
+                'content_label' => '案例内容',
+                'summary_label' => '案例摘要',
+                'summary_placeholder' => '输入案例摘要（用于列表展示和 SEO）',
+                'slug_placeholder' => 'case-slug',
+                'cover_label' => '案例封面',
+                'publish_button_create' => '发布案例',
+                'tips' => [
+                    '标题尽量突出案例亮点与行业场景',
+                    '摘要可简要概括客户需求和成果',
+                    '封面建议使用高质量项目图片',
+                    '草稿状态不会在前台显示',
+                ],
+            ],
+            'page' => [
+                'type' => 'page',
+                'singular' => '页面',
+                'plural' => '页面',
+                'count_unit' => '个',
+                'index_title' => '页面管理',
+                'form_create_title' => '新建页面',
+                'form_edit_title' => '编辑页面',
+                'index_url' => '/admin/pages',
+                'create_url' => '/admin/pages/create',
+                'edit_url' => '/admin/pages/edit',
+                'delete_url' => '/admin/pages/delete',
+                'preview_base' => null,
+                'icon' => 'file-lines',
+                'header_style' => 'background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); box-shadow: 0 10px 40px rgba(99, 102, 241, 0.28);',
+                'accent_text_class' => 'text-indigo-600',
+                'accent_soft_class' => 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
+                'accent_focus_class' => 'focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100',
+                'primary_button_class' => 'bg-gradient-to-r from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/25',
+                'show_categories' => false,
+                'category_manage_url' => null,
+                'category_manage_label' => '',
+                'list_empty_text' => '暂无页面',
+                'list_empty_action' => '创建第一个页面',
+                'form_intro_create' => '创建新的独立页面',
+                'form_intro_edit' => '修改页面内容',
+                'content_section_title' => '页面内容',
+                'content_label' => '页面内容',
+                'summary_label' => '页面摘要',
+                'summary_placeholder' => '输入页面摘要（用于列表展示和 SEO）',
+                'slug_placeholder' => 'page-slug',
+                'cover_label' => '页面封面',
+                'publish_button_create' => '发布页面',
+                'tips' => [
+                    '页面适合放置关于我们、服务、FAQ 等固定内容',
+                    '别名建议简短，便于后续作为独立页面路径使用',
+                    '摘要可用于页面列表和搜索引擎描述',
+                    '草稿状态不会在前台显示',
+                ],
+            ],
+        ];
+
+        return $configs[$type];
     }
 
-    public function caseStore(): void {
-        csrf_check();
-        $data = $this->getGenericFormData();
-        $this->caseModel->create($data);
-        $this->redirect('/admin/cases');
+    private function renderContentList(string $type): void
+    {
+        $config = $this->contentConfig($type);
+        $items = $this->postModel->getList(0, false, $config['type']);
+
+        $this->renderAdmin(
+            $config['index_title'],
+            $this->renderView('admin/posts/index', [
+                'items' => $items,
+                'contentConfig' => $config,
+            ])
+        );
     }
 
-    public function caseEdit(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $item = $this->caseModel->getById($id);
-        if (!$item) $this->redirect('/admin/cases');
-        $this->renderAdmin('编辑案例', $this->renderView('admin/cases/form', ['action' => '/admin/cases/edit?id='.$id, 'item' => $item, 'label' => '案例']));
+    private function renderContentForm(string $type, ?array $item = null): void
+    {
+        $config = $this->contentConfig($type);
+        $categories = $config['show_categories'] ? $this->categoryModel->getFlatTree('post') : [];
+        $action = $item === null
+            ? $config['create_url']
+            : $config['edit_url'] . '?id=' . (int)$item['id'];
+
+        $this->renderAdmin(
+            $item === null ? $config['form_create_title'] : $config['form_edit_title'],
+            $this->renderView('admin/posts/form', [
+                'action' => $action,
+                'item' => $item,
+                'categories' => $categories,
+                'contentConfig' => $config,
+            ])
+        );
     }
 
-    public function caseUpdate(): void {
-        csrf_check();
-        $id = (int)($_GET['id'] ?? 0);
-        $data = $this->getGenericFormData();
-        $this->caseModel->update($id, $data);
-        $this->redirect('/admin/cases');
-    }
-
-    public function caseDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $this->caseModel->delete($id);
-        $this->redirect('/admin/cases');
-    }
-
-    // --- Posts ---
-    public function postList(): void {
-        $items = $this->postModel->getList();
-        $categories = $this->categoryModel->getFlatTree('post');
-        $this->renderAdmin('博客管理', $this->renderView('admin/posts/index', [
-            'items' => $items,
-            'categories' => $categories
-        ]));
-    }
-
-    public function postCreate(): void {
-        $categories = $this->categoryModel->getFlatTree('post');
-        $this->renderAdmin('新建博客', $this->renderView('admin/posts/form', [
-            'action' => '/admin/posts/create',
-            'categories' => $categories
-        ]));
-    }
-
-    public function postStore(): void {
-        csrf_check();
-        $data = $this->getPostFormData();
-        $this->postModel->create($data);
-        $this->redirect('/admin/posts');
-    }
-
-    public function postEdit(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $item = $this->postModel->getById($id);
-        if (!$item) $this->redirect('/admin/posts');
-        $categories = $this->categoryModel->getFlatTree('post');
-        $this->renderAdmin('编辑博客', $this->renderView('admin/posts/form', [
-            'action' => '/admin/posts/edit?id='.$id,
-            'item' => $item,
-            'categories' => $categories
-        ]));
-    }
-
-    public function postUpdate(): void {
-        csrf_check();
-        $id = (int)($_GET['id'] ?? 0);
-        $data = $this->getPostFormData();
-        $this->postModel->update($id, $data);
-        $this->redirect('/admin/posts');
-    }
-
-    public function postDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $this->postModel->delete($id);
-        $this->redirect('/admin/posts');
-    }
-
-    private function getPostFormData(): array {
-        $title = trim((string)$_POST['title']);
+    private function getContentFormData(string $type): array
+    {
+        $config = $this->contentConfig($type);
+        $title = trim((string)($_POST['title'] ?? ''));
         $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($title);
+
+        if ($slug === '') {
+            $slug = slugify($title);
+        }
+
         return [
             'title' => $title,
             'slug' => $slug,
+            'post_type' => $config['type'],
             'summary' => trim((string)($_POST['summary'] ?? '')),
             'content' => normalize_rich_text(trim((string)($_POST['content'] ?? ''))),
             'cover' => trim((string)($_POST['cover'] ?? '')),
-            'category_id' => (int)($_POST['category_id'] ?? 0),
+            'category_id' => $config['show_categories'] ? (int)($_POST['category_id'] ?? 0) : 0,
             'status' => trim((string)($_POST['status'] ?? 'active')),
             'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
             'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
@@ -914,20 +998,143 @@ class AdminController extends Controller {
         ];
     }
 
-    private function getGenericFormData(): array {
-        $title = trim((string)$_POST['title']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($title);
-        return [
-            'title' => $title,
-            'slug' => $slug,
-            'summary' => trim((string)($_POST['summary'] ?? '')),
-            'content' => normalize_rich_text(trim((string)($_POST['content'] ?? ''))),
-            'cover' => trim((string)($_POST['cover'] ?? '')),
-            'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
-            'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
-            'seo_description' => trim((string)($_POST['seo_description'] ?? '')),
-        ];
+    // --- Cases / Posts / Pages ---
+    public function caseList(): void
+    {
+        $this->renderContentList('case');
+    }
+
+    public function caseCreate(): void
+    {
+        $this->renderContentForm('case');
+    }
+
+    public function caseStore(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('case');
+        $this->postModel->create($this->getContentFormData('case'));
+        $this->redirect($config['index_url']);
+    }
+
+    public function caseEdit(): void
+    {
+        $config = $this->contentConfig('case');
+        $id = (int)($_GET['id'] ?? 0);
+        $item = $this->postModel->getById($id, 'case');
+        if (!$item) {
+            $this->redirect($config['index_url']);
+        }
+        $this->renderContentForm('case', $item);
+    }
+
+    public function caseUpdate(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('case');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->update($id, $this->getContentFormData('case'), 'case');
+        $this->redirect($config['index_url']);
+    }
+
+    public function caseDelete(): void
+    {
+        $config = $this->contentConfig('case');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->delete($id, 'case');
+        $this->redirect($config['index_url']);
+    }
+
+    public function postList(): void
+    {
+        $this->renderContentList('post');
+    }
+
+    public function postCreate(): void
+    {
+        $this->renderContentForm('post');
+    }
+
+    public function postStore(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('post');
+        $this->postModel->create($this->getContentFormData('post'));
+        $this->redirect($config['index_url']);
+    }
+
+    public function postEdit(): void
+    {
+        $config = $this->contentConfig('post');
+        $id = (int)($_GET['id'] ?? 0);
+        $item = $this->postModel->getById($id, 'post');
+        if (!$item) {
+            $this->redirect($config['index_url']);
+        }
+        $this->renderContentForm('post', $item);
+    }
+
+    public function postUpdate(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('post');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->update($id, $this->getContentFormData('post'), 'post');
+        $this->redirect($config['index_url']);
+    }
+
+    public function postDelete(): void
+    {
+        $config = $this->contentConfig('post');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->delete($id, 'post');
+        $this->redirect($config['index_url']);
+    }
+
+    public function pageList(): void
+    {
+        $this->renderContentList('page');
+    }
+
+    public function pageCreate(): void
+    {
+        $this->renderContentForm('page');
+    }
+
+    public function pageStore(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('page');
+        $this->postModel->create($this->getContentFormData('page'));
+        $this->redirect($config['index_url']);
+    }
+
+    public function pageEdit(): void
+    {
+        $config = $this->contentConfig('page');
+        $id = (int)($_GET['id'] ?? 0);
+        $item = $this->postModel->getById($id, 'page');
+        if (!$item) {
+            $this->redirect($config['index_url']);
+        }
+        $this->renderContentForm('page', $item);
+    }
+
+    public function pageUpdate(): void
+    {
+        csrf_check();
+        $config = $this->contentConfig('page');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->update($id, $this->getContentFormData('page'), 'page');
+        $this->redirect($config['index_url']);
+    }
+
+    public function pageDelete(): void
+    {
+        $config = $this->contentConfig('page');
+        $id = (int)($_GET['id'] ?? 0);
+        $this->postModel->delete($id, 'page');
+        $this->redirect($config['index_url']);
     }
 
     // --- Messages & Inquiries ---

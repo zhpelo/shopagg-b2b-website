@@ -1221,31 +1221,6 @@ ${iconHtml}
         });
     }
 
-    function initCaseForm() {
-        const coverInput = document.getElementById('case-cover-input');
-        const coverPreview = document.getElementById('case-cover-preview');
-        const coverPreviewWrap = document.getElementById('case-cover-preview-wrap');
-        const coverSelectBtn = document.getElementById('case-cover-select-btn');
-        const coverClearBtn = document.getElementById('case-cover-clear-btn');
-        if (!coverInput || !coverSelectBtn) {
-            return;
-        }
-
-        coverSelectBtn.addEventListener('click', () => {
-            openMediaLibrary((url) => {
-                coverInput.value = url;
-                if (coverPreview) coverPreview.src = url;
-                coverPreviewWrap?.classList.remove('hidden');
-            }, false);
-        });
-
-        coverClearBtn?.addEventListener('click', () => {
-            coverInput.value = '';
-            if (coverPreview) coverPreview.src = '';
-            coverPreviewWrap?.classList.add('hidden');
-        });
-    }
-
     function initProductForm() {
         const mediaContainer = document.getElementById('media-container');
         const gridWrap = document.getElementById('media-grid-wrap');
@@ -1621,7 +1596,6 @@ ${iconHtml}
         initJoditEditors();
         initPriceTierManager();
         initPostForm();
-        initCaseForm();
         initProductForm();
         initSettingsGeneralPickers();
         initSettingsMediaHelpers();

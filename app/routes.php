@@ -85,6 +85,14 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/posts/edit', [AdminController::class, 'postUpdate']);
     $router->add('GET', '/admin/posts/delete', [AdminController::class, 'postDelete']);
 
+    // 后台：页面
+    $router->add('GET', '/admin/pages', [AdminController::class, 'pageList']);
+    $router->add('GET', '/admin/pages/create', [AdminController::class, 'pageCreate']);
+    $router->add('POST', '/admin/pages/create', [AdminController::class, 'pageStore']);
+    $router->add('GET', '/admin/pages/edit', [AdminController::class, 'pageEdit']);
+    $router->add('POST', '/admin/pages/edit', [AdminController::class, 'pageUpdate']);
+    $router->add('GET', '/admin/pages/delete', [AdminController::class, 'pageDelete']);
+
     // 后台：留言与询单
     $router->add('GET', '/admin/messages', [AdminController::class, 'messageList']);
     $router->add('GET', '/admin/messages/detail', [AdminController::class, 'messageDetail']);

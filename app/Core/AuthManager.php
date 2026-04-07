@@ -16,6 +16,7 @@ class AuthManager {
         '/admin/product-categories' => 'products',
         '/admin/cases' => 'cases',
         '/admin/posts' => 'blog',
+        '/admin/pages' => 'blog',
         '/admin/post-categories' => 'blog',
         '/admin/messages' => 'inbox',
         '/admin/inquiries' => 'inbox',

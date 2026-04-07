@@ -12,7 +12,7 @@
         </span>
         核心数据
     </div>
-    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
         <div class="">
             <div class="stat-card primary">
                 <div class="stat-icon primary">
@@ -57,6 +57,19 @@
             </div>
         </div>
         <div class="">
+            <div class="stat-card primary">
+                <div class="stat-icon primary">
+                    <i class="fas fa-file-lines"></i>
+                </div>
+                <div class="stat-value"><?= $counts['pages'] ?></div>
+                <div class="stat-label">独立页面</div>
+                <a href="<?= url('/admin/pages') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100">
+                    <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
+                    <span>管理</span>
+                </a>
+            </div>
+        </div>
+        <div class="">
             <div class="stat-card warning">
                 <div class="stat-icon warning">
                     <i class="fas fa-tags"></i>
@@ -80,7 +93,7 @@
         </span>
         客户互动
     </div>
-    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
         <div class="">
             <div class="stat-card danger">
                 <div class="stat-icon danger">
@@ -321,6 +334,17 @@
                 <div>
                     <div class="action-text">添加案例</div>
                     <div class="action-desc">展示成功客户案例</div>
+                </div>
+            </a>
+        </div>
+        <div class="">
+            <a href="<?= url('/admin/pages/create') ?>" class="quick-action">
+                <div class="action-icon bg-violet-50 text-violet-600">
+                    <i class="fas fa-file-circle-plus"></i>
+                </div>
+                <div>
+                    <div class="action-text">新建页面</div>
+                    <div class="action-desc">维护关于我们和服务页面</div>
                 </div>
             </a>
         </div>

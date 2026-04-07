@@ -5,7 +5,6 @@ namespace App\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\CaseModel;
 use App\Models\PostModel;
 use App\Models\Message;
 use App\Models\Inquiry;
@@ -15,7 +14,7 @@ class SiteController extends BaseController {
         $products = (new Product())->getList(6, true);  // 只获取已上架产品
         foreach ($products as &$p) $p['url'] = url('/product/' . $p['slug']);
         
-        $cases = (new CaseModel())->getList(6);
+        $cases = (new PostModel())->getList(6, true, 'case');
         foreach ($cases as &$c) $c['url'] = url('/case/' . $c['slug']);
         
         // 首页使用全局 SEO 设置
@@ -111,7 +110,7 @@ class SiteController extends BaseController {
     }
 
     public function cases(): void {
-        $items = (new CaseModel())->getList();
+        $items = (new PostModel())->getList(0, true, 'case');
         foreach ($items as &$i) $i['url'] = url('/case/' . $i['slug']);
         $this->renderSite('case_list', [
             'title' => 'Cases',
@@ -121,8 +120,8 @@ class SiteController extends BaseController {
     }
 
     public function caseDetail(string $slug): void {
-        $item = (new CaseModel())->getBySlug($slug);
-        if (!$item) { $this->notFound(); return; }
+        $item = (new PostModel())->getBySlug($slug, 'case');
+        if (!$item || ($item['status'] ?? 'active') !== 'active') { $this->notFound(); return; }
         $this->renderSite('case_detail', [
             'item' => $item,
             'seo' => [
@@ -143,9 +142,9 @@ class SiteController extends BaseController {
         
         // 获取文章列表
         if ($categoryId > 0) {
-            $items = $postModel->getByCategory($categoryId);
+            $items = $postModel->getByCategory($categoryId, 0, 'post');
         } else {
-            $items = $postModel->getList(0, true);  // 只获取已发布文章
+            $items = $postModel->getList(0, true, 'post');  // 只获取已发布文章
         }
         foreach ($items as &$i) $i['url'] = url('/blog/' . $i['slug']);
         
@@ -167,7 +166,7 @@ class SiteController extends BaseController {
         $postModel = new PostModel();
         $categoryModel = new Category();
         
-        $item = $postModel->getBySlug($slug);
+        $item = $postModel->getBySlug($slug, 'post');
         // 只有已发布的文章才能查看
         if (!$item || ($item['status'] ?? 'active') !== 'active') { $this->notFound(); return; }
         
@@ -240,9 +239,9 @@ class SiteController extends BaseController {
         
         $res = $db->query("SELECT slug FROM products WHERE status = 'active'");  // 只索引已上架产品
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/product/' . $r['slug'];
-        $res = $db->query("SELECT slug FROM cases");
+        $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'case'");
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/case/' . $r['slug'];
-        $res = $db->query("SELECT slug FROM posts WHERE status = 'active'");  // 只索引已发布文章
+        $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'post'");  // 只索引已发布文章
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/blog/' . $r['slug'];
 
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";

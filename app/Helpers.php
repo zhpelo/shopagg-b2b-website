@@ -437,18 +437,23 @@ function get_posts(array $args = []): array {
     $limit = isset($args['limit']) ? (int)$args['limit'] : 5;
     $categoryId = isset($args['category']) ? (int)$args['category'] : 0;
     $activeOnly = isset($args['status']) ? ($args['status'] === 'active') : true;
+    $type = isset($args['type']) ? (string)$args['type'] : 'post';
 
     $postModel = new \App\Models\PostModel();
 
     if ($categoryId > 0) {
-        $items = $postModel->getByCategory($categoryId, $limit);
+        $items = $postModel->getByCategory($categoryId, $limit, $type);
     } else {
-        // 假设 PostModel 有一个类似 getLatest 的方法，或者复用 getList
-        $items = $postModel->getList($limit, $activeOnly);
+        $items = $postModel->getList($limit, $activeOnly, $type);
     }
 
     foreach ($items as &$item) {
-        $item['url'] = url('/blog/' . ($item['slug'] ?? $item['id']));
+        $prefix = match ($type) {
+            'case' => '/case/',
+            'page' => '/',
+            default => '/blog/',
+        };
+        $item['url'] = url($prefix . ($item['slug'] ?? $item['id']));
     }
 
     return $items;
@@ -463,8 +468,8 @@ function get_posts(array $args = []): array {
 function get_cases(array $args = []): array {
     $limit = isset($args['limit']) ? (int)$args['limit'] : 6;
     
-    $caseModel = new \App\Models\CaseModel();
-    $items = $caseModel->getList($limit);
+    $postModel = new \App\Models\PostModel();
+    $items = $postModel->getList($limit, true, 'case');
 
     foreach ($items as &$item) {
         $item['url'] = url('/case/' . ($item['slug'] ?? $item['id']));

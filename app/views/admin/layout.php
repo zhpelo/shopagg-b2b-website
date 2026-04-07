@@ -22,7 +22,7 @@
         }
         $active_group = '';
         if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/product-categories')) $active_group = 'catalog';
-        elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
+        elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/pages') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
         elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
         elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
@@ -33,6 +33,7 @@
         $can_access = function ($perm) use ($user_role, $user_perms) {
             return $user_role === 'admin' || in_array($perm, $user_perms);
         };
+        $content_nav_url = $can_access('blog') ? '/admin/posts' : '/admin/cases';
     ?>
         <!-- 第一级主导航 -->
         <nav class="admin-navbar border-b border-slate-200 bg-white/95 backdrop-blur" role="navigation" aria-label="main navigation">
@@ -64,7 +65,7 @@
                             </a>
                         <?php endif; ?>
                         <?php if ($can_access('blog') || $can_access('cases')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'content' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
+                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'content' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url($content_nav_url) ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                             </a>
                         <?php endif; ?>
@@ -119,15 +120,22 @@
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>产品分类
                         </a>
                     <?php elseif ($active_group === 'content'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-newspaper"></i></span>文章管理
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/post-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/post-categories') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>文章分类
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例展示
-                        </a>
+                        <?php if ($can_access('blog')): ?>
+                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-newspaper"></i></span>文章管理
+                            </a>
+                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/post-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/post-categories') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>文章分类
+                            </a>
+                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/pages' || str_contains($current_path, '/admin/pages/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/pages') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-file-lines"></i></span>页面管理
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($can_access('cases')): ?>
+                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例展示
+                            </a>
+                        <?php endif; ?>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/media') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/media') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-photo-video"></i></span>媒体库
                         </a>
