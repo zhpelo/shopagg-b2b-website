@@ -79,7 +79,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     </div>
 </div>
 
-<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 mb-6">
     <div>
         <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
             <div class="stat-mini">
@@ -282,7 +282,6 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                 </label>
                 <div>名称</div>
                 <div>类型</div>
-                <div>所在目录</div>
                 <div>大小</div>
                 <div>修改时间</div>
                 <div>操作</div>
@@ -303,7 +302,6 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                         onclick='selectExplorerFile(<?= json_encode([
                                                         'name' => $file['original_name'] ?: $file['name'],
                                                         'url' => asset_url($file['public_path']),
-                                                        'path' => $file['public_path'],
                                                         'type' => $file['type'],
                                                         'size' => $file['size_formatted'],
                                                         'date' => $file['date'],
@@ -330,7 +328,6 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                             </div>
                         </div>
                         <div><?= $file['is_video'] ? '视频' : ($file['is_image'] ? '图片' : '文件') ?></div>
-                        <div><?= h($file['directory'] ? '/uploads/' . $file['directory'] : '/uploads') ?></div>
                         <div><?= h($file['size_formatted']) ?></div>
                         <div><?= h($file['date']) ?></div>
                         <div class="explorer-actions" onclick="event.stopPropagation()">
@@ -876,7 +873,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
         document.getElementById('explorerPreviewName').textContent = file.name || '';
         document.getElementById('explorerPreviewStorage').textContent = file.storage_name || '';
         document.getElementById('explorerPreviewType').textContent = file.type === 'video' ? '视频' : (file.type === 'image' ? '图片' : '文件');
-        document.getElementById('explorerPreviewDirectory').textContent = file.directory ? `/uploads/${file.directory}` : '/uploads';
+        // document.getElementById('explorerPreviewDirectory').textContent = file.directory ? `/uploads/${file.directory}` : '/uploads';
         document.getElementById('explorerPreviewSize').textContent = [file.size || '', file.dimensions || ''].filter(Boolean).join(' · ') || '-';
         document.getElementById('explorerPreviewDate').textContent = file.date || '';
         document.getElementById('explorerPreviewPath').value = file.path || '';
