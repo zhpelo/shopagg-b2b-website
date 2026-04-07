@@ -248,7 +248,6 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 
     <div class="explorer-main">
         <aside class="explorer-sidebar">
-            <div class="explorer-pane-title">文件夹</div>
             <div class="explorer-tree">
                 <a href="<?= h($buildMediaUrl('')) ?>" class="explorer-tree-root <?= $currentDir === '' ? 'is-current' : '' ?>">
                     <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-hdd"></i></span>
@@ -497,7 +496,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     }
 
     .explorer-tree {
-        padding: 0 0.9rem 1rem;
+        padding: 1rem;
     }
 
     .explorer-tree-root,
