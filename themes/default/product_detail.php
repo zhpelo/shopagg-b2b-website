@@ -57,7 +57,7 @@ $category = $category ?? null;
                             <div class="swiper-button-prev !w-10 !h-10 !bg-white/80 !rounded-full !text-gray-800 hover:!bg-white"></div>
                         </div>
                         <!-- Thumbs Swiper -->
-                        <div class="swiper thumbs-swiper" style="height: 80px;">
+                        <div class="swiper thumbs-swiper">
                             <div class="swiper-wrapper">
                                 <?php foreach ($images as $img): ?>
                                     <div class="swiper-slide cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 transition-colors">
@@ -108,7 +108,7 @@ $category = $category ?? null;
                     <?php endif; ?>
 
                     <?php if (!empty($price_tiers)): ?>
-                        <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="grid grid-cols-3 gap-3 mb-6">
                             <?php foreach ($price_tiers as $tier): ?>
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
                                     <div class="text-xl font-bold text-gray-900">

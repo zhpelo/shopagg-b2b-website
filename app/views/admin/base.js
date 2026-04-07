@@ -473,7 +473,6 @@ ${thumbHtml}
 </div>
 </div>
 <div class="media-library-file-col type">文件夹</div>
-<div class="media-library-file-col folder">${escapeHtmlAttr(folder.directory ? `/uploads/${folder.directory}` : '/uploads')}</div>
 <div class="media-library-file-col size">-</div>
 <div class="media-library-file-col date">${Number(folder.item_count || 0)} 项</div>
 `;
@@ -514,7 +513,6 @@ ${iconHtml}
 </div>
 </div>
 <div class="media-library-file-col type">${file.type === 'video' ? '视频' : '图片'}</div>
-<div class="media-library-file-col folder">${escapeHtmlAttr(file.directory ? `/uploads/${file.directory}` : '/uploads')}</div>
 <div class="media-library-file-col size">${escapeHtmlAttr(file.size_formatted || '')}</div>
 <div class="media-library-file-col date">${escapeHtmlAttr(file.date || '')}</div>
 `;

@@ -294,7 +294,6 @@
                                 </div>
                                 <div class="media-library-file-col name">名称</div>
                                 <div class="media-library-file-col type">类型</div>
-                                <div class="media-library-file-col folder">目录</div>
                                 <div class="media-library-file-col size">大小</div>
                                 <div class="media-library-file-col date">修改时间</div>
                             </div>
