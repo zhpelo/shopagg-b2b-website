@@ -47,7 +47,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 
  echo '<li class="' . h(implode(' ', $classes)) . '">';
  echo '<a href="' . h($buildMediaUrl((string)($node['directory'] ?? ''))) . '" class="explorer-tree-link">';
- echo '<span class="icon"><i class="fas fa-folder"></i></span>';
+ echo '<span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>';
  echo '<span>' . h((string)($node['name'] ?? '')) . '</span>';
  echo '</a>';
  echo $renderTree((array)($node['children'] ?? []));
@@ -165,7 +165,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm explorer-shell">
  <div class="explorer-topbar">
  <div class="explorer-topbar-left">
- <span class="icon explorer-app-icon"><i class="fas fa-photo-video"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center explorer-app-icon"><i class="fas fa-photo-video"></i></span>
  <strong class="explorer-app-title">媒体库</strong>
  <div class="explorer-nav-buttons flex items-center gap-2">
  <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" onclick="history.back()">
@@ -251,7 +251,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  <div class="explorer-pane-title">文件夹</div>
  <div class="explorer-tree">
  <a href="<?= h($buildMediaUrl('')) ?>" class="explorer-tree-root <?= $currentDir === '' ? 'is-current' : '' ?>">
- <span class="icon"><i class="fas fa-hdd"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-hdd"></i></span>
  <span>我的媒体</span>
  </a>
  <?= $renderTree($folderTree) ?>
@@ -260,7 +260,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 
  <section class="explorer-content">
  <div class="explorer-location-bar">
- <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-map-marker-alt"></i></span>
  <span>当前位置：<?= h($listing['directory_display'] ?? '/uploads') ?></span>
  </div>
 
@@ -268,7 +268,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  <div class="explorer-folder-strip">
  <?php foreach ($folders as $folder): ?>
  <a href="<?= h($buildMediaUrl((string)$folder['directory'])) ?>" class="explorer-folder-chip">
- <span class="icon"><i class="fas fa-folder"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>
  <span><?= h($folder['name']) ?></span>
  <small><?= (int)$folder['item_count'] ?> 项</small>
  </a>
@@ -319,9 +319,9 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  <?php if ($file['is_image']): ?>
  <img src="<?= asset_url($file['public_path']) ?>" alt="<?= h($file['original_name'] ?: $file['name']) ?>" loading="lazy">
  <?php elseif ($file['is_video']): ?>
- <span class="icon"><i class="fas fa-video"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-video"></i></span>
  <?php else: ?>
- <span class="icon"><i class="fas fa-file"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-file"></i></span>
  <?php endif; ?>
  </div>
  <div class="explorer-name-meta">
@@ -574,7 +574,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  padding: 0.7rem 0.85rem;
 }
 
-.explorer-folder-chip .icon {
+.explorer-folder-chip > span:first-child {
  color: #f59e0b;
 }
 

@@ -133,33 +133,33 @@
  <div id="adminNavbar" class="hidden w-full flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" data-nav-menu>
  <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-2">
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin') ?>">
- <span class="icon mr-1"><i class="fas fa-home"></i></span>仪表盘
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-home"></i></span>仪表盘
  </a>
  <?php if ($can_access('inbox')): ?>
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'inbox' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
- <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-envelope"></i></span>收件箱
  </a>
  <?php endif; ?>
  <?php if ($can_access('products')): ?>
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'catalog' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
- <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-box"></i></span>产品中心
  </a>
  <?php endif; ?>
  <?php if ($can_access('blog') || $can_access('cases')): ?>
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'content' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
- <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
  </a>
  <?php endif; ?>
  
  <?php if ($user_role === 'admin'): ?>
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'staff' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
- <span class="icon mr-1"><i class="fas fa-users"></i></span>员工管理
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-users"></i></span>员工管理
  </a>
  <?php endif; ?>
 
  <?php if ($can_access('settings')): ?>
  <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/settings') ?>">
- <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-cog"></i></span>系统设置
  </a>
  <?php endif; ?>
  </div>
@@ -167,20 +167,20 @@
  <div class="flex items-center justify-end">
  <div class="group relative">
  <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
- <span class="icon mr-1"><i class="fas fa-user-circle"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-circle"></i></span>
  <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
  <span class="text-xs text-slate-400"><i class="fas fa-chevron-down"></i></span>
  </button>
  <div class="invisible absolute right-0 top-full z-50 mt-2 min-w-[13rem] translate-y-1 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
  <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/admin/profile') ?>">
- <span class="icon mr-2"><i class="fas fa-id-card"></i></span>个人资料
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-id-card"></i></span>个人资料
  </a>
  <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/') ?>" target="_blank">
- <span class="icon mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
  </a>
  <div class="my-2 h-px bg-slate-200"></div>
  <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" href="<?= url('/admin/logout') ?>">
- <span class="icon mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
  </a>
  </div>
  </div>
@@ -195,37 +195,37 @@
  <div class="container admin-subnav-container flex items-center overflow-x-auto whitespace-nowrap">
  <?php if ($active_group === 'catalog'): ?>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
- <span class="icon mr-1"><i class="fas fa-list"></i></span>产品列表
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-list"></i></span>产品列表
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/product-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/product-categories') ?>">
- <span class="icon mr-1"><i class="fas fa-folder"></i></span>产品分类
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>产品分类
  </a>
  <?php elseif ($active_group === 'content'): ?>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
- <span class="icon mr-1"><i class="fas fa-newspaper"></i></span>文章管理
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-newspaper"></i></span>文章管理
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/post-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/post-categories') ?>">
- <span class="icon mr-1"><i class="fas fa-folder"></i></span>文章分类
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>文章分类
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
- <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例展示
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/media') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/media') ?>">
- <span class="icon mr-1"><i class="fas fa-photo-video"></i></span>媒体库
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-photo-video"></i></span>媒体库
  </a>
  <?php elseif ($active_group === 'inbox'): ?>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/messages') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
- <span class="icon mr-1"><i class="fas fa-comment-dots"></i></span>联系留言
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-comment-dots"></i></span>联系留言
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/inquiries') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/inquiries') ?>">
- <span class="icon mr-1"><i class="fas fa-file-invoice"></i></span>询单管理
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-file-invoice"></i></span>询单管理
  </a>
  <?php elseif ($active_group === 'staff'): ?>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/staff' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
- <span class="icon mr-1"><i class="fas fa-list"></i></span>员工列表
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-list"></i></span>员工列表
  </a>
  <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/create') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff/create') ?>">
- <span class="icon mr-1"><i class="fas fa-user-plus"></i></span>新增员工
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
  </a>
  <?php endif; ?>
  </div>
@@ -248,23 +248,25 @@
  <div class="media-library-modal-card relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
  <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-4">
  <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
- <span class="icon mr-2"><i class="fas fa-photo-video"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-photo-video"></i></span>
  媒体库
  </p>
- <button type="button" class="delete" aria-label="close" data-media-modal-close></button>
+ <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700" aria-label="关闭媒体库" data-media-modal-close>
+ <i class="fas fa-times text-sm"></i>
+ </button>
  </header>
  <section class="media-library-body overflow-auto">
  <div class="media-library-window">
  <div class="media-library-window-nav">
  <div class="flex items-center gap-2">
  <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-back-btn" disabled>
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  </button>
  <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-forward-btn" disabled>
- <span class="icon"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  </button>
  <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-up-btn">
- <span class="icon"><i class="fas fa-level-up-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-level-up-alt"></i></span>
  </button>
  </div>
  <div class="media-library-toolbar-main">
@@ -276,23 +278,23 @@
  <div class="media-library-toolbar-buttons flex flex-wrap items-center justify-end gap-3">
  <label class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:bg-sky-100">
  <input class="hidden" type="file" id="media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
- <span class="icon"><i class="fas fa-upload"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-upload"></i></span>
  <span>上传文件</span>
  </label>
  <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-new-folder-btn">
- <span class="icon"><i class="fas fa-folder-plus"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder-plus"></i></span>
  <span>新建文件夹</span>
  </button>
  <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-bulk-delete-btn" disabled>
- <span class="icon"><i class="fas fa-trash"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash"></i></span>
  <span id="media-library-bulk-delete-label">删除</span>
  </button>
  <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-400" disabled>
- <span class="icon"><i class="fas fa-i-cursor"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-i-cursor"></i></span>
  <span>重命名</span>
  </button>
  <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-refresh-btn">
- <span class="icon"><i class="fas fa-sync-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-sync-alt"></i></span>
  <span>刷新</span>
  </button>
  </div>
@@ -330,10 +332,10 @@
  <div class="media-library-file-toolbar">
  <div class="media-library-view-switch flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
  <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 transition" id="media-library-view-list-btn">
- <span class="icon"><i class="fas fa-list"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-list"></i></span>
  </button>
  <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white hover:text-slate-700" id="media-library-view-tiles-btn">
- <span class="icon"><i class="fas fa-th-large"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-th-large"></i></span>
  </button>
  </div>
  <p class="text-xs text-slate-500" id="media-library-current-mode-label">列表视图</p>
@@ -354,7 +356,7 @@
  <div class="media-library-pane-title">预览 / 属性</div>
  <div class="media-library-details" id="media-library-details-empty">
  <div class="media-library-details-placeholder">
- <span class="icon is-large"><i class="fas fa-image"></i></span>
+ <span class="inline-flex h-8 w-8 items-center justify-center text-2xl"><i class="fas fa-image"></i></span>
  <p class="mt-3">选择一个媒体文件后，这里会显示预览和详情。</p>
  </div>
  </div>
@@ -733,10 +735,10 @@ function renderMediaLibraryTree(nodes, currentDirectory) {
  <li class="media-library-tree-node ${node.is_current ? 'is-current' : ''} ${node.is_ancestor ? 'is-ancestor' : ''}">
  <div class="media-library-tree-row">
  <button type="button" class="media-library-tree-toggle ${node.children && node.children.length ? '' : 'is-empty'} ${mediaLibraryState.expandedDirectories.has(node.directory || '') ? 'is-expanded' : ''}" data-directory="${escapeHtmlAttr(node.directory || '')}">
- <span class="icon"><i class="fas fa-caret-right"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-caret-right"></i></span>
  </button>
  <a href="#" class="js-media-library-tree-link media-library-tree-link" data-directory="${escapeHtmlAttr(node.directory || '')}">
- <span class="icon"><i class="fas fa-folder"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>
  <span>${escapeHtmlAttr(node.name || '')}</span>
  </a>
  </div>
@@ -751,7 +753,7 @@ function renderMediaLibraryTree(nodes, currentDirectory) {
 
  return `
  <a href="#" class="js-media-library-tree-link media-library-tree-root ${currentDirectory === '' ? 'is-current' : ''}" data-directory="">
- <span class="icon"><i class="fas fa-hdd"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-hdd"></i></span>
  <span>我的媒体</span>
  </a>
  ${renderNodes(nodes || [])}
@@ -843,7 +845,7 @@ function renderMediaLibrary(payload) {
  if (!folders.length && !files.length) {
  container.innerHTML = `
  <div class="media-library-empty">
- <span class="icon is-large"><i class="fas fa-photo-video"></i></span>
+ <span class="inline-flex h-8 w-8 items-center justify-center text-2xl"><i class="fas fa-photo-video"></i></span>
  <p class="mt-3">这个目录下还没有符合条件的媒体文件。</p>
  </div>
  `;
@@ -859,7 +861,7 @@ function renderMediaLibrary(payload) {
  tile.className = 'media-library-folder-tile media-library-folder-tile-explorer';
  tile.innerHTML = `
  <div class="media-library-folder-tile-icon">
- <span class="icon is-large"><i class="fas fa-folder"></i></span>
+ <span class="inline-flex h-8 w-8 items-center justify-center text-2xl"><i class="fas fa-folder"></i></span>
  </div>
  <div class="media-library-tile-body">
  <strong title="${escapeHtmlAttr(folder.name || '')}">${escapeHtmlAttr(folder.name || '')}</strong>
@@ -1073,7 +1075,7 @@ async function fetchMediaLibrary() {
  renderLibraryStatus('');
  container.innerHTML = `
  <div class="media-library-empty">
- <span class="icon is-large"><i class="fas fa-spinner fa-pulse"></i></span>
+ <span class="inline-flex h-8 w-8 items-center justify-center text-2xl"><i class="fas fa-spinner fa-pulse"></i></span>
  <p class="mt-3">正在加载媒体库...</p>
  </div>
  `;
@@ -1092,7 +1094,7 @@ async function fetchMediaLibrary() {
  } catch (err) {
  container.innerHTML = `
  <div class="media-library-empty text-rose-600">
- <span class="icon is-large"><i class="fas fa-exclamation-circle"></i></span>
+ <span class="inline-flex h-8 w-8 items-center justify-center text-2xl"><i class="fas fa-exclamation-circle"></i></span>
  <p class="mt-3">${escapeHtmlAttr(err.message || '加载失败')}</p>
  </div>
  `;

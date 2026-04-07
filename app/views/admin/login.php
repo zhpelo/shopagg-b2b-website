@@ -30,14 +30,14 @@
  </div>
  </div>
  <button class="login-btn mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5 hover:shadow-indigo-500/40" type="submit">
- <span class="icon mr-2"><i class="fas fa-sign-in-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-sign-in-alt"></i></span>
  登录
  </button>
  </form>
  
  <div class="login-footer">
  <a href="<?= url('/') ?>">
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  返回网站首页
  </a>
  </div>

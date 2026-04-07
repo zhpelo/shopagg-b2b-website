@@ -17,7 +17,7 @@ $currentId = (int)($category['id'] ?? 0);
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-<?= isset($category) ? 'edit' : 'plus' ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-<?= isset($category) ? 'edit' : 'plus' ?>"></i></span>
  <?= isset($category) ? '编辑' . $label : '新建' . $label ?>
  </h1>
  <p class="mt-1 text-sm text-white/80"><?= isset($category) ? '修改分类信息' : '创建新的' . $label ?></p>
@@ -25,7 +25,7 @@ $currentId = (int)($category['id'] ?? 0);
  </div>
  <div class="header-actions flex items-center gap-3">
  <a href="<?= $baseUrl ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold <?= $isPost ? 'text-emerald-600' : 'text-amber-700' ?> shadow-sm transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  <span>返回列表</span>
  </a>
  </div>
@@ -91,11 +91,11 @@ $currentId = (int)($category['id'] ?? 0);
  
  <div class="flex flex-wrap gap-3">
  <button type="submit" class="inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25 text-slate-900' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
- <span class="icon"><i class="fas fa-save"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
  <span><?= isset($category) ? '保存修改' : '创建分类' ?></span>
  </button>
  <a href="<?= $baseUrl ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-times"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-times"></i></span>
  <span>取消</span>
  </a>
  </div>
@@ -123,13 +123,13 @@ $currentId = (int)($category['id'] ?? 0);
  <p>
  <?php if ($isPost): ?>
  <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
- <span class="icon"><i class="fas fa-newspaper"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-newspaper"></i></span>
  <span>文章分类</span>
  </span>
  <br><small class="mt-2 block text-slate-500">用于组织博客文章</small>
  <?php else: ?>
  <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
- <span class="icon"><i class="fas fa-box"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-box"></i></span>
  <span>产品分类</span>
  </span>
  <br><small class="mt-2 block text-slate-500">用于组织产品目录</small>

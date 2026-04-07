@@ -13,7 +13,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
  <?= h($label) ?>管理
  </h1>
  <p class="mt-1 text-sm text-white/80">共有 <?= count($items) ?> 个<?= h($label) ?></p>
@@ -21,7 +21,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
  </div>
  <div class="header-actions flex items-center gap-3">
  <a href="<?= url("/admin/cases/create") ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-cyan-700 shadow-sm transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-plus"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
  <span>新建<?= h($label) ?></span>
  </a>
  </div>
@@ -32,10 +32,10 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
 <!-- 空状态 -->
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
- <span class="icon"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
  <p>暂无<?= h($label) ?>记录</p>
  <a href="<?= url('/admin/cases/create') ?>" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/25 transition hover:-translate-y-0.5">
- <span class="icon"><i class="fas fa-plus"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
  <span>创建第一个<?= h($label) ?></span>
  </a>
  </div>
@@ -61,7 +61,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
  <?php $cover = $row['cover'] ?? ''; ?>
  <div style="width: 44px; height: 44px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
  <?php if (!$cover): ?>
- <span class="icon text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
  <?php endif; ?>
  </div>
  <div>
@@ -79,18 +79,18 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
  </td>
  <td>
  <span class="text-xs text-slate-500">
- <span class="icon is-small"><i class="far fa-calendar-alt"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="far fa-calendar-alt"></i></span>
  <?= format_date($row['created_at']) ?>
  </span>
  </td>
  <td>
  <div class="flex flex-wrap gap-2">
  <a href="<?= url('/admin/cases/edit?id='. intval($row['id']) ) ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-edit"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-edit"></i></span>
  <span>编辑</span>
  </a>
  <a href="<?= url('/admin/cases/delete?id='. intval($row['id']) ) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" onclick="return confirm('确定要删除该<?= h($label) ?>吗？此操作不可恢复。')">
- <span class="icon"><i class="fas fa-trash-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
  </a>
  </div>
  </td>

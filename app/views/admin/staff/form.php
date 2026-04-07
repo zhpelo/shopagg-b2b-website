@@ -4,7 +4,7 @@
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-<?= isset($user) ? 'user-edit' : 'user-plus' ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-<?= isset($user) ? 'user-edit' : 'user-plus' ?>"></i></span>
  <?= isset($user) ? '编辑员工' : '新增员工' ?>
  </h1>
  <p class="mt-1 text-sm text-white/80"><?= isset($user) ? '修改员工信息和权限' : '添加新的后台用户' ?></p>
@@ -12,7 +12,7 @@
  </div>
  <div class="header-actions flex items-center gap-3">
  <a href="<?= url('/admin/staff') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  <span>返回列表</span>
  </a>
  </div>
@@ -102,7 +102,7 @@
  <div>
  <label class="flex cursor-pointer items-center rounded-2xl border-2 px-4 py-3 transition <?= in_array($key, $user_perms) ? 'border-indigo-500 bg-indigo-50' : 'border-transparent bg-slate-50 hover:border-slate-200 hover:bg-slate-100' ?>">
  <input type="checkbox" name="permissions[]" value="<?= $key ?>" <?= in_array($key, $user_perms) ? 'checked' : '' ?> class="mr-3 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
- <span class="icon is-small mr-2 <?= $info[2] ?>"><i class="fas fa-<?= $info[1] ?>"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-2 <?= $info[2] ?>"><i class="fas fa-<?= $info[1] ?>"></i></span>
  <?= $info[0] ?>
  </label>
  </div>
@@ -116,11 +116,11 @@
  <!-- 提交按钮 -->
  <div class="flex flex-wrap gap-3">
  <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
- <span class="icon"><i class="fas fa-save"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
  <span><?= isset($user) ? '保存修改' : '创建员工' ?></span>
  </button>
  <a href="<?= url('/admin/staff') ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-times"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-times"></i></span>
  <span>取消</span>
  </a>
  </div>

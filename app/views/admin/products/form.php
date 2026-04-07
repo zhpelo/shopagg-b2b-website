@@ -4,7 +4,7 @@
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-<?= isset($product) ? 'edit' : 'plus' ?>"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-<?= isset($product) ? 'edit' : 'plus' ?>"></i></span>
  <?= isset($product) ? '编辑产品' : '添加产品' ?>
  </h1>
  <p class="mt-1 text-sm text-white/80"><?= isset($product) ? '修改产品信息' : '创建新的产品' ?></p>
@@ -12,7 +12,7 @@
  </div>
  <div class="header-actions flex items-center gap-3">
  <a href="<?= url('/admin/products') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  <span>返回列表</span>
  </a>
  </div>

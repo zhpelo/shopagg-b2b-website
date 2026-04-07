@@ -4,7 +4,7 @@
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-file-invoice"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-file-invoice"></i></span>
  询单管理
  </h1>
  <p class="mt-1 text-sm text-white/80">共收到 <?= count($inquiries) ?> 条询单</p>
@@ -12,7 +12,7 @@
  </div>
  <div class="header-actions flex items-center gap-3">
  <a href="<?= url('/admin/inquiries/export') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-download"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-download"></i></span>
  <span>导出 CSV</span>
  </a>
  </div>
@@ -21,7 +21,9 @@
 
 <?php if (isset($_GET['success'])): ?>
 <div class="relative rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800 shadow-sm">
- <button class="delete" type="button" onclick="this.parentElement.remove()"></button>
+ <button type="button" class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 transition hover:bg-emerald-200" onclick="this.parentElement.remove()" aria-label="关闭提示">
+ <i class="fas fa-times text-xs"></i>
+ </button>
  <?= h($_GET['success']) ?>
 </div>
 <?php endif; ?>
@@ -29,19 +31,19 @@
 <!-- 状态筛选 -->
 <div class="modern-tabs">
  <a href="<?= url('/admin/inquiries') ?>" class="<?= empty($current_status) ? 'is-active' : '' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-list"></i></span>全部
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-list"></i></span>全部
  </a>
  <a href="<?= url('/admin/inquiries?status=pending') ?>" class="<?= $current_status === 'pending' ? 'is-active' : '' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-clock"></i></span>待处理
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-clock"></i></span>待处理
  </a>
  <a href="<?= url('/admin/inquiries?status=contacted') ?>" class="<?= $current_status === 'contacted' ? 'is-active' : '' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-phone"></i></span>已联系
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-phone"></i></span>已联系
  </a>
  <a href="<?= url('/admin/inquiries?status=quoted') ?>" class="<?= $current_status === 'quoted' ? 'is-active' : '' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-file-invoice-dollar"></i></span>已报价
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-file-invoice-dollar"></i></span>已报价
  </a>
  <a href="<?= url('/admin/inquiries?status=closed') ?>" class="<?= $current_status === 'closed' ? 'is-active' : '' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-check-circle"></i></span>已关闭
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-check-circle"></i></span>已关闭
  </a>
 </div>
 
@@ -49,7 +51,7 @@
 <!-- 空状态 -->
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
- <span class="icon"><i class="fas fa-file-invoice"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-file-invoice"></i></span>
  <p>暂无相关询单记录</p>
  </div>
 </div>
@@ -86,7 +88,7 @@
  <td>
  <span class="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-700"><?= h($row['product_title'] ?? '通用咨询') ?></span>
  <p class="mt-1 text-xs text-slate-500">
- <span class="icon is-small"><i class="fas fa-cubes"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-cubes"></i></span>
  数量: <?= h($row['quantity'] ?: '未指定') ?>
  </p>
  </td>
@@ -95,7 +97,7 @@
  <?= nl2br(h($row['message'])) ?>
  </div>
  <p class="mt-2 text-xs text-slate-500">
- <span class="icon is-small"><i class="far fa-clock"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="far fa-clock"></i></span>
  <?= format_date($row['created_at']) ?>
  </p>
  </td>
@@ -115,19 +117,19 @@
  ];
  $style = $status_styles[$row['status']] ?? $status_styles['pending'];
  ?>
- <span class="tag" style="background: <?= $style['bg'] ?>; color: <?= $style['color'] ?>;">
- <span class="icon is-small mr-1"><i class="fas fa-<?= $style['icon'] ?>"></i></span>
+ <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold" style="background: <?= $style['bg'] ?>; color: <?= $style['color'] ?>;">
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-<?= $style['icon'] ?>"></i></span>
  <?= $status_labels[$row['status']] ?? $row['status'] ?>
  </span>
  </td>
  <td>
  <p class="text-xs text-slate-500">
- <span class="icon is-small"><i class="fas fa-map-marker-alt"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-map-marker-alt"></i></span>
  IP: <?= h($row['ip']) ?>
  </p>
  <?php if (!empty($row['source_url'])): ?>
  <a href="<?= h($row['source_url']) ?>" target="_blank" class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700">
- <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-external-link-alt"></i></span>
  查看来源
  </a>
  <?php endif; ?>
@@ -135,41 +137,37 @@
  <td>
  <div class="flex flex-wrap gap-2">
  <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 transition hover:bg-cyan-100" title="查看详情">
- <span class="icon"><i class="fas fa-eye"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-eye"></i></span>
  </a>
- <div class="dropdown relative">
- <div class="dropdown-trigger">
- <button class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900" aria-haspopup="true">
- <span class="icon is-small"><i class="fas fa-ellipsis-v"></i></span>
+ <div class="group relative">
+ <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900" aria-haspopup="true" aria-expanded="false">
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-ellipsis-v"></i></span>
  </button>
- </div>
- <div class="dropdown-menu">
- <div class="dropdown-content">
- <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small text-sky-600 mr-2"><i class="fas fa-eye"></i></span>
+ <div class="invisible absolute right-0 top-full z-20 mt-2 w-52 translate-y-1 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+ <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+ <span class="inline-flex h-4 w-4 items-center justify-center text-sky-600 mr-2"><i class="fas fa-eye"></i></span>
  查看详情
  </a>
- <hr class="dropdown-divider">
- <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=contacted') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small text-sky-600 mr-2"><i class="fas fa-phone"></i></span>
+ <div class="my-1 h-px bg-slate-200"></div>
+ <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=contacted') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+ <span class="inline-flex h-4 w-4 items-center justify-center text-sky-600 mr-2"><i class="fas fa-phone"></i></span>
  标记为已联系
  </a>
- <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=quoted') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small text-emerald-600 mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
+ <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=quoted') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+ <span class="inline-flex h-4 w-4 items-center justify-center text-emerald-600 mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
  标记为已报价
  </a>
- <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=closed') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small text-slate-500 mr-2"><i class="fas fa-check-circle"></i></span>
+ <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=closed') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+ <span class="inline-flex h-4 w-4 items-center justify-center text-slate-500 mr-2"><i class="fas fa-check-circle"></i></span>
  标记为已关闭
  </a>
- <hr class="dropdown-divider">
- <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm text-rose-600" onclick="return confirm('确定要删除此询单吗？')">
- <span class="icon is-small mr-2"><i class="fas fa-trash"></i></span>
+ <div class="my-1 h-px bg-slate-200"></div>
+ <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" onclick="return confirm('确定要删除此询单吗？')">
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-2"><i class="fas fa-trash"></i></span>
  删除询单
  </a>
  </div>
- </div>
- </div>
+</div>
  </div>
  </td>
  </tr>

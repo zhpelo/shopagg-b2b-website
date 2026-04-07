@@ -26,7 +26,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
                         </span>
                     <?php endif; ?>
                     <div style="width: 40px; height: 40px; background: <?= $themeGradient ?>; border-radius: 10px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <span class="icon text-white"><i class="fas <?= $icon ?>"></i></span>
+                        <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas <?= $icon ?>"></i></span>
                     </div>
                     <div>
                         <strong><?= h($row['name']) ?></strong>
@@ -47,18 +47,18 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
             </td>
             <td>
                 <span class="text-xs text-slate-500">
-                    <span class="icon is-small"><i class="far fa-calendar-alt"></i></span>
+                    <span class="inline-flex h-4 w-4 items-center justify-center"><i class="far fa-calendar-alt"></i></span>
                     <?= format_date($row['created_at'], 'Y-m-d') ?>
                 </span>
             </td>
             <td>
                 <div class="flex flex-wrap gap-2">
                     <a href="<?= $baseUrl ?>/edit?id=<?= (int)$row['id'] ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                        <span class="icon"><i class="fas fa-edit"></i></span>
+                        <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-edit"></i></span>
                         <span>编辑</span>
                     </a>
                     <a href="<?= $baseUrl ?>/delete?id=<?= (int)$row['id'] ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" onclick="return confirm('确定要删除该分类吗？子分类将提升到父级。')">
-                        <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                        <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
                     </a>
                 </div>
             </td>
@@ -91,7 +91,7 @@ $totalCount = countTotalCategories($categories);
         <div class="flex items-center gap-4">
             <div>
                 <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
-                    <span class="icon mr-2"><i class="fas <?= $icon ?>"></i></span>
+                    <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas <?= $icon ?>"></i></span>
                     <?= $label ?>
                 </h1>
                 <p class="mt-1 text-sm text-white/80">共有 <?= $totalCount ?> 个分类</p>
@@ -99,11 +99,11 @@ $totalCount = countTotalCategories($categories);
         </div>
         <div class="header-actions flex flex-wrap items-center gap-3">
             <a href="<?= $backUrl ?>" class="inline-flex items-center gap-2 rounded-xl border border-white/50 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20">
-                <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
                 <span>返回<?= $isPost ? '文章' : '产品' ?>列表</span>
             </a>
             <a href="<?= $baseUrl ?>/create" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold <?= $isPost ? 'text-emerald-600' : 'text-amber-700' ?> shadow-sm transition hover:bg-slate-50">
-                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
                 <span>新建分类</span>
             </a>
         </div>
@@ -114,10 +114,10 @@ $totalCount = countTotalCategories($categories);
     <!-- 空状态 -->
     <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="empty-state">
-            <span class="icon"><i class="fas fa-folder-open"></i></span>
+            <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder-open"></i></span>
             <p>暂无<?= $label ?>记录</p>
             <a href="<?= $baseUrl ?>/create" class="mt-4 inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
-                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
                 <span>创建第一个分类</span>
             </a>
         </div>

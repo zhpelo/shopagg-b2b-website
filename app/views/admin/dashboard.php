@@ -7,7 +7,7 @@
 <!-- 核心数据统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon bg-indigo-50 text-indigo-600">
+ <span class="inline-flex h-5 w-5 items-center justify-center bg-indigo-50 text-indigo-600">
  <i class="fas fa-chart-pie"></i>
  </span>
  核心数据
@@ -25,7 +25,7 @@
  <?= $counts['active_products'] ?> 已上架
  </div>
  <a href="<?= url('/admin/products') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -38,7 +38,7 @@
  <div class="stat-value"><?= $counts['cases'] ?></div>
  <div class="stat-label">成功案例</div>
  <a href="<?= url('/admin/cases') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-cyan-50 px-3 py-2 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -51,7 +51,7 @@
  <div class="stat-value"><?= $counts['posts'] ?></div>
  <div class="stat-label">博客文章</div>
  <a href="<?= url('/admin/posts') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -64,7 +64,7 @@
  <div class="stat-value"><?= $counts['categories'] ?></div>
  <div class="stat-label">产品分类</div>
  <a href="<?= url('/admin/product-categories') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -75,7 +75,7 @@
 <!-- 客户互动统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon bg-rose-50 text-rose-600">
+ <span class="inline-flex h-5 w-5 items-center justify-center bg-rose-50 text-rose-600">
  <i class="fas fa-users"></i>
  </span>
  客户互动
@@ -93,7 +93,7 @@
  今日 +<?= $counts['today_messages'] ?>
  </div>
  <a href="<?= url('/admin/messages') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>查看</span>
  </a>
  </div>
@@ -110,7 +110,7 @@
  <?= $counts['pending_inquiries'] ?> 待处理
  </div>
  <a href="<?= url('/admin/inquiries') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -123,7 +123,7 @@
  <div class="stat-value"><?= $counts['users'] ?></div>
  <div class="stat-label">团队成员</div>
  <a href="<?= url('/admin/staff') ?>" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
- <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-arrow-right"></i></span>
  <span>管理</span>
  </a>
  </div>
@@ -143,7 +143,7 @@
 <!-- 活动统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon bg-sky-50 text-sky-600">
+ <span class="inline-flex h-5 w-5 items-center justify-center bg-sky-50 text-sky-600">
  <i class="fas fa-chart-line"></i>
  </span>
  活动统计
@@ -152,7 +152,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon text-amber-600"><i class="fas fa-sun"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-amber-600"><i class="fas fa-sun"></i></span>
  今日活动
  </h3>
  <div class="grid gap-4 sm:grid-cols-2">
@@ -174,7 +174,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon text-sky-600"><i class="fas fa-calendar-week"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-sky-600"><i class="fas fa-calendar-week"></i></span>
  本周活动
  </h3>
  <div class="grid gap-4 sm:grid-cols-2">
@@ -196,7 +196,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon text-emerald-600"><i class="fas fa-calendar-alt"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-emerald-600"><i class="fas fa-calendar-alt"></i></span>
  本月概览
  </h3>
  <div class="grid gap-4 sm:grid-cols-3">
@@ -231,7 +231,7 @@
 <!-- 30天趋势图 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon bg-emerald-50 text-emerald-600">
+ <span class="inline-flex h-5 w-5 items-center justify-center bg-emerald-50 text-emerald-600">
  <i class="fas fa-chart-bar"></i>
  </span>
  近30天趋势
@@ -240,7 +240,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon text-rose-600"><i class="fas fa-envelope"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-rose-600"><i class="fas fa-envelope"></i></span>
  留言趋势
  </h3>
  <div class="mini-chart">
@@ -261,7 +261,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon text-indigo-600"><i class="fas fa-file-invoice"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center text-indigo-600"><i class="fas fa-file-invoice"></i></span>
  询单趋势
  </h3>
  <div class="mini-chart">
@@ -285,7 +285,7 @@
 <!-- 快捷操作 -->
 <div class="mb-5">
  <div class="section-title">
- <span class="icon bg-amber-50 text-amber-700">
+ <span class="inline-flex h-5 w-5 items-center justify-center bg-amber-50 text-amber-700">
  <i class="fas fa-bolt"></i>
  </span>
  快捷操作

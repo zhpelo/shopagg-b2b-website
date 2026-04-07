@@ -4,7 +4,7 @@
  <div class="flex items-center gap-4">
  <div>
  <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
- <span class="icon mr-2"><i class="fas fa-user-circle"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-user-circle"></i></span>
  个人资料
  </h1>
  <p class="mt-1 text-sm text-white/80">管理您的账户信息</p>
@@ -23,7 +23,7 @@
  <h3 class="mb-1 text-xl font-bold text-slate-900"><?= h($user['display_name'] ?? $user['username']) ?></h3>
  <p class="mb-3 text-sm text-slate-500">@<?= h($user['username']) ?></p>
  <span class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold <?= $user['role'] === 'admin' ? 'bg-rose-50 text-rose-700' : 'bg-cyan-50 text-cyan-700' ?>">
- <span class="icon is-small mr-1"><i class="fas fa-<?= $user['role'] === 'admin' ? 'shield-alt' : 'user' ?>"></i></span>
+ <span class="inline-flex h-4 w-4 items-center justify-center mr-1"><i class="fas fa-<?= $user['role'] === 'admin' ? 'shield-alt' : 'user' ?>"></i></span>
  <?= $user['role'] === 'admin' ? '管理员' : '普通员工' ?>
  </span>
  
@@ -89,11 +89,11 @@
  
  <div class="flex flex-wrap gap-3">
  <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
- <span class="icon"><i class="fas fa-save"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
  <span>保存修改</span>
  </button>
  <a href="<?= url('/admin') ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
- <span class="icon"><i class="fas fa-arrow-left"></i></span>
+ <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-arrow-left"></i></span>
  <span>返回仪表盘</span>
  </a>
  </div>
