@@ -12,17 +12,23 @@ $carouselProducts = get_carousel_products(3);
 <?php if($carouselProducts): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <!-- Hero 轮播 -->
-<section class="relative min-h-[480px] lg:min-h-[560px] overflow-hidden">
+<section class="hero-banner relative overflow-hidden">
     <div class="swiper hero-swiper w-full h-full">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
                 <div class="swiper-slide relative">
                     <!-- Background Image -->
-                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?= get_image_url($p['banner_image'] ?? null, 1200, 560, 'Product Banner') ?>');"></div>
+                    <div class="absolute inset-0">
+                        <img
+                            src="<?= get_image_url($p['banner_image'] ?? null, 1980, 900) ?>"
+                            alt="<?= h($p['title']) ?>"
+                            class="w-full h-full object-cover"
+                        >
+                    </div>
                     <!-- Overlay -->
                     <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/50 to-gray-900/40"></div>
                     <!-- Content -->
-                    <div class="relative z-10 container mx-auto px-4 lg:px-8 h-full flex items-center py-20">
+                    <div class="relative z-10 container mx-auto px-4 lg:px-8 h-full flex items-center py-12 md:py-16 lg:py-20">
                         <div class="max-w-2xl">
                             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight line-clamp-2">
                                 <?= h($p['title']) ?>

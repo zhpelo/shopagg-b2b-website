@@ -34,6 +34,16 @@
 }
 
 /* ===== Hero Swiper ===== */
+.hero-banner {
+  height: clamp(420px, 45.4545vw, 900px);
+}
+
+.hero-banner .swiper,
+.hero-banner .swiper-wrapper,
+.hero-banner .swiper-slide {
+  height: 100%;
+}
+
 .hero-swiper .swiper-button-prev,
 .hero-swiper .swiper-button-next {
   background: rgba(255, 255, 255, 0.2);
