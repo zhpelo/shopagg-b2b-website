@@ -24,6 +24,16 @@ use SQLite3;
  * 所有方法均受权限控制保护
  */
 class AdminController extends Controller {
+    private const SETTINGS_TABS = [
+        'general' => '基础设置',
+        'company' => '公司简介',
+        'trade' => '贸易能力',
+        'media' => '公司展示',
+        'contact' => '联系方式',
+        'translate' => '翻译设置',
+        'custom' => '自定义代码',
+    ];
+
     
     // 数据库实例
     private SQLite3 $db;
@@ -195,8 +205,29 @@ class AdminController extends Controller {
         return $out;
     }
 
+    private function currentAdminPath(): string {
+        return AuthManager::normalizePath(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
+    }
+
+    private function normalizeSettingsTab(string $tab): string {
+        return array_key_exists($tab, self::SETTINGS_TABS) ? $tab : 'general';
+    }
+
+    private function settingsPath(string $tab): string {
+        return '/admin/settings-' . $this->normalizeSettingsTab($tab);
+    }
+
+    private function resolveSettingsTab(): string {
+        $path = $this->currentAdminPath();
+        if (preg_match('#^/admin/settings-([a-z\-]+)$#', $path, $matches) === 1) {
+            return $this->normalizeSettingsTab($matches[1]);
+        }
+
+        return 'general';
+    }
+
     public function settings(): void {
-        $tab = $_GET['tab'] ?? 'general';
+        $tab = $this->resolveSettingsTab();
         $settings = $this->settingModel->getAll();
         
         // Scan for available themes
@@ -212,19 +243,46 @@ class AdminController extends Controller {
 
         $theme = $settings['theme'] ?? 'default';
         if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
-        
+
+        $translateLanguageOptions = [
+            'en' => 'English',
+            'zh-CN' => '简体中文',
+            'zh-TW' => '繁體中文',
+            'ja' => '日本語',
+            'ko' => '한국어',
+            'es' => 'Español',
+            'fr' => 'Français',
+            'de' => 'Deutsch',
+            'it' => 'Italiano',
+            'pt' => 'Português',
+            'ru' => 'Русский',
+            'ar' => 'العربية',
+        ];
+
+        $selectedTranslateLanguages = json_decode($settings['translate_languages'] ?? '[]', true);
+        if (!is_array($selectedTranslateLanguages) || empty($selectedTranslateLanguages)) {
+            $selectedTranslateLanguages = ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ar'];
+        }
+        if (!in_array('en', $selectedTranslateLanguages, true)) {
+            array_unshift($selectedTranslateLanguages, 'en');
+        }
+
         $data = [
             'settings' => $settings,
             'tab' => $tab,
-            'available_themes' => $availableThemes
+            'available_themes' => $availableThemes,
+            'settings_form_action' => $this->settingsPath($tab),
+            'settings_section_view' => $tab,
+            'translateLanguageOptions' => $translateLanguageOptions,
+            'selectedTranslateLanguages' => $selectedTranslateLanguages,
         ];
 
-        $this->renderAdmin('系统设置', $this->renderView('admin/settings', $data));
+        $this->renderAdmin('系统设置 - ' . (self::SETTINGS_TABS[$tab] ?? '基础设置'), $this->renderView('admin/settings/page', $data));
     }
 
     public function saveSettings(): void {
         csrf_check();
-        $tab = $_POST['tab'] ?? 'general';
+        $tab = $this->resolveSettingsTab();
         
         // Special handling for media tab JSON conversion
         if ($tab === 'media') {
@@ -250,7 +308,7 @@ class AdminController extends Controller {
             }
             $this->settingModel->set('company_certificates_json', json_encode($certData));
 
-            $this->redirect('/admin/settings?tab=media');
+            $this->redirect($this->settingsPath('media'));
             return;
         }
 
@@ -271,7 +329,7 @@ class AdminController extends Controller {
             $this->settingModel->set('translate_auto_browser', $autoBrowser);
             $this->settingModel->set('translate_languages', json_encode($languages, JSON_UNESCAPED_UNICODE));
 
-            $this->redirect('/admin/settings?tab=translate');
+            $this->redirect($this->settingsPath('translate'));
             return;
         }
 
@@ -289,7 +347,7 @@ class AdminController extends Controller {
                 $this->settingModel->set($k, is_array($_POST[$k]) ? json_encode($_POST[$k]) : trim((string)$_POST[$k]));
             }
         }
-        $this->redirect('/admin/settings?tab=' . $tab);
+        $this->redirect($this->settingsPath($tab));
     }
 
     // --- Products ---

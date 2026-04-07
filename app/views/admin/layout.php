@@ -175,7 +175,7 @@
                         <?php endif; ?>
 
                         <?php if ($can_access('settings')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/settings') ?>">
+                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'settings' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/settings-general') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-cog"></i></span>系统设置
                             </a>
                         <?php endif; ?>
@@ -244,9 +244,8 @@
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/create') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff/create') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                         </a>
-                    <?php elseif ($active_group === 'settings'): 
-                            
-                            $tabs = [
+                    <?php elseif ($active_group === 'settings'):
+                            $settingsTabs = [
                                 'general' => ['基础设置', 'cog'],
                                 'company' => ['公司简介', 'building'],
                                 'trade' => ['贸易能力', 'globe'],
@@ -255,10 +254,14 @@
                                 'translate' => ['翻译设置', 'language'],
                                 'custom' => ['自定义代码', 'code']
                             ];
-                            foreach ($tabs as $key => $info): ?>
+                            $currentSettingsSection = 'general';
+                            if (preg_match('#^/admin/settings-([a-z\-]+)$#', $current_path, $matches) === 1 && array_key_exists($matches[1], $settingsTabs)) {
+                                $currentSettingsSection = $matches[1];
+                            }
+                            foreach ($settingsTabs as $key => $info): ?>
                             <a
-                                href="<?= url('/admin/settings?tab=' . urlencode($key)) ?>"
-                                class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $tab === $key ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>">
+                                href="<?= url('/admin/settings-' . $key) ?>"
+                                class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $currentSettingsSection === $key ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>">
                                 <span class="inline-flex h-4 w-4 items-center justify-center">
                                     <i class="fas fa-<?= $info[1] ?> text-xs"></i>
                                 </span>
@@ -455,7 +458,7 @@
     <footer class="footer bg-white py-4" style="border-top: 1px solid #e5e7eb;">
         <div class="container text-center">
             <p class="text-xs text-slate-500">
-                &copy; <?= date('Y') ?> SHOPAGG B2B Management Platform. Powered by <a href="https://www.shopagg.com" target="_blank" style="color: #667eea;">SHOPAGG</a>.
+                &copy; <?= date('Y') ?> SHOPAGG B2B 企业官网系统. Powered by <a href="https://www.shopagg.com" target="_blank" style="color: #667eea;">SHOPAGG</a>.
             </p>
         </div>
     </footer>

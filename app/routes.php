@@ -30,8 +30,20 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/login', [AdminController::class, 'doLogin']);
     $router->add('GET', '/admin/logout', [AdminController::class, 'logout']);
     $router->add('GET', '/admin', [AdminController::class, 'dashboard']);
-    $router->add('GET', '/admin/settings', [AdminController::class, 'settings']);
-    $router->add('POST', '/admin/settings', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-general', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-general', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-company', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-company', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-trade', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-trade', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-media', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-media', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-contact', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-contact', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-translate', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-translate', [AdminController::class, 'saveSettings']);
+    $router->add('GET', '/admin/settings-custom', [AdminController::class, 'settings']);
+    $router->add('POST', '/admin/settings-custom', [AdminController::class, 'saveSettings']);
 
     // 后台：产品
     $router->add('GET', '/admin/products', [AdminController::class, 'productList']);
