@@ -1,17 +1,17 @@
 <!-- 页面头部 -->
 <div class="page-header animate-in">
-    <div class="level mb-0">
-        <div class="level-left">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
             <div>
-                <h1 class="title is-4 mb-1">
+                <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
                     <span class="icon mr-2"><i class="fas fa-box"></i></span>
                     产品管理
                 </h1>
-                <p class="subtitle is-6">共有 <?= count($products) ?> 个产品</p>
+                <p class="mt-1 text-sm text-white/80">共有 <?= count($products) ?> 个产品</p>
             </div>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= url('/admin/products/create') ?>" class="button is-white">
+        <div class="header-actions flex items-center gap-3">
+            <a href="<?= url('/admin/products/create') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
                 <span class="icon"><i class="fas fa-plus"></i></span>
                 <span>添加产品</span>
             </a>
@@ -25,7 +25,7 @@
     <div class="empty-state">
         <span class="icon"><i class="fas fa-box-open"></i></span>
         <p>暂无产品记录</p>
-        <a href="<?= url('/admin/products/create') ?>" class="button is-primary mt-4">
+        <a href="<?= url('/admin/products/create') ?>" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
             <span class="icon"><i class="fas fa-plus"></i></span>
             <span>添加第一个产品</span>
         </a>
@@ -35,7 +35,7 @@
 <!-- 产品列表 -->
 <div class="modern-table animate-in delay-1">
     <div class="table-container">
-        <table class="table is-fullwidth">
+        <table class="min-w-full text-sm text-slate-700">
             <thead>
                 <tr>
                     <th>产品信息</th>
@@ -49,7 +49,7 @@
                 <?php foreach ($products as $row): ?>
                 <tr>
                     <td>
-                        <div class="is-flex is-align-items-center">
+                        <div class="flex items-center">
                             <?php 
                             $images = json_decode($row['images_json'] ?? '[]', true);
                             $cover = !empty($images) ? $images[0] : null;
@@ -67,45 +67,45 @@
                     </td>
                     <td>
                         <?php if (!empty($row['category_name'])): ?>
-                        <span class="tag is-light">
+                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                             <span class="icon is-small mr-1"><i class="fas fa-folder"></i></span>
                             <?= h($row['category_name']) ?>
                         </span>
                         <?php else: ?>
-                        <span class="has-text-grey-light is-size-7">未分类</span>
+                        <span class="text-xs text-slate-400">未分类</span>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php
                         $status_map = [
-                            'draft' => ['草稿', 'warning', 'edit'],
-                            'active' => ['已上架', 'success', 'check-circle'],
-                            'inactive' => ['已下架', 'grey', 'arrow-down'],
-                            'archived' => ['已下架', 'grey', 'arrow-down']  // 兼容旧数据
+                            'draft' => ['草稿', 'bg-amber-50 text-amber-700', 'edit'],
+                            'active' => ['已上架', 'bg-emerald-50 text-emerald-700', 'check-circle'],
+                            'inactive' => ['已下架', 'bg-slate-100 text-slate-600', 'arrow-down'],
+                            'archived' => ['已下架', 'bg-slate-100 text-slate-600', 'arrow-down']
                         ];
                         $s = $status_map[$row['status'] ?? 'active'] ?? $status_map['active'];
                         ?>
-                        <span class="tag is-<?= $s[1] ?>">
+                        <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold <?= $s[1] ?>">
                             <span class="icon is-small mr-1"><i class="fas fa-<?= $s[2] ?>"></i></span>
                             <?= $s[0] ?>
                         </span>
                     </td>
                     <td>
-                        <span class="is-size-7 has-text-grey">
+                        <span class="text-xs text-slate-500">
                             <span class="icon is-small"><i class="far fa-calendar-alt"></i></span>
                             <?= format_date($row['created_at']) ?>
                         </span>
                     </td>
                     <td>
-                        <div class="buttons are-small" style="gap: 0.5rem;">
-                            <a href="<?= url('/product/' . h($row['slug'])) ?>" target="_blank" class="button is-light" style="border-radius: 8px;" title="预览">
+                        <div class="flex flex-wrap gap-2">
+                            <a href="<?= url('/product/' . h($row['slug'])) ?>" target="_blank" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900" title="预览">
                                 <span class="icon"><i class="fas fa-eye"></i></span>
                             </a>
-                            <a href="<?= url('/admin/products/edit?id=' . (int)$row['id']) ?>" class="button is-light" style="border-radius: 8px;">
+                            <a href="<?= url('/admin/products/edit?id=' . (int)$row['id']) ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                                 <span class="icon"><i class="fas fa-edit"></i></span>
                                 <span>编辑</span>
                             </a>
-                            <a href="<?= url('/admin/products/delete?id=' . (int)$row['id']) ?>" class="button is-danger is-light" style="border-radius: 8px;" onclick="return confirm('确定要删除该产品吗？此操作不可恢复。')">
+                            <a href="<?= url('/admin/products/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" onclick="return confirm('确定要删除该产品吗？此操作不可恢复。')">
                                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
                             </a>
                         </div>

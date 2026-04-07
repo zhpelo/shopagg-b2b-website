@@ -1,17 +1,17 @@
 <!-- 页面头部 -->
 <div class="page-header animate-in">
-    <div class="level mb-0">
-        <div class="level-left">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
             <div>
-                <h1 class="title is-4 mb-1">
+                <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
                     <span class="icon mr-2"><i class="fas fa-<?= isset($user) ? 'user-edit' : 'user-plus' ?>"></i></span>
                     <?= isset($user) ? '编辑员工' : '新增员工' ?>
                 </h1>
-                <p class="subtitle is-6"><?= isset($user) ? '修改员工信息和权限' : '添加新的后台用户' ?></p>
+                <p class="mt-1 text-sm text-white/80"><?= isset($user) ? '修改员工信息和权限' : '添加新的后台用户' ?></p>
             </div>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= url('/admin/staff') ?>" class="button is-white">
+        <div class="header-actions flex items-center gap-3">
+            <a href="<?= url('/admin/staff') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -19,8 +19,8 @@
     </div>
 </div>
 
-<div class="columns">
-    <div class="column is-8 animate-in delay-1">
+<div class="grid gap-6 xl:grid-cols-12">
+    <div class="animate-in delay-1 xl:col-span-8">
         <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             
@@ -31,8 +31,8 @@
                     基本信息
                 </div>
                 
-                <div class="columns">
-                    <div class="column">
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
                         <div class="field">
                             <label class="label">用户名</label>
                             <div class="control has-icons-left">
@@ -48,7 +48,7 @@
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="column">
+                    <div>
                         <div class="field">
                             <label class="label">显示名称</label>
                             <div class="control has-icons-left">
@@ -99,7 +99,7 @@
                 <div class="field">
                     <label class="label">访问权限</label>
                     <div class="control">
-                        <div class="columns is-multiline" style="margin-top: 0.5rem;">
+                        <div class="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                             <?php 
                             $available_perms = [
                                 'products' => ['产品管理', 'box', 'primary'],
@@ -112,9 +112,9 @@
                             $user_perms = $user['permissions'] ?? [];
                             foreach ($available_perms as $key => $info): 
                             ?>
-                            <div class="column is-4">
-                                <label class="checkbox" style="display: flex; align-items: center; padding: 0.75rem 1rem; background: <?= in_array($key, $user_perms) ? 'rgba(102, 126, 234, 0.1)' : '#f8fafc' ?>; border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 2px solid <?= in_array($key, $user_perms) ? '#667eea' : 'transparent' ?>;">
-                                    <input type="checkbox" name="permissions[]" value="<?= $key ?>" <?= in_array($key, $user_perms) ? 'checked' : '' ?> style="margin-right: 0.75rem;">
+                            <div>
+                                <label class="flex cursor-pointer items-center rounded-2xl border-2 px-4 py-3 transition <?= in_array($key, $user_perms) ? 'border-indigo-500 bg-indigo-50' : 'border-transparent bg-slate-50 hover:border-slate-200 hover:bg-slate-100' ?>">
+                                    <input type="checkbox" name="permissions[]" value="<?= $key ?>" <?= in_array($key, $user_perms) ? 'checked' : '' ?> class="mr-3 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                                     <span class="icon is-small mr-2 has-text-<?= $info[2] ?>"><i class="fas fa-<?= $info[1] ?>"></i></span>
                                     <?= $info[0] ?>
                                 </label>
@@ -127,12 +127,12 @@
             </div>
 
             <!-- 提交按钮 -->
-            <div class="buttons">
-                <button type="submit" class="button is-primary is-medium">
+            <div class="flex flex-wrap gap-3">
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                     <span class="icon"><i class="fas fa-save"></i></span>
                     <span><?= isset($user) ? '保存修改' : '创建员工' ?></span>
                 </button>
-                <a href="<?= url('/admin/staff') ?>" class="button is-light is-medium">
+                <a href="<?= url('/admin/staff') ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                     <span class="icon"><i class="fas fa-times"></i></span>
                     <span>取消</span>
                 </a>
@@ -141,7 +141,7 @@
     </div>
 
     <!-- 右侧提示 -->
-    <div class="column is-4 animate-in delay-2">
+    <div class="animate-in delay-2 xl:col-span-4">
         <div class="admin-card" style="padding: 1.5rem;">
             <div class="section-title" style="font-size: 1rem;">
                 <span class="icon-box info"><i class="fas fa-info"></i></span>

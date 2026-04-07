@@ -4,7 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($title) ?></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script>
+        tailwind = window.tailwind || {};
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', '"Helvetica Neue"', 'sans-serif']
+                    },
+                    colors: {
+                        admin: {
+                            primary: '#667eea',
+                            primaryDark: '#4c51bf',
+                            slate: '#0f172a'
+                        }
+                    },
+                    boxShadow: {
+                        admin: '0 12px 40px rgba(15, 23, 42, 0.12)'
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.css">
     <link rel="stylesheet" href="<?= url('/app/views/admin/style.css') ?>">
@@ -74,7 +96,7 @@
     <script>window.APP_BASE_PATH = '<?= base_path() ?>';</script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
-<body class="<?= ($showNav ?? true) ? '' : 'login-page' ?>">
+<body class="<?= ($showNav ?? true) ? 'min-h-screen bg-slate-100 text-slate-800' : 'login-page' ?>">
     <?php if ($showNav ?? true): 
     $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $basePath = base_path();
@@ -95,68 +117,69 @@
     };
 ?>
     <!-- 第一级主导航 -->
-    <nav class="navbar is-white admin-navbar" role="navigation" aria-label="main navigation">
-        <div class="container">
-            <div class="navbar-brand">
-                <a class="logo-link" href="<?= url('/admin') ?>" style="padding: 0.5rem;">
+    <nav class="admin-navbar border-b border-slate-200 bg-white/95 backdrop-blur" role="navigation" aria-label="main navigation">
+        <div class="container flex items-center justify-between gap-6 py-4">
+            <div class="flex items-center gap-3">
+                <a class="logo-link inline-flex items-center rounded-xl p-2 transition hover:bg-slate-100" href="<?= url('/admin') ?>">
                     <img src="https://www.shopagg.com/wp-content/uploads/2024/12/shopagg-logo-b.png" alt="logo" style="height: 36px; max-height: 36px;">
                 </a>
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="adminNavbar">
+                <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 lg:hidden" aria-label="menu" aria-expanded="false" data-nav-toggle data-target="adminNavbar">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
-                </a>
+                </button>
             </div>
 
-            <div id="adminNavbar" class="navbar-menu ml-6">
-                <div class="navbar-start">
-                    <a class="navbar-item <?= $current_path === '/admin' ? 'is-active' : '' ?>" href="<?= url('/admin') ?>">
+            <div id="adminNavbar" class="hidden w-full flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" data-nav-menu>
+                <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-2">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin') ?>">
                         <span class="icon mr-1"><i class="fas fa-home"></i></span>仪表盘
                     </a>
                     <?php if ($can_access('inbox')): ?>
-                    <a class="navbar-item <?= $active_group === 'inbox' ? 'is-active' : '' ?>" href="<?= url('/admin/messages') ?>">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'inbox' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
                         <span class="icon mr-1"><i class="fas fa-envelope"></i></span>收件箱
                     </a>
                     <?php endif; ?>
                     <?php if ($can_access('products')): ?>
-                    <a class="navbar-item <?= $active_group === 'catalog' ? 'is-active' : '' ?>" href="<?= url('/admin/products') ?>">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'catalog' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
                         <span class="icon mr-1"><i class="fas fa-box"></i></span>产品中心
                     </a>
                     <?php endif; ?>
                     <?php if ($can_access('blog') || $can_access('cases')): ?>
-                    <a class="navbar-item <?= $active_group === 'content' ? 'is-active' : '' ?>" href="<?= url('/admin/posts') ?>">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'content' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
                         <span class="icon mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
                     </a>
                     <?php endif; ?>
                     
                     <?php if ($user_role === 'admin'): ?>
-                    <a class="navbar-item <?= $active_group === 'staff' ? 'is-active' : '' ?>" href="<?= url('/admin/staff') ?>">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'staff' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
                         <span class="icon mr-1"><i class="fas fa-users"></i></span>员工管理
                     </a>
                     <?php endif; ?>
 
                     <?php if ($can_access('settings')): ?>
-                    <a class="navbar-item <?= $current_path === '/admin/settings' ? 'is-active' : '' ?>" href="<?= url('/admin/settings') ?>">
+                    <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/settings') ?>">
                         <span class="icon mr-1"><i class="fas fa-cog"></i></span>系统设置
                     </a>
                     <?php endif; ?>
                 </div>
 
-                <div class="navbar-end">
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
+                <div class="flex items-center justify-end">
+                    <div class="group relative">
+                        <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
                             <span class="icon mr-1"><i class="fas fa-user-circle"></i></span>
                             <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
-                        </a>
-                        <div class="navbar-dropdown is-right">
-                            <a class="navbar-item" href="<?= url('/admin/profile') ?>">
+                            <span class="text-xs text-slate-400"><i class="fas fa-chevron-down"></i></span>
+                        </button>
+                        <div class="invisible absolute right-0 top-full z-50 mt-2 min-w-[13rem] translate-y-1 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                            <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/admin/profile') ?>">
                                 <span class="icon mr-2"><i class="fas fa-id-card"></i></span>个人资料
                             </a>
-                            <a class="navbar-item" href="<?= url('/') ?>" target="_blank">
+                            <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/') ?>" target="_blank">
                                 <span class="icon mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
                             </a>
-                            <hr class="navbar-divider">
-                            <a class="navbar-item has-text-danger" href="<?= url('/admin/logout') ?>">
+                            <div class="my-2 h-px bg-slate-200"></div>
+                            <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" href="<?= url('/admin/logout') ?>">
                                 <span class="icon mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
                             </a>
                         </div>
@@ -168,40 +191,40 @@
 
     <!-- 第二级二级导航 -->
     <?php if ($active_group): ?>
-    <nav class="admin-subnav">
-        <div class="container admin-subnav-container">
+    <nav class="admin-subnav border-b border-slate-200 bg-white">
+        <div class="container admin-subnav-container flex items-center overflow-x-auto whitespace-nowrap">
             <?php if ($active_group === 'catalog'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'is-active' : '' ?>" href="<?= url('/admin/products') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>产品列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/product-categories') ? 'is-active' : '' ?>" href="<?= url('/admin/product-categories') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/product-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/product-categories') ?>">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>产品分类
                 </a>
             <?php elseif ($active_group === 'content'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'is-active' : '' ?>" href="<?= url('/admin/posts') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
                     <span class="icon mr-1"><i class="fas fa-newspaper"></i></span>文章管理
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/post-categories') ? 'is-active' : '' ?>" href="<?= url('/admin/post-categories') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/post-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/post-categories') ?>">
                     <span class="icon mr-1"><i class="fas fa-folder"></i></span>文章分类
                 </a>
-                <a class="navbar-item <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'is-active' : '' ?>" href="<?= url('/admin/cases') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
                     <span class="icon mr-1"><i class="fas fa-briefcase"></i></span>案例展示
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/admin/media') ? 'is-active' : '' ?>" href="<?= url('/admin/media') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/media') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/media') ?>">
                     <span class="icon mr-1"><i class="fas fa-photo-video"></i></span>媒体库
                 </a>
             <?php elseif ($active_group === 'inbox'): ?>
-                <a class="navbar-item <?= str_contains($current_path, '/messages') ? 'is-active' : '' ?>" href="<?= url('/admin/messages') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/messages') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
                     <span class="icon mr-1"><i class="fas fa-comment-dots"></i></span>联系留言
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/inquiries') ? 'is-active' : '' ?>" href="<?= url('/admin/inquiries') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/inquiries') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/inquiries') ?>">
                     <span class="icon mr-1"><i class="fas fa-file-invoice"></i></span>询单管理
                 </a>
             <?php elseif ($active_group === 'staff'): ?>
-                <a class="navbar-item <?= $current_path === '/admin/staff' ? 'is-active' : '' ?>" href="<?= url('/admin/staff') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/staff' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
                     <span class="icon mr-1"><i class="fas fa-list"></i></span>员工列表
                 </a>
-                <a class="navbar-item <?= str_contains($current_path, '/create') ? 'is-active' : '' ?>" href="<?= url('/admin/staff/create') ?>">
+                <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/create') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff/create') ?>">
                     <span class="icon mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                 </a>
             <?php endif; ?>
@@ -212,7 +235,7 @@
 <?php endif; ?>
 
 <div class="admin-main">
-    <section class="section">
+    <section class="px-4 py-6 sm:px-6 lg:px-8">
         <div class="container">
             <?= $content ?>
         </div>
@@ -220,17 +243,17 @@
 </div>
 
 <!-- 统一媒体库模态框 -->
-<div class="modal" id="media-library-modal">
-    <div class="modal-background"></div>
-    <div class="modal-card media-library-modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">
+<div class="fixed inset-0 z-[80] hidden items-center justify-center p-4" id="media-library-modal">
+    <div class="absolute inset-0 bg-slate-950/60" data-media-modal-close></div>
+    <div class="media-library-modal-card relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
+        <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-4">
+            <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
                 <span class="icon mr-2"><i class="fas fa-photo-video"></i></span>
                 媒体库
             </p>
-            <button type="button" class="delete close-modal" aria-label="close"></button>
+            <button type="button" class="delete" aria-label="close" data-media-modal-close></button>
         </header>
-        <section class="modal-card-body media-library-body">
+        <section class="media-library-body overflow-auto">
             <div class="media-library-window">
                 <div class="media-library-window-nav">
                     <div class="buttons are-small mb-0">
@@ -400,9 +423,9 @@
                 </div>
             </div>
         </section>
-        <footer class="modal-card-foot media-library-footer">
+        <footer class="media-library-footer flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
             <button type="button" class="button is-link" id="confirm-media-selection" style="display:none">确认选择</button>
-            <button type="button" class="button is-light close-modal ml-2">取消</button>
+            <button type="button" class="button is-light" data-media-modal-close>取消</button>
         </footer>
     </div>
 </div>
@@ -508,7 +531,8 @@ function openMediaLibrary(callback, multi = false, options = {}) {
         confirmLabel.disabled = true;
         confirmLabel.textContent = multi ? '插入所选' : '插入';
     }
-    modal.classList.add('is-active');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     updateMediaLibraryNavButtons();
     updateMediaLibraryViewMode();
     fetchMediaLibrary();
@@ -517,7 +541,8 @@ function openMediaLibrary(callback, multi = false, options = {}) {
 function closeMediaLibraryModal() {
     const modal = document.getElementById('media-library-modal');
     if (modal) {
-        modal.classList.remove('is-active');
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
     }
 }
 
@@ -1107,19 +1132,24 @@ function insertMediaIntoEditor(editor, selection) {
 
 document.addEventListener("DOMContentLoaded", function () {
     // 手机端导航切换
-    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('[data-nav-toggle]'), 0);
     $navbarBurgers.forEach( el => {
         el.addEventListener('click', () => {
             const target = el.dataset.target;
             const $target = document.getElementById(target);
+            const isHidden = $target.classList.contains('hidden');
             el.classList.toggle('is-active');
-            $target.classList.toggle('is-active');
+            el.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+            $target.classList.toggle('hidden', !isHidden);
+            if (window.innerWidth < 1024) {
+                $target.classList.toggle('flex', isHidden);
+            }
         });
     });
 
     // 媒体库通用事件
     const modal = document.getElementById('media-library-modal');
-    const closeBtns = modal ? modal.querySelectorAll('.close-modal, .modal-background') : [];
+    const closeBtns = modal ? modal.querySelectorAll('[data-media-modal-close]') : [];
     closeBtns.forEach(btn => btn.addEventListener('click', () => closeMediaLibraryModal()));
 
     const confirmBtn = document.getElementById('confirm-media-selection');
@@ -1381,7 +1411,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.addEventListener('keydown', function(event) {
-        if (!modal || !modal.classList.contains('is-active')) {
+        if (!modal || modal.classList.contains('hidden')) {
             return;
         }
 

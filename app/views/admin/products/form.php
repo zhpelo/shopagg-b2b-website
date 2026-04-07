@@ -1,17 +1,17 @@
 <!-- 页面头部 -->
 <div class="page-header animate-in">
-    <div class="level mb-0">
-        <div class="level-left">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
             <div>
-                <h1 class="title is-4 mb-1">
+                <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
                     <span class="icon mr-2"><i class="fas fa-<?= isset($product) ? 'edit' : 'plus' ?>"></i></span>
                     <?= isset($product) ? '编辑产品' : '添加产品' ?>
                 </h1>
-                <p class="subtitle is-6"><?= isset($product) ? '修改产品信息' : '创建新的产品' ?></p>
+                <p class="mt-1 text-sm text-white/80"><?= isset($product) ? '修改产品信息' : '创建新的产品' ?></p>
             </div>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= url('/admin/products') ?>" class="button is-white">
+        <div class="header-actions flex items-center gap-3">
+            <a href="<?= url('/admin/products') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-slate-50">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -22,9 +22,9 @@
 <form method="post" action="<?= h(url($action)) ?>" enctype="multipart/form-data" id="product-form" class="modern-form">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
-    <div class="columns">
+    <div class="grid gap-6 xl:grid-cols-12">
         <!-- 左侧栏 -->
-        <div class="column is-8">
+        <div class="xl:col-span-8">
             <!-- 标题和描述 -->
             <div class="admin-card mb-5 animate-in delay-1" style="padding: 2rem;">
                 <div class="section-title">
@@ -185,7 +185,7 @@
         </div>
 
         <!-- 右侧栏 -->
-        <div class="column is-4">
+        <div class="xl:col-span-4">
             <!-- 状态 -->
             <div class="admin-card mb-5 animate-in delay-1" style="padding: 1.5rem;">
                 <div class="section-title" style="font-size: 1rem;">

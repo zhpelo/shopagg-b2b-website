@@ -5,18 +5,18 @@ $categories = $categories ?? [];
 
 <!-- 页面头部 -->
 <div class="page-header animate-in" style="background: linear-gradient(135deg, #00d1b2 0%, #48c774 100%); box-shadow: 0 10px 40px rgba(0, 209, 178, 0.3);">
-    <div class="level mb-0">
-        <div class="level-left">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
             <div>
-                <h1 class="title is-4 mb-1">
+                <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
                     <span class="icon mr-2"><i class="fas fa-<?= $isEdit ? 'edit' : 'plus' ?>"></i></span>
                     <?= $isEdit ? '编辑文章' : '新建文章' ?>
                 </h1>
-                <p class="subtitle is-6"><?= $isEdit ? '修改文章内容' : '创建新的博客文章' ?></p>
+                <p class="mt-1 text-sm text-white/80"><?= $isEdit ? '修改文章内容' : '创建新的博客文章' ?></p>
             </div>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= url('/admin/posts') ?>" class="button is-white">
+        <div class="header-actions flex items-center gap-3">
+            <a href="<?= url('/admin/posts') ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-emerald-600 shadow-sm transition hover:bg-slate-50">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -27,9 +27,9 @@ $categories = $categories ?? [];
 <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     
-    <div class="columns">
+    <div class="grid gap-6 xl:grid-cols-12">
         <!-- 左侧：主要内容 -->
-        <div class="column is-8 animate-in delay-1">
+        <div class="animate-in delay-1 xl:col-span-8">
             <div class="admin-card" style="padding: 2rem;">
                 <div class="section-title">
                     <span class="icon-box success"><i class="fas fa-file-alt"></i></span>
@@ -76,7 +76,7 @@ $categories = $categories ?? [];
         </div>
         
         <!-- 右侧：设置 -->
-        <div class="column is-4 animate-in delay-2">
+        <div class="animate-in delay-2 xl:col-span-4">
             <!-- 发布设置 -->
             <div class="admin-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
                 <div class="section-title">
@@ -129,10 +129,10 @@ $categories = $categories ?? [];
                             <figure class="image is-3by2" style="border-radius: 8px; overflow: hidden; max-width: 100%;">
                                 <img id="cover-preview" src="<?= asset_url($item['cover'] ?? '') ?>" alt="封面预览" style="object-fit: cover; width: 100%; height: 100%;">
                             </figure>
-                            <button type="button" id="cover-clear-btn" class="button is-small is-light is-danger mt-2">清除封面</button>
+                            <button type="button" id="cover-clear-btn" class="mt-2 inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-100">清除封面</button>
                         </div>
-                        <div class="buttons">
-                            <button type="button" id="post-cover-select-btn" class="button is-light">
+                        <div class="flex flex-wrap gap-3">
+                            <button type="button" id="post-cover-select-btn" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                                 <span class="icon"><i class="fas fa-image"></i></span>
                                 <span>从媒体库选择</span>
                             </button>
@@ -142,16 +142,16 @@ $categories = $categories ?? [];
 
                 <hr style="margin: 1.5rem 0;">
                 
-                <div class="buttons">
-                    <button type="submit" class="button is-success is-fullwidth">
+                <div class="space-y-3">
+                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:-translate-y-0.5">
                         <span class="icon"><i class="fas fa-save"></i></span>
                         <span><?= $isEdit ? '保存修改' : '发布文章' ?></span>
                     </button>
+                    <a href="<?= url('/admin/posts') ?>" class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        <span class="icon"><i class="fas fa-times"></i></span>
+                        <span>取消</span>
+                    </a>
                 </div>
-                <a href="<?= url('/admin/posts') ?>" class="button is-light is-fullwidth">
-                    <span class="icon"><i class="fas fa-times"></i></span>
-                    <span>取消</span>
-                </a>
             </div>
 
             <!-- SEO 设置 -->

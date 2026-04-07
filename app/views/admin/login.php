@@ -9,25 +9,27 @@
         </div>
         
         <form method="post" action="<?= url('/admin/login'); ?>" class="login-form">
-            <div class="field">
-                <label class="label">用户名</label>
-                <div class="control has-icons-left">
-                    <input class="input" name="username" placeholder="请输入用户名" required>
-                    <span class="icon is-left">
+            <div class="space-y-5">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">用户名</label>
+                    <div class="relative">
+                        <input class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pl-11 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" name="username" placeholder="请输入用户名" required>
+                        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                         <i class="fas fa-user"></i>
-                    </span>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label">密码</label>
-                <div class="control has-icons-left">
-                    <input class="input" type="password" name="password" placeholder="请输入密码" required>
-                    <span class="icon is-left">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">密码</label>
+                    <div class="relative">
+                        <input class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pl-11 text-sm text-slate-800 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100" type="password" name="password" placeholder="请输入密码" required>
+                        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                         <i class="fas fa-lock"></i>
-                    </span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <button class="login-btn" type="submit">
+            <button class="login-btn mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5 hover:shadow-indigo-500/40" type="submit">
                 <span class="icon mr-2"><i class="fas fa-sign-in-alt"></i></span>
                 登录
             </button>

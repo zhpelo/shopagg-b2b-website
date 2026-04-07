@@ -13,18 +13,18 @@ $currentId = (int)($category['id'] ?? 0);
 
 <!-- 页面头部 -->
 <div class="page-header animate-in" style="background: <?= $themeGradient ?>; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);">
-    <div class="level mb-0">
-        <div class="level-left">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4">
             <div>
-                <h1 class="title is-4 mb-1">
+                <h1 class="flex items-center gap-2 text-2xl font-bold text-white">
                     <span class="icon mr-2"><i class="fas fa-<?= isset($category) ? 'edit' : 'plus' ?>"></i></span>
                     <?= isset($category) ? '编辑' . $label : '新建' . $label ?>
                 </h1>
-                <p class="subtitle is-6"><?= isset($category) ? '修改分类信息' : '创建新的' . $label ?></p>
+                <p class="mt-1 text-sm text-white/80"><?= isset($category) ? '修改分类信息' : '创建新的' . $label ?></p>
             </div>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= $baseUrl ?>" class="button is-white">
+        <div class="header-actions flex items-center gap-3">
+            <a href="<?= $baseUrl ?>" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold <?= $isPost ? 'text-emerald-600' : 'text-amber-700' ?> shadow-sm transition hover:bg-slate-50">
                 <span class="icon"><i class="fas fa-arrow-left"></i></span>
                 <span>返回列表</span>
             </a>
@@ -32,8 +32,8 @@ $currentId = (int)($category['id'] ?? 0);
     </div>
 </div>
 
-<div class="columns">
-    <div class="column is-7 animate-in delay-1">
+<div class="grid gap-6 xl:grid-cols-12">
+    <div class="animate-in delay-1 xl:col-span-7">
         <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             
@@ -98,12 +98,12 @@ $currentId = (int)($category['id'] ?? 0);
 
                 <hr style="margin: 1.5rem 0;">
                 
-                <div class="buttons">
-                    <button type="submit" class="button is-<?= $isPost ? 'success' : 'warning' ?>">
+                <div class="flex flex-wrap gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25 text-slate-900' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
                         <span class="icon"><i class="fas fa-save"></i></span>
                         <span><?= isset($category) ? '保存修改' : '创建分类' ?></span>
                     </button>
-                    <a href="<?= $baseUrl ?>" class="button is-light">
+                    <a href="<?= $baseUrl ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         <span class="icon"><i class="fas fa-times"></i></span>
                         <span>取消</span>
                     </a>
@@ -112,7 +112,7 @@ $currentId = (int)($category['id'] ?? 0);
         </form>
     </div>
     
-    <div class="column is-5 animate-in delay-2">
+    <div class="animate-in delay-2 xl:col-span-5">
         <div class="admin-card" style="padding: 1.5rem;">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-info-circle"></i></span>
@@ -128,17 +128,17 @@ $currentId = (int)($category['id'] ?? 0);
                 <p class="mt-4"><strong>当前分类类型：</strong></p>
                 <p>
                     <?php if ($isPost): ?>
-                    <span class="tag is-success is-light is-medium">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
                         <span class="icon"><i class="fas fa-newspaper"></i></span>
                         <span>文章分类</span>
                     </span>
-                    <br><small class="has-text-grey mt-2" style="display: block;">用于组织博客文章</small>
+                    <br><small class="mt-2 block text-slate-500">用于组织博客文章</small>
                     <?php else: ?>
-                    <span class="tag is-warning is-light is-medium">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
                         <span class="icon"><i class="fas fa-box"></i></span>
                         <span>产品分类</span>
                     </span>
-                    <br><small class="has-text-grey mt-2" style="display: block;">用于组织产品目录</small>
+                    <br><small class="mt-2 block text-slate-500">用于组织产品目录</small>
                     <?php endif; ?>
                 </p>
             </div>
