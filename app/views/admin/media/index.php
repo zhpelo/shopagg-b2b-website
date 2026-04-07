@@ -60,28 +60,28 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 ?>
 
 <div class="page-header animate-in" style="background: linear-gradient(135deg, #1f6feb 0%, #0ea5e9 100%); box-shadow: 0 10px 40px rgba(31, 111, 235, 0.28);">
-    <div class="level mb-0">
-        <div class="level-left">
-            <div>
-                <h1 class="title is-4 mb-1">
-                    <span class="icon mr-2"><i class="fas fa-folder-open"></i></span>
-                    媒体资源管理器
-                </h1>
-                <p class="subtitle is-6">左侧目录树、顶部工具栏、右侧文件列表与属性栏，尽量贴近 Windows 文件管理器的使用习惯。</p>
-            </div>
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/16 text-white">
+                    <i class="fas fa-folder-open"></i>
+                </span>
+                <span>媒体资源管理器</span>
+            </h1>
+            <p class="mt-2 max-w-3xl text-sm text-white/80">左侧目录树、顶部工具栏、右侧文件列表与属性栏，尽量贴近 Windows 文件管理器的使用习惯。</p>
         </div>
-        <div class="level-right header-actions">
-            <a href="<?= url('/admin/media') ?>" class="button is-white">
-                <span class="icon"><i class="fas fa-home"></i></span>
+        <div class="header-actions">
+            <a href="<?= url('/admin/media') ?>" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50">
+                <i class="fas fa-home text-xs"></i>
                 <span>返回根目录</span>
             </a>
         </div>
     </div>
 </div>
 
-<div class="columns animate-in delay-1">
-    <div class="column is-4">
-        <div class="admin-card" style="padding: 1.25rem;">
+<div class="grid gap-6 animate-in delay-1 md:grid-cols-2 xl:grid-cols-3">
+    <div>
+        <div class="admin-card p-5">
             <div class="stat-mini">
                 <div class="icon-box" style="background: var(--info-gradient);">
                     <i class="fas fa-file-image"></i>
@@ -93,8 +93,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             </div>
         </div>
     </div>
-    <div class="column is-4">
-        <div class="admin-card" style="padding: 1.25rem;">
+    <div>
+        <div class="admin-card p-5">
             <div class="stat-mini">
                 <div class="icon-box" style="background: var(--warning-gradient); color: #1f2937;">
                     <i class="fas fa-video"></i>
@@ -106,8 +106,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             </div>
         </div>
     </div>
-    <div class="column is-4">
-        <div class="admin-card" style="padding: 1.25rem;">
+    <div>
+        <div class="admin-card p-5">
             <div class="stat-mini">
                 <div class="icon-box" style="background: var(--success-gradient);">
                     <i class="fas fa-database"></i>
@@ -122,16 +122,20 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-<div class="notification is-success is-light animate-in">
-    <button class="delete" onclick="this.parentElement.remove()"></button>
-    <?= h($_GET['success']) ?>
+<div class="animate-in flex items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-sm">
+    <span><?= h($_GET['success']) ?></span>
+    <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-emerald-500 transition hover:bg-emerald-100" onclick="this.parentElement.remove()">
+        <i class="fas fa-times text-xs"></i>
+    </button>
 </div>
 <?php endif; ?>
 
 <?php if (isset($_GET['error'])): ?>
-<div class="notification is-danger is-light animate-in">
-    <button class="delete" onclick="this.parentElement.remove()"></button>
-    <?= h($_GET['error']) ?>
+<div class="animate-in flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 shadow-sm">
+    <span><?= h($_GET['error']) ?></span>
+    <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-rose-500 transition hover:bg-rose-100" onclick="this.parentElement.remove()">
+        <i class="fas fa-times text-xs"></i>
+    </button>
 </div>
 <?php endif; ?>
 
@@ -163,89 +167,81 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
         <div class="explorer-topbar-left">
             <span class="icon explorer-app-icon"><i class="fas fa-photo-video"></i></span>
             <strong class="explorer-app-title">媒体库</strong>
-            <div class="buttons are-small explorer-nav-buttons">
-                <button type="button" class="button is-light" onclick="history.back()">
-                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <div class="explorer-nav-buttons flex items-center gap-2">
+                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" onclick="history.back()">
+                    <i class="fas fa-arrow-left text-xs"></i>
                 </button>
-                <button type="button" class="button is-light" onclick="history.forward()">
-                    <span class="icon"><i class="fas fa-arrow-right"></i></span>
+                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50" onclick="history.forward()">
+                    <i class="fas fa-arrow-right text-xs"></i>
                 </button>
-                <a href="<?= h($buildMediaUrl($parentDir)) ?>" class="button is-light">
-                    <span class="icon"><i class="fas fa-level-up-alt"></i></span>
+                <a href="<?= h($buildMediaUrl($parentDir)) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50">
+                    <i class="fas fa-level-up-alt text-xs"></i>
                 </a>
             </div>
         </div>
         <div class="explorer-breadcrumbs">
-            <nav class="breadcrumb is-small mb-0" aria-label="breadcrumbs">
-                <ul>
+            <nav aria-label="breadcrumbs">
+                <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                     <?php foreach ($breadcrumbs as $index => $crumb): ?>
-                    <li class="<?= $index === count($breadcrumbs) - 1 ? 'is-active' : '' ?>">
+                    <li class="flex items-center gap-2">
                         <?php if ($index === count($breadcrumbs) - 1): ?>
-                        <a aria-current="page"><?= h($crumb['name']) ?></a>
+                        <span class="rounded-lg bg-slate-100 px-2.5 py-1 font-medium text-slate-700" aria-current="page"><?= h($crumb['name']) ?></span>
                         <?php else: ?>
-                        <a href="<?= h($buildMediaUrl((string)$crumb['directory'])) ?>"><?= h($crumb['name']) ?></a>
+                        <a href="<?= h($buildMediaUrl((string)$crumb['directory'])) ?>" class="rounded-lg px-2.5 py-1 transition hover:bg-slate-100 hover:text-slate-700"><?= h($crumb['name']) ?></a>
+                        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
                         <?php endif; ?>
                     </li>
                     <?php endforeach; ?>
-                </ul>
+                </ol>
             </nav>
         </div>
     </div>
 
     <div class="explorer-toolbar">
-        <div class="buttons mb-0">
-            <button type="button" class="button is-info" id="page-media-upload-btn">
-                <span class="icon"><i class="fas fa-upload"></i></span>
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600" id="page-media-upload-btn">
+                <i class="fas fa-upload text-xs"></i>
                 <span>上传文件</span>
             </button>
-            <button type="button" class="button is-light" id="page-media-new-folder-btn">
-                <span class="icon"><i class="fas fa-folder-plus"></i></span>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" id="page-media-new-folder-btn">
+                <i class="fas fa-folder-plus text-xs"></i>
                 <span>新建文件夹</span>
             </button>
-            <button type="button" class="button is-danger is-light" id="page-media-delete-btn" disabled>
-                <span class="icon"><i class="fas fa-trash"></i></span>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50" id="page-media-delete-btn" disabled>
+                <i class="fas fa-trash text-xs"></i>
                 <span id="page-media-delete-label">删除</span>
             </button>
-            <button type="button" class="button is-light" disabled>
-                <span class="icon"><i class="fas fa-i-cursor"></i></span>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-400" disabled>
+                <i class="fas fa-i-cursor text-xs"></i>
                 <span>重命名</span>
             </button>
-            <a href="<?= h($buildMediaUrl($currentDir)) ?>" class="button is-light">
-                <span class="icon"><i class="fas fa-sync-alt"></i></span>
+            <a href="<?= h($buildMediaUrl($currentDir)) ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+                <i class="fas fa-sync-alt text-xs"></i>
                 <span>刷新</span>
             </a>
         </div>
 
         <form method="get" action="<?= url('/admin/media') ?>" class="explorer-filter-bar">
             <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
-            <div class="field has-addons mb-0">
-                <div class="control is-expanded">
-                    <input class="input" type="text" name="search" value="<?= h($searchKeyword) ?>" placeholder="搜索当前目录或原始文件名">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <div class="relative flex-1">
+                    <i class="fas fa-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                    <input class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" type="text" name="search" value="<?= h($searchKeyword) ?>" placeholder="搜索当前目录或原始文件名">
                 </div>
-                <div class="control">
-                    <div class="select">
-                        <select name="type">
-                            <option value="all" <?= $typeFilter === 'all' ? 'selected' : '' ?>>全部</option>
-                            <option value="image" <?= $typeFilter === 'image' ? 'selected' : '' ?>>图片</option>
-                            <option value="video" <?= $typeFilter === 'video' ? 'selected' : '' ?>>视频</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select name="sort">
-                            <option value="date_desc" <?= $sortFilter === 'date_desc' ? 'selected' : '' ?>>最新上传</option>
-                            <option value="date_asc" <?= $sortFilter === 'date_asc' ? 'selected' : '' ?>>最早上传</option>
-                            <option value="name_asc" <?= $sortFilter === 'name_asc' ? 'selected' : '' ?>>文件名 A-Z</option>
-                            <option value="name_desc" <?= $sortFilter === 'name_desc' ? 'selected' : '' ?>>文件名 Z-A</option>
-                            <option value="type_asc" <?= $sortFilter === 'type_asc' ? 'selected' : '' ?>>类型升序</option>
-                            <option value="type_desc" <?= $sortFilter === 'type_desc' ? 'selected' : '' ?>>类型降序</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="control">
-                    <button type="submit" class="button is-link is-light">搜索</button>
-                </div>
+                <select name="type" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100">
+                    <option value="all" <?= $typeFilter === 'all' ? 'selected' : '' ?>>全部</option>
+                    <option value="image" <?= $typeFilter === 'image' ? 'selected' : '' ?>>图片</option>
+                    <option value="video" <?= $typeFilter === 'video' ? 'selected' : '' ?>>视频</option>
+                </select>
+                <select name="sort" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100">
+                    <option value="date_desc" <?= $sortFilter === 'date_desc' ? 'selected' : '' ?>>最新上传</option>
+                    <option value="date_asc" <?= $sortFilter === 'date_asc' ? 'selected' : '' ?>>最早上传</option>
+                    <option value="name_asc" <?= $sortFilter === 'name_asc' ? 'selected' : '' ?>>文件名 A-Z</option>
+                    <option value="name_desc" <?= $sortFilter === 'name_desc' ? 'selected' : '' ?>>文件名 Z-A</option>
+                    <option value="type_asc" <?= $sortFilter === 'type_asc' ? 'selected' : '' ?>>类型升序</option>
+                    <option value="type_desc" <?= $sortFilter === 'type_desc' ? 'selected' : '' ?>>类型降序</option>
+                </select>
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100">搜索</button>
             </div>
         </form>
     </div>
@@ -295,8 +291,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <div class="explorer-file-list" id="page-media-file-list">
                 <?php if (empty($files)): ?>
                 <div class="explorer-empty-state">
-                    <span class="icon is-large"><i class="fas fa-folder-open"></i></span>
-                    <p>当前目录下没有符合筛选条件的媒体文件。</p>
+                    <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><i class="fas fa-folder-open text-xl"></i></span>
+                    <p class="mt-4 text-sm">当前目录下没有符合筛选条件的媒体文件。</p>
                 </div>
                 <?php endif; ?>
 
@@ -338,11 +334,11 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                     <div><?= h($file['size_formatted']) ?></div>
                     <div><?= h($file['date']) ?></div>
                     <div class="explorer-actions" onclick="event.stopPropagation()">
-                        <button type="button" class="button is-small is-light" onclick="copyMediaPath('<?= h($file['public_path']) ?>')">
-                            <span class="icon"><i class="fas fa-copy"></i></span>
+                        <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700" onclick="copyMediaPath('<?= h($file['public_path']) ?>')">
+                            <i class="fas fa-copy text-xs"></i>
                         </button>
-                        <button type="button" class="button is-small is-danger is-light" onclick="submitSingleMediaDelete('<?= h($file['public_path']) ?>')">
-                            <span class="icon"><i class="fas fa-trash"></i></span>
+                        <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-600" onclick="submitSingleMediaDelete('<?= h($file['public_path']) ?>')">
+                            <i class="fas fa-trash text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -353,10 +349,10 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
         <aside class="explorer-preview-pane">
             <div class="explorer-pane-title">预览 / 属性</div>
             <div class="explorer-preview-empty" id="explorerPreviewEmpty">
-                <span class="icon is-large"><i class="fas fa-image"></i></span>
-                <p>选择一个文件后，这里会显示预览和属性。</p>
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><i class="fas fa-image text-xl"></i></span>
+                <p class="mt-4 text-sm leading-6">选择一个文件后，这里会显示预览和属性。</p>
             </div>
-            <div class="explorer-preview-panel is-hidden" id="explorerPreviewPanel">
+            <div class="explorer-preview-panel hidden" id="explorerPreviewPanel">
                 <div class="explorer-preview-box" id="explorerPreviewBox"></div>
                 <div class="explorer-preview-meta">
                     <div class="explorer-meta-row">
@@ -383,17 +379,13 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                         <span>修改时间</span>
                         <strong id="explorerPreviewDate"></strong>
                     </div>
-                    <div class="field">
-                        <label class="label is-size-7">路径</label>
-                        <div class="field has-addons">
-                            <div class="control is-expanded">
-                                <input class="input is-small" id="explorerPreviewPath" type="text" readonly>
-                            </div>
-                            <div class="control">
-                                <button type="button" class="button is-small is-info" onclick="copyMediaPath(document.getElementById('explorerPreviewPath').value)">
-                                    复制
-                                </button>
-                            </div>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">路径</label>
+                        <div class="flex gap-2">
+                            <input class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 outline-none" id="explorerPreviewPath" type="text" readonly>
+                            <button type="button" class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-sky-600" onclick="copyMediaPath(document.getElementById('explorerPreviewPath').value)">
+                                复制
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -872,8 +864,8 @@ function selectExplorerFile(file) {
         return;
     }
 
-    empty.classList.add('is-hidden');
-    panel.classList.remove('is-hidden');
+    empty.classList.add('hidden');
+    panel.classList.remove('hidden');
 
     if (file.type === 'video') {
         box.innerHTML = `<video controls playsinline preload="metadata"><source src="${file.url}"></video>`;

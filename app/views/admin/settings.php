@@ -35,25 +35,28 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
 
 <!-- 页面头部 -->
 <div class="page-header animate-in" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); box-shadow: 0 10px 40px rgba(108, 117, 125, 0.3);">
-    <div class="level mb-0">
-        <div class="level-left">
-            <div>
-                <h1 class="title is-4 mb-1">
-                    <span class="icon mr-2"><i class="fas fa-cog"></i></span>
-                    系统设置
-                </h1>
-                <p class="subtitle is-6">管理网站配置和公司信息</p>
-            </div>
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/16 text-white">
+                    <i class="fas fa-cog"></i>
+                </span>
+                <span>系统设置</span>
+            </h1>
+            <p class="mt-2 text-sm text-white/80">管理网站配置、公司资料、媒体展示和自定义代码。</p>
         </div>
     </div>
 </div>
 
 <!-- 选项卡 -->
-<div class="modern-tabs animate-in delay-1" style="display: flex; flex-wrap: wrap;">
+<div class="animate-in delay-1 flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     <?php foreach ($tabs as $key => $info): ?>
-        <a href="<?= url('/admin/settings?tab=' . urlencode($key)) ?>" class="<?= $tab === $key ? 'is-active' : '' ?>">
-            <span class="icon is-small mr-1"><i class="fas fa-<?= $info[1] ?>"></i></span>
-            <?= $info[0] ?>
+        <a
+            href="<?= url('/admin/settings?tab=' . urlencode($key)) ?>"
+            class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition <?= $tab === $key ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>"
+        >
+            <i class="fas fa-<?= $info[1] ?> text-xs"></i>
+            <span><?= $info[0] ?></span>
         </a>
     <?php endforeach; ?>
 </div>
@@ -770,9 +773,9 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
     </div>
     <?php endif; ?>
 
-    <div class="mt-5 animate-in delay-3">
-        <button class="button is-primary is-medium" type="submit">
-            <span class="icon"><i class="fas fa-save"></i></span>
+    <div class="mt-6 animate-in delay-3">
+        <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800" type="submit">
+            <i class="fas fa-save text-xs"></i>
             <span>保存设置</span>
         </button>
     </div>
