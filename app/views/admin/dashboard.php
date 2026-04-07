@@ -7,7 +7,7 @@
 <!-- 核心数据统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon has-background-primary-light has-text-primary">
+ <span class="icon bg-indigo-50 text-indigo-600">
  <i class="fas fa-chart-pie"></i>
  </span>
  核心数据
@@ -75,7 +75,7 @@
 <!-- 客户互动统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon has-background-danger-light has-text-danger">
+ <span class="icon bg-rose-50 text-rose-600">
  <i class="fas fa-users"></i>
  </span>
  客户互动
@@ -143,7 +143,7 @@
 <!-- 活动统计 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon has-background-info-light has-text-info">
+ <span class="icon bg-sky-50 text-sky-600">
  <i class="fas fa-chart-line"></i>
  </span>
  活动统计
@@ -152,13 +152,13 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon has-text-warning"><i class="fas fa-sun"></i></span>
+ <span class="icon text-amber-600"><i class="fas fa-sun"></i></span>
  今日活动
  </h3>
  <div class="grid gap-4 sm:grid-cols-2">
  <div>
  <div class="activity-stat">
- <div class="value has-text-danger">+<?= $counts['today_messages'] ?></div>
+ <div class="value text-rose-600">+<?= $counts['today_messages'] ?></div>
  <div class="label">新留言</div>
  </div>
  </div>
@@ -174,13 +174,13 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon has-text-info"><i class="fas fa-calendar-week"></i></span>
+ <span class="icon text-sky-600"><i class="fas fa-calendar-week"></i></span>
  本周活动
  </h3>
  <div class="grid gap-4 sm:grid-cols-2">
  <div>
  <div class="activity-stat">
- <div class="value has-text-danger">+<?= $counts['week_messages'] ?></div>
+ <div class="value text-rose-600">+<?= $counts['week_messages'] ?></div>
  <div class="label">新留言</div>
  </div>
  </div>
@@ -196,7 +196,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon has-text-success"><i class="fas fa-calendar-alt"></i></span>
+ <span class="icon text-emerald-600"><i class="fas fa-calendar-alt"></i></span>
  本月概览
  </h3>
  <div class="grid gap-4 sm:grid-cols-3">
@@ -231,7 +231,7 @@
 <!-- 30天趋势图 -->
 <div class="mb-6">
  <div class="section-title">
- <span class="icon has-background-success-light has-text-success">
+ <span class="icon bg-emerald-50 text-emerald-600">
  <i class="fas fa-chart-bar"></i>
  </span>
  近30天趋势
@@ -240,7 +240,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon has-text-danger"><i class="fas fa-envelope"></i></span>
+ <span class="icon text-rose-600"><i class="fas fa-envelope"></i></span>
  留言趋势
  </h3>
  <div class="mini-chart">
@@ -252,7 +252,7 @@
  <div class="bar" style="height: <?= max(4, $height) ?>%; background: linear-gradient(180deg, #dc3545, #e83e8c);" title="<?= date('m-d', strtotime('-' . (29-$i) . ' days')) ?>: <?= $val ?>"></div>
  <?php endforeach; ?>
  </div>
- <div class="is-flex is-justify-content-space-between mt-2" style="font-size: 0.75rem; color: #a0aec0;">
+ <div class="mt-2 flex items-center justify-between text-xs text-slate-400">
  <span><?= date('m/d', strtotime('-29 days')) ?></span>
  <span>今天</span>
  </div>
@@ -261,7 +261,7 @@
  <div class="">
  <div class="activity-card">
  <h3>
- <span class="icon has-text-link"><i class="fas fa-file-invoice"></i></span>
+ <span class="icon text-indigo-600"><i class="fas fa-file-invoice"></i></span>
  询单趋势
  </h3>
  <div class="mini-chart">
@@ -285,7 +285,7 @@
 <!-- 快捷操作 -->
 <div class="mb-5">
  <div class="section-title">
- <span class="icon has-background-warning-light has-text-warning-dark">
+ <span class="icon bg-amber-50 text-amber-700">
  <i class="fas fa-bolt"></i>
  </span>
  快捷操作
@@ -293,7 +293,7 @@
  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
  <div class="">
  <a href="<?= url('/admin/products/create') ?>" class="quick-action">
- <div class="action-icon has-background-primary-light has-text-primary">
+ <div class="action-icon bg-indigo-50 text-indigo-600">
  <i class="fas fa-plus"></i>
  </div>
  <div>
@@ -304,7 +304,7 @@
  </div>
  <div class="">
  <a href="<?= url('/admin/posts/create') ?>" class="quick-action">
- <div class="action-icon has-background-success-light has-text-success">
+ <div class="action-icon bg-emerald-50 text-emerald-600">
  <i class="fas fa-edit"></i>
  </div>
  <div>
@@ -315,7 +315,7 @@
  </div>
  <div class="">
  <a href="<?= url('/admin/cases/create') ?>" class="quick-action">
- <div class="action-icon has-background-info-light has-text-info">
+ <div class="action-icon bg-sky-50 text-sky-600">
  <i class="fas fa-star"></i>
  </div>
  <div>
@@ -326,7 +326,7 @@
  </div>
  <div class="">
  <a href="<?= url('/admin/inquiries') ?>" class="quick-action">
- <div class="action-icon has-background-danger-light has-text-danger">
+ <div class="action-icon bg-rose-50 text-rose-600">
  <i class="fas fa-envelope-open-text"></i>
  </div>
  <div>

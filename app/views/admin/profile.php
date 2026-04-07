@@ -16,7 +16,7 @@
 <div class="grid gap-6 xl:grid-cols-12">
  <!-- 左侧：个人信息卡片 -->
  <div class="xl:col-span-4">
- <div class="admin-card" style="padding: 2rem; text-align: center;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem; text-align: center;">
  <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
  <?= strtoupper(substr($user['display_name'] ?? $user['username'], 0, 1)) ?>
  </div>
@@ -41,7 +41,7 @@
  <form method="post" action="<?= url('/admin/profile/update') ?>">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
- <div class="admin-card" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-edit"></i></span>
  编辑资料

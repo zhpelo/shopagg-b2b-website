@@ -30,7 +30,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
 
 <?php if (empty($items)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
  <p>暂无<?= h($label) ?>记录</p>
@@ -61,7 +61,7 @@ $theme = $theme_colors[$label] ?? ['gradient' => 'linear-gradient(135deg, #667ee
  <?php $cover = $row['cover'] ?? ''; ?>
  <div style="width: 44px; height: 44px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : $theme['gradient'] ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
  <?php if (!$cover): ?>
- <span class="icon has-text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
+ <span class="icon text-white"><i class="fas fa-<?= $theme['icon'] ?>"></i></span>
  <?php endif; ?>
  </div>
  <div>

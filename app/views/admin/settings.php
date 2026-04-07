@@ -68,7 +68,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  <?php if ($tab === 'general'): ?>
  <div class="grid gap-6 xl:grid-cols-12">
  <div class="space-y-6 xl:col-span-8">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-globe"></i></span>
  网站基础设置
@@ -142,7 +142,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
  </div>
 
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box success"><i class="fas fa-search"></i></span>
  SEO 设置
@@ -187,7 +187,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
 
  <div class="space-y-6 xl:col-span-4">
- <div class="admin-card p-6">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  设置说明
@@ -204,7 +204,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
 
  <?php elseif ($tab === 'company'): ?>
  <div class="space-y-6">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-building"></i></span>
  公司简介 (Profile)
@@ -261,7 +261,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
  </div>
 
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box warning"><i class="fas fa-star"></i></span>
  资质认证
@@ -295,7 +295,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
 
  <?php elseif ($tab === 'trade'): ?>
  <div class="space-y-6">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-globe"></i></span>
  贸易能力 (Trade Capacity)
@@ -365,7 +365,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
  </div>
 
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box success"><i class="fas fa-flask"></i></span>
  研发能力 (R&D)
@@ -384,7 +384,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
 
  <?php elseif ($tab === 'media'): ?>
- <div class="admin-card mb-5 p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-images"></i></span>
  公司展示 (Show)
@@ -426,7 +426,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </button>
  </div>
 
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box warning"><i class="fas fa-certificate"></i></span>
  资质证书 (Certificates)
@@ -545,7 +545,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  <?php elseif ($tab === 'contact'): ?>
  <div class="grid gap-6 xl:grid-cols-12">
  <div class="space-y-6 xl:col-span-8">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-phone"></i></span>
  联系信息
@@ -584,7 +584,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </label>
  </div>
 
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-share-alt"></i></span>
  社交媒体
@@ -612,7 +612,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
 
  <div class="space-y-6 xl:col-span-4">
- <div class="admin-card p-6">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  设置说明
@@ -629,7 +629,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  <?php elseif ($tab === 'translate'): ?>
  <div class="grid gap-6 xl:grid-cols-12">
  <div class="space-y-6 xl:col-span-8">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-language"></i></span>
  前台翻译功能
@@ -670,7 +670,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
 
  <div class="space-y-6 xl:col-span-4">
- <div class="admin-card p-6">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  设置说明
@@ -686,7 +686,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  <?php elseif ($tab === 'custom'): ?>
  <div class="grid gap-6 xl:grid-cols-12">
  <div class="space-y-6 xl:col-span-8">
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-code"></i></span>
  自定义代码
@@ -708,7 +708,7 @@ if (!in_array('en', $selectedTranslateLanguages, true)) {
  </div>
 
  <div class="space-y-6 xl:col-span-4">
- <div class="admin-card p-6">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  设置说明

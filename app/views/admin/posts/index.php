@@ -25,7 +25,7 @@
 
 <?php if (empty($items)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-file-alt"></i></span>
  <p>暂无博客文章</p>
@@ -57,7 +57,7 @@
  <?php $cover = $row['cover'] ?? ''; ?>
  <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #00d1b2 0%, #48c774 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
  <?php if (!$cover): ?>
- <span class="icon has-text-white"><i class="fas fa-file-alt"></i></span>
+ <span class="icon text-white"><i class="fas fa-file-alt"></i></span>
  <?php endif; ?>
  </div>
  <div>

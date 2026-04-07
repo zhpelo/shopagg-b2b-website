@@ -37,7 +37,7 @@ $currentId = (int)($category['id'] ?? 0);
  <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
- <div class="admin-card p-8">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
  <div class="section-title">
  <span class="icon-box <?= $isPost ? 'success' : 'warning' ?>"><i class="fas <?= $icon ?>"></i></span>
  分类信息
@@ -104,7 +104,7 @@ $currentId = (int)($category['id'] ?? 0);
  </div>
  
  <div class="xl:col-span-5">
- <div class="admin-card p-6">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-info-circle"></i></span>
  分类说明

@@ -256,46 +256,42 @@
  <section class="media-library-body overflow-auto">
  <div class="media-library-window">
  <div class="media-library-window-nav">
- <div class="buttons are-small mb-0">
- <button type="button" class="button is-light" id="media-library-back-btn" disabled>
+ <div class="flex items-center gap-2">
+ <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-back-btn" disabled>
  <span class="icon"><i class="fas fa-arrow-left"></i></span>
  </button>
- <button type="button" class="button is-light" id="media-library-forward-btn" disabled>
+ <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-forward-btn" disabled>
  <span class="icon"><i class="fas fa-arrow-right"></i></span>
  </button>
- <button type="button" class="button is-light" id="media-library-up-btn">
+ <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-up-btn">
  <span class="icon"><i class="fas fa-level-up-alt"></i></span>
  </button>
  </div>
  <div class="media-library-toolbar-main">
- <nav class="breadcrumb is-small mb-0" aria-label="breadcrumbs" id="media-library-breadcrumbs"></nav>
+ <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500" aria-label="breadcrumbs" id="media-library-breadcrumbs"></nav>
  <p class="mt-2 text-xs text-slate-500" id="media-library-directory-label">/uploads</p>
  </div>
  </div>
  <div class="media-library-toolbar">
- <div class="buttons mb-0 media-library-toolbar-buttons">
- <div class="file is-info">
- <label class="file-label">
- <input class="file-input" type="file" id="media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
- <span class="file-cta">
- <span class="file-icon"><i class="fas fa-upload"></i></span>
- <span class="file-label">上传文件</span>
- </span>
+ <div class="media-library-toolbar-buttons flex flex-wrap items-center justify-end gap-3">
+ <label class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:bg-sky-100">
+ <input class="hidden" type="file" id="media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
+ <span class="icon"><i class="fas fa-upload"></i></span>
+ <span>上传文件</span>
  </label>
- </div>
- <button type="button" class="button is-light" id="media-library-new-folder-btn">
+ <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-new-folder-btn">
  <span class="icon"><i class="fas fa-folder-plus"></i></span>
  <span>新建文件夹</span>
  </button>
- <button type="button" class="button is-danger is-light" id="media-library-bulk-delete-btn" disabled>
+ <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50" id="media-library-bulk-delete-btn" disabled>
  <span class="icon"><i class="fas fa-trash"></i></span>
  <span id="media-library-bulk-delete-label">删除</span>
  </button>
- <button type="button" class="button is-light" disabled>
+ <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-400" disabled>
  <span class="icon"><i class="fas fa-i-cursor"></i></span>
  <span>重命名</span>
  </button>
- <button type="button" class="button is-light" id="media-library-refresh-btn">
+ <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="media-library-refresh-btn">
  <span class="icon"><i class="fas fa-sync-alt"></i></span>
  <span>刷新</span>
  </button>
@@ -332,11 +328,11 @@
  </aside>
  <section class="media-library-files-panel">
  <div class="media-library-file-toolbar">
- <div class="buttons are-small mb-0 media-library-view-switch">
- <button type="button" class="button is-light is-active" id="media-library-view-list-btn">
+ <div class="media-library-view-switch flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+ <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 transition" id="media-library-view-list-btn">
  <span class="icon"><i class="fas fa-list"></i></span>
  </button>
- <button type="button" class="button is-light" id="media-library-view-tiles-btn">
+ <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white hover:text-slate-700" id="media-library-view-tiles-btn">
  <span class="icon"><i class="fas fa-th-large"></i></span>
  </button>
  </div>
@@ -396,7 +392,7 @@
  <label class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400" for="media-details-path">路径</label>
  <div class="flex items-center gap-2">
  <input class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none" type="text" readonly id="media-details-path">
- <button type="button" class="button is-small is-info" id="media-details-copy-btn">复制</button>
+ <button type="button" class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-600" id="media-details-copy-btn">复制</button>
  </div>
  </div>
  </div>
@@ -410,13 +406,13 @@
  </div>
  </section>
  <footer class="media-library-footer flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
- <button type="button" class="button is-link" id="confirm-media-selection" style="display:none">确认选择</button>
- <button type="button" class="button is-light" data-media-modal-close>取消</button>
+ <button type="button" class="hidden items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700" id="confirm-media-selection">确认选择</button>
+ <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" data-media-modal-close>取消</button>
  </footer>
  </div>
 </div>
 
-<footer class="footer has-background-white py-4" style="border-top: 1px solid #e5e7eb;">
+<footer class="footer bg-white py-4" style="border-top: 1px solid #e5e7eb;">
  <div class="container text-center">
  <p class="text-xs text-slate-500">
  &copy; <?= date('Y') ?> SHOPAGG B2B Management Platform. Powered by <a href="https://www.shopagg.com" target="_blank" style="color: #667eea;">SHOPAGG</a>.
@@ -513,7 +509,8 @@ function openMediaLibrary(callback, multi = false, options = {}) {
  }
 
  if (confirmLabel) {
- confirmLabel.style.display = 'inline-flex';
+ confirmLabel.classList.remove('hidden');
+ confirmLabel.classList.add('inline-flex');
  confirmLabel.disabled = true;
  confirmLabel.textContent = multi ? '插入所选' : '插入';
  }
@@ -768,8 +765,20 @@ function updateMediaLibraryViewMode() {
  const header = document.getElementById('media-library-file-header');
  const label = document.getElementById('media-library-current-mode-label');
 
- if (listBtn) listBtn.classList.toggle('is-active', mediaLibraryState.view === 'list');
- if (tilesBtn) tilesBtn.classList.toggle('is-active', mediaLibraryState.view === 'tiles');
+ if (listBtn) {
+ listBtn.classList.toggle('bg-indigo-50', mediaLibraryState.view === 'list');
+ listBtn.classList.toggle('text-indigo-600', mediaLibraryState.view === 'list');
+ listBtn.classList.toggle('text-slate-500', mediaLibraryState.view !== 'list');
+ listBtn.classList.toggle('hover:bg-white', mediaLibraryState.view !== 'list');
+ listBtn.classList.toggle('hover:text-slate-700', mediaLibraryState.view !== 'list');
+ }
+ if (tilesBtn) {
+ tilesBtn.classList.toggle('bg-indigo-50', mediaLibraryState.view === 'tiles');
+ tilesBtn.classList.toggle('text-indigo-600', mediaLibraryState.view === 'tiles');
+ tilesBtn.classList.toggle('text-slate-500', mediaLibraryState.view !== 'tiles');
+ tilesBtn.classList.toggle('hover:bg-white', mediaLibraryState.view !== 'tiles');
+ tilesBtn.classList.toggle('hover:text-slate-700', mediaLibraryState.view !== 'tiles');
+ }
  if (list) list.classList.toggle('is-tiles', mediaLibraryState.view === 'tiles');
  if (header) header.classList.toggle('hidden', mediaLibraryState.view === 'tiles');
  if (label) label.textContent = mediaLibraryState.view === 'tiles' ? '缩略图视图' : '列表视图';
@@ -805,18 +814,15 @@ function renderMediaLibrary(payload) {
  total_size_formatted: '0 B'
  };
  directoryLabel.textContent = payload.current_directory_label || '/uploads';
- breadcrumbsContainer.innerHTML = `
- <ul>
- ${(payload.breadcrumbs || []).map((crumb, index, arr) => {
+ breadcrumbsContainer.innerHTML = (payload.breadcrumbs || []).map((crumb, index, arr) => {
  const active = index === arr.length - 1;
  const label = escapeHtmlAttr(crumb.name || '');
+ const separator = index > 0 ? '<span class="text-slate-300">/</span>' : '';
  if (active) {
- return `<li class="is-active"><a aria-current="page">${label}</a></li>`;
+ return `${separator}<span class="font-semibold text-slate-900" aria-current="page">${label}</span>`;
  }
- return `<li><a href="#" data-directory="${escapeHtmlAttr(crumb.directory || '')}" class="js-media-breadcrumb">${label}</a></li>`;
- }).join('')}
- </ul>
- `;
+ return `${separator}<a href="#" data-directory="${escapeHtmlAttr(crumb.directory || '')}" class="js-media-breadcrumb transition hover:text-slate-700">${label}</a>`;
+ }).join('');
 
  const folders = payload.folders || [];
  const files = payload.files || [];

@@ -81,7 +81,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 
 <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
  <div>
- <div class="admin-card p-5">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
  <div class="stat-mini">
  <div class="icon-box" style="background: var(--info-gradient);">
  <i class="fas fa-file-image"></i>
@@ -94,7 +94,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  </div>
  </div>
  <div>
- <div class="admin-card p-5">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
  <div class="stat-mini">
  <div class="icon-box" style="background: var(--warning-gradient); color: #1f2937;">
  <i class="fas fa-video"></i>
@@ -107,7 +107,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  </div>
  </div>
  <div>
- <div class="admin-card p-5">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
  <div class="stat-mini">
  <div class="icon-box" style="background: var(--success-gradient);">
  <i class="fas fa-database"></i>
@@ -162,7 +162,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
  <input type="file" name="media_files[]" id="page-media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
 </form>
 
-<div class="admin-card explorer-shell">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm explorer-shell">
  <div class="explorer-topbar">
  <div class="explorer-topbar-left">
  <span class="icon explorer-app-icon"><i class="fas fa-photo-video"></i></span>

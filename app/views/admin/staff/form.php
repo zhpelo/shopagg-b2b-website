@@ -25,7 +25,7 @@
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <!-- 基本信息 -->
- <div class="admin-card mb-5" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-user"></i></span>
  基本信息
@@ -68,7 +68,7 @@
  </div>
 
  <!-- 角色和权限 -->
- <div class="admin-card mb-5" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box warning"><i class="fas fa-shield-alt"></i></span>
  角色和权限
@@ -89,12 +89,12 @@
  <div class="mt-2 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
  <?php 
  $available_perms = [
- 'products' => ['产品管理', 'box', 'primary'],
- 'cases' => ['案例管理', 'briefcase', 'info'],
- 'blog' => ['内容管理', 'pen-nib', 'success'],
- 'inbox' => ['询单/留言', 'envelope', 'warning'],
- 'settings' => ['系统设置', 'cog', 'danger'],
- 'staff' => ['员工管理', 'users', 'dark']
+ 'products' => ['产品管理', 'box', 'text-indigo-600'],
+ 'cases' => ['案例管理', 'briefcase', 'text-sky-600'],
+ 'blog' => ['内容管理', 'pen-nib', 'text-emerald-600'],
+ 'inbox' => ['询单/留言', 'envelope', 'text-amber-600'],
+ 'settings' => ['系统设置', 'cog', 'text-rose-600'],
+ 'staff' => ['员工管理', 'users', 'text-slate-700']
  ];
  $user_perms = $user['permissions'] ?? [];
  foreach ($available_perms as $key => $info): 
@@ -102,7 +102,7 @@
  <div>
  <label class="flex cursor-pointer items-center rounded-2xl border-2 px-4 py-3 transition <?= in_array($key, $user_perms) ? 'border-indigo-500 bg-indigo-50' : 'border-transparent bg-slate-50 hover:border-slate-200 hover:bg-slate-100' ?>">
  <input type="checkbox" name="permissions[]" value="<?= $key ?>" <?= in_array($key, $user_perms) ? 'checked' : '' ?> class="mr-3 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
- <span class="icon is-small mr-2 has-text-<?= $info[2] ?>"><i class="fas fa-<?= $info[1] ?>"></i></span>
+ <span class="icon is-small mr-2 <?= $info[2] ?>"><i class="fas fa-<?= $info[1] ?>"></i></span>
  <?= $info[0] ?>
  </label>
  </div>
@@ -129,7 +129,7 @@
 
  <!-- 右侧提示 -->
  <div class="xl:col-span-4">
- <div class="admin-card" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem;">
  <div class="section-title" style="font-size: 1rem;">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  权限说明

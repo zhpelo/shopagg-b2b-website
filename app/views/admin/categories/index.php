@@ -26,7 +26,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
                         </span>
                     <?php endif; ?>
                     <div style="width: 40px; height: 40px; background: <?= $themeGradient ?>; border-radius: 10px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <span class="icon has-text-white"><i class="fas <?= $icon ?>"></i></span>
+                        <span class="icon text-white"><i class="fas <?= $icon ?>"></i></span>
                     </div>
                     <div>
                         <strong><?= h($row['name']) ?></strong>
@@ -112,7 +112,7 @@ $totalCount = countTotalCategories($categories);
 
 <?php if (empty($categories)): ?>
     <!-- 空状态 -->
-    <div class="admin-card">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="empty-state">
             <span class="icon"><i class="fas fa-folder-open"></i></span>
             <p>暂无<?= $label ?>记录</p>

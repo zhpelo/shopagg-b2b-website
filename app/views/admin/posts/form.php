@@ -30,7 +30,7 @@ $categories = $categories ?? [];
  <div class="grid gap-6 xl:grid-cols-12">
  <!-- 左侧：主要内容 -->
  <div class="xl:col-span-8">
- <div class="admin-card" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box success"><i class="fas fa-file-alt"></i></span>
  文章内容
@@ -72,7 +72,7 @@ $categories = $categories ?? [];
  <!-- 右侧：设置 -->
  <div class="xl:col-span-4">
  <!-- 发布设置 -->
- <div class="admin-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem; margin-bottom: 1.5rem;">
  <div class="section-title">
  <span class="icon-box info"><i class="fas fa-cog"></i></span>
  发布设置
@@ -140,7 +140,7 @@ $categories = $categories ?? [];
  </div>
 
  <!-- SEO 设置 -->
- <div class="admin-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem; margin-bottom: 1.5rem;">
  <div class="section-title">
  <span class="icon-box success"><i class="fas fa-search"></i></span>
  SEO 设置
@@ -164,7 +164,7 @@ $categories = $categories ?? [];
  </div>
 
  <!-- 提示信息 -->
- <div class="admin-card" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem;">
  <div class="section-title">
  <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
  写作提示

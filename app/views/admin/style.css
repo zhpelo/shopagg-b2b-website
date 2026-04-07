@@ -86,92 +86,6 @@ video {
     font-size: 1.5rem;
 }
 
-.buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.buttons.are-small {
-    gap: 0.5rem;
-}
-
-.button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 2.5rem;
-    padding: 0.625rem 1rem;
-    border: 1px solid transparent;
-    background: #fff;
-    color: #0f172a;
-    font-size: 0.9375rem;
-    line-height: 1.2;
-    text-align: center;
-    cursor: pointer;
-    white-space: nowrap;
-    user-select: none;
-}
-
-.button.is-small {
-    min-height: 2rem;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.8125rem;
-}
-
-.button:focus-visible,
-.file-label:focus-within .file-cta {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.14);
-}
-
-.file {
-    display: inline-flex;
-}
-
-.file-label {
-    position: relative;
-    display: inline-flex;
-    cursor: pointer;
-}
-
-.file-input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.file-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 2.5rem;
-    padding: 0.625rem 1rem;
-    border-radius: var(--border-radius-xs);
-    border: 1px solid #bfdbfe;
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.file-label:hover .file-cta {
-    background: #dbeafe;
-}
-
-.file-icon,
-.file-label .icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -272,92 +186,9 @@ video {
     display: block;
 }
 
-.breadcrumb ul {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.breadcrumb li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: #64748b;
-}
-
-.breadcrumb li + li::before {
-    content: "/";
-    color: #94a3b8;
-}
-
-.breadcrumb a {
-    color: inherit;
-}
-
-.breadcrumb li.is-active,
-.breadcrumb li.is-active a {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.content {
-    color: #334155;
-    line-height: 1.7;
-}
-
-.content p:not(:last-child),
-.content ul:not(:last-child),
-.content ol:not(:last-child) {
-    margin-bottom: 0.75rem;
-}
-
-.content ul,
-.content ol {
-    padding-left: 1.25rem;
-}
-
-.has-text-centered { text-align: center !important; }
-.has-text-white { color: #fff !important; }
-.has-text-grey { color: #64748b !important; }
-.has-text-grey-light { color: #94a3b8 !important; }
-.has-text-primary { color: #667eea !important; }
-.has-text-link { color: #5a67d8 !important; }
-.has-text-info { color: #0f766e !important; }
-.has-text-success { color: #15803d !important; }
-.has-text-warning { color: #d97706 !important; }
-.has-text-warning-dark { color: #92400e !important; }
-.has-text-danger { color: #dc2626 !important; }
-.has-background-white { background: #fff !important; }
-.has-background-primary-light { background: rgba(102, 126, 234, 0.14) !important; }
-.has-background-info-light { background: rgba(14, 165, 233, 0.14) !important; }
-.has-background-success-light { background: rgba(34, 197, 94, 0.14) !important; }
-.has-background-warning-light { background: rgba(245, 158, 11, 0.16) !important; }
-.has-background-danger-light { background: rgba(239, 68, 68, 0.14) !important; }
-
 .is-hidden { display: none !important; }
-.is-flex { display: flex !important; }
-.is-justify-content-between,
-.is-justify-content-space-between { justify-content: space-between !important; }
 .is-expanded { width: 100%; }
 .is-left { left: 0; }
-.is-size-7 { font-size: 0.75rem !important; }
-
-/* ==================== 全局卡片样式 ==================== */
-.admin-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    border: 1px solid rgba(0,0,0,0.04);
-    transition: all 0.3s ease;
-}
-
-.admin-card:hover {
-    box-shadow: var(--card-hover-shadow);
-}
 
 /* ==================== 页面头部样式 ==================== */
 .page-header {
@@ -374,16 +205,6 @@ video {
     margin-bottom: 0.5rem !important;
     font-weight: 700;
     line-height: 1.3;
-}
-
-.page-header .header-actions .button {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: white;
-}
-
-.page-header .header-actions .button:hover {
-    background: rgba(255,255,255,0.3);
 }
 
 /* ==================== 统一表格样式 ==================== */
@@ -456,78 +277,6 @@ video {
 }
 
 .table-container { overflow-x: auto; }
-
-.button:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
-/* ==================== 统一按钮样式 ==================== */
-.button {
-    border-radius: var(--border-radius-xs);
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.button.is-link {
-    background: var(--primary-gradient);
-    border: none;
-    color: #fff !important;
-}
-
-.button.is-link:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    color: #fff !important;
-}
-
-.button.is-info {
-    background: var(--info-gradient);
-    border: none;
-    color: #fff !important;
-}
-
-.button.is-info:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-    color: #fff !important;
-}
-
-.button.is-danger {
-    background: var(--danger-gradient);
-    border: none;
-    color: #fff !important;
-}
-
-.button.is-danger:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-    color: #fff !important;
-}
-
-/* Light 变体按钮 - 浅色背景深色文字 */
-.button.is-danger.is-light {
-    background: rgba(220, 53, 69, 0.15);
-    color: #c82333 !important;
-}
-
-.button.is-danger.is-light:hover {
-    background: rgba(220, 53, 69, 0.25);
-    color: #a71d2a !important;
-    box-shadow: none;
-    transform: none;
-}
-
-.button.is-light {
-    background: #f8f9fa;
-    color: #495057 !important;
-    border: 1px solid #e9ecef;
-}
-
-.button.is-light:hover {
-    background: #e9ecef;
-    color: #343a40 !important;
-}
 
 /* ==================== 统一标签样式 ==================== */
 .tag {
@@ -1258,8 +1007,6 @@ video {
     background: #fafafa; 
 }
 
-.media-placeholder .buttons { justify-content: center; margin-bottom: 10px; }
-
 /* ==================== Jodit 编辑器样式 ==================== */
 #editor-wrapper { border: 1px solid #e5e7eb; border-radius: var(--border-radius-xs); background: #fff; }
 #editor-wrapper .jodit-container:not(.jodit_inline) { border: none; }
@@ -1725,10 +1472,6 @@ body.login-page {
         padding: 1rem 1.25rem;
     }
 
-    .admin-card {
-        border-radius: var(--border-radius-sm);
-    }
-    
     .modern-table {
         border-radius: var(--border-radius-sm);
     }
@@ -1777,8 +1520,7 @@ body.login-page {
         justify-content: stretch;
     }
 
-    .media-library-toolbar-buttons .button,
-    .media-library-toolbar-buttons .file {
+    .media-library-toolbar-buttons > * {
         width: 100%;
     }
 

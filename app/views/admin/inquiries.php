@@ -47,7 +47,7 @@
 
 <?php if (empty($inquiries)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-file-invoice"></i></span>
  <p>暂无相关询单记录</p>
@@ -146,20 +146,20 @@
  <div class="dropdown-menu">
  <div class="dropdown-content">
  <a href="<?= url('/admin/inquiries/detail?id=' . (int)$row['id']) ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small has-text-info mr-2"><i class="fas fa-eye"></i></span>
+ <span class="icon is-small text-sky-600 mr-2"><i class="fas fa-eye"></i></span>
  查看详情
  </a>
  <hr class="dropdown-divider">
  <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=contacted') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small has-text-info mr-2"><i class="fas fa-phone"></i></span>
+ <span class="icon is-small text-sky-600 mr-2"><i class="fas fa-phone"></i></span>
  标记为已联系
  </a>
  <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=quoted') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small has-text-success mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
+ <span class="icon is-small text-emerald-600 mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
  标记为已报价
  </a>
  <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=closed') ?>" class="dropdown-item rounded-xl px-3 py-2.5 text-sm">
- <span class="icon is-small has-text-grey mr-2"><i class="fas fa-check-circle"></i></span>
+ <span class="icon is-small text-slate-500 mr-2"><i class="fas fa-check-circle"></i></span>
  标记为已关闭
  </a>
  <hr class="dropdown-divider">

@@ -22,7 +22,7 @@
 
 <?php if (empty($messages)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-inbox"></i></span>
  <p>暂无留言记录</p>
@@ -58,9 +58,9 @@
  </td>
  <td>
  <div class="text-xs text-slate-500">
- <p><span class="icon is-small has-text-grey mr-1"><i class="fas fa-envelope"></i></span> <?= h($row['email']) ?></p>
+ <p><span class="icon is-small text-slate-500 mr-1"><i class="fas fa-envelope"></i></span> <?= h($row['email']) ?></p>
  <?php if (!empty($row['phone'])): ?>
- <p class="mt-1"><span class="icon is-small has-text-grey mr-1"><i class="fas fa-phone"></i></span> <?= h($row['phone']) ?></p>
+ <p class="mt-1"><span class="icon is-small text-slate-500 mr-1"><i class="fas fa-phone"></i></span> <?= h($row['phone']) ?></p>
  <?php endif; ?>
  </div>
  </td>

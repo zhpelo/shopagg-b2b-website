@@ -35,7 +35,7 @@ $isEdit = isset($item);
  <div class="grid gap-6 xl:grid-cols-12">
  <div class="xl:col-span-8">
  <!-- 基本信息 -->
- <div class="admin-card mb-5" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-info-circle"></i></span>
  基本信息
@@ -60,7 +60,7 @@ $isEdit = isset($item);
  </div>
 
  <!-- 内容编辑器 -->
- <div class="admin-card mb-5" style="padding: 2rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
  <div class="section-title">
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-edit"></i></span>
  详细内容
@@ -74,7 +74,7 @@ $isEdit = isset($item);
 
  <div class="xl:col-span-4">
  <!-- 封面图片 -->
- <div class="admin-card mb-5" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 1.5rem;">
  <div class="section-title" style="font-size: 1rem;">
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-image"></i></span>
  封面图片
@@ -97,7 +97,7 @@ $isEdit = isset($item);
  </div>
 
  <!-- 发布 -->
- <div class="admin-card mb-5" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 1.5rem;">
  <div class="section-title" style="font-size: 1rem;">
  <span class="icon-box <?= $theme['box'] ?>"><i class="fas fa-paper-plane"></i></span>
  发布
@@ -122,7 +122,7 @@ $isEdit = isset($item);
  </div>
 
  <!-- SEO 设置 -->
- <div class="admin-card mb-5" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 1.5rem;">
  <div class="section-title" style="font-size: 1rem;">
  <span class="icon-box success"><i class="fas fa-search"></i></span>
  SEO 设置
@@ -146,7 +146,7 @@ $isEdit = isset($item);
  </div>
 
  <!-- 提示 -->
- <div class="admin-card" style="padding: 1.5rem;">
+ <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem;">
  <div class="section-title" style="font-size: 1rem;">
  <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
  写作提示

@@ -21,7 +21,7 @@
 
 <?php if (empty($users)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-users"></i></span>
  <p>暂无员工记录</p>

@@ -21,7 +21,7 @@
 
 <?php if (empty($products)): ?>
 <!-- 空状态 -->
-<div class="admin-card">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
  <div class="empty-state">
  <span class="icon"><i class="fas fa-box-open"></i></span>
  <p>暂无产品记录</p>
@@ -56,12 +56,12 @@
  ?>
  <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
  <?php if (!$cover): ?>
- <span class="icon has-text-white"><i class="fas fa-box"></i></span>
+ <span class="icon text-white"><i class="fas fa-box"></i></span>
  <?php endif; ?>
  </div>
  <div>
  <strong><?= h($row['title']) ?></strong>
- <p class="is-size-7 has-text-grey">/product/<?= h($row['slug']) ?></p>
+ <p class="text-xs text-slate-500">/product/<?= h($row['slug']) ?></p>
  </div>
  </div>
  </td>
