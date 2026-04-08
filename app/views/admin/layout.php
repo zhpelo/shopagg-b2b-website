@@ -90,7 +90,8 @@
                                 <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
                                 <span class="text-xs text-slate-400"><i class="fas fa-chevron-down"></i></span>
                             </button>
-                            <div class="invisible absolute right-0 top-full z-50 mt-2 min-w-[13rem] translate-y-1 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                            <div class="invisible absolute right-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition duration-150 group-hover:visible group-hover:opacity-100">
+                            <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
                                 <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/admin/profile') ?>">
                                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-id-card"></i></span>个人资料
                                 </a>
@@ -101,6 +102,7 @@
                                 <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" href="<?= url('/admin/logout') ?>">
                                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
                                 </a>
+                            </div>
                             </div>
                         </div>
                     </div>
