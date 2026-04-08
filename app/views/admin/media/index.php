@@ -122,7 +122,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div class="flex items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-sm">
+    <div class="flex items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-sm mb-6">
         <span><?= h($_GET['success']) ?></span>
         <button type="button" class="inline-flex h-7 w-7 items-center justify-center rounded-full text-emerald-500 transition hover:bg-emerald-100" data-dismiss-parent>
             <i class="fas fa-times text-xs"></i>

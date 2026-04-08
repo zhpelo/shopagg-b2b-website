@@ -867,10 +867,17 @@ ${iconHtml}
             if (!path) {
                 return;
             }
-            navigator.clipboard.writeText(path).then(() => {
-                renderLibraryStatus('路径已复制到剪贴板', 'success');
-                window.setTimeout(() => renderLibraryStatus(''), 1600);
-            });
+            const fullUrl = toFullUrl(path);
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    renderLibraryStatus('路径已复制到剪贴板', 'success');
+                    window.setTimeout(() => renderLibraryStatus(''), 1600);
+                }).catch(() => {
+                    fallbackCopyText(fullUrl);
+                });
+            } else {
+                fallbackCopyText(fullUrl);
+            }
         });
 
         document.getElementById('media-library-search')?.addEventListener('input', function () {
@@ -1456,13 +1463,42 @@ ${iconHtml}
         });
     }
 
+    function toFullUrl(path) {
+        if (!path || /^(https?:)?\/\//i.test(path) || path.startsWith('data:')) {
+            return path || '';
+        }
+        return window.location.origin + (window.APP_BASE_PATH || '') + path;
+    }
+
     function copyMediaPath(path) {
         if (!path) {
             return;
         }
-        navigator.clipboard.writeText(path).then(() => {
-            window.alert(`已复制：${path}`);
-        });
+        const fullUrl = toFullUrl(path);
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                window.alert(`已复制：${fullUrl}`);
+            }).catch(() => {
+                fallbackCopyText(fullUrl);
+            });
+        } else {
+            fallbackCopyText(fullUrl);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            window.alert(`已复制：${text}`);
+        } catch (e) {
+            window.alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
     }
 
     function setExplorerSelectedCount() {
