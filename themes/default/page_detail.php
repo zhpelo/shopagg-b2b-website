@@ -56,7 +56,7 @@
             <?php endif; ?>
 
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-10">
-                <article class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-brand-600 hover:prose-a:text-brand-700">
+                <article class="prose prose-lg max-w-none prose-a:text-brand-600">
                     <?= process_rich_text($item['content']) ?>
                 </article>
             </div>

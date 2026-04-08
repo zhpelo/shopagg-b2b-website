@@ -53,7 +53,7 @@ $category = $category ?? null;
 
             <!-- Article Content -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-10 mb-8">
-                <article class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-brand-600 hover:prose-a:text-brand-700">
+                <article class="prose prose-lg max-w-none prose-a:text-brand-600">
                     <?= process_rich_text($item['content']) ?>
                 </article>
             </div>
