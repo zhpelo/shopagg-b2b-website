@@ -68,7 +68,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                 </span>
                 <span>媒体资源管理器</span>
             </h1>
-            <p class="mt-2 max-w-3xl text-sm text-white/80">左侧目录树、顶部工具栏、右侧文件列表与属性栏，尽量贴近 Windows 文件管理器的使用习惯。</p>
+            <p class="mt-2 max-w-3xl text-sm text-white/80">你可以在这里管理和浏览你的媒体文件，包括图片、视频和其他文件类型。</p>
         </div>
         <div class="header-actions">
             <a href="<?= url('/admin/media') ?>" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50">
