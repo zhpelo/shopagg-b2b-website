@@ -31,12 +31,6 @@
                         <?php endforeach; ?>
                     </select>
                 </label>
-                <div class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">禁用设置</span>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                        多语言功能已移除，默认使用英语
-                    </div>
-                </div>
             </div>
 
             <div class="mt-6 grid gap-6 md:grid-cols-2">
