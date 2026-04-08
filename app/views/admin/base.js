@@ -1125,6 +1125,7 @@ ${iconHtml}
         editorInputs.forEach((input) => {
             const editorHeight = parseInt(input.dataset.editorHeight || '', 10);
             const editor = window.Jodit.make(input, {
+                language: 'zh_cn',
                 height: Number.isFinite(editorHeight) && editorHeight > 0 ? editorHeight : 400,
                 minHeight: 260,
                 globalFullSize: false,

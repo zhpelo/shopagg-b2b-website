@@ -52,9 +52,9 @@
                         <span class="text-sm font-medium text-slate-700">用户名</span>
                         <span class="relative block">
                             <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-700 outline-none" type="text" value="<?= h($user['username']) ?>" readonly disabled>
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username']) ?>" required placeholder="输入用户名">
                         </span>
-                        <span class="text-xs text-slate-500">用户名创建后不可修改</span>
+                        <span class="text-xs text-slate-500">用于登录的账户名，仅支持字母、数字和下划线</span>
                     </label>
 
                     <label class="block space-y-2">

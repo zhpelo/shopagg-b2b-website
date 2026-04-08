@@ -1369,8 +1369,22 @@ class AdminController extends Controller {
         if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
+        $username = trim((string)$_POST['username']);
+        if ($username !== '' && !preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+            $_SESSION['flash_error'] = '用户名仅支持字母、数字和下划线';
+            $this->redirect('/admin/staff/edit?id=' . $id);
+            return;
+        }
+        if ($username !== '') {
+            $existing = $this->userModel->getByUsername($username);
+            if ($existing && (int)$existing['id'] !== $id) {
+                $_SESSION['flash_error'] = '该用户名已被使用';
+                $this->redirect('/admin/staff/edit?id=' . $id);
+                return;
+            }
+        }
         $data = [
-            'username' => trim((string)$_POST['username']),
+            'username' => $username,
             'display_name' => trim((string)$_POST['display_name']),
             'role' => trim((string)$_POST['role']),
             'permissions' => implode(',', $_POST['permissions'] ?? [])
@@ -1400,14 +1414,34 @@ class AdminController extends Controller {
     public function profileUpdate(): void {
         csrf_check();
         $id = (int)$_SESSION['admin_user_id'];
+        $username = trim((string)($_POST['username'] ?? ''));
+        if ($username !== '' && !preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+            $_SESSION['flash_error'] = '用户名仅支持字母、数字和下划线';
+            $this->redirect('/admin/profile');
+            return;
+        }
+        if ($username !== '') {
+            $existing = $this->userModel->getByUsername($username);
+            if ($existing && (int)$existing['id'] !== $id) {
+                $_SESSION['flash_error'] = '该用户名已被使用';
+                $this->redirect('/admin/profile');
+                return;
+            }
+        }
         $data = [
             'display_name' => trim((string)$_POST['display_name'])
         ];
+        if ($username !== '') {
+            $data['username'] = $username;
+        }
         if (!empty($_POST['password'])) {
             $data['password'] = (string)$_POST['password'];
         }
         $this->userModel->update($id, $data);
         $_SESSION['admin_display_name'] = $data['display_name'];
+        if (isset($data['username'])) {
+            $_SESSION['admin_username'] = $data['username'];
+        }
         $this->redirect('/admin/profile');
     }
 
