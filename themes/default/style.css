@@ -85,29 +85,7 @@
   border-color: #0ea5e9 !important;
 }
 
-/* ===== Prose Content ===== */
-.prose img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-}
-
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
-}
-
-.prose th,
-.prose td {
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-}
-
-.prose th {
-  background-color: #f8fafc;
-  font-weight: 600;
-}
+/* Rich content styles are now in /app/views/admin/rich-content.css */
 
 /* ===== Sticky Sidebar ===== */
 .sticky-element {
@@ -651,7 +629,7 @@ textarea:focus {
 
 /* ===== Responsive Typography ===== */
 @media (max-width: 640px) {
-  .prose {
+  .rich-content {
     font-size: 0.9375rem;
   }
 }

@@ -115,7 +115,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="prose max-w-none text-gray-600 leading-relaxed">
+                    <div class="rich-content">
                         <?= nl2br(h($site['company_bio'] ?? '')) ?>
                     </div>
                 </div>

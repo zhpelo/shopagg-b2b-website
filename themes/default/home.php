@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Why Choose Us</h2>
-                <div class="prose text-gray-600 mb-6">
+                <div class="rich-content mb-6">
                     <p class="mb-4"><?= h($site['company_bio'] ?? '') ?></p>
                 </div>
                 <ul class="space-y-3 mb-8">

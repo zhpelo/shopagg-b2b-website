@@ -63,7 +63,7 @@ $category = $category ?? null;
                 <!-- Description -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">Product Description</h2>
-                    <div class="prose max-w-none text-gray-600">
+                    <div class="rich-content">
                         <?= process_rich_text($item['content']) ?>
                     </div>
                 </div>

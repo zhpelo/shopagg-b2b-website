@@ -1128,6 +1128,7 @@ ${iconHtml}
                 height: Number.isFinite(editorHeight) && editorHeight > 0 ? editorHeight : 400,
                 minHeight: 260,
                 globalFullSize: false,
+                editorClassName: 'rich-content',
                 toolbarAdaptive: false,
                 toolbarSticky: false,
                 askBeforePasteHTML: false,

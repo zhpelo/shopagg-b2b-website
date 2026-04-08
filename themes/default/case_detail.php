@@ -37,7 +37,7 @@
                 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Project Details</h2>
-                    <article class="prose max-w-none text-gray-600">
+                    <article class="rich-content">
                         <?= process_rich_text($item['content']) ?>
                     </article>
                 </div>

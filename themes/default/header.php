@@ -54,6 +54,7 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?= url('/app/views/admin/rich-content.css') ?>">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
     <?= get_head_code() ?>
 </head>
