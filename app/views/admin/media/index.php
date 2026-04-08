@@ -162,6 +162,12 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     <input type="file" name="media_files[]" id="page-media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
 </form>
 
+<form method="post" action="<?= url('/admin/media/folder/delete') ?>" id="page-media-folder-delete-form" style="display:none;">
+    <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+    <input type="hidden" name="directory" id="page-media-folder-delete-dir" value="">
+    <input type="hidden" name="parent_dir" value="<?= h($currentDir) ?>">
+</form>
+
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm explorer-shell">
     <div class="explorer-topbar">
         <div class="explorer-topbar-left">
@@ -266,11 +272,16 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <?php if (!empty($folders)): ?>
                 <div class="explorer-folder-strip">
                     <?php foreach ($folders as $folder): ?>
-                        <a href="<?= h($buildMediaUrl((string)$folder['directory'])) ?>" class="explorer-folder-chip">
-                            <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>
-                            <span><?= h($folder['name']) ?></span>
-                            <small><?= (int)$folder['item_count'] ?> 项</small>
-                        </a>
+                        <div class="explorer-folder-chip-wrap" style="display: inline-flex; align-items: center; gap: 0;">
+                            <a href="<?= h($buildMediaUrl((string)$folder['directory'])) ?>" class="explorer-folder-chip" style="border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: 0;">
+                                <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>
+                                <span><?= h($folder['name']) ?></span>
+                                <small><?= (int)$folder['item_count'] ?> 项</small>
+                            </a>
+                            <button type="button" class="js-folder-delete-btn inline-flex h-full items-center justify-center rounded-r-xl border border-l-0 border-slate-200 bg-white px-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-500" data-folder-dir="<?= h((string)$folder['directory']) ?>" data-folder-name="<?= h($folder['name']) ?>" data-folder-count="<?= (int)$folder['item_count'] ?>" title="删除文件夹">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

@@ -1548,18 +1548,15 @@ ${iconHtml}
         }
 
         document.querySelectorAll('.explorer-file-row[data-explorer-file]').forEach((row) => {
-            row.addEventListener('click', () => {
+            row.addEventListener('click', (event) => {
+                if (event.target.closest('.explorer-check-cell') || event.target.closest('.explorer-actions')) {
+                    return;
+                }
                 try {
                     selectExplorerFile(JSON.parse(row.dataset.explorerFile || '{}'));
                 } catch (error) {
                     console.warn('Invalid explorer file payload', error);
                 }
-            });
-        });
-
-        document.querySelectorAll('.explorer-check-cell, .explorer-actions').forEach((element) => {
-            element.addEventListener('click', (event) => {
-                event.stopPropagation();
             });
         });
 
@@ -1597,6 +1594,30 @@ ${iconHtml}
             }
             folderInput.value = name.trim();
             document.getElementById('page-media-create-folder-form')?.submit();
+        });
+
+        document.querySelectorAll('.js-folder-delete-btn').forEach((btn) => {
+            btn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const folderDir = btn.dataset.folderDir || '';
+                const folderName = btn.dataset.folderName || '';
+                const folderCount = parseInt(btn.dataset.folderCount || '0', 10);
+                if (folderCount > 0) {
+                    window.alert(`文件夹「${folderName}」内有 ${folderCount} 个项目，请先清空后再删除。`);
+                    return;
+                }
+                if (!window.confirm(`确定删除文件夹「${folderName}」吗？`)) {
+                    return;
+                }
+                const form = document.getElementById('page-media-folder-delete-form');
+                const input = document.getElementById('page-media-folder-delete-dir');
+                if (!form || !input) {
+                    return;
+                }
+                input.value = folderDir;
+                form.submit();
+            });
         });
 
         setExplorerSelectedCount();
