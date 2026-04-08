@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+    <div class="card p-8">
         <div class="section-title">
             <span class="icon-box primary"><i class="fas fa-building"></i></span>
             公司简介 (Profile)
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+    <div class="card p-8">
         <div class="section-title">
             <span class="icon-box warning"><i class="fas fa-star"></i></span>
             资质认证

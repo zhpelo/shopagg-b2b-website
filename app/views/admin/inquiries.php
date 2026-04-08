@@ -49,7 +49,7 @@
 
 <?php if (empty($inquiries)): ?>
     <!-- 空状态 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="card">
         <div class="empty-state">
             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-file-invoice"></i></span>
             <p>暂无相关询单记录</p>
@@ -57,7 +57,7 @@
     </div>
 <?php else: ?>
     <!-- 询单列表 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden [&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:border-b [&_thead_th]:border-slate-200 [&_thead_th]:px-5 [&_thead_th]:py-3 [&_thead_th]:text-left [&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:uppercase [&_thead_th]:tracking-wider [&_thead_th]:text-slate-500 [&_tbody_td]:px-5 [&_tbody_td]:py-4 [&_tbody_td]:align-middle [&_tbody_td]:border-b [&_tbody_td]:border-slate-100 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-slate-50">
+    <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
                 <thead class="bg-gradient-to-b from-white to-slate-50">
@@ -75,7 +75,7 @@
                         <tr>
                             <td>
                                 <div class="flex items-center">
-                                    <div class="icon-box mr-3" style="width: 44px; height: 44px; background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; flex-shrink: 0;">
+                                    <div class="icon-box mr-3 size-11 rounded-[10px] flex items-center justify-center text-white font-semibold shrink-0 bg-gradient-to-br from-cyan-600 to-emerald-500">
                                         <?= strtoupper(mb_substr($row['name'], 0, 1)) ?>
                                     </div>
                                     <div>

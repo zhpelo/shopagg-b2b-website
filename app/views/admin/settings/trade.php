@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+    <div class="card p-8">
         <div class="section-title">
             <span class="icon-box info"><i class="fas fa-globe"></i></span>
             贸易能力 (Trade Capacity)
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+    <div class="card p-8">
         <div class="section-title">
             <span class="icon-box success"><i class="fas fa-flask"></i></span>
             研发能力 (R&D)

@@ -21,11 +21,11 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
             <td>
                 <div class="flex items-center" style="padding-left: <?= $level * 28 ?>px;">
                     <?php if ($level > 0): ?>
-                        <span class="tree-line" style="color: #cbd5e0; margin-right: 8px;">
+                        <span class="tree-line text-slate-300 mr-2">
                             <i class="fas fa-level-up-alt fa-rotate-90"></i>
                         </span>
                     <?php endif; ?>
-                    <div style="width: 40px; height: 40px; background: <?= $themeGradient ?>; border-radius: 10px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <div class="size-10 rounded-[10px] mr-4 flex items-center justify-center shrink-0" style="background: <?= $themeGradient ?>">
                         <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas <?= $icon ?>"></i></span>
                     </div>
                     <div>
@@ -40,7 +40,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
                 </div>
             </td>
             <td>
-                <code style="background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8125rem;"><?= h($row['slug']) ?></code>
+                <code class="bg-slate-100 px-3 py-1 rounded-md text-[0.8125rem]"><?= h($row['slug']) ?></code>
             </td>
             <td>
                 <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"><?= $itemCount ?> 项</span>
@@ -86,7 +86,7 @@ $totalCount = countTotalCategories($categories);
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header" style="background: <?= $themeGradient ?>; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);">
+<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= $themeGradient ?>">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-4">
             <div>
@@ -112,7 +112,7 @@ $totalCount = countTotalCategories($categories);
 
 <?php if (empty($categories)): ?>
     <!-- 空状态 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="card">
         <div class="empty-state">
             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder-open"></i></span>
             <p>暂无<?= $label ?>记录</p>
@@ -124,12 +124,12 @@ $totalCount = countTotalCategories($categories);
     </div>
 <?php else: ?>
     <!-- 分类列表 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden [&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:border-b [&_thead_th]:border-slate-200 [&_thead_th]:px-5 [&_thead_th]:py-3 [&_thead_th]:text-left [&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:uppercase [&_thead_th]:tracking-wider [&_thead_th]:text-slate-500 [&_tbody_td]:px-5 [&_tbody_td]:py-4 [&_tbody_td]:align-middle [&_tbody_td]:border-b [&_tbody_td]:border-slate-100 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-slate-50">
+    <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="category-tree-table min-w-full text-sm text-slate-700">
                 <thead class="bg-gradient-to-b from-white to-slate-50">
                     <tr>
-                        <th style="min-width: 280px;">分类名称</th>
+                        <th class="min-w-[280px]">分类名称</th>
                         <th>别名 (Slug)</th>
                         <th>内容数</th>
                         <th>创建时间</th>

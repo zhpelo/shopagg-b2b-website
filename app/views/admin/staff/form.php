@@ -25,7 +25,7 @@
  <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
  
  <!-- 基本信息 -->
- <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
+ <div class="card mb-5 p-8">
  <div class="section-title">
  <span class="icon-box primary"><i class="fas fa-user"></i></span>
  基本信息
@@ -36,7 +36,7 @@
  <span class="text-sm font-medium text-slate-700">用户名</span>
  <span class="relative block">
  <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
- <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required <?= isset($user) ? 'readonly style="background: #f8fafc;"' : 'placeholder="输入登录用户名"' ?>>
+ <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required <?= isset($user) ? 'readonly class="!bg-slate-50"' : 'placeholder="输入登录用户名"' ?>>
  </span>
  <?php if (isset($user)): ?>
  <span class="text-xs text-slate-500">用户名创建后不可修改</span>
@@ -68,7 +68,7 @@
  </div>
 
  <!-- 角色和权限 -->
- <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5" style="padding: 2rem;">
+ <div class="card mb-5 p-8">
  <div class="section-title">
  <span class="icon-box warning"><i class="fas fa-shield-alt"></i></span>
  角色和权限
@@ -129,8 +129,8 @@
 
  <!-- 右侧提示 -->
  <div class="xl:col-span-4">
- <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem;">
- <div class="section-title" style="font-size: 1rem;">
+ <div class="card p-6">
+ <div class="section-title text-base">
  <span class="icon-box info"><i class="fas fa-info"></i></span>
  权限说明
  </div>

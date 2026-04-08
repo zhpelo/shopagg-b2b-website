@@ -44,7 +44,7 @@ $tips = $contentConfig['tips'] ?? [];
 
     <div class="grid gap-6 xl:grid-cols-12">
         <div class="xl:col-span-8">
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem;">
+            <div class="card p-8">
                 <div class="section-title">
                     <span class="icon-box success"><i class="fas fa-<?= h($icon) ?>"></i></span>
                     <?= h($contentConfig['content_section_title'] ?? ($singular . '内容')) ?>
@@ -84,7 +84,7 @@ $tips = $contentConfig['tips'] ?? [];
         </div>
 
         <div class="xl:col-span-4">
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="card p-6 mb-6">
                 <div class="section-title">
                     <span class="icon-box info"><i class="fas fa-cog"></i></span>
                     发布设置
@@ -141,7 +141,7 @@ $tips = $contentConfig['tips'] ?? [];
                     </div>
                 </div>
 
-                <hr style="margin: 1.5rem 0;">
+                <hr class="my-6">
 
                 <div class="space-y-3">
                     <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 <?= h($primaryButtonClass) ?>">
@@ -155,7 +155,7 @@ $tips = $contentConfig['tips'] ?? [];
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="card p-6 mb-6">
                 <div class="section-title">
                     <span class="icon-box success"><i class="fas fa-search"></i></span>
                     SEO 设置
@@ -178,7 +178,7 @@ $tips = $contentConfig['tips'] ?? [];
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 1.5rem;">
+            <div class="card p-6">
                 <div class="section-title">
                     <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
                     写作提示

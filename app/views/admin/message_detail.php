@@ -1,5 +1,5 @@
 <!-- 页面头部 -->
-<div class="page-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+<div class="page-header bg-gradient-to-br from-indigo-500 to-purple-600">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
@@ -24,7 +24,7 @@
 
 <div class="grid gap-6 xl:grid-cols-12">
     <div class="space-y-6 xl:col-span-8">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-user"></i></span>
                 客户信息
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box primary"><i class="fas fa-comment-alt"></i></span>
                 留言内容
@@ -86,7 +86,7 @@
     </div>
 
     <div class="space-y-6 xl:col-span-4">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box primary"><i class="fas fa-bolt"></i></span>
                 快捷操作
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box success"><i class="fas fa-id-card"></i></span>
                 客户名片
@@ -139,7 +139,7 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box danger"><i class="fas fa-exclamation-triangle"></i></span>
                 危险操作

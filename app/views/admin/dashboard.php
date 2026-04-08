@@ -262,7 +262,7 @@
                     foreach ($counts['recent_messages'] as $i => $val):
                         $height = ($val / $maxMsg) * 100;
                     ?>
-                        <div class="bar" style="height: <?= max(4, $height) ?>%; background: linear-gradient(180deg, #dc3545, #e83e8c);" title="<?= date('m-d', strtotime('-' . (29 - $i) . ' days')) ?>: <?= $val ?>"></div>
+                        <div class="bar bg-gradient-to-b from-rose-600 to-pink-500" style="height: <?= max(4, $height) ?>%" title="<?= date('m-d', strtotime('-' . (29 - $i) . ' days')) ?>: <?= $val ?>"></div>
                     <?php endforeach; ?>
                 </div>
                 <div class="mt-2 flex items-center justify-between text-xs text-slate-400">

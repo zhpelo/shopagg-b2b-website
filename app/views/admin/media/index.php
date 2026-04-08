@@ -59,7 +59,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 };
 ?>
 
-<div class="page-header" style="background: linear-gradient(135deg, #1f6feb 0%, #0ea5e9 100%); box-shadow: 0 10px 40px rgba(31, 111, 235, 0.28);">
+<div class="page-header bg-gradient-to-br from-blue-600 to-sky-500 shadow-[0_10px_40px_rgba(31,111,235,0.28)]">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
@@ -81,7 +81,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 
 <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 mb-6">
     <div>
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="card p-5">
             <div class="stat-mini">
                 <div class="icon-box" style="background: var(--info-gradient);">
                     <i class="fas fa-file-image"></i>
@@ -94,10 +94,10 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
         </div>
     </div>
     <div>
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="card p-5">
             <div class="stat-mini">
-                <div class="icon-box" style="background: var(--warning-gradient); color: #1f2937;">
-                    <i class="fas fa-video"></i>
+                <div class="icon-box" style="background: var(--warning-gradient)">
+                    <i class="fas fa-video text-gray-800"></i>
                 </div>
                 <div class="stat-info">
                     <div class="value"><?= number_format((int)($summary['video_count'] ?? 0)) ?></div>
@@ -107,7 +107,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
         </div>
     </div>
     <div>
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="card p-5">
             <div class="stat-mini">
                 <div class="icon-box" style="background: var(--success-gradient);">
                     <i class="fas fa-database"></i>
@@ -139,36 +139,36 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     </div>
 <?php endif; ?>
 
-<form method="post" action="<?= url('/admin/media/delete') ?>" id="media-bulk-delete-form" style="display:none;">
+<form method="post" action="<?= url('/admin/media/delete') ?>" id="media-bulk-delete-form" class="hidden">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
 </form>
 
-<form method="post" action="<?= url('/admin/media/delete') ?>" id="single-media-delete-form" style="display:none;">
+<form method="post" action="<?= url('/admin/media/delete') ?>" id="single-media-delete-form" class="hidden">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
     <input type="hidden" name="path" id="single-media-delete-path" value="">
 </form>
 
-<form method="post" action="<?= url('/admin/media/folder/create') ?>" id="page-media-create-folder-form" style="display:none;">
+<form method="post" action="<?= url('/admin/media/folder/create') ?>" id="page-media-create-folder-form" class="hidden">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
     <input type="hidden" name="folder_name" id="page-media-create-folder-name" value="">
 </form>
 
-<form method="post" action="<?= url('/admin/media/upload') ?>" enctype="multipart/form-data" id="page-media-upload-form" style="display:none;">
+<form method="post" action="<?= url('/admin/media/upload') ?>" enctype="multipart/form-data" id="page-media-upload-form" class="hidden">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
     <input type="file" name="media_files[]" id="page-media-upload-input" multiple accept="image/*,video/mp4,video/webm,video/ogg,video/quicktime">
 </form>
 
-<form method="post" action="<?= url('/admin/media/folder/delete') ?>" id="page-media-folder-delete-form" style="display:none;">
+<form method="post" action="<?= url('/admin/media/folder/delete') ?>" id="page-media-folder-delete-form" class="hidden">
     <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="directory" id="page-media-folder-delete-dir" value="">
     <input type="hidden" name="parent_dir" value="<?= h($currentDir) ?>">
 </form>
 
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm explorer-shell">
+<div class="card explorer-shell">
     <div class="explorer-topbar">
         <div class="explorer-topbar-left">
             <span class="inline-flex h-5 w-5 items-center justify-center explorer-app-icon"><i class="fas fa-photo-video"></i></span>
@@ -272,8 +272,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <?php if (!empty($folders)): ?>
                 <div class="explorer-folder-strip">
                     <?php foreach ($folders as $folder): ?>
-                        <div class="explorer-folder-chip-wrap" style="display: inline-flex; align-items: center; gap: 0;">
-                            <a href="<?= h($buildMediaUrl((string)$folder['directory'])) ?>" class="explorer-folder-chip" style="border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: 0;">
+                        <div class="explorer-folder-chip-wrap inline-flex items-center gap-0">
+                            <a href="<?= h($buildMediaUrl((string)$folder['directory'])) ?>" class="explorer-folder-chip rounded-r-none mr-0">
                                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder"></i></span>
                                 <span><?= h($folder['name']) ?></span>
                                 <small><?= (int)$folder['item_count'] ?> 项</small>

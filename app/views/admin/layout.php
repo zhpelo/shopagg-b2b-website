@@ -40,7 +40,7 @@
             <div class="container flex items-center justify-between gap-6 py-4">
                 <div class="flex items-center gap-3">
                     <a class="logo-link inline-flex items-center rounded-xl p-2 transition" href="<?= url('/admin') ?>">
-                        <img src="https://www.shopagg.com/wp-content/uploads/2024/12/shopagg-logo-b.png" alt="logo" style="height: 36px; max-height: 36px;">
+                        <img src="https://www.shopagg.com/wp-content/uploads/2024/12/shopagg-logo-b.png" alt="logo" class="h-9 max-h-9">
                     </a>
                     <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 lg:hidden" aria-label="menu" aria-expanded="false" data-nav-toggle data-target="adminNavbar">
                         <span aria-hidden="true"></span>
@@ -362,10 +362,10 @@
         </div>
     </div>
 
-    <footer class="footer bg-white py-6" style="border-top: 1px solid #e5e7eb;">
+    <footer class="footer bg-white py-6 border-t border-gray-200">
         <div class="container text-center">
             <p class="text-md text-slate-500">
-                &copy; <?= date('Y') ?> SHOPAGG B2B 企业官网系统. Powered by <a href="https://www.shopagg.com" target="_blank" style="color: #667eea;">SHOPAGG</a>.
+                &copy; <?= date('Y') ?> SHOPAGG B2B 企业官网系统. Powered by <a href="https://www.shopagg.com" target="_blank" class="text-indigo-500 hover:text-indigo-600">SHOPAGG</a>.
             </p>
         </div>
     </footer>

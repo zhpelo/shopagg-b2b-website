@@ -21,7 +21,7 @@
 
 <?php if (empty($products)): ?>
     <!-- 空状态 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="card">
         <div class="empty-state">
             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-box-open"></i></span>
             <p>暂无产品记录</p>
@@ -33,7 +33,7 @@
     </div>
 <?php else: ?>
     <!-- 产品列表 -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden [&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:border-b [&_thead_th]:border-slate-200 [&_thead_th]:px-5 [&_thead_th]:py-3 [&_thead_th]:text-left [&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:uppercase [&_thead_th]:tracking-wider [&_thead_th]:text-slate-500 [&_tbody_td]:px-5 [&_tbody_td]:py-4 [&_tbody_td]:align-middle [&_tbody_td]:border-b [&_tbody_td]:border-slate-100 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-slate-50">
+    <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
                 <thead class="bg-gradient-to-b from-white to-slate-50">
@@ -54,7 +54,7 @@
                                     $images = json_decode($row['images_json'] ?? '[]', true);
                                     $cover = !empty($images) ? $images[0] : null;
                                     ?>
-                                    <div style="width: 56px; height: 56px; background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>; border-radius: 10px; margin-right: 1rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                    <div class="size-14 rounded-[10px] mr-4 shrink-0 flex items-center justify-center" style="background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>">
                                         <?php if (!$cover): ?>
                                             <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas fa-box"></i></span>
                                         <?php endif; ?>

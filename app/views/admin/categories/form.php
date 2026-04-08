@@ -12,7 +12,7 @@ $currentId = (int)($category['id'] ?? 0);
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header" style="background: <?= $themeGradient ?>; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);">
+<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= $themeGradient ?>">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-4">
             <div>
@@ -37,7 +37,7 @@ $currentId = (int)($category['id'] ?? 0);
         <form method="post" action="<?= h(url($action)) ?>" class="modern-form">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
 
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+            <div class="card p-8">
                 <div class="section-title">
                     <span class="icon-box <?= $isPost ? 'success' : 'warning' ?>"><i class="fas <?= $icon ?>"></i></span>
                     分类信息
@@ -104,7 +104,7 @@ $currentId = (int)($category['id'] ?? 0);
     </div>
 
     <div class="xl:col-span-5">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-info-circle"></i></span>
                 分类说明

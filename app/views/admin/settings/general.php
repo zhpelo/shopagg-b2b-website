@@ -1,6 +1,6 @@
 <div class="grid gap-6 xl:grid-cols-12">
     <div class="space-y-6 xl:col-span-8">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box primary"><i class="fas fa-globe"></i></span>
                 网站基础设置
@@ -39,7 +39,7 @@
                     <input type="hidden" name="site_logo" id="site_logo" value="<?= h($settings['site_logo'] ?? '') ?>">
                     <div class="logo-preview-box flex h-24 w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" data-media-picker-target="site_logo" data-media-picker-fit="contain">
                         <?php if (!empty($settings['site_logo'])): ?>
-                            <img src="<?= asset_url(h($settings['site_logo'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            <img src="<?= asset_url(h($settings['site_logo'])) ?>" class="max-w-full max-h-full object-contain">
                         <?php else: ?>
                             <div class="text-center text-slate-400">
                                 <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white"><i class="fas fa-image text-lg"></i></span>
@@ -55,7 +55,7 @@
                     <input type="hidden" name="site_favicon" id="site_favicon" value="<?= h($settings['site_favicon'] ?? '') ?>">
                     <div class="favicon-preview-box flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40" data-media-picker-target="site_favicon" data-media-picker-fit="contain">
                         <?php if (!empty($settings['site_favicon'])): ?>
-                            <img src="<?= asset_url(h($settings['site_favicon'])) ?>" style="max-width: 48px; max-height: 48px; object-fit: contain;">
+                            <img src="<?= asset_url(h($settings['site_favicon'])) ?>" class="max-w-12 max-h-12 object-contain">
                         <?php else: ?>
                             <div class="text-center text-slate-400">
                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white"><i class="fas fa-star"></i></span>
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box success"><i class="fas fa-search"></i></span>
                 SEO 设置
@@ -98,7 +98,7 @@
                     <input type="hidden" name="og_image" id="og_image" value="<?= h($settings['og_image'] ?? '') ?>">
                     <div class="og-image-preview-box flex h-[105px] w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-emerald-300 hover:bg-emerald-50/40" data-media-picker-target="og_image" data-media-picker-fit="cover">
                         <?php if (!empty($settings['og_image'])): ?>
-                            <img src="<?= asset_url(h($settings['og_image'])) ?>" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                            <img src="<?= asset_url(h($settings['og_image'])) ?>" class="max-w-full max-h-full object-cover">
                         <?php else: ?>
                             <div class="text-center text-slate-400">
                                 <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white"><i class="fas fa-share-alt text-lg"></i></span>
@@ -113,7 +113,7 @@
     </div>
 
     <div class="space-y-6 xl:col-span-4">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-info"></i></span>
                 设置说明

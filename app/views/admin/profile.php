@@ -16,8 +16,8 @@
 <div class="grid gap-6 xl:grid-cols-12">
     <!-- 左侧：个人信息卡片 -->
     <div class="xl:col-span-4">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem; text-align: center;">
-            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+        <div class="card p-8 text-center">
+            <div class="size-[100px] bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full inline-flex items-center justify-center text-4xl text-white mb-6 shadow-[0_10px_30px_rgba(102,126,234,0.3)]">
                 <?= strtoupper(substr($user['display_name'] ?? $user['username'], 0, 1)) ?>
             </div>
             <h3 class="mb-1 text-xl font-bold text-slate-900"><?= h($user['display_name'] ?? $user['username']) ?></h3>
@@ -27,7 +27,7 @@
                 <?= $user['role'] === 'admin' ? '管理员' : '普通员工' ?>
             </span>
 
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9;">
+            <div class="mt-6 pt-6 border-t border-slate-100">
                 <div class="flex items-center justify-center">
                     <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-slate-400"><i class="far fa-calendar-alt"></i></span>
                     <span class="text-xs text-slate-500">创建于 <?= format_date($user['created_at'] ?? '') ?: '未知' ?></span>
@@ -41,7 +41,7 @@
         <form method="post" action="<?= url('/admin/profile/update') ?>">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
 
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm" style="padding: 2rem;">
+            <div class="card p-8">
                 <div class="section-title">
                     <span class="icon-box primary"><i class="fas fa-edit"></i></span>
                     编辑资料
@@ -85,7 +85,7 @@
                     </label>
                 </div>
 
-                <hr style="margin: 1.5rem 0;">
+                <hr class="my-6">
 
                 <div class="flex flex-wrap gap-3">
                     <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">

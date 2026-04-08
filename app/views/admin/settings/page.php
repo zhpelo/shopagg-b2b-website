@@ -1,5 +1,5 @@
 <!-- 页面头部 -->
-<div class="page-header" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); box-shadow: 0 10px 40px rgba(108, 117, 125, 0.3);">
+<div class="page-header bg-gradient-to-br from-gray-500 to-gray-700 shadow-[0_10px_40px_rgba(108,117,125,0.3)]">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">

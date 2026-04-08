@@ -1,4 +1,4 @@
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
+<div class="card mb-5 p-8">
     <div class="section-title">
         <span class="icon-box primary"><i class="fas fa-images"></i></span>
         公司展示 (Show)
@@ -40,7 +40,7 @@
     </button>
 </div>
 
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+<div class="card p-8">
     <div class="section-title">
         <span class="icon-box warning"><i class="fas fa-certificate"></i></span>
         资质证书 (Certificates)

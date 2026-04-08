@@ -1,6 +1,6 @@
 <div class="grid gap-6 xl:grid-cols-12">
     <div class="space-y-6 xl:col-span-8">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box primary"><i class="fas fa-phone"></i></span>
                 联系信息
@@ -39,7 +39,7 @@
             </label>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-8">
+        <div class="card p-8">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-share-alt"></i></span>
                 社交媒体
@@ -67,7 +67,7 @@
     </div>
 
     <div class="space-y-6 xl:col-span-4">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="card p-6">
             <div class="section-title">
                 <span class="icon-box info"><i class="fas fa-info"></i></span>
                 设置说明

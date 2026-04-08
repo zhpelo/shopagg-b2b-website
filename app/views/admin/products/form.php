@@ -26,7 +26,7 @@
         <!-- 左侧栏 -->
         <div class="xl:col-span-8">
             <!-- 标题和描述 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
+            <div class="card mb-5 p-8">
                 <div class="section-title">
                     <span class="icon-box primary"><i class="fas fa-info-circle"></i></span>
                     基本信息
@@ -46,7 +46,7 @@
             </div>
 
             <!-- 媒体文件 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
+            <div class="card mb-5 p-8">
                 <div class="section-title">
                     <span class="icon-box info"><i class="fas fa-images"></i></span>
                     媒体文件
@@ -90,17 +90,17 @@
             </div>
 
             <!-- 横幅图片 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
+            <div class="card mb-5 p-8">
                 <div class="section-title">
                     <span class="icon-box primary"><i class="fas fa-image"></i></span>
                     横幅图片
                 </div>
                 <p class="mb-4 text-xs text-slate-500">选择一张图片作为商品页面的横幅展示（可选）</p>
 
-                <div id="banner-preview" class="mb-4" style="<?= empty($product['banner_image']) ? 'display: none;' : '' ?>">
+                <div id="banner-preview" class="mb-4 <?= empty($product['banner_image']) ? 'hidden' : '' ?>">
                     <div class="banner-image-container relative inline-block">
-                        <img id="banner-image" src="<?= h(url($product['banner_image'] ?? '')) ?>" alt="横幅图片" style="max-width: 300px; max-height: 200px; border-radius: 8px; border: 2px solid #e5e7eb;">
-                        <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-white transition hover:bg-rose-500" id="remove-banner" style="position: absolute; top: 8px; right: 8px;" aria-label="移除横幅">
+                        <img id="banner-image" src="<?= h(url($product['banner_image'] ?? '')) ?>" alt="横幅图片" class="max-w-[300px] max-h-[200px] rounded-lg border-2 border-gray-200">
+                        <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-white transition hover:bg-rose-500 absolute top-2 right-2" id="remove-banner" aria-label="移除横幅">
                             <i class="fas fa-times text-xs"></i>
                         </button>
                     </div>
@@ -108,7 +108,7 @@
 
                 <input type="hidden" name="banner_image" id="banner-input" value="<?= h($product['banner_image'] ?? '') ?>">
 
-                <div id="banner-placeholder" class="media-placeholder" style="<?= !empty($product['banner_image']) ? 'display: none;' : '' ?>">
+                <div id="banner-placeholder" class="media-placeholder <?= !empty($product['banner_image']) ? 'hidden' : '' ?>">
                     <button type="button" class="open-banner-library-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
                         <i class="fas fa-plus text-xs"></i>
                         <span>选择横幅图片</span>
@@ -117,7 +117,7 @@
             </div>
 
             <!-- 价格 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-8">
+            <div class="card mb-5 p-8">
                 <div class="section-title">
                     <span class="icon-box success"><i class="fas fa-dollar-sign"></i></span>
                     阶梯价格
@@ -164,7 +164,7 @@
         <!-- 右侧栏 -->
         <div class="xl:col-span-4">
             <!-- 状态 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-6">
+            <div class="card mb-5 p-6">
                 <div class="section-title">
                     <span class="icon-box warning"><i class="fas fa-toggle-on"></i></span>
                     发布状态
@@ -177,7 +177,7 @@
             </div>
 
             <!-- 类别和摘要 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-6">
+            <div class="card mb-5 p-6">
                 <div class="section-title">
                     <span class="icon-box primary"><i class="fas fa-cog"></i></span>
                     产品设置
@@ -210,7 +210,7 @@
             </div>
 
             <!-- 产品组织 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-6">
+            <div class="card mb-5 p-6">
                 <div class="section-title">
                     <span class="icon-box info"><i class="fas fa-sitemap"></i></span>
                     产品组织
@@ -233,7 +233,7 @@
             </div>
 
             <!-- SEO 设置 -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm mb-5 p-6">
+            <div class="card mb-5 p-6">
                 <div class="section-title">
                     <span class="icon-box success"><i class="fas fa-search"></i></span>
                     SEO 设置
