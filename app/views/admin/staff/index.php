@@ -29,10 +29,10 @@
 </div>
 <?php else: ?>
 <!-- 员工列表 -->
-<div class="modern-table">
- <div class="table-container">
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden [&_thead_th]:sticky [&_thead_th]:top-0 [&_thead_th]:border-b [&_thead_th]:border-slate-200 [&_thead_th]:px-5 [&_thead_th]:py-3 [&_thead_th]:text-left [&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:uppercase [&_thead_th]:tracking-wider [&_thead_th]:text-slate-500 [&_tbody_td]:px-5 [&_tbody_td]:py-4 [&_tbody_td]:align-middle [&_tbody_td]:border-b [&_tbody_td]:border-slate-100 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-slate-50">
+ <div class="overflow-x-auto">
  <table class="min-w-full text-sm text-slate-700">
- <thead>
+ <thead class="bg-gradient-to-b from-white to-slate-50">
  <tr>
  <th>员工信息</th>
  <th>角色</th>
