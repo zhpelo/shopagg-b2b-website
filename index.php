@@ -36,13 +36,6 @@ use App\Core\Database;
 // 数据库（首次访问时初始化 schema）
 Database::getInstance();
 
-// 语言
-$langs = get_languages();
-if (!empty($_GET['lang']) && isset($langs[$_GET['lang']])) {
-    $_SESSION['lang'] = $_GET['lang'];
-}
-$current_lang = $_SESSION['lang'] ?? (new \App\Models\Setting())->get('default_lang', 'en');
-
 // 路由
 $router = new Router();
 require APP_ROOT . '/app/routes.php';

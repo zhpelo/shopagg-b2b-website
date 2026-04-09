@@ -141,29 +141,6 @@ function asset_url(string $path): string {
     return url($path);
 }
 
-/**
- * 生成语言切换 URL
- * 
- * 保留当前请求参数，仅修改 lang 参数
- * 
- * @param string $lang 语言代码（如 'en'、'zh'）
- * @return string 语言切换 URL
- */
-function lang_switch_url(string $lang): string {
-    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    $query = $_GET;
-    $query['lang'] = $lang;
-    return $path . '?' . http_build_query($query);
-}
-
-/**
- * 获取支持的语言列表
- * 
- * @return array 语言代码 => 显示名称 的关联数组
- */
-function get_languages(): array {
-    return ['en' => 'English', 'zh' => '中文'];
-}
 
 // ============================================================================
 // 文件上传处理
