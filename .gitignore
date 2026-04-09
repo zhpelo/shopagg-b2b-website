@@ -2,4 +2,7 @@ uploads/
 \#data/
 .DS_Store
 .htaccess
+.env
+storage/logs/*.log
+uploads/logs/*.log
 themes/Food-Industry-B2B-For-Shopagg-Theme
