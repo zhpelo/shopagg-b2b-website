@@ -34,7 +34,7 @@
                 <div class="space-y-5">
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">产品标题</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="title" value="<?= h($product['title'] ?? '') ?>" placeholder="输入产品标题" required>
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="title" value="<?= h($product['title'] ?? '') ?>" placeholder="输入产品标题" required>
                     </label>
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-slate-700" for="content-input">产品描述</label>
@@ -186,13 +186,13 @@
                 <div class="space-y-5">
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($product['slug'] ?? '') ?>" placeholder="product-slug">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($product['slug'] ?? '') ?>" placeholder="product-slug">
                         <p class="text-xs text-slate-500">留空自动生成</p>
                     </label>
 
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">产品摘要</span>
-                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="summary" rows="2" placeholder="简短描述产品特点"><?= h($product['summary'] ?? '') ?></textarea>
+                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="summary" rows="2" placeholder="简短描述产品特点"><?= h($product['summary'] ?? '') ?></textarea>
                     </label>
 
                     <label class="block space-y-2">
@@ -219,15 +219,15 @@
                 <div class="space-y-4">
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">产品类型</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="product_type" value="<?= h($product['product_type'] ?? '') ?>" placeholder="如：服装、电子产品">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="product_type" value="<?= h($product['product_type'] ?? '') ?>" placeholder="如：服装、电子产品">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">供应商/厂商</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="vendor" value="<?= h($product['vendor'] ?? '') ?>" placeholder="厂商名称">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="vendor" value="<?= h($product['vendor'] ?? '') ?>" placeholder="厂商名称">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">标签</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="tags" value="<?= h($product['tags'] ?? '') ?>" placeholder="用逗号分隔多个标签">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="tags" value="<?= h($product['tags'] ?? '') ?>" placeholder="用逗号分隔多个标签">
                     </label>
                 </div>
             </div>
@@ -243,15 +243,15 @@
                 <div class="space-y-4">
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 标题</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($product['seo_title'] ?? '') ?>" placeholder="页面标题 (留空使用产品标题)">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($product['seo_title'] ?? '') ?>" placeholder="页面标题 (留空使用产品标题)">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 关键词</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_keywords" value="<?= h($product['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_keywords" value="<?= h($product['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 描述</span>
-                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_description" rows="2" placeholder="页面描述 (留空使用产品摘要)"><?= h($product['seo_description'] ?? '') ?></textarea>
+                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_description" rows="2" placeholder="页面描述 (留空使用产品摘要)"><?= h($product['seo_description'] ?? '') ?></textarea>
                     </label>
                 </div>
             </div>

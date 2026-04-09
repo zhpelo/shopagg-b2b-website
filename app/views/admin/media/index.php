@@ -232,7 +232,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
                 <div class="relative flex-1">
                     <i class="fas fa-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                    <input class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" type="text" name="search" value="<?= h($searchKeyword) ?>" placeholder="搜索当前目录或原始文件名">
+                    <input class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" type="text" name="search" value="<?= h($searchKeyword) ?>" placeholder="搜索当前目录或原始文件名">
                 </div>
                 <select name="type" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100">
                     <option value="all" <?= $typeFilter === 'all' ? 'selected' : '' ?>>全部</option>

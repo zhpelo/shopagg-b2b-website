@@ -881,13 +881,7 @@ video {
     background: #fafafa; 
 }
 
-/* ==================== Jodit 编辑器样式 ==================== */
-#editor-wrapper { border: 1px solid #e5e7eb; border-radius: var(--border-radius-xs); background: #fff; }
-#editor-wrapper .jodit-container:not(.jodit_inline) { border: none; }
-#editor-wrapper .jodit-workplace { min-height: 200px; }
-#editor-wrapper .jodit-wysiwyg,
-#editor-wrapper .jodit-source__mirror { font-size: 16px; line-height: 1.8; }
-#editor-wrapper .jodit-status-bar { border-top: 1px solid #e5e7eb; }
+
 
 /* ==================== 统计卡片 ==================== */
 .stat-mini {
@@ -1404,13 +1398,14 @@ body.login-page {
 }
 
 #editor-wrapper .jodit-workplace {
-    min-height: 300px;
+    min-height: 600px;
 }
 
 #editor-wrapper .jodit-wysiwyg,
 #editor-wrapper .jodit-source__mirror {
     font-size: 16px;
     line-height: 1.8;
+    padding: 0 2rem;
 }
 
 #editor-wrapper .jodit-status-bar {

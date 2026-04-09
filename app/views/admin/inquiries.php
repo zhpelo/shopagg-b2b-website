@@ -93,7 +93,7 @@
                                 </p>
                             </td>
                             <td>
-                                <div class="max-w-[280px] whitespace-normal text-xs leading-6 text-slate-600">
+                                <div class="max-w-[280px] whitespace-normal text-slate-600">
                                     <?= nl2br(h($row['message'])) ?>
                                 </div>
                                 <p class="mt-2 text-xs text-slate-500">

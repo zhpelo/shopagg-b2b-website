@@ -52,7 +52,7 @@
                         <span class="text-sm font-medium text-slate-700">用户名</span>
                         <span class="relative block">
                             <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username']) ?>" required placeholder="输入用户名">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username']) ?>" required placeholder="输入用户名">
                         </span>
                         <span class="text-xs text-slate-500">用于登录的账户名，仅支持字母、数字和下划线</span>
                     </label>
@@ -61,7 +61,7 @@
                         <span class="text-sm font-medium text-slate-700">显示名称</span>
                         <span class="relative block">
                             <i class="fas fa-id-badge pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name']) ?>" required placeholder="输入您的显示名称">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name']) ?>" required placeholder="输入您的显示名称">
                         </span>
                         <span class="text-xs text-slate-500">此名称将在后台界面中显示</span>
                     </label>
@@ -70,7 +70,7 @@
                         <span class="text-sm font-medium text-slate-700">修改密码</span>
                         <span class="relative block">
                             <i class="fas fa-lock pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" placeholder="输入新密码（留空则不修改）">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" placeholder="输入新密码（留空则不修改）">
                         </span>
                         <span class="text-xs text-slate-500">如需修改密码请输入新密码，否则留空</span>
                     </label>

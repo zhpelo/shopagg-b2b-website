@@ -23,7 +23,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">图片标题</label>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="show_title[]" value="<?= h($item['title']) ?>" placeholder="输入图片标题">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="show_title[]" value="<?= h($item['title']) ?>" placeholder="输入图片标题">
                     </div>
                     <div>
                         <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" data-media-row-remove>
@@ -65,7 +65,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">证书名称</label>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:ring-2 focus:ring-amber-100" name="cert_title[]" value="<?= h($item['title']) ?>" placeholder="输入证书名称">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-amber-400 focus:ring-2 focus:ring-amber-100" name="cert_title[]" value="<?= h($item['title']) ?>" placeholder="输入证书名称">
                     </div>
                     <div>
                         <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" data-media-row-remove>

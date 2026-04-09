@@ -63,20 +63,20 @@ $tips = $contentConfig['tips'] ?? [];
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
                         <span class="relative block">
                             <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="<?= h($contentConfig['slug_placeholder'] ?? 'auto-slug') ?>">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 <?= h($accentFocusClass) ?>" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="<?= h($contentConfig['slug_placeholder'] ?? 'auto-slug') ?>">
                         </span>
                         <span class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</span>
                     </label>
 
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700"><?= h($summaryLabel) ?></span>
-                        <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="summary" rows="3" placeholder="<?= h($summaryPlaceholder) ?>"><?= h($item['summary'] ?? '') ?></textarea>
+                        <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 <?= h($accentFocusClass) ?>" name="summary" rows="3" placeholder="<?= h($summaryPlaceholder) ?>"><?= h($item['summary'] ?? '') ?></textarea>
                     </label>
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-slate-700" for="content-input"><?= h($contentLabel) ?></label>
                         <div id="editor-wrapper">
-                            <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="420"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
+                            <textarea id="content-input" name="content" class="js-rich-editor" data-editor-height="800"><?= h(process_rich_text($item['content'] ?? '')) ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -165,15 +165,15 @@ $tips = $contentConfig['tips'] ?? [];
                 <div class="space-y-4">
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 标题</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 <?= h($accentFocusClass) ?>" name="seo_title" value="<?= h($item['seo_title'] ?? '') ?>" placeholder="页面标题">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 关键词</span>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 <?= h($accentFocusClass) ?>" name="seo_keywords" value="<?= h($item['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2">
                     </label>
                     <label class="block space-y-2">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 描述</span>
-                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
+                        <textarea class="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 <?= h($accentFocusClass) ?>" name="seo_description" rows="2" placeholder="页面描述"><?= h($item['seo_description'] ?? '') ?></textarea>
                     </label>
                 </div>
             </div>
@@ -183,7 +183,7 @@ $tips = $contentConfig['tips'] ?? [];
                     <span class="icon-box warning"><i class="fas fa-lightbulb"></i></span>
                     写作提示
                 </div>
-                <div class="text-xs leading-6 text-slate-500">
+                <div class="text-slate-500">
                     <ul class="list-disc space-y-1 pl-5">
                         <?php foreach ($tips as $tip): ?>
                             <li><?= h($tip) ?></li>

@@ -180,7 +180,7 @@ $statusButtonClasses = [
             <?php if (!empty($inquiry['user_agent'])): ?>
                 <div class="mt-6 space-y-2">
                     <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">浏览器信息</p>
-                    <p class="break-all rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-6 text-slate-500">
+                    <p class="break-all rounded-2xl border border-slate-200 bg-slate-50 p-4 text-slate-500">
                         <?= h($inquiry['user_agent']) ?>
                     </p>
                 </div>

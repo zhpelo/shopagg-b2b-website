@@ -48,7 +48,7 @@ $currentId = (int)($category['id'] ?? 0);
                         <span class="text-sm font-medium text-slate-700">分类名称 <span class="text-rose-500">*</span></span>
                         <span class="relative block">
                             <i class="fas fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称">
                         </span>
                         <p class="text-xs text-slate-500">分类的显示名称</p>
                     </label>
@@ -57,7 +57,7 @@ $currentId = (int)($category['id'] ?? 0);
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
                         <span class="relative block">
                             <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug">
                         </span>
                         <p class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</p>
                     </label>
@@ -82,7 +82,7 @@ $currentId = (int)($category['id'] ?? 0);
 
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">分类描述</span>
-                        <textarea class="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="description" rows="3" placeholder="输入分类描述（可选）"><?= h($category['description'] ?? '') ?></textarea>
+                        <textarea class="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="description" rows="3" placeholder="输入分类描述（可选）"><?= h($category['description'] ?? '') ?></textarea>
                         <p class="text-xs text-slate-500">简短描述该分类的内容</p>
                     </label>
                 </div>

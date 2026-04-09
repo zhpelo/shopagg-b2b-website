@@ -11,21 +11,21 @@
                     <span class="text-sm font-medium text-slate-700">邮箱</span>
                     <span class="relative block">
                         <i class="fas fa-envelope pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_email" value="<?= h($settings['company_email'] ?? '') ?>" placeholder="contact@example.com">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_email" value="<?= h($settings['company_email'] ?? '') ?>" placeholder="contact@example.com">
                     </span>
                 </label>
                 <label class="space-y-2">
                     <span class="text-sm font-medium text-slate-700">电话</span>
                     <span class="relative block">
                         <i class="fas fa-phone pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_phone" value="<?= h($settings['company_phone'] ?? '') ?>" placeholder="+86 123 4567 8900">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_phone" value="<?= h($settings['company_phone'] ?? '') ?>" placeholder="+86 123 4567 8900">
                     </span>
                 </label>
                 <label class="space-y-2">
                     <span class="text-sm font-medium text-slate-700">WhatsApp</span>
                     <span class="relative block">
                         <i class="fab fa-whatsapp pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="whatsapp" value="<?= h($settings['whatsapp'] ?? '') ?>" placeholder="+86 123 4567 8900">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="whatsapp" value="<?= h($settings['whatsapp'] ?? '') ?>" placeholder="+86 123 4567 8900">
                     </span>
                 </label>
             </div>
@@ -34,7 +34,7 @@
                 <span class="text-sm font-medium text-slate-700">公司地址</span>
                 <span class="relative block">
                     <i class="fas fa-map-marker-alt pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                    <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_address" value="<?= h($settings['company_address'] ?? '') ?>" placeholder="详细地址">
+                    <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_address" value="<?= h($settings['company_address'] ?? '') ?>" placeholder="详细地址">
                 </span>
             </label>
         </div>
@@ -58,7 +58,7 @@
                         <span class="text-sm font-medium text-slate-700"><?= $info[0] ?></span>
                         <span class="relative block">
                             <i class="<?= $info[1] ?> pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm" style="color: <?= $info[2] ?>;"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="<?= $key ?>" value="<?= h($settings[$key] ?? '') ?>" placeholder="<?= $info[0] ?> URL">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="<?= $key ?>" value="<?= h($settings[$key] ?? '') ?>" placeholder="<?= $info[0] ?> URL">
                         </span>
                     </label>
                 <?php endforeach; ?>

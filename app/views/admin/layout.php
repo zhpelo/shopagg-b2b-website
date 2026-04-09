@@ -250,7 +250,7 @@
                             </button>
                         </div>
                         <div class="media-library-filter-bar flex flex-1 flex-wrap items-stretch gap-3">
-                            <input class="min-w-[240px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
+                            <input class="min-w-[240px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="media-library-search" placeholder="搜索原始文件名、目录或存储文件名">
                             <select id="media-library-type-filter" class="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
                                 <option value="image">图片</option>
                                 <option value="all">全部媒体</option>

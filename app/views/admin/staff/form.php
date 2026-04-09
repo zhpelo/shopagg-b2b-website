@@ -36,7 +36,7 @@
                         <span class="text-sm font-medium text-slate-700">用户名</span>
                         <span class="relative block">
                             <i class="fas fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required placeholder="输入登录用户名">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="username" value="<?= h($user['username'] ?? '') ?>" required placeholder="输入登录用户名">
                         </span>
                         <span class="text-xs text-slate-500">用于登录后台系统，仅支持字母、数字和下划线</span>
                     </label>
@@ -45,7 +45,7 @@
                         <span class="text-sm font-medium text-slate-700">显示名称</span>
                         <span class="relative block">
                             <i class="fas fa-id-badge pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name'] ?? '') ?>" required placeholder="输入显示名称">
+                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" name="display_name" value="<?= h($user['display_name'] ?? '') ?>" required placeholder="输入显示名称">
                         </span>
                         <span class="text-xs text-slate-500">在后台界面中显示的名称</span>
                     </label>
@@ -55,7 +55,7 @@
                     <span class="text-sm font-medium text-slate-700">密码</span>
                     <span class="relative block">
                         <i class="fas fa-lock pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" <?= isset($user) ? '' : 'required' ?> placeholder="<?= isset($user) ? '留空则不修改密码' : '输入登录密码' ?>">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="password" name="password" <?= isset($user) ? '' : 'required' ?> placeholder="<?= isset($user) ? '留空则不修改密码' : '输入登录密码' ?>">
                     </span>
                     <?php if (isset($user)): ?>
                         <span class="text-xs text-slate-500">如需修改密码请输入新密码，否则留空</span>
@@ -130,7 +130,7 @@
                 <span class="icon-box info"><i class="fas fa-info"></i></span>
                 权限说明
             </div>
-            <div class="text-xs leading-6 text-slate-500">
+            <div class="text-slate-500">
                 <ul class="list-disc space-y-1 pl-5">
                     <li><strong>产品管理</strong>：添加、编辑、删除产品和分类</li>
                     <li><strong>案例管理</strong>：添加、编辑、删除客户案例</li>

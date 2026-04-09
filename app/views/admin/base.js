@@ -1420,7 +1420,7 @@ ${iconHtml}
 </div>
 <div class="space-y-2">
 <label class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">${labelText}</label>
-<input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 ${inputAccent}" name="${titleName}[]" value="" placeholder="${placeholderText}">
+<input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 ${inputAccent}" name="${titleName}[]" value="" placeholder="${placeholderText}">
 </div>
 <div>
 <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" data-media-row-remove>

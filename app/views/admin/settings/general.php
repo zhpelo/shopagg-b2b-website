@@ -11,14 +11,14 @@
                     <span class="text-sm font-medium text-slate-700">网站名称</span>
                     <span class="relative block">
                         <i class="fas fa-heading pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="site_name" value="<?= h($settings['site_name'] ?? '') ?>" placeholder="我的B2B网站">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="site_name" value="<?= h($settings['site_name'] ?? '') ?>" placeholder="我的B2B网站">
                     </span>
                 </label>
                 <label class="space-y-2">
                     <span class="text-sm font-medium text-slate-700">标语</span>
                     <span class="relative block">
                         <i class="fas fa-quote-right pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="site_tagline" value="<?= h($settings['site_tagline'] ?? '') ?>" placeholder="专业的B2B服务">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="site_tagline" value="<?= h($settings['site_tagline'] ?? '') ?>" placeholder="专业的B2B服务">
                     </span>
                 </label>
                 <label class="space-y-2">
@@ -79,19 +79,19 @@
                     <span class="text-sm font-medium text-slate-700">SEO 标题 (Title)</span>
                     <span class="relative block">
                         <i class="fas fa-heading pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($settings['seo_title'] ?? '') ?>" placeholder="网站标题 | 公司名称">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($settings['seo_title'] ?? '') ?>" placeholder="网站标题 | 公司名称">
                     </span>
                 </label>
                 <label class="block space-y-2">
                     <span class="text-sm font-medium text-slate-700">SEO 关键词 (Keywords)</span>
                     <span class="relative block">
                         <i class="fas fa-tags pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_keywords" value="<?= h($settings['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2, 关键词3">
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_keywords" value="<?= h($settings['seo_keywords'] ?? '') ?>" placeholder="关键词1, 关键词2, 关键词3">
                     </span>
                 </label>
                 <label class="block space-y-2">
                     <span class="text-sm font-medium text-slate-700">SEO 描述 (Description)</span>
-                    <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_description" rows="3" placeholder="网站描述内容..."><?= h($settings['seo_description'] ?? '') ?></textarea>
+                    <textarea class="min-h-[110px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_description" rows="3" placeholder="网站描述内容..."><?= h($settings['seo_description'] ?? '') ?></textarea>
                 </label>
                 <div class="space-y-3">
                     <label class="text-sm font-medium text-slate-700">OG Image (社交分享图)</label>

@@ -74,7 +74,7 @@
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <div class="max-w-[400px] text-xs leading-6 text-slate-600">
+                                <div class="max-w-[400px] text-slate-600">
                                     <?= nl2br(h($row['message'])) ?>
                                 </div>
                             </td>
