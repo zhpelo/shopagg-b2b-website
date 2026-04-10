@@ -124,4 +124,10 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/media/connector', [AdminController::class, 'mediaConnector']);
     $router->add('POST', '/admin/upload-image', [AdminController::class, 'uploadImage']);
     $router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
+
+    // 后台：程序更新
+    $router->add('GET', '/admin/updater', [AdminController::class, 'updaterIndex']);
+    $router->add('POST', '/admin/updater/download', [AdminController::class, 'updaterDownload']);
+    $router->add('POST', '/admin/updater/install', [AdminController::class, 'updaterInstall']);
+    $router->add('POST', '/admin/updater/delete-backup', [AdminController::class, 'updaterDeleteBackup']);
 }

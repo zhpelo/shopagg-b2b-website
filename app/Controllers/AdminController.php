@@ -14,6 +14,7 @@ use App\Models\PostModel;
 use App\Models\Inquiry;
 use App\Models\Message;
 use App\Models\User;
+use App\Models\Updater;
 use SQLite3;
 
 /**
@@ -36,6 +37,7 @@ class AdminController extends Controller {
     private Message $messageModel;
     private User $userModel;
     private MediaManager $mediaManager;
+    private Updater $updater;
 
     /**
      * 构造函数 - 初始化模型和执行认证检查
@@ -51,6 +53,7 @@ class AdminController extends Controller {
         $this->messageModel = new Message();
         $this->userModel = new User();
         $this->mediaManager = new MediaManager();
+        $this->updater = new Updater();
         
         // 执行认证和授权检查
         $this->performAuthChecks();
@@ -1455,5 +1458,95 @@ class AdminController extends Controller {
         ob_start();
         include APP_ROOT . '/app/views/' . $view . '.php';
         return ob_get_clean();
+    }
+
+    // --- Program Updater (程序更新) ---
+    
+    /**
+     * 显示更新管理页面
+     */
+    public function updaterIndex(): void {
+        // 检查权限：仅管理员可访问
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->redirect('/admin');
+        }
+        
+        $checkResult = $this->updater->checkUpdate();
+        $releases = $this->updater->getReleases(1, 20);
+        $history = $this->updater->getUpdateHistory();
+        $backups = $this->updater->getBackups();
+        
+        $this->renderAdmin('程序更新', $this->renderView('admin/updater/index', [
+            'checkResult' => $checkResult,
+            'releases' => $releases,
+            'history' => $history,
+            'backups' => $backups,
+        ]));
+    }
+    
+    /**
+     * AJAX：下载更新包
+     */
+    public function updaterDownload(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->json(['success' => false, 'message' => '无权访问'], 403);
+        }
+        
+        csrf_check();
+        
+        $version = trim((string)($_POST['version'] ?? ''));
+        if ($version === '') {
+            $this->json(['success' => false, 'message' => '版本号不能为空']);
+        }
+        
+        $result = $this->updater->downloadSourceZip($version);
+        $this->json($result);
+    }
+    
+    /**
+     * AJAX：安装更新
+     */
+    public function updaterInstall(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->json(['success' => false, 'message' => '无权访问'], 403);
+        }
+        
+        csrf_check();
+        
+        $version = trim((string)($_POST['version'] ?? ''));
+        $filepath = trim((string)($_POST['filepath'] ?? ''));
+        
+        if ($version === '' || $filepath === '') {
+            $this->json(['success' => false, 'message' => '参数不完整']);
+        }
+        
+        // 安全检查：确保文件路径在允许的目录内
+        $realpath = realpath($filepath);
+        $allowedDir = realpath(APP_ROOT . '/storage/updates');
+        if ($realpath === false || !str_starts_with($realpath, $allowedDir)) {
+            $this->json(['success' => false, 'message' => '无效的文件路径']);
+        }
+        
+        $result = $this->updater->installUpdate($version, $filepath);
+        $this->json($result);
+    }
+    
+    /**
+     * AJAX：删除备份
+     */
+    public function updaterDeleteBackup(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->json(['success' => false, 'message' => '无权访问'], 403);
+        }
+        
+        csrf_check();
+        
+        $filename = trim((string)($_POST['filename'] ?? ''));
+        if ($filename === '') {
+            $this->json(['success' => false, 'message' => '文件名不能为空']);
+        }
+        
+        $result = $this->updater->deleteBackup($filename);
+        $this->json(['success' => $result]);
     }
 }

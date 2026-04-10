@@ -26,6 +26,7 @@
         elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/pages') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
         elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
         elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
+        elseif (str_starts_with($current_path, '/admin/updater')) $active_group = 'updater';
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
 
         $user_role = $_SESSION['admin_role'] ?? 'staff';
@@ -74,6 +75,9 @@
                         <?php if ($user_role === 'admin'): ?>
                             <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'staff' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-users"></i></span>员工管理
+                            </a>
+                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'updater' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/updater') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
                             </a>
                         <?php endif; ?>
 
