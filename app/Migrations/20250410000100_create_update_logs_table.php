@@ -8,7 +8,6 @@ declare(strict_types=1);
  * 用于记录程序更新的详细信息
  */
 
-use SQLite3;
 
 return new class {
     /**
