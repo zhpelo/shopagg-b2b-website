@@ -1475,12 +1475,14 @@ class AdminController extends Controller {
         $releases = $this->updater->getReleases(1, 20);
         $history = $this->updater->getUpdateHistory();
         $backups = $this->updater->getBackups();
+        $migrationStatus = $this->updater->getMigrationStatus();
         
         $this->renderAdmin('程序更新', $this->renderView('admin/updater/index', [
             'checkResult' => $checkResult,
             'releases' => $releases,
             'history' => $history,
             'backups' => $backups,
+            'migrationStatus' => $migrationStatus,
         ]));
     }
     
@@ -1548,5 +1550,31 @@ class AdminController extends Controller {
         
         $result = $this->updater->deleteBackup($filename);
         $this->json(['success' => $result]);
+    }
+    
+    /**
+     * AJAX：获取迁移状态
+     */
+    public function updaterMigrationStatus(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->json(['success' => false, 'message' => '无权访问'], 403);
+        }
+        
+        $status = $this->updater->getMigrationStatus();
+        $this->json(['success' => true, 'data' => $status]);
+    }
+    
+    /**
+     * AJAX：手动执行数据库迁移
+     */
+    public function updaterRunMigrations(): void {
+        if ($_SESSION['admin_role'] !== 'admin') {
+            $this->json(['success' => false, 'message' => '无权访问'], 403);
+        }
+        
+        csrf_check();
+        
+        $result = $this->updater->runMigrations();
+        $this->json($result);
     }
 }

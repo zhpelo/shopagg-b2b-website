@@ -130,4 +130,6 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/updater/download', [AdminController::class, 'updaterDownload']);
     $router->add('POST', '/admin/updater/install', [AdminController::class, 'updaterInstall']);
     $router->add('POST', '/admin/updater/delete-backup', [AdminController::class, 'updaterDeleteBackup']);
+    $router->add('GET', '/admin/updater/migrations', [AdminController::class, 'updaterMigrationStatus']);
+    $router->add('POST', '/admin/updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
 }

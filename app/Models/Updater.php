@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Core\Migrator;
+
 /**
  * 程序更新管理器
  * 
@@ -28,10 +30,14 @@ class Updater {
     /** 更新日志文件 */
     private string $logFile;
     
+    /** 迁移管理器 */
+    private Migrator $migrator;
+    
     public function __construct() {
         $this->downloadDir = APP_ROOT . '/storage/updates';
         $this->backupDir = APP_ROOT . '/storage/backups';
         $this->logFile = APP_ROOT . '/storage/update.log';
+        $this->migrator = new Migrator();
         
         // 确保目录存在
         if (!is_dir($this->downloadDir)) {
@@ -342,14 +348,23 @@ class Updater {
         // 更新版本号
         $this->updateVersionFile($version);
         
+        // 执行数据库迁移（新版本可能包含新的迁移文件）
+        $migrationResult = $this->migrator->runAllPending();
+        
         // 记录更新日志
         $this->logUpdate($version, 'success');
         
+        $message = '更新成功！已安装版本 ' . $version;
+        if ($migrationResult['success'] && !empty($migrationResult['executed'])) {
+            $message .= '，执行了 ' . count($migrationResult['executed']) . ' 个数据库迁移';
+        }
+        
         return [
             'success' => true,
-            'message' => '更新成功！已安装版本 ' . $version,
+            'message' => $message,
             'backup_path' => $backupResult['backup_path'],
             'files_updated' => $copyResult['files_copied'] ?? 0,
+            'migrations' => $migrationResult,
         ];
     }
     
@@ -417,6 +432,28 @@ class Updater {
             return unlink($filepath);
         }
         return false;
+    }
+    
+    /**
+     * 获取数据库迁移状态
+     * 
+     * @return array 迁移状态信息
+     */
+    public function getMigrationStatus(): array {
+        return [
+            'status' => $this->migrator->getStatus(),
+            'pending' => $this->migrator->getPendingMigrations(),
+            'executed' => $this->migrator->getExecutedMigrations(),
+        ];
+    }
+    
+    /**
+     * 手动执行数据库迁移
+     * 
+     * @return array 执行结果
+     */
+    public function runMigrations(): array {
+        return $this->migrator->runAllPending();
     }
     
     /**

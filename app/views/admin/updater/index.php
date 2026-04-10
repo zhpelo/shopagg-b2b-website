@@ -5,11 +5,18 @@
  * @var array $releases GitHub 上的版本列表
  * @var array $history 本地更新历史
  * @var array $backups 备份列表
+ * @var array $migrationStatus 迁移状态
  */
 $hasUpdate = $checkResult['has_update'] ?? false;
 $currentVersion = $checkResult['current_version'] ?? '1.0.0';
 $latestVersion = $checkResult['latest_version'] ?? $currentVersion;
 $releaseInfo = $checkResult['release_info'] ?? null;
+
+// 获取迁移状态
+$migrationStatus = $migrationStatus ?? ['status' => ['total' => 0, 'executed' => 0, 'pending' => 0], 'pending' => [], 'executed' => []];
+$pendingMigrations = $migrationStatus['pending'] ?? [];
+$executedMigrations = $migrationStatus['executed'] ?? [];
+$migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 'pending' => 0];
 ?>
 
 <!-- 页面头部 -->
@@ -34,7 +41,7 @@ $releaseInfo = $checkResult['release_info'] ?? null;
 </div>
 
 <!-- 当前版本状态卡片 -->
-<div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex items-center gap-3">
             <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
@@ -69,6 +76,23 @@ $releaseInfo = $checkResult['release_info'] ?? null;
                 <a href="https://github.com/zhpelo/shopagg-b2b-website" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">
                     查看仓库 <i class="fas fa-external-link-alt text-xs"></i>
                 </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl <?= $migrationStats['pending'] > 0 ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600' ?>">
+                <i class="fas fa-database text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">数据库迁移</p>
+                <p class="text-lg font-bold text-slate-900">
+                    <?= $migrationStats['executed'] ?> / <?= $migrationStats['total'] ?>
+                    <?php if ($migrationStats['pending'] > 0): ?>
+                    <span class="ml-1 text-xs font-normal text-amber-600">(<?= $migrationStats['pending'] ?> 个待执行)</span>
+                    <?php endif; ?>
+                </p>
             </div>
         </div>
     </div>
@@ -146,6 +170,13 @@ $releaseInfo = $checkResult['release_info'] ?? null;
         <button type="button" class="tab-btn inline-flex items-center gap-2 border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-slate-500 hover:border-slate-200 hover:text-slate-900" data-tab="backups">
             <i class="fas fa-archive"></i>
             <span>备份管理</span>
+        </button>
+        <button type="button" class="tab-btn inline-flex items-center gap-2 border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-slate-500 hover:border-slate-200 hover:text-slate-900" data-tab="migrations">
+            <i class="fas fa-database"></i>
+            <span>数据库迁移</span>
+            <?php if ($migrationStats['pending'] > 0): ?>
+            <span class="ml-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-xs font-bold text-white"><?= $migrationStats['pending'] ?></span>
+            <?php endif; ?>
         </button>
     </nav>
 </div>
@@ -327,6 +358,85 @@ $releaseInfo = $checkResult['release_info'] ?? null;
     </div>
 </div>
 
+<!-- 数据库迁移 -->
+<div id="tab-migrations" class="tab-content hidden">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 px-5 py-4">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h2 class="flex items-center gap-2 text-base font-bold text-slate-900">
+                    <i class="fas fa-database text-slate-400"></i>
+                    数据库迁移管理
+                </h2>
+                <div class="flex items-center gap-2">
+                    <?php if ($migrationStats['pending'] > 0): ?>
+                    <button type="button" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" onclick="runMigrations()">
+                        <i class="fas fa-play"></i>
+                        执行迁移
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 待执行迁移 -->
+        <?php if (!empty($pendingMigrations)): ?>
+        <div class="border-b border-slate-200 bg-amber-50/50 p-4">
+            <h3 class="mb-3 flex items-center gap-2 text-sm font-bold text-amber-900">
+                <i class="fas fa-clock text-amber-500"></i>
+                待执行迁移 (<?= count($pendingMigrations) ?>)
+            </h3>
+            <div class="space-y-2">
+                <?php foreach ($pendingMigrations as $migration): ?>
+                <div class="flex items-center justify-between rounded-lg border border-amber-200 bg-white p-3">
+                    <div>
+                        <p class="font-medium text-slate-900"><?= h($migration['name']) ?></p>
+                        <p class="text-xs text-slate-500">版本: <?= h($migration['version']) ?></p>
+                    </div>
+                    <span class="inline-flex items-center rounded-lg bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">待执行</span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <!-- 已执行迁移 -->
+        <div class="p-4">
+            <h3 class="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
+                <i class="fas fa-check-circle text-emerald-500"></i>
+                已执行迁移 (<?= count($executedMigrations) ?>)
+            </h3>
+            <?php if (empty($executedMigrations)): ?>
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
+                暂无已执行的迁移
+            </div>
+            <?php else: ?>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left font-semibold text-slate-700">版本</th>
+                            <th class="px-4 py-2 text-left font-semibold text-slate-700">名称</th>
+                            <th class="px-4 py-2 text-left font-semibold text-slate-700">执行时间</th>
+                            <th class="px-4 py-2 text-right font-semibold text-slate-700">耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <?php foreach (array_reverse($executedMigrations, true) as $version => $migration): ?>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-2 font-mono text-xs text-slate-600"><?= h($version) ?></td>
+                            <td class="px-4 py-2 text-slate-900"><?= h($migration['name']) ?></td>
+                            <td class="px-4 py-2 text-slate-600"><?= h($migration['executed_at']) ?></td>
+                            <td class="px-4 py-2 text-right text-slate-600"><?= $migration['execution_time'] ?>ms</td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
 <!-- 更新进度模态框 -->
 <div id="update-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4">
     <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
@@ -503,5 +613,38 @@ function closeUpdateModal() {
     document.getElementById('update-modal').classList.add('hidden');
     document.getElementById('update-modal').classList.remove('flex');
     window.location.reload();
+}
+
+// 执行数据库迁移
+async function runMigrations() {
+    if (!confirm('确定要执行数据库迁移吗？\n\n此操作将修改数据库结构，请确保已备份重要数据。')) {
+        return;
+    }
+    
+    showUpdateModal('正在执行迁移', '正在准备执行数据库迁移...');
+    updateProgress(30, '正在执行迁移...');
+    
+    try {
+        const res = await fetch('<?= url('/admin/updater/migrations/run') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'csrf=<?= h(csrf_token()) ?>'
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            updateProgress(100, '迁移完成！');
+            const count = data.executed ? data.executed.length : 0;
+            showUpdateSuccess('迁移成功', '成功执行 ' + count + ' 个数据库迁移。');
+        } else {
+            throw new Error(data.message || '迁移失败');
+        }
+    } catch (error) {
+        showUpdateError('迁移失败', error.message);
+    }
 }
 </script>
