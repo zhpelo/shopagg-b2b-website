@@ -201,3 +201,175 @@ if (!function_exists('render_post_card')) {
         <?php
     }
 }
+
+/**
+ * 获取菜单（新版菜单系统）
+ * @param string $menuSlug 菜单标识符
+ * @return array 菜单项数组
+ */
+if (!function_exists('get_menu_items')) {
+    function get_menu_items(string $menuSlug = 'main-nav'): array {
+        static $cache = [];
+        
+        if (isset($cache[$menuSlug])) {
+            return $cache[$menuSlug];
+        }
+        
+        try {
+            $menuModel = new \App\Models\Menu();
+            $menu = $menuModel->getBySlugWithItems($menuSlug, true);
+            
+            if (!$menu || $menu['status'] !== 'active') {
+                $cache[$menuSlug] = [];
+                return [];
+            }
+            
+            $items = $menu['items'] ?? [];
+            
+            // 格式化菜单项
+            $formatItems = function($items) use (&$formatItems) {
+                $result = [];
+                foreach ($items as $item) {
+                    $formatted = [
+                        'id' => $item['id'],
+                        'title' => $item['title'],
+                        'url' => $item['url'],
+                        'target' => $item['target'] ?? '_self',
+                        'css_class' => $item['css_class'] ?? '',
+                        'children' => []
+                    ];
+                    
+                    if (!empty($item['children'])) {
+                        $formatted['children'] = $formatItems($item['children']);
+                    }
+                    
+                    $result[] = $formatted;
+                }
+                return $result;
+            };
+            
+            $formattedItems = $formatItems($items);
+            $cache[$menuSlug] = $formattedItems;
+            return $formattedItems;
+            
+        } catch (\Exception $e) {
+            $cache[$menuSlug] = [];
+            return [];
+        }
+    }
+}
+
+/**
+ * 渲染菜单项
+ * @param array $item 菜单项
+ * @param bool $isMobile 是否为移动端
+ * @return void
+ */
+if (!function_exists('render_menu_item')) {
+    function render_menu_item(array $item, bool $isMobile = false): void {
+        $hasChildren = !empty($item['children']);
+        $baseClass = $isMobile 
+            ? 'block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg transition-colors'
+            : 'px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors';
+        
+        if (!empty($item['css_class'])) {
+            $baseClass .= ' ' . $item['css_class'];
+        }
+        
+        $target = $item['target'] ?? '_self';
+        $targetAttr = $target === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
+        
+        // 处理 URL
+        $url = $item['url'];
+        if (!str_starts_with($url, 'http') && !str_starts_with($url, '#') && !str_starts_with($url, 'mailto:')) {
+            $url = url($url);
+        }
+        
+        if ($hasChildren && !$isMobile) {
+            // 桌面端下拉菜单
+            ?>
+            <div class="relative group">
+                <button type="button" class="<?= $baseClass ?> inline-flex items-center gap-1">
+                    <?= h($item['title']) ?>
+                    <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                </button>
+                <div class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="py-2">
+                        <?php foreach ($item['children'] as $child): ?>
+                            <?php 
+                            $childUrl = $child['url'];
+                            if (!str_starts_with($childUrl, 'http') && !str_starts_with($childUrl, '#') && !str_starts_with($childUrl, 'mailto:')) {
+                                $childUrl = url($childUrl);
+                            }
+                            $childTarget = $child['target'] ?? '_self';
+                            $childTargetAttr = $childTarget === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
+                            ?>
+                            <a href="<?= $childUrl ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600">
+                                <?= h($child['title']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+        } elseif ($hasChildren && $isMobile) {
+            // 移动端子菜单
+            ?>
+            <div>
+                <div class="px-4 py-2 text-gray-700 font-medium"><?= h($item['title']) ?></div>
+                <div class="pl-4 space-y-1">
+                    <?php foreach ($item['children'] as $child): ?>
+                        <?php 
+                        $childUrl = $child['url'];
+                        if (!str_starts_with($childUrl, 'http') && !str_starts_with($childUrl, '#') && !str_starts_with($childUrl, 'mailto:')) {
+                            $childUrl = url($childUrl);
+                        }
+                        $childTarget = $child['target'] ?? '_self';
+                        $childTargetAttr = $childTarget === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
+                        ?>
+                        <a href="<?= $childUrl ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">
+                            <?= h($child['title']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php
+        } else {
+            // 普通菜单项
+            ?>
+            <a href="<?= $url ?>"<?= $targetAttr ?> class="<?= $baseClass ?>">
+                <?= h($item['title']) ?>
+            </a>
+            <?php
+        }
+    }
+}
+
+/**
+ * 渲染完整菜单
+ * @param string $menuSlug 菜单标识符
+ * @param bool $isMobile 是否为移动端
+ * @return void
+ */
+if (!function_exists('render_menu')) {
+    function render_menu(string $menuSlug = 'main-nav', bool $isMobile = false): void {
+        $items = get_menu_items($menuSlug);
+        
+        if (empty($items)) {
+            // 使用默认菜单
+            $defaultItems = [
+                ['title' => 'Home', 'url' => '/', 'target' => '_self', 'css_class' => '', 'children' => []],
+                ['title' => 'Products', 'url' => '/products', 'target' => '_self', 'css_class' => '', 'children' => []],
+                ['title' => 'Cases', 'url' => '/cases', 'target' => '_self', 'css_class' => '', 'children' => []],
+                ['title' => 'Blog', 'url' => '/blog', 'target' => '_self', 'css_class' => '', 'children' => []],
+                ['title' => 'Contact', 'url' => '/contact', 'target' => '_self', 'css_class' => '', 'children' => []],
+                ['title' => 'About Us', 'url' => '/about', 'target' => '_self', 'css_class' => '', 'children' => []],
+            ];
+            $items = $defaultItems;
+        }
+        
+        foreach ($items as $item) {
+            render_menu_item($item, $isMobile);
+        }
+    }
+}

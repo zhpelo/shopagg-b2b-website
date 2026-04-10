@@ -6,6 +6,10 @@
  * 变量：$site（站点设置）、$seo（SEO信息）、$currentTheme（主题名）、$languages/$lang（语言配置）。
  * 注意：由布局模板自动引入，不应独立渲染。
  */
+
+// 获取菜单项（如果没有设置，将使用默认菜单）
+$menuItems = get_menu_items('main-nav');
+$hasMenu = !empty($menuItems);
 ?>
 <!DOCTYPE html>
 <html lang="<?= h($lang ?? 'en') ?>">
@@ -54,7 +58,6 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= url('/app/views/admin/rich-content.css') ?>">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
     <?= get_head_code() ?>
 </head>
@@ -78,12 +81,7 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    <a href="<?= url('/') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Home</a>
-                    <a href="<?= url('/products') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Products</a>
-                    <a href="<?= url('/cases') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Cases</a>
-                    <a href="<?= url('/blog') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Blog</a>
-                    <a href="<?= url('/contact') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">Contact</a>
-                    <a href="<?= url('/about') ?>" class="px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors">About Us</a>
+                    <?php render_menu('main-nav', false); ?>
                     <?= get_google_translate_widget($site, 'px-4 py-2 text-gray-700') ?>
                     <a href="<?= url('/contact') ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
                         Request Quote
@@ -99,12 +97,7 @@
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-100">
                 <div class="py-4 space-y-2">
-                    <a href="<?= url('/') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Home</a>
-                    <a href="<?= url('/products') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Products</a>
-                    <a href="<?= url('/cases') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Cases</a>
-                    <a href="<?= url('/blog') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Blog</a>
-                    <a href="<?= url('/contact') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">Contact</a>
-                    <a href="<?= url('/about') ?>" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">About Us</a>
+                    <?php render_menu('main-nav', true); ?>
                     <div class="px-4 pt-2">
                         <a href="<?= url('/contact') ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
                             Request Quote

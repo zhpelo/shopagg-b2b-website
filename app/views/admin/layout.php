@@ -162,6 +162,9 @@
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                         </a>
                     <?php elseif ($active_group === 'appearance'): ?>
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/menus') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/menus') ?>">
+                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-bars"></i></span>菜单管理
+                        </a>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/sliders') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/sliders') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-images"></i></span>轮播图
                         </a>
