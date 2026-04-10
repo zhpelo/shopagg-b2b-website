@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建设置表
- * 版本: 20240101000002
+ * 版本: 20260410000002
  */
 
 return new class {

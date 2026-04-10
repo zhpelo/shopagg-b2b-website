@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建留言表
- * 版本: 20240101000006
+ * 版本: 20260410000006
  */
 
 return new class {

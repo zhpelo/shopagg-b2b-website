@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建更新日志表
- * 版本: 20240101000010
+ * 版本: 20260410000010
  */
 
 return new class {

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建产品价格表
- * 版本: 20240101000008
+ * 版本: 20260410000008
  */
 
 return new class {

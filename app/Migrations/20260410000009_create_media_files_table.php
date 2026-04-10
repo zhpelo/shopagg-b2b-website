@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建媒体文件表
- * 版本: 20240101000009
+ * 版本: 20260410000009
  */
 
 return new class {
