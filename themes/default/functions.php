@@ -64,6 +64,14 @@ if (!function_exists('get_carousel_products')) {
             return $cache;
         }
 
+        // 首先尝试从新的轮播图系统获取
+        $sliderItems = get_slider_items('home-hero');
+        if (!empty($sliderItems)) {
+            $cache = $sliderItems;
+            return $sliderItems;
+        }
+
+        // 回退到旧的产品轮播逻辑
         $featuredProducts = get_products(['limit' => $limit, 'featured' => true]);
 
         // 2. 如果不够数量，补充最新产品（排除已有横幅图片的产品）
@@ -99,6 +107,42 @@ if (!function_exists('get_carousel_products')) {
 
         $cache = $carouselProducts;
         return $carouselProducts;
+    }
+}
+
+/**
+ * 获取轮播图项目（新版轮播图系统）
+ * @param string $sliderSlug 轮播图标识符
+ * @return array 轮播图片数组
+ */
+if (!function_exists('get_slider_items')) {
+    function get_slider_items(string $sliderSlug): array {
+        try {
+            $sliderModel = new \App\Models\Slider();
+            $slider = $sliderModel->getBySlugWithItems($sliderSlug);
+            
+            if (!$slider || $slider['status'] !== 'active') {
+                return [];
+            }
+            
+            $items = [];
+            foreach ($slider['items'] as $item) {
+                $items[] = [
+                    'id' => $item['id'],
+                    'title' => $item['title'],
+                    'subtitle' => $item['subtitle'],
+                    'banner_image' => $item['image'],
+                    'url' => $item['link_url'] ?: '#',
+                    'link_text' => $item['link_text'] ?: 'View Details',
+                    'image' => $item['image'],
+                ];
+            }
+            
+            return $items;
+        } catch (\Exception $e) {
+            // 如果发生错误，返回空数组
+            return [];
+        }
     }
 }
 

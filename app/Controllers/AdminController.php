@@ -15,6 +15,7 @@ use App\Models\Inquiry;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Updater;
+use App\Models\Slider;
 use SQLite3;
 
 /**
@@ -38,6 +39,7 @@ class AdminController extends Controller {
     private User $userModel;
     private MediaManager $mediaManager;
     private Updater $updater;
+    private Slider $sliderModel;
 
     /**
      * 构造函数 - 初始化模型和执行认证检查
@@ -54,6 +56,7 @@ class AdminController extends Controller {
         $this->userModel = new User();
         $this->mediaManager = new MediaManager();
         $this->updater = new Updater();
+        $this->sliderModel = new Slider();
         
         // 执行认证和授权检查
         $this->performAuthChecks();
@@ -1576,5 +1579,151 @@ class AdminController extends Controller {
         
         $result = $this->updater->runMigrations();
         $this->json($result);
+    }
+
+    // --- Appearance / Sliders Management (外观区块 - 轮播图管理) ---
+    
+    /**
+     * 轮播图列表
+     */
+    public function sliderList(): void {
+        $sliders = $this->sliderModel->getAll();
+        // 为每个轮播图加载图片数量
+        foreach ($sliders as &$slider) {
+            $slider['item_count'] = count($this->sliderModel->getItems((int)$slider['id']));
+        }
+        $this->renderAdmin('轮播图管理', $this->renderView('admin/sliders/index', ['sliders' => $sliders]));
+    }
+
+    /**
+     * 创建轮播图页面
+     */
+    public function sliderCreate(): void {
+        $this->renderAdmin('新建轮播图', $this->renderView('admin/sliders/form', [
+            'action' => '/admin/appearance/sliders/create',
+            'slider' => null,
+            'items' => []
+        ]));
+    }
+
+    /**
+     * 保存新轮播图
+     */
+    public function sliderStore(): void {
+        csrf_check();
+        
+        $name = trim((string)($_POST['name'] ?? ''));
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($name);
+        }
+        
+        $sliderData = [
+            'name' => $name,
+            'slug' => $slug,
+            'description' => trim((string)($_POST['description'] ?? '')),
+            'status' => $_POST['status'] ?? 'active',
+            'sort_order' => (int)($_POST['sort_order'] ?? 0),
+        ];
+        
+        $sliderId = $this->sliderModel->create($sliderData);
+        
+        // 处理轮播图片
+        $this->processSliderItems($sliderId);
+        
+        $this->redirect('/admin/appearance/sliders');
+    }
+
+    /**
+     * 编辑轮播图页面
+     */
+    public function sliderEdit(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $slider = $this->sliderModel->getWithItems($id);
+        if (!$slider) {
+            $this->redirect('/admin/appearance/sliders');
+        }
+        
+        $this->renderAdmin('编辑轮播图', $this->renderView('admin/sliders/form', [
+            'action' => '/admin/appearance/sliders/edit?id=' . $id,
+            'slider' => $slider,
+            'items' => $slider['items'] ?? []
+        ]));
+    }
+
+    /**
+     * 更新轮播图
+     */
+    public function sliderUpdate(): void {
+        csrf_check();
+        
+        $id = (int)($_GET['id'] ?? 0);
+        $slider = $this->sliderModel->getById($id);
+        if (!$slider) {
+            $this->redirect('/admin/appearance/sliders');
+        }
+        
+        $name = trim((string)($_POST['name'] ?? ''));
+        $slug = trim((string)($_POST['slug'] ?? ''));
+        if ($slug === '') {
+            $slug = slugify($name);
+        }
+        
+        $sliderData = [
+            'name' => $name,
+            'slug' => $slug,
+            'description' => trim((string)($_POST['description'] ?? '')),
+            'status' => $_POST['status'] ?? 'active',
+            'sort_order' => (int)($_POST['sort_order'] ?? 0),
+        ];
+        
+        $this->sliderModel->update($id, $sliderData);
+        
+        // 处理轮播图片（先删除旧的，再添加新的）
+        $this->sliderModel->deleteAllItems($id);
+        $this->processSliderItems($id);
+        
+        $this->redirect('/admin/appearance/sliders');
+    }
+
+    /**
+     * 删除轮播图
+     */
+    public function sliderDelete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id) {
+            $this->sliderModel->delete($id);
+        }
+        $this->redirect('/admin/appearance/sliders?success=轮播图已删除');
+    }
+
+    /**
+     * 处理轮播图片数据
+     */
+    private function processSliderItems(int $sliderId): void {
+        $images = $_POST['item_image'] ?? [];
+        $titles = $_POST['item_title'] ?? [];
+        $subtitles = $_POST['item_subtitle'] ?? [];
+        $linkUrls = $_POST['item_link_url'] ?? [];
+        $linkTexts = $_POST['item_link_text'] ?? [];
+        $sortOrders = $_POST['item_sort_order'] ?? [];
+        
+        foreach ($images as $index => $image) {
+            if (empty($image)) {
+                continue;
+            }
+            
+            $itemData = [
+                'image' => $image,
+                'title' => $titles[$index] ?? '',
+                'subtitle' => $subtitles[$index] ?? '',
+                'link_url' => $linkUrls[$index] ?? '',
+                'link_text' => $linkTexts[$index] ?? 'View Details',
+                'sort_order' => (int)($sortOrders[$index] ?? $index),
+                'status' => 'active',
+            ];
+            
+            $this->sliderModel->addItem($sliderId, $itemData);
+        }
     }
 }

@@ -33,12 +33,18 @@ $carouselProducts = get_carousel_products(3);
                             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight line-clamp-2">
                                 <?= h($p['title']) ?>
                             </h1>
-                            <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
-                                <?= h(mb_substr(strip_tags($p['summary']), 0, 120)) ?>
-                            </p>
+                            <?php if (!empty($p['subtitle'])): ?>
+                                <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
+                                    <?= h($p['subtitle']) ?>
+                                </p>
+                            <?php elseif (!empty($p['summary'])): ?>
+                                <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
+                                    <?= h(mb_substr(strip_tags($p['summary']), 0, 120)) ?>
+                                </p>
+                            <?php endif; ?>
                             <div class="flex flex-wrap gap-4">
                                 <a href="<?= $p['url'] ?>" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg">
-                                    View Details
+                                    <?= h($p['link_text'] ?? 'View Details') ?>
                                 </a>
                                 <a href="<?= url('/contact') ?>" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors">
                                     Contact

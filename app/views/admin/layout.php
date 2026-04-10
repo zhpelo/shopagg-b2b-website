@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($title) ?></title>
-    <script src="<?= url('/app/views/admin/base.js') ?>"></script>
+    <script src="<?= url('/assets/admin/base.js') ?>"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.css">
-    <link rel="stylesheet" href="<?= url('/app/views/admin/rich-content.css') ?>">
-    <link rel="stylesheet" href="<?= url('/app/views/admin/style.css') ?>">
+    <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css') ?>">
+    <link rel="stylesheet" href="<?= url('/assets/admin/style.css') ?>">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 
@@ -28,6 +28,7 @@
         elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
         elseif (str_starts_with($current_path, '/admin/updater')) $active_group = 'updater';
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
+        elseif (str_starts_with($current_path, '/admin/appearance')) $active_group = 'appearance';
 
         $user_role = $_SESSION['admin_role'] ?? 'staff';
         $user_perms = $_SESSION['admin_permissions'] ?? [];
@@ -78,6 +79,12 @@
                             </a>
                             <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'updater' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/updater') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if ($user_role === 'admin'): ?>
+                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'appearance' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/sliders') ?>">
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-paint-brush"></i></span>外观区块
                             </a>
                         <?php endif; ?>
 
@@ -159,6 +166,10 @@
                         </a>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/create') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff/create') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
+                        </a>
+                    <?php elseif ($active_group === 'appearance'): ?>
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/sliders') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/sliders') ?>">
+                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-images"></i></span>轮播图
                         </a>
                     <?php elseif ($active_group === 'settings'): ?>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-general' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-general') ?>">

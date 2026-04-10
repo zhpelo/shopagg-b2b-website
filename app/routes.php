@@ -132,4 +132,13 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/updater/delete-backup', [AdminController::class, 'updaterDeleteBackup']);
     $router->add('GET', '/admin/updater/migrations', [AdminController::class, 'updaterMigrationStatus']);
     $router->add('POST', '/admin/updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
+
+    // 后台：外观区块 - 轮播图管理
+    $router->add('GET', '/admin/appearance', [AdminController::class, 'sliderList']);
+    $router->add('GET', '/admin/appearance/sliders', [AdminController::class, 'sliderList']);
+    $router->add('GET', '/admin/appearance/sliders/create', [AdminController::class, 'sliderCreate']);
+    $router->add('POST', '/admin/appearance/sliders/create', [AdminController::class, 'sliderStore']);
+    $router->add('GET', '/admin/appearance/sliders/edit', [AdminController::class, 'sliderEdit']);
+    $router->add('POST', '/admin/appearance/sliders/edit', [AdminController::class, 'sliderUpdate']);
+    $router->add('GET', '/admin/appearance/sliders/delete', [AdminController::class, 'sliderDelete']);
 }
