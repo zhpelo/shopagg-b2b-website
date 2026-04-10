@@ -132,7 +132,7 @@ $db->exec('DROP INDEX IF EXISTS idx_name');
 
 ## 后台管理
 
-访问 `/admin/updater` → "数据库迁移" 标签页：
+访问 `/admin/settings-updater` → "数据库迁移" 标签页：
 - 查看待执行和已执行的迁移
 - 手动执行数据库迁移
 

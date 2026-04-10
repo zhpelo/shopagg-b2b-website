@@ -26,7 +26,6 @@
         elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/pages') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
         elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
         elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
-        elseif (str_starts_with($current_path, '/admin/updater')) $active_group = 'updater';
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
         elseif (str_starts_with($current_path, '/admin/appearance')) $active_group = 'appearance';
 
@@ -77,9 +76,7 @@
                             <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'staff' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-users"></i></span>员工管理
                             </a>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'updater' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/updater') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
-                            </a>
+                            
                         <?php endif; ?>
 
                         <?php if ($user_role === 'admin'): ?>
@@ -138,16 +135,13 @@
                             <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-newspaper"></i></span>文章管理
                             </a>
-                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/post-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/post-categories') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>文章分类
-                            </a>
                             <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/pages' || str_contains($current_path, '/admin/pages/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/pages') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-file-lines"></i></span>页面管理
                             </a>
                         <?php endif; ?>
                         <?php if ($can_access('cases')): ?>
                             <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例展示
+                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例管理
                             </a>
                         <?php endif; ?>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/media') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/media') ?>">
@@ -192,6 +186,9 @@
                         </a>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-custom' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-custom') ?>">
                             <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-code text-xs"></i></span>自定义代码
+                        </a>
+                        <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-updater' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-updater') ?>">
+                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
                         </a>
                     <?php endif; ?>
                 </div>

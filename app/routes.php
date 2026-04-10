@@ -126,12 +126,12 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/media-library', [AdminController::class, 'mediaLibrary']);
 
     // 后台：程序更新
-    $router->add('GET', '/admin/updater', [AdminController::class, 'updaterIndex']);
-    $router->add('POST', '/admin/updater/download', [AdminController::class, 'updaterDownload']);
-    $router->add('POST', '/admin/updater/install', [AdminController::class, 'updaterInstall']);
-    $router->add('POST', '/admin/updater/delete-backup', [AdminController::class, 'updaterDeleteBackup']);
-    $router->add('GET', '/admin/updater/migrations', [AdminController::class, 'updaterMigrationStatus']);
-    $router->add('POST', '/admin/updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
+    $router->add('GET', '/admin/settings-updater', [AdminController::class, 'updaterIndex']);
+    $router->add('POST', '/admin/settings-updater/download', [AdminController::class, 'updaterDownload']);
+    $router->add('POST', '/admin/settings-updater/install', [AdminController::class, 'updaterInstall']);
+    $router->add('POST', '/admin/settings-updater/delete-backup', [AdminController::class, 'updaterDeleteBackup']);
+    $router->add('GET', '/admin/settings-updater/migrations', [AdminController::class, 'updaterMigrationStatus']);
+    $router->add('POST', '/admin/settings-updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
 
     // 后台：外观区块 - 轮播图管理
     $router->add('GET', '/admin/appearance', [AdminController::class, 'sliderList']);

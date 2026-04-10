@@ -32,7 +32,7 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
             <p class="mt-2 text-sm text-white/80">检查更新、下载并安装最新版本，查看更新历史。</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="<?= url('/admin/updater') ?>" class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20">
+            <a href="<?= url('/admin/settings-updater') ?>" class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20">
                 <i class="fas fa-refresh"></i>
                 <span>刷新状态</span>
             </a>
@@ -497,7 +497,7 @@ async function installUpdate(version) {
     try {
         // 步骤1：下载
         updateProgress(10, '正在下载更新包...');
-        const downloadRes = await fetch('<?= url('/admin/updater/download') ?>', {
+        const downloadRes = await fetch('<?= url('/admin/settings-updater/download') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -515,7 +515,7 @@ async function installUpdate(version) {
         updateProgress(50, '下载完成，正在安装...');
         
         // 步骤2：安装
-        const installRes = await fetch('<?= url('/admin/updater/install') ?>', {
+        const installRes = await fetch('<?= url('/admin/settings-updater/install') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -545,7 +545,7 @@ async function deleteBackup(filename) {
     }
     
     try {
-        const res = await fetch('<?= url('/admin/updater/delete-backup') ?>', {
+        const res = await fetch('<?= url('/admin/settings-updater/delete-backup') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -625,7 +625,7 @@ async function runMigrations() {
     updateProgress(30, '正在执行迁移...');
     
     try {
-        const res = await fetch('<?= url('/admin/updater/migrations/run') ?>', {
+        const res = await fetch('<?= url('/admin/settings-updater/migrations/run') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
