@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建产品价格表
- * 版本: 20240101000009
+ * 版本: 20240101000008
  */
-
 
 return new class {
     public function up(SQLite3 $db): void {
@@ -20,6 +19,7 @@ return new class {
             FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
         )');
         
+        // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_product_prices_product ON product_prices(product_id)');
     }
     

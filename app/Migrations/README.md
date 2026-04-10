@@ -2,64 +2,48 @@
 
 ## 简介
 
-数据库迁移系统用于管理数据库结构的版本化变更。每次更新程序时，系统会自动执行未执行的迁移文件，确保数据库结构与代码版本保持一致。
+数据库迁移系统用于管理数据库结构的版本化变更。迁移文件存放在 `app/Migrations/` 目录，按版本号顺序执行。
 
 ## 迁移文件命名规范
 
-迁移文件位于 `app/Migrations/` 目录，命名格式：
+格式：`YYYYMMDDHHMMSS_description.php`
 
-```
-YYYYMMDDHHMMSS_description.php
-```
-
-例如：
+示例：
 - `20250410120000_add_user_email_index.php`
 - `20250410123000_create_order_table.php`
 
-## 迁移文件结构
+## 迁移文件模板
 
 ```php
 <?php
 declare(strict_types=1);
 
 /**
- * 迁移: 添加用户邮箱索引
+ * 迁移: 描述这个迁移的作用
  * 版本: 20250410120000
  */
-
-use SQLite3;
 
 return new class {
     /**
      * 执行迁移（升级）
      */
     public function up(SQLite3 $db): void {
-        // 创建索引示例
-        $db->exec('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
-        
-        // 添加字段示例
-        $db->exec('ALTER TABLE users ADD COLUMN phone TEXT');
-        
         // 创建表示例
-        $db->exec('CREATE TABLE IF NOT EXISTS orders (
+        $db->exec('CREATE TABLE IF NOT EXISTS example (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            total DECIMAL(10,2) DEFAULT 0,
-            status TEXT DEFAULT "pending",
+            name TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )');
+        
+        // 创建索引示例
+        $db->exec('CREATE INDEX IF NOT EXISTS idx_example_name ON example(name)');
     }
     
     /**
      * 回滚迁移（降级）
      */
     public function down(SQLite3 $db): void {
-        // 删除索引示例
-        $db->exec('DROP INDEX IF EXISTS idx_users_email');
-        
-        // 注意：SQLite 不支持直接删除字段，需要重建表
-        // 删除表示例
-        $db->exec('DROP TABLE IF EXISTS orders');
+        $db->exec('DROP TABLE IF EXISTS example');
     }
 };
 ```
@@ -92,7 +76,6 @@ public function up(SQLite3 $db): void {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         email TEXT NOT NULL
-        -- 注意：移除了不需要的字段
     )');
     
     // 2. 复制数据
@@ -120,100 +103,40 @@ $db->exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_email ON users(email)');
 $db->exec('DROP INDEX IF EXISTS idx_name');
 ```
 
-## 常用操作示例
+## 现有迁移文件说明
 
-### 创建表
+| 文件 | 说明 |
+|------|------|
+| `20240101000001_create_users_table.php` | 用户表 + 默认 admin 账号 |
+| `20240101000002_create_settings_table.php` | 设置表 + 默认配置 |
+| `20240101000003_create_products_table.php` | 产品表（含完整字段） |
+| `20240101000004_create_posts_table.php` | 文章/页面/案例表 |
+| `20240101000005_create_inquiries_table.php` | 询单表 |
+| `20240101000006_create_messages_table.php` | 留言表 |
+| `20240101000007_create_product_categories_table.php` | 产品分类表 |
+| `20240101000008_create_product_prices_table.php` | 产品价格表 |
+| `20240101000009_create_media_files_table.php` | 媒体文件表 |
+| `20240101000010_create_update_logs_table.php` | 程序更新日志表 |
 
-```php
-public function up(SQLite3 $db): void {
-    $db->exec('CREATE TABLE IF NOT EXISTS categories (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        slug TEXT UNIQUE NOT NULL,
-        parent_id INTEGER DEFAULT 0,
-        sort_order INTEGER DEFAULT 0,
-        is_active INTEGER DEFAULT 1,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )');
-    
-    // 创建索引
-    $db->exec('CREATE INDEX idx_categories_parent ON categories(parent_id)');
-    $db->exec('CREATE INDEX idx_categories_slug ON categories(slug)');
-}
-```
+## 工作流程
 
-### 添加字段并填充数据
+### 新安装系统
+1. Database.php 调用 Migrator
+2. 执行所有未执行的迁移
+3. 创建所有表结构和初始数据
 
-```php
-public function up(SQLite3 $db): void {
-    // 添加字段
-    $db->exec('ALTER TABLE products ADD COLUMN view_count INTEGER DEFAULT 0');
-    
-    // 填充默认值
-    $db->exec('UPDATE products SET view_count = 0 WHERE view_count IS NULL');
-}
-```
+### 版本更新
+1. 程序更新时下载新版本文件
+2. 自动执行新迁移文件
+3. 数据库结构与代码版本保持一致
 
-### 创建关联表
+## 后台管理
 
-```php
-public function up(SQLite3 $db): void {
-    $db->exec('CREATE TABLE IF NOT EXISTS product_tags (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        product_id INTEGER NOT NULL,
-        tag_name TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )');
-    
-    $db->exec('CREATE INDEX idx_product_tags_product ON product_tags(product_id)');
-    $db->exec('CREATE INDEX idx_product_tags_name ON product_tags(tag_name)');
-}
-```
-
-## 测试迁移
-
-在部署前，建议先在测试环境验证迁移：
-
-1. 复制生产数据库到测试环境
-2. 执行迁移
-3. 验证数据完整性
-4. 测试回滚（如需要）
-
-## 最佳实践
-
-1. **原子性**：每个迁移应该是一个完整的、独立的操作单元
-2. **幂等性**：迁移应该可以安全地重复执行（使用 `IF NOT EXISTS` 等）
-3. **数据安全**：修改表结构前，确保已备份数据
-4. **版本控制**：迁移文件应该提交到 Git 版本控制
-5. **文档**：在迁移文件头部添加清晰的注释说明
-
-## 故障排除
-
-### 迁移执行失败
-
-1. 检查 SQL 语法是否正确
-2. 确认表名、字段名是否正确
-3. 查看 `migrations` 表中的执行记录
-4. 检查 PHP 错误日志
-
-### 手动修复
-
-如果迁移执行失败，可以：
-
-1. 修复迁移文件
-2. 手动删除 `migrations` 表中失败的记录
-3. 重新执行迁移
-
-```sql
--- 查看迁移记录
-SELECT * FROM migrations ORDER BY id DESC;
-
--- 删除失败的迁移记录（谨慎操作）
-DELETE FROM migrations WHERE version = '20250410120000';
-```
+访问 `/admin/updater` → "数据库迁移" 标签页：
+- 查看待执行和已执行的迁移
+- 手动执行数据库迁移
 
 ## 参考
 
-- [SQLite ALTER TABLE 文档](https://www.sqlite.org/lang_altertable.html)
+- [SQLite ALTER TABLE](https://www.sqlite.org/lang_altertable.html)
 - [SQLite 数据类型](https://www.sqlite.org/datatype3.html)

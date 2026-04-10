@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建媒体文件表
- * 版本: 20240101000010
+ * 版本: 20240101000009
  */
-
 
 return new class {
     public function up(SQLite3 $db): void {
@@ -27,6 +26,7 @@ return new class {
             updated_at TEXT NOT NULL
         )');
         
+        // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_media_files_directory ON media_files(directory)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_media_files_media_type ON media_files(media_type)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_media_files_created_at ON media_files(created_at DESC)');

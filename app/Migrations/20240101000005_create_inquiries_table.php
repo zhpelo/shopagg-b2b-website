@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建询单表
- * 版本: 20240101000006
+ * 版本: 20240101000005
  */
-
 
 return new class {
     public function up(SQLite3 $db): void {
@@ -25,6 +24,7 @@ return new class {
             created_at TEXT NOT NULL
         )');
         
+        // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_inquiries_product ON inquiries(product_id)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_inquiries_created ON inquiries(created_at)');

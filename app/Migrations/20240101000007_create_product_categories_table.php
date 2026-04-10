@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建产品分类表
- * 版本: 20240101000008
+ * 版本: 20240101000007
  */
-
 
 return new class {
     public function up(SQLite3 $db): void {
@@ -21,6 +20,7 @@ return new class {
             updated_at TEXT NOT NULL
         )');
         
+        // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_categories_parent ON product_categories(parent_id)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_categories_type ON product_categories(type)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_categories_slug ON product_categories(slug)');

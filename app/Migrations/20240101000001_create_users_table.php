@@ -6,7 +6,6 @@ declare(strict_types=1);
  * 版本: 20240101000001
  */
 
-
 return new class {
     public function up(SQLite3 $db): void {
         $db->exec('CREATE TABLE IF NOT EXISTS users (

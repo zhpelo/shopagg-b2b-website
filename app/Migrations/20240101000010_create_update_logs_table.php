@@ -3,16 +3,10 @@ declare(strict_types=1);
 
 /**
  * 迁移: 创建更新日志表
- * 版本: 20250410000100
- * 
- * 用于记录程序更新的详细信息
+ * 版本: 20240101000010
  */
 
-
 return new class {
-    /**
-     * 执行迁移
-     */
     public function up(SQLite3 $db): void {
         $db->exec('CREATE TABLE IF NOT EXISTS update_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,9 +27,6 @@ return new class {
         $db->exec('CREATE INDEX IF NOT EXISTS idx_update_logs_status ON update_logs(status)');
     }
     
-    /**
-     * 回滚迁移
-     */
     public function down(SQLite3 $db): void {
         $db->exec('DROP TABLE IF EXISTS update_logs');
     }

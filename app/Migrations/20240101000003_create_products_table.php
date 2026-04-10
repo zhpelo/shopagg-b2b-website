@@ -6,7 +6,6 @@ declare(strict_types=1);
  * 版本: 20240101000003
  */
 
-
 return new class {
     public function up(SQLite3 $db): void {
         $db->exec('CREATE TABLE IF NOT EXISTS products (
@@ -21,6 +20,7 @@ return new class {
             vendor TEXT,
             tags TEXT,
             images_json TEXT,
+            banner_image TEXT,
             seo_title TEXT,
             seo_keywords TEXT,
             seo_description TEXT,
@@ -28,8 +28,10 @@ return new class {
             updated_at TEXT NOT NULL
         )');
         
+        // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_products_status ON products(status)');
+        $db->exec('CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug)');
     }
     
     public function down(SQLite3 $db): void {
