@@ -8,6 +8,17 @@
 
 declare(strict_types=1);
 
+// 标记入口点，防止直接访问 app 目录文件
+define('APP_ENTRY_POINT', true);
+
+// 应用安全响应头
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-XSS-Protection: 1; mode=block');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+}
+
 // 运行环境
 session_start();
 date_default_timezone_set('UTC');

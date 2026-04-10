@@ -1,7 +1,19 @@
+# 禁止访问敏感目录和文件
 <IfModule mod_rewrite.c>
   RewriteEngine On
   # 根目录部署保持 RewriteBase / ；若放在二级目录（如 /b2bwebsite/），请改为：RewriteBase /b2bwebsite/
   RewriteBase /
+
+  # 禁止直接访问 #data 目录及其内容
+  RewriteRule ^#data/ - [F,L]
+  
+  # 禁止访问敏感文件类型
+  RewriteRule \.(db|sqlite|sqlite3|env|log|ini|sh|bash)$ - [F,L]
+  
+  # 禁止访问版本控制目录
+  RewriteRule ^\.git/ - [F,L]
+  RewriteRule ^\.svn/ - [F,L]
+  RewriteRule ^\.hg/ - [F,L]
 
   # Keep existing files/directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -11,4 +23,28 @@
   # Route all requests to index.php
   RewriteRule ^ index.php [L]
 </IfModule>
+
+# 额外的安全头（如果服务器支持）
+<IfModule mod_headers.c>
+  # 禁止 MIME 类型嗅探
+  Header set X-Content-Type-Options "nosniff"
+  # XSS 保护
+  Header set X-XSS-Protection "1; mode=block"
+  # 禁止框架嵌入
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# 禁止目录列表
+Options -Indexes
+
+# 保护敏感文件
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(db|sqlite|sqlite3|env|log|ini|sh|bash)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
 
