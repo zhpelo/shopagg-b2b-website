@@ -1855,66 +1855,78 @@ class AdminController extends Controller {
         $this->redirect('/admin/appearance/menus?success=菜单已删除');
     }
 
+
+
     /**
-     * 处理菜单项数据
+     * 处理菜单项数据 - 简化版
      */
     private function processMenuItems(int $menuId): void {
         $titles = $_POST['item_title'] ?? [];
         $urls = $_POST['item_url'] ?? [];
         $targets = $_POST['item_target'] ?? [];
-        $parentIndexes = $_POST['item_parent_index'] ?? [];
+        $parentIds = $_POST['item_parent_id'] ?? [];
         $cssClasses = $_POST['item_css_class'] ?? [];
         $sortOrders = $_POST['item_sort_order'] ?? [];
         
-        // 第一阶段：收集所有菜单项数据并分离顶级和子级
+        // 收集所有菜单项数据
         $allItems = [];
         foreach ($titles as $index => $title) {
             if (empty($title)) {
                 continue;
             }
             
-            $parentIndex = isset($parentIndexes[$index]) ? (int)$parentIndexes[$index] : -1;
-            
             $allItems[] = [
-                'index' => $index,
-                'title' => $title,
-                'url' => $urls[$index] ?? '#',
+                'index' => (int)$index,
+                'title' => trim($title),
+                'url' => trim($urls[$index] ?? '#'),
                 'target' => $targets[$index] ?? '_self',
-                'parent_index' => $parentIndex, // -1 表示顶级
+                'parent_index' => (int)($parentIds[$index] ?? 0),
                 'css_class' => $cssClasses[$index] ?? '',
                 'sort_order' => (int)($sortOrders[$index] ?? $index),
-                'db_id' => null, // 保存后会填充
             ];
         }
         
-        // 第二阶段：先保存所有顶级菜单项
-        $topLevelItems = array_filter($allItems, fn($item) => $item['parent_index'] === -1);
+        if (empty($allItems)) {
+            return;
+        }
         
-        foreach ($topLevelItems as &$item) {
+        // 按排序值排序
+        usort($allItems, fn($a, $b) => $a['sort_order'] <=> $b['sort_order']);
+        
+        // 分离顶级菜单（parent_index = 0）和子菜单
+        $topLevelItems = array_filter($allItems, fn($item) => $item['parent_index'] === 0);
+        $childItems = array_filter($allItems, fn($item) => $item['parent_index'] !== 0);
+        
+        // 保存所有菜单项
+        $indexToDbId = []; // 表单索引 -> 新数据库ID 映射
+        $sequence = 0;
+        
+        // 第一阶段：保存顶级菜单
+        foreach ($topLevelItems as $item) {
             $itemData = [
                 'title' => $item['title'],
                 'url' => $item['url'],
                 'target' => $item['target'],
                 'parent_id' => 0,
                 'css_class' => $item['css_class'],
-                'sort_order' => $item['sort_order'],
+                'sort_order' => $sequence++,
                 'status' => 'active',
             ];
             
-            $item['db_id'] = $this->menuModel->addItem($menuId, $itemData);
+            $newId = $this->menuModel->addItem($menuId, $itemData);
+            $indexToDbId[$item['index']] = $newId;
         }
         
-        // 第三阶段：保存子菜单项
-        $childItems = array_filter($allItems, fn($item) => $item['parent_index'] !== -1);
-        
+        // 第二阶段：保存子菜单
         foreach ($childItems as $item) {
-            // 根据 parent_index 找到对应的数据库ID
-            $parentDbId = 0;
-            foreach ($topLevelItems as $topItem) {
-                if ($topItem['index'] === $item['parent_index']) {
-                    $parentDbId = $topItem['db_id'];
-                    break;
-                }
+            $parentIndex = $item['parent_index'];
+            
+            // 检查父级是否已保存（parent_index 指向父级在表单中的索引）
+            if (!isset($indexToDbId[$parentIndex])) {
+                // 如果指定的父级不存在，设为顶级菜单
+                $parentDbId = 0;
+            } else {
+                $parentDbId = $indexToDbId[$parentIndex];
             }
             
             $itemData = [
@@ -1923,11 +1935,12 @@ class AdminController extends Controller {
                 'target' => $item['target'],
                 'parent_id' => $parentDbId,
                 'css_class' => $item['css_class'],
-                'sort_order' => $item['sort_order'],
+                'sort_order' => $sequence++,
                 'status' => 'active',
             ];
             
-            $this->menuModel->addItem($menuId, $itemData);
+            $newId = $this->menuModel->addItem($menuId, $itemData);
+            $indexToDbId[$item['index']] = $newId;
         }
     }
 }
