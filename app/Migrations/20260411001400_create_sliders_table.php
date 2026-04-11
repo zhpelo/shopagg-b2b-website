@@ -6,8 +6,6 @@ declare(strict_types=1);
  * 版本: 20260411001400
  */
 
-use SQLite3;
-
 return new class {
     /**
      * 执行迁移
@@ -56,6 +54,52 @@ return new class {
         $stmt->bindValue(':status', 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', 1, SQLITE3_INTEGER);
         $stmt->execute();
+
+        $sliderId = $db->lastInsertRowID();
+        $placeholderImage = 'https://devtool.tech/api/placeholder/1920/800?text=%E9%BB%98%E8%AE%A4%E9%A6%96%E9%A1%B5%E8%BD%AE%E6%92%AD%E5%9B%BE%EF%BC%881920x800%EF%BC%89';
+
+        // 插入三条默认轮播图片
+        $itemStmt = $db->prepare(
+            'INSERT INTO slider_items (slider_id, image, title, subtitle, link_url, link_text, sort_order, status)
+             VALUES (:slider_id, :image, :title, :subtitle, :link_url, :link_text, :sort_order, :status)'
+        );
+
+        $defaultItems = [
+            [
+                'title'      => 'Premium Quality, Global Standard',
+                'subtitle'   => 'ISO-certified manufacturing with strict quality control at every stage — delivering products you can count on.',
+                'link_url'   => '/products',
+                'link_text'  => 'Explore Products',
+                'sort_order' => 1,
+            ],
+            [
+                'title'      => 'One-Stop OEM & ODM Solutions',
+                'subtitle'   => 'From prototype to mass production, our R&D team works with you to bring your custom designs to life.',
+                'link_url'   => '/contact',
+                'link_text'  => 'Request a Quote',
+                'sort_order' => 2,
+            ],
+            [
+                'title'      => 'Trusted by Buyers in 50+ Countries',
+                'subtitle'   => 'Reliable shipments, on-time delivery, and a dedicated account team — building long-term partnerships worldwide.',
+                'link_url'   => '/cases',
+                'link_text'  => 'View Success Cases',
+                'sort_order' => 3,
+            ],
+        ];
+
+        foreach ($defaultItems as $item) {
+            $itemStmt->reset();
+            $itemStmt->bindValue(':slider_id', $sliderId,        SQLITE3_INTEGER);
+            $itemStmt->bindValue(':image',     $placeholderImage, SQLITE3_TEXT);
+            $itemStmt->bindValue(':title',     $item['title'],    SQLITE3_TEXT);
+            $itemStmt->bindValue(':subtitle',  $item['subtitle'], SQLITE3_TEXT);
+            $itemStmt->bindValue(':link_url',  $item['link_url'], SQLITE3_TEXT);
+            $itemStmt->bindValue(':link_text', $item['link_text'],SQLITE3_TEXT);
+            $itemStmt->bindValue(':sort_order',$item['sort_order'],SQLITE3_INTEGER);
+            $itemStmt->bindValue(':status',    'active',          SQLITE3_TEXT);
+            $itemStmt->execute();
+        }
     }
     
     /**

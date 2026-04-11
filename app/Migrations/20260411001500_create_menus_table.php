@@ -6,8 +6,6 @@ declare(strict_types=1);
  * 版本: 20260411001500
  */
 
-use SQLite3;
-
 return new class {
     /**
      * 执行迁移
@@ -61,12 +59,12 @@ return new class {
 
         // 插入默认菜单项
         $items = [
-            ['title' => '首页', 'url' => '/', 'sort_order' => 1],
-            ['title' => '产品中心', 'url' => '/products', 'sort_order' => 2],
-            ['title' => '案例展示', 'url' => '/cases', 'sort_order' => 3],
-            ['title' => '新闻动态', 'url' => '/blog', 'sort_order' => 4],
-            ['title' => '关于我们', 'url' => '/about', 'sort_order' => 5],
-            ['title' => '联系我们', 'url' => '/contact', 'sort_order' => 6],
+            ['title' => 'Home', 'url' => '/', 'sort_order' => 1],
+            ['title' => 'Products', 'url' => '/products', 'sort_order' => 2],
+            ['title' => 'Cases', 'url' => '/cases', 'sort_order' => 3],
+            ['title' => 'Blog', 'url' => '/blog', 'sort_order' => 4],
+            ['title' => 'About Us', 'url' => '/about', 'sort_order' => 5],
+            ['title' => 'Contact', 'url' => '/contact', 'sort_order' => 6],
         ];
 
         $itemStmt = $db->prepare('INSERT INTO menu_items (menu_id, parent_id, title, url, target, sort_order, status) VALUES (:menu_id, 0, :title, :url, "_self", :sort_order, "active")');
