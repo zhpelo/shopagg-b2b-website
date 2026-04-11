@@ -102,7 +102,7 @@ spl_autoload_register(function (string $class): void {
     if (file_exists($file)) require $file;
 });
 
-require APP_ROOT . '/app/Helpers.php';
+require APP_ROOT . '/app/Helpers/Helpers.php';
 
 use App\Core\Router;
 use App\Core\Database;

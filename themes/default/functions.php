@@ -6,7 +6,7 @@ declare(strict_types=1);
  * 此文件在每次渲染主题时自动加载，可以在此定义可重用的模板函数
  * 可以访问数据库模型和助手函数
  * 
- * 核心功能函数现在通过 app/Helpers.php 统一提供，包括:
+ * 核心功能函数现在通过 app/Helpers/Helpers.php 统一提供，包括:
  * - get_products()
  * - get_posts()
  * - get_cases()

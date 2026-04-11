@@ -297,7 +297,9 @@ server {
 │   ├── Core/                 # Router / Database / Auth / Media 等核心类
 │   ├── Models/               # 数据模型
 │   ├── views/admin/          # 后台视图与静态资源
-│   ├── Helpers.php           # 全局辅助函数
+│   ├── Helpers/              # 辅助函数目录
+│   │   ├── Helpers.php       # 全局辅助函数
+│   │   └── SecurityHelper.php # 安全辅助函数
 │   └── routes.php            # 路由注册
 ├── themes/
 │   └── default/              # 默认前台主题
@@ -437,7 +439,7 @@ server {
 
 ### 关键辅助函数
 
-全局通用函数位于 `app/Helpers.php`，主要包括：
+全局通用函数位于 `app/Helpers/Helpers.php`，主要包括：
 
 - `url()`、`base_url()`、`asset_url()`
 - `csrf_token()`、`csrf_check()`
