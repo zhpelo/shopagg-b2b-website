@@ -12,8 +12,8 @@
             <!-- Contact Info -->
             <div class="lg:w-5/12">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
-                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Contact</p>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-3">Contact Us</h1>
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2"><?= h(block('page_contact', 'label')) ?></p>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-3"><?= h(block('page_contact', 'heading')) ?></h1>
                     <p class="text-gray-600 mb-8"><?= h($site['company_bio'] ?? '') ?></p>
                     
                     <div class="space-y-4 mb-8">
@@ -60,11 +60,11 @@
                     <!-- Highlights -->
                     <div class="grid grid-cols-2 gap-4 mb-8">
                         <div class="bg-gray-50 rounded-xl p-4">
-                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Avg. Response Time</span>
+                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1"><?= h(block('page_contact', 'response_label')) ?></span>
                             <span class="font-bold text-gray-900"><?= h($site['company_response_time'] ?? '≤24h') ?></span>
                         </div>
                         <div class="bg-gray-50 rounded-xl p-4">
-                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Markets</span>
+                            <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1"><?= h(block('page_contact', 'markets_label')) ?></span>
                             <span class="font-bold text-gray-900"><?= h($site['company_main_markets'] ?? '-') ?></span>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                         <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" 
                            class="block w-full text-center px-6 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors shadow-md">
                             <i class="fab fa-whatsapp mr-2"></i>
-                            Chat Now
+                            <?= h(block('page_contact', 'chat_btn')) ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -85,8 +85,8 @@
             <!-- Contact Form -->
             <div class="lg:w-7/12">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8">
-                    <h2 class="text-xl font-bold text-gray-900 mb-2">Send Message</h2>
-                    <p class="text-gray-500 mb-8">Project requirements, customization, etc.</p>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2"><?= h(block('page_contact', 'form_title')) ?></h2>
+                    <p class="text-gray-500 mb-8"><?= h(block('page_contact', 'form_subtitle')) ?></p>
                     
                     <form method="post" action="<?= url('/contact') ?>">
                         <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
@@ -125,7 +125,7 @@
                         
                         <button type="submit" 
                                 class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
-                            Send Message
+                            <?= h(block('page_contact', 'form_btn')) ?>
                         </button>
                     </form>
                 </div>

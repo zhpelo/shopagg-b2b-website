@@ -91,24 +91,24 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="fas fa-check-circle text-2xl"></i>
+                        <i class="<?= h(block('home_value_props', 'item1_icon')) ?> text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Quality Assurance</h3>
-                    <p class="text-gray-500 text-sm">ISO-aligned production with strict QC before shipment.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item1_title')) ?></h3>
+                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item1_desc')) ?></p>
                 </div>
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="fas fa-globe-americas text-2xl"></i>
+                        <i class="<?= h(block('home_value_props', 'item2_icon')) ?> text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Global Logistics</h3>
-                    <p class="text-gray-500 text-sm">On-time delivery with consolidated freight options.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item2_title')) ?></h3>
+                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item2_desc')) ?></p>
                 </div>
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="fas fa-user-shield text-2xl"></i>
+                        <i class="<?= h(block('home_value_props', 'item3_icon')) ?> text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Dedicated Support</h3>
-                    <p class="text-gray-500 text-sm">One-to-one account service for long-term buyers.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item3_title')) ?></h3>
+                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item3_desc')) ?></p>
                 </div>
             </div>
         </div>
@@ -121,11 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Section Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-gray-200">
             <div>
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Featured Products</h2>
-                <p class="text-gray-500">Company Highlights</p>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2"><?= h(block('home_featured', 'heading')) ?></h2>
+                <p class="text-gray-500"><?= h(block('home_featured', 'subheading')) ?></p>
             </div>
             <a href="<?= url('/products') ?>" class="mt-4 sm:mt-0 px-6 py-2.5 bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors">
-                View All →
+                <?= h(block('home_featured', 'link_text')) ?>
             </a>
         </div>
 
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Why Choose Us</h2>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6"><?= h(block('home_why_us', 'heading')) ?></h2>
                 <div class="rich-content mb-6">
                     <p class="mb-4"><?= h($site['company_bio'] ?? '') ?></p>
                 </div>
@@ -164,23 +164,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
                             <i class="fas fa-check text-sm"></i>
                         </span>
-                        ISO Certified
+                        <?= h(block('home_why_us', 'badge1')) ?>
                     </li>
                     <li class="flex items-center text-gray-700">
                         <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
                             <i class="fas fa-check text-sm"></i>
                         </span>
-                        OEM & ODM
+                        <?= h(block('home_why_us', 'badge2')) ?>
                     </li>
                     <li class="flex items-center text-gray-700">
                         <span class="w-6 h-6 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600">
                             <i class="fas fa-check text-sm"></i>
                         </span>
-                        R&D Team
+                        <?= h(block('home_why_us', 'badge3')) ?>
                     </li>
                 </ul>
                 <a href="<?= url('/about') ?>" class="inline-flex items-center px-6 py-2.5 border-2 border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors">
-                    About Us
+                    <?= h(block('home_why_us', 'link_text')) ?>
                 </a>
             </div>
             <div class="relative">
@@ -198,8 +198,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="py-16 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">Success Cases</h2>
-            <p class="text-gray-500">Global Presence</p>
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3"><?= h(block('home_cases', 'heading')) ?></h2>
+            <p class="text-gray-500"><?= h(block('home_cases', 'subheading')) ?></p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -229,11 +229,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
             
             <div class="relative z-10">
-                <h2 class="text-2xl lg:text-4xl font-bold text-white mb-4">Ready to start your project?</h2>
-                <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">Contact us today for a professional quote and expert consultation.</p>
+                <h2 class="text-2xl lg:text-4xl font-bold text-white mb-4"><?= h(block('home_cta', 'heading')) ?></h2>
+                <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto"><?= h(block('home_cta', 'text')) ?></p>
                 <div class="flex flex-wrap justify-center gap-4">
                     <a href="<?= url('/contact') ?>" class="px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg">
-                        Request Quote
+                        <?= h(block('home_cta', 'btn1_text')) ?>
                     </a>
                     <?php
                     $wa = $site['whatsapp'] ?? '';
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" 
                            class="px-8 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-lg inline-flex items-center gap-2">
                             <i class="fab fa-whatsapp text-xl"></i>
-                            Chat Now
+                            <?= h(block('home_cta', 'btn2_text')) ?>
                         </a>
                     <?php endif; ?>
                 </div>

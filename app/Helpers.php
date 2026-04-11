@@ -839,3 +839,154 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
 </div>
 HTML;
 }
+
+// ============================================================================
+// 区块配置函数 - 模板区块可视化编辑系统
+// ============================================================================
+
+/**
+ * 获取区块字段值
+ * 
+ * 优先读取用户自定义值，无则回退到模板默认值。
+ * 
+ * @param string $blockKey 区块标识（如 'home_cta'）
+ * @param string $fieldKey 字段标识（如 'heading'）
+ * @param string $fallback 最终兜底值（当模板默认也无此字段时）
+ * @return string
+ */
+function block(string $blockKey, string $fieldKey, string $fallback = ''): string {
+    static $merged = null;
+
+    if ($merged === null) {
+        $merged = _load_merged_blocks();
+    }
+
+    return (string)($merged[$blockKey][$fieldKey] ?? $fallback);
+}
+
+/**
+ * 获取区块所有字段的值（合并后的）
+ *
+ * @param string $blockKey 区块标识
+ * @return array 字段 key => value
+ */
+function block_all(string $blockKey): array {
+    static $merged = null;
+    if ($merged === null) {
+        $merged = _load_merged_blocks();
+    }
+    return $merged[$blockKey] ?? [];
+}
+
+/**
+ * 加载并合并区块配置：模板默认 + 用户自定义
+ *
+ * @return array [blockKey => [fieldKey => value, ...], ...]
+ */
+function _load_merged_blocks(): array {
+    $theme = _get_current_theme();
+
+    // 1. 模板默认区块配置
+    $defaultFile = APP_ROOT . '/themes/' . $theme . '/blocks.php';
+    $defaults = [];
+    if (is_file($defaultFile)) {
+        $raw = include $defaultFile;
+        if (is_array($raw)) {
+            foreach ($raw as $bk => $block) {
+                if (!isset($block['fields']) || !is_array($block['fields'])) continue;
+                foreach ($block['fields'] as $fk => $field) {
+                    $defaults[$bk][$fk] = $field['default'] ?? '';
+                }
+            }
+        }
+    }
+
+    // 2. 用户自定义区块配置
+    $userFile = APP_ROOT . '/storage/blocks/' . $theme . '.php';
+    $userValues = [];
+    if (is_file($userFile)) {
+        $userValues = include $userFile;
+        if (!is_array($userValues)) {
+            $userValues = [];
+        }
+    }
+
+    // 3. 合并：用户值覆盖默认值
+    $merged = $defaults;
+    foreach ($userValues as $bk => $fields) {
+        if (!is_array($fields)) continue;
+        foreach ($fields as $fk => $val) {
+            if ((string)$val !== '') {
+                $merged[$bk][$fk] = $val;
+            }
+        }
+    }
+
+    return $merged;
+}
+
+/**
+ * 获取当前主题名称
+ */
+function _get_current_theme(): string {
+    static $theme = null;
+    if ($theme === null) {
+        try {
+            $settingModel = new \App\Models\Setting();
+            $theme = $settingModel->get('theme', 'default');
+        } catch (\Throwable $e) {
+            $theme = 'default';
+        }
+    }
+    return $theme;
+}
+
+/**
+ * 加载模板的区块定义（带字段元数据，供后台使用）
+ *
+ * @param string $theme 主题名称
+ * @return array 完整区块定义
+ */
+function get_block_definitions(string $theme = 'default'): array {
+    $file = APP_ROOT . '/themes/' . $theme . '/blocks.php';
+    if (!is_file($file)) return [];
+    $defs = include $file;
+    return is_array($defs) ? $defs : [];
+}
+
+/**
+ * 加载用户自定义区块值
+ *
+ * @param string $theme 主题名称
+ * @return array [blockKey => [fieldKey => value, ...], ...]
+ */
+function get_user_block_values(string $theme = 'default'): array {
+    $file = APP_ROOT . '/storage/blocks/' . $theme . '.php';
+    if (!is_file($file)) return [];
+    $data = include $file;
+    return is_array($data) ? $data : [];
+}
+
+/**
+ * 保存用户自定义区块值
+ *
+ * @param string $theme 主题名称
+ * @param array $values [blockKey => [fieldKey => value, ...], ...]
+ * @return bool
+ */
+function save_user_block_values(string $theme, array $values): bool {
+    $dir = APP_ROOT . '/storage/blocks';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+
+    // 安全校验主题名
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $theme)) {
+        return false;
+    }
+
+    $file = $dir . '/' . $theme . '.php';
+    $export = var_export($values, true);
+    $content = "<?php\n// 用户自定义区块配置 - 主题: {$theme}\n// 自动生成，请勿手动编辑\n// 最后更新: " . date('Y-m-d H:i:s') . "\nreturn {$export};\n";
+    return file_put_contents($file, $content, LOCK_EX) !== false;
+}

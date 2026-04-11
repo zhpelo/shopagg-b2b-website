@@ -35,22 +35,46 @@ $hasMenu = !empty($menuItems);
     <?php endif; ?>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <?php
+        $brandPrimary     = block('brand_colors', 'primary');
+        $brandPrimaryDark = block('brand_colors', 'primary_dark');
+        $brandInk         = block('brand_colors', 'ink');
+
+        // Generate lighter shades from primary hex
+        function _brand_lighten(string $hex, float $factor): string {
+            $hex = ltrim($hex, '#');
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+            $r = (int) round($r + (255 - $r) * $factor);
+            $g = (int) round($g + (255 - $g) * $factor);
+            $b = (int) round($b + (255 - $b) * $factor);
+            return sprintf('#%02x%02x%02x', $r, $g, $b);
+        }
+        function _brand_darken(string $hex, float $factor): string {
+            $hex = ltrim($hex, '#');
+            $r = (int) round(hexdec(substr($hex, 0, 2)) * (1 - $factor));
+            $g = (int) round(hexdec(substr($hex, 2, 2)) * (1 - $factor));
+            $b = (int) round(hexdec(substr($hex, 4, 2)) * (1 - $factor));
+            return sprintf('#%02x%02x%02x', $r, $g, $b);
+        }
+    ?>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0f172a',
+                            50:  '<?= h(_brand_lighten($brandPrimary, 0.94)) ?>',
+                            100: '<?= h(_brand_lighten($brandPrimary, 0.88)) ?>',
+                            200: '<?= h(_brand_lighten($brandPrimary, 0.73)) ?>',
+                            300: '<?= h(_brand_lighten($brandPrimary, 0.49)) ?>',
+                            400: '<?= h(_brand_lighten($brandPrimary, 0.22)) ?>',
+                            500: '<?= h($brandPrimary) ?>',
+                            600: '<?= h($brandPrimaryDark) ?>',
+                            700: '<?= h(_brand_darken($brandPrimaryDark, 0.15)) ?>',
+                            800: '<?= h(_brand_darken($brandPrimaryDark, 0.35)) ?>',
+                            900: '<?= h($brandInk) ?>',
                         }
                     }
                 }
@@ -83,8 +107,8 @@ $hasMenu = !empty($menuItems);
                 <div class="hidden lg:flex items-center space-x-1">
                     <?php render_menu('main-nav', false); ?>
                     <?= get_google_translate_widget($site, 'px-4 py-2 text-gray-700') ?>
-                    <a href="<?= url('/contact') ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
-                        Request Quote
+                    <a href="<?= url(block('header', 'cta_url', '/contact')) ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
+                        <?= h(block('header', 'cta_text')) ?>
                     </a>
                 </div>
 
@@ -99,8 +123,8 @@ $hasMenu = !empty($menuItems);
                 <div class="py-4 space-y-2">
                     <?php render_menu('main-nav', true); ?>
                     <div class="px-4 pt-2">
-                        <a href="<?= url('/contact') ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
-                            Request Quote
+                        <a href="<?= url(block('header', 'cta_url', '/contact')) ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
+                            <?= h(block('header', 'cta_text')) ?>
                         </a>
                     </div>
                 </div>

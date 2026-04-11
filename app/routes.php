@@ -142,6 +142,10 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/appearance/sliders/edit', [AdminController::class, 'sliderUpdate']);
     $router->add('GET', '/admin/appearance/sliders/delete', [AdminController::class, 'sliderDelete']);
 
+    // 后台：外观区块 - 模板区块配置
+    $router->add('GET', '/admin/appearance/blocks', [AdminController::class, 'blockList']);
+    $router->add('POST', '/admin/appearance/blocks/save', [AdminController::class, 'blockSave']);
+
     // 后台：外观区块 - 菜单管理
     $router->add('GET', '/admin/appearance/menus', [AdminController::class, 'menuList']);
     $router->add('GET', '/admin/appearance/menus/create', [AdminController::class, 'menuCreate']);

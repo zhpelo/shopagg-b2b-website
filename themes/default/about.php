@@ -11,7 +11,7 @@
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Company Profile</p>
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3"><?= h(block('page_about', 'label')) ?></p>
                 <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-3 font-serif"><?= h($site['name'] ?? 'Company') ?></h1>
                 <p class="text-xl text-gray-600 mb-6"><?= h($site['tagline'] ?? 'General Information') ?></p>
                 
@@ -33,10 +33,10 @@
                 
                 <div class="flex flex-wrap gap-4">
                     <a href="<?= url('/contact') ?>" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-md">
-                        Send My Inquiry
+                        <?= h(block('page_about', 'cta_btn1')) ?>
                     </a>
                     <a href="#company-show" class="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-gray-400 transition-colors">
-                        Book a Factory Tour
+                        <?= h(block('page_about', 'cta_btn2')) ?>
                     </a>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                                      class="w-full h-full object-cover">
                             </figure>
                             <a href="#company-show" class="mt-4 block w-full text-center px-4 py-2 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition-colors">
-                                Book a Factory Tour
+                                <?= h(block('page_about', 'cta_btn2')) ?>
                             </a>
                         </div>
                         <div class="lg:col-span-3">
@@ -227,7 +227,7 @@
                 if (!empty($showItems) && is_array($showItems)): 
                 ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8" id="company-show">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Company Show</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-6"><?= h(block('page_about', 'company_show_title')) ?></h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <?php foreach ($showItems as $item): 
                             if (empty($item['img'])) continue;
@@ -252,7 +252,7 @@
                 if (!empty($certItems) && is_array($certItems)): 
                 ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Certificates</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-6"><?= h(block('page_about', 'certificates_title')) ?></h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <?php foreach ($certItems as $item): 
                             if (empty($item['img'])) continue;
@@ -276,10 +276,10 @@
                 <div class="sticky top-24 space-y-6">
                     <!-- Contact Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h3 class="font-bold text-gray-900 mb-4">Contact Provider</h3>
+                        <h3 class="font-bold text-gray-900 mb-4"><?= h(block('page_about', 'sidebar_title')) ?></h3>
                         <a href="<?= url('/contact') ?>" 
                            class="block w-full text-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors mb-3">
-                            Send My Inquiry
+                            <?= h(block('page_about', 'sidebar_btn')) ?>
                         </a>
                         <?php
                             $waDigits = preg_replace('/\D+/', '', $site['whatsapp'] ?? '');
@@ -288,7 +288,7 @@
                             <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank"
                                class="block w-full text-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition-colors">
                                 <i class="fab fa-whatsapp text-green-500 mr-2"></i>
-                                Chat Now
+                                <?= h(block('page_about', 'sidebar_chat')) ?>
                             </a>
                         <?php endif; ?>
                     </div>

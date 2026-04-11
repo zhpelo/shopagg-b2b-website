@@ -90,13 +90,13 @@ $hasFloatingContact = !empty($floatingContacts) || !empty($floatingSocialLinks);
         aria-controls="site-float-contact-panel"
     >
         <i class="fas fa-comments"></i>
-        <span>Contact</span>
+        <span><?= h(block('float_contact', 'toggle_text')) ?></span>
     </button>
 
     <div class="site-float-contact__panel" id="site-float-contact-panel">
-        <div class="site-float-contact__eyebrow">Global Contact</div>
-        <h3 class="site-float-contact__title">Talk to our team</h3>
-        <p class="site-float-contact__desc">Quick access to your configured contact details and social channels.</p>
+        <div class="site-float-contact__eyebrow"><?= h(block('float_contact', 'eyebrow')) ?></div>
+        <h3 class="site-float-contact__title"><?= h(block('float_contact', 'title')) ?></h3>
+        <p class="site-float-contact__desc"><?= h(block('float_contact', 'desc')) ?></p>
 
         <?php if ($floatingContacts): ?>
             <div class="site-float-contact__group">
@@ -134,7 +134,7 @@ $hasFloatingContact = !empty($floatingContacts) || !empty($floatingSocialLinks);
             </div>
         <?php endif; ?>
 
-        <a href="<?= url('/contact') ?>" class="site-float-contact__cta">Send Inquiry</a>
+        <a href="<?= url(block('float_contact', 'cta_url', '/contact')) ?>" class="site-float-contact__cta"><?= h(block('float_contact', 'cta_text')) ?></a>
     </div>
 </aside>
 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="lg:col-span-7">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <h4 class="font-semibold text-gray-900 mb-4">Contact</h4>
+                        <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'contact_title')) ?></h4>
                         <div class="space-y-3">
                             <?php if (!empty($site['company_email'])): ?>
                                 <a href="mailto:<?= h($site['company_email']) ?>" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             ];
                         }
                         ?>
-                        <h4 class="font-semibold text-gray-900 mb-4">Quick Links</h4>
+                        <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'quick_links_title')) ?></h4>
                         <div class="space-y-2">
                             <?php foreach ($footerMenuItems as $fItem): ?>
                                 <a href="<?= url(h($fItem['url'])) ?>" class="block text-gray-600 hover:text-brand-600 transition-colors"
@@ -277,7 +277,13 @@ document.addEventListener('DOMContentLoaded', function () {
         <!-- Footer Bottom -->
         <div class="py-6 border-t border-gray-100">
             <p class="text-center text-gray-500 text-sm">
-                © <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.
+                <?php
+                $customCopyright = block('footer', 'copyright');
+                if ($customCopyright): ?>
+                    <?= h($customCopyright) ?>
+                <?php else: ?>
+                    &copy; <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.
+                <?php endif; ?>
             </p>
         </div>
     </div>

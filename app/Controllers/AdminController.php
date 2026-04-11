@@ -1731,7 +1731,69 @@ class AdminController extends Controller {
     }
 
     // --- Appearance / Menus Management (外观区块 - 菜单管理) ---
-    
+
+    // --- Appearance / Blocks Management (外观区块 - 模板区块配置) ---
+
+    /**
+     * 模板区块配置页面
+     */
+    public function blockList(): void {
+        $theme = $this->settingModel->get('theme', 'default');
+        $definitions = get_block_definitions($theme);
+        $userValues = get_user_block_values($theme);
+
+        $this->renderAdmin('模板区块配置', $this->renderView('admin/blocks/index', [
+            'definitions' => $definitions,
+            'userValues'  => $userValues,
+            'theme'       => $theme,
+        ]));
+    }
+
+    /**
+     * 保存模板区块配置
+     */
+    public function blockSave(): void {
+        csrf_check();
+
+        $theme = trim((string)($_POST['theme'] ?? 'default'));
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $theme)) {
+            $this->redirect('/admin/appearance/blocks');
+            return;
+        }
+
+        $definitions = get_block_definitions($theme);
+        $existingValues = get_user_block_values($theme);
+        $submitted = $_POST['blocks'] ?? [];
+        $resetBlocks = $_POST['reset_blocks'] ?? [];
+
+        $newValues = [];
+
+        foreach ($definitions as $blockKey => $block) {
+            // 如果勾选了重置此区块，跳过（不保存自定义值）
+            if (in_array($blockKey, $resetBlocks, true)) {
+                continue;
+            }
+
+            $fields = $block['fields'] ?? [];
+            foreach ($fields as $fieldKey => $field) {
+                $val = trim((string)($submitted[$blockKey][$fieldKey] ?? ''));
+                $default = $field['default'] ?? '';
+                // 只保存与默认值不同的值
+                if ($val !== '' && $val !== $default) {
+                    $newValues[$blockKey][$fieldKey] = $val;
+                } elseif ($val === '' && isset($existingValues[$blockKey][$fieldKey])) {
+                    // 用户清空了，不保存（回退到默认）
+                } elseif ($val === $default) {
+                    // 与默认值相同，不保存
+                }
+            }
+        }
+
+        save_user_block_values($theme, $newValues);
+
+        $this->redirect('/admin/appearance/blocks?success=' . urlencode('区块配置已保存'));
+    }
+
     /**
      * 菜单列表
      */
