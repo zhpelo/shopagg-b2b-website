@@ -176,7 +176,7 @@ class AdminController extends Controller {
         $counts['recent_messages'] = $this->dashboardDailyCounts('messages', 30);
         $counts['recent_inquiries'] = $this->dashboardDailyCounts('inquiries', 30);
 
-        $dbFile = APP_ROOT . '/#data/site.db';
+        $dbFile = APP_ROOT . '/storage/site.db';
         $counts['system_age_days'] = is_file($dbFile) ? (int)((time() - filectime($dbFile)) / 86400) : 0;
 
         $this->renderAdmin('仪表盘', $this->renderView('admin/dashboard', ['counts' => $counts]));

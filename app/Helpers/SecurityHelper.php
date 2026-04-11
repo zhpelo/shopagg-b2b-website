@@ -18,18 +18,18 @@ class SecurityHelper {
     public static function checkSecurity(): array {
         $results = [];
         
-        // 检查 #data 目录
-        $dataDir = APP_ROOT . '/#data';
-        if (is_dir($dataDir)) {
-            $htaccessFile = $dataDir . '/.htaccess';
+        // 检查 storage 目录
+        $storageDir = APP_ROOT . '/storage';
+        if (is_dir($storageDir)) {
+            $htaccessFile = $storageDir . '/.htaccess';
             if (is_file($htaccessFile)) {
-                $results['data_dir'] = ['status' => 'protected', 'message' => '#data 目录受 .htaccess 保护'];
+                $results['data_dir'] = ['status' => 'protected', 'message' => 'storage 目录受 .htaccess 保护'];
             } else {
-                $results['data_dir'] = ['status' => 'warning', 'message' => '#data 目录缺少 .htaccess 保护'];
+                $results['data_dir'] = ['status' => 'warning', 'message' => 'storage 目录缺少 .htaccess 保护'];
             }
             
             // 检查数据库文件权限
-            $dbFile = $dataDir . '/site.db';
+            $dbFile = $storageDir . '/site.db';
             if (is_file($dbFile)) {
                 $perms = fileperms($dbFile);
                 $permStr = sprintf('%o', $perms & 0777);
@@ -41,22 +41,11 @@ class SecurityHelper {
             }
         }
         
-        // 检查 storage 目录
-        $storageDir = APP_ROOT . '/storage';
-        if (is_dir($storageDir)) {
-            $htaccessFile = $storageDir . '/.htaccess';
-            if (is_file($htaccessFile)) {
-                $results['storage_dir'] = ['status' => 'protected', 'message' => 'storage 目录受 .htaccess 保护'];
-            } else {
-                $results['storage_dir'] = ['status' => 'warning', 'message' => 'storage 目录缺少 .htaccess 保护'];
-            }
-        }
-        
         // 检查根目录 .htaccess
         $rootHtaccess = APP_ROOT . '/.htaccess';
         if (is_file($rootHtaccess)) {
             $content = file_get_contents($rootHtaccess);
-            if (strpos($content, '#data') !== false || strpos($content, '\.db') !== false) {
+            if (strpos($content, 'storage') !== false || strpos($content, '\.db') !== false) {
                 $results['root_htaccess'] = ['status' => 'protected', 'message' => '根目录 .htaccess 包含安全规则'];
             } else {
                 $results['root_htaccess'] = ['status' => 'warning', 'message' => '根目录 .htaccess 可能缺少安全规则'];

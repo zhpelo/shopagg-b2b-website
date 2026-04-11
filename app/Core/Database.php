@@ -10,15 +10,15 @@ class Database {
 
     public static function getInstance(): SQLite3 {
         if (self::$instance === null) {
-            $dbFile = APP_ROOT . '/#data/site.db';
-            $dataDir = APP_ROOT . '/#data';
+            $dbFile = APP_ROOT . '/storage/site.db';
+            $storageDir = APP_ROOT . '/storage';
             $isNew = !is_file($dbFile);
             
             if ($isNew) {
-                @mkdir($dataDir, 0755, true);
+                @mkdir($storageDir, 0755, true);
                 
-                // 确保 #data 目录下有 .htaccess 保护
-                self::ensureDataDirProtection($dataDir);
+                // 确保 storage 目录下有 .htaccess 保护
+                self::ensureDataDirProtection($storageDir);
             }
             
             self::$instance = new SQLite3($dbFile);
@@ -39,7 +39,7 @@ class Database {
     }
     
     /**
-     * 确保 #data 目录有安全保护
+     * 确保 storage 目录有安全保护
      */
     private static function ensureDataDirProtection(string $dataDir): void {
         // 创建 .htaccess 文件防止直接访问

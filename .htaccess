@@ -4,8 +4,8 @@
   # 根目录部署保持 RewriteBase / ；若放在二级目录（如 /b2bwebsite/），请改为：RewriteBase /b2bwebsite/
   RewriteBase /
 
-  # 禁止直接访问 #data 目录及其内容
-  RewriteRule ^#data/ - [F,L]
+  # 禁止直接访问 storage 目录及其内容
+  RewriteRule ^storage/ - [F,L]
   
   # 禁止访问敏感文件类型
   RewriteRule \.(db|sqlite|sqlite3|env|log|ini|sh|bash)$ - [F,L]

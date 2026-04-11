@@ -326,7 +326,6 @@ class Updater {
         
         // 执行文件覆盖
         $excludeFiles = [
-            '#data',
             'uploads',
             'storage',
             '.env',

@@ -1,5 +1,8 @@
 uploads/
-\#data/
+storage/site.db
+storage/site.db-wal
+storage/site.db-shm
+storage/blocks/
 .DS_Store
 .htaccess
 .env
