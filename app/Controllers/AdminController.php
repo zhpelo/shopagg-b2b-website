@@ -1798,7 +1798,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * 更新菜单 - 简洁版
+     * 更新菜单 - 支持 JSON 树形结构提交
      */
     public function menuUpdate(): void {
         csrf_check();
@@ -1825,35 +1825,68 @@ class AdminController extends Controller {
         ];
         $this->menuModel->update($id, $menuData);
         
-        // 更新现有的菜单项
-        $items = $_POST['items'] ?? [];
-        foreach ($items as $topIndex => $topItem) {
-            // 更新顶级菜单项
-            if (!empty($topItem['id'])) {
-                $this->menuModel->updateItem((int)$topItem['id'], [
-                    'title' => trim($topItem['title'] ?? ''),
-                    'url' => trim($topItem['url'] ?? ''),
-                    'target' => $topItem['target'] ?? '_self',
-                    'sort_order' => (int)($topItem['sort_order'] ?? 0),
-                    'parent_id' => 0,
-                ]);
-            }
-            
-            // 更新子菜单项
-            $children = $topItem['children'] ?? [];
-            foreach ($children as $childItem) {
-                if (!empty($childItem['id'])) {
-                    $this->menuModel->updateItem((int)$childItem['id'], [
-                        'title' => trim($childItem['title'] ?? ''),
-                        'url' => trim($childItem['url'] ?? ''),
-                        'target' => $childItem['target'] ?? '_self',
-                        'sort_order' => (int)($childItem['sort_order'] ?? 0),
-                    ]);
+        // 处理 JSON 格式的菜单项数据
+        $jsonItems = $_POST['menu_items_json'] ?? '';
+        if ($jsonItems !== '') {
+            $treeItems = json_decode($jsonItems, true);
+            if (is_array($treeItems)) {
+                // 收集现有项 ID
+                $existingItems = $this->menuModel->getItems($id);
+                $existingIds = array_column($existingItems, 'id');
+                $processedIds = [];
+                
+                // 递归处理树形结构
+                $this->processMenuItemsTree($id, $treeItems, 0, $processedIds);
+                
+                // 删除不再存在的菜单项
+                foreach ($existingIds as $existingId) {
+                    if (!in_array((int)$existingId, $processedIds)) {
+                        $this->menuModel->deleteItem((int)$existingId);
+                    }
                 }
             }
         }
         
         $this->redirect('/admin/appearance/menus/edit?id=' . $id . '&success=' . urlencode('菜单已保存'));
+    }
+
+    /**
+     * 递归处理菜单项树形结构
+     */
+    private function processMenuItemsTree(int $menuId, array $items, int $parentId, array &$processedIds): void {
+        foreach ($items as $sortOrder => $item) {
+            $title = trim((string)($item['title'] ?? ''));
+            $url = trim((string)($item['url'] ?? ''));
+            if ($title === '' || $url === '') {
+                continue;
+            }
+            
+            $itemData = [
+                'title' => $title,
+                'url' => $url,
+                'target' => $item['target'] ?? '_self',
+                'css_class' => $item['css_class'] ?? '',
+                'sort_order' => $sortOrder,
+                'parent_id' => $parentId,
+            ];
+            
+            $itemId = (int)($item['id'] ?? 0);
+            
+            if ($itemId > 0) {
+                // 更新已存在的菜单项
+                $this->menuModel->updateItem($itemId, $itemData);
+                $processedIds[] = $itemId;
+            } else {
+                // 新增菜单项（ID 为负数或 0 表示新建）
+                $itemId = $this->menuModel->addItem($menuId, array_merge($itemData, ['status' => 'active']));
+                $processedIds[] = $itemId;
+            }
+            
+            // 处理子项
+            if (!empty($item['children']) && is_array($item['children'])) {
+                $this->processMenuItemsTree($menuId, $item['children'], $itemId, $processedIds);
+            }
+        }
     }
 
     /**
