@@ -1,52 +1,47 @@
 <?php
 /**
- * 菜单表单页（新建/编辑）- 简化版
+ * 菜单表单页（新建/编辑）- 简洁版
  * @var string $action 表单提交地址
  * @var array|null $menu 菜单数据（编辑时）
- * @var array $items 菜单项树形数据（编辑时）
  * @var array $flatItems 菜单项扁平数据（编辑时）
  * @var string|null $success 成功消息
  */
 $isEdit = $menu !== null;
-$title = $isEdit ? '编辑菜单' : '新建菜单';
+$title = $isEdit ? '编辑菜单：' . h($menu['name']) : '新建菜单';
 
-// 构建树形结构用于显示
-function buildTree(array $items, int $parentId = 0): array {
-    $tree = [];
-    foreach ($items as $item) {
-        if ((int)($item['parent_id'] ?? 0) === $parentId) {
-            $children = buildTree($items, (int)$item['id']);
-            if ($children) {
-                $item['children'] = $children;
-            }
-            $tree[] = $item;
-        }
+// 按 parent_id 分组菜单项
+$groupedItems = [];
+foreach ($flatItems as $item) {
+    $parentId = (int)($item['parent_id'] ?? 0);
+    if (!isset($groupedItems[$parentId])) {
+        $groupedItems[$parentId] = [];
     }
-    return $tree;
+    $groupedItems[$parentId][] = $item;
 }
 
-$treeItems = buildTree($flatItems);
-
-// 获取所有顶级菜单项作为父级选项
-$topLevelItems = array_filter($flatItems, fn($item) => ($item['parent_id'] ?? 0) == 0);
+// 获取顶级菜单项
+$topLevelItems = $groupedItems[0] ?? [];
 ?>
+
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <!-- Header -->
     <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-violet-600">
-        <div class="flex items-center gap-3">
-            <a href="<?= url('/admin/appearance/menus') ?>" 
-               class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div>
-                <h1 class="text-2xl font-bold text-white"><?= $title ?></h1>
-                <p class="text-indigo-100 mt-1"><?= $isEdit ? '修改菜单设置和菜单项' : '创建一个新的导航菜单' ?></p>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="<?= url('/admin/appearance/menus') ?>" 
+                   class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-white"><?= $title ?></h1>
+                    <p class="text-indigo-100 mt-1"><?= $isEdit ? '修改菜单信息和菜单项' : '创建新菜单' ?></p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Form -->
-    <form action="<?= $action ?>" method="post" class="p-6" id="menu-form">
+    <form action="<?= $action ?>" method="post" class="p-6">
         <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
 
         <?php if (isset($_GET['success'])): ?>
@@ -56,221 +51,228 @@ $topLevelItems = array_filter($flatItems, fn($item) => ($item['parent_id'] ?? 0)
             </div>
         <?php endif; ?>
 
-        <div class="space-y-8">
-            <!-- Basic Settings -->
-            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <i class="fas fa-cog text-indigo-500"></i>
-                    基础设置
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Name -->
-                    <div>
-                        <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">
-                            菜单名称 <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="text" id="name" name="name" required
-                               value="<?= h($menu['name'] ?? '') ?>"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                               placeholder="如：主导航菜单">
-                    </div>
-
-                    <!-- Slug -->
-                    <div>
-                        <label for="slug" class="block text-sm font-semibold text-slate-700 mb-2">
-                            标识符 <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="text" id="slug" name="slug" required
-                               value="<?= h($menu['slug'] ?? '') ?>"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-mono text-sm"
-                               placeholder="如：main-nav">
-                        <p class="text-xs text-slate-500 mt-1.5">
-                            用于模板调用，只能包含字母、数字、连字符和下划线
-                        </p>
-                    </div>
-
-                    <!-- Location -->
-                    <div>
-                        <label for="location" class="block text-sm font-semibold text-slate-700 mb-2">
-                            菜单位置
-                        </label>
-                        <select id="location" name="location" 
-                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all bg-white">
-                            <option value="header" <?= ($menu['location'] ?? 'header') === 'header' ? 'selected' : '' ?>>顶部导航</option>
-                            <option value="footer" <?= ($menu['location'] ?? '') === 'footer' ? 'selected' : '' ?>>页脚导航</option>
-                            <option value="sidebar" <?= ($menu['location'] ?? '') === 'sidebar' ? 'selected' : '' ?>>侧边栏</option>
-                            <option value="other" <?= ($menu['location'] ?? '') === 'other' ? 'selected' : '' ?>>其他</option>
-                        </select>
-                    </div>
-
-                    <!-- Sort Order -->
-                    <div>
-                        <label for="sort_order" class="block text-sm font-semibold text-slate-700 mb-2">
-                            排序
-                        </label>
-                        <input type="number" id="sort_order" name="sort_order"
-                               value="<?= $menu['sort_order'] ?? 0 ?>"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                               placeholder="0">
-                    </div>
-                </div>
-
-                <!-- Description -->
-                <div class="mt-4">
-                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-2">
-                        描述
+        <!-- 基础信息 -->
+        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-6">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-cog text-indigo-500"></i>
+                基础信息
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        菜单名称 <span class="text-rose-500">*</span>
                     </label>
-                    <textarea id="description" name="description" rows="2"
-                              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
-                              placeholder="菜单的用途说明..."><?= h($menu['description'] ?? '') ?></textarea>
+                    <input type="text" name="name" required
+                           value="<?= h($menu['name'] ?? '') ?>"
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                           placeholder="如：主导航">
                 </div>
-
-                <!-- Status -->
-                <div class="mt-4">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">状态</label>
-                    <div class="flex items-center gap-4">
-                        <label class="inline-flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="status" value="active" 
-                                   <?= ($menu['status'] ?? 'active') === 'active' ? 'checked' : '' ?>
-                                   class="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500">
-                            <span class="text-sm text-slate-700">启用</span>
-                        </label>
-                        <label class="inline-flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="status" value="inactive" 
-                                   <?= ($menu['status'] ?? '') === 'inactive' ? 'checked' : '' ?>
-                                   class="w-4 h-4 text-slate-400 border-slate-300 focus:ring-slate-400">
-                            <span class="text-sm text-slate-700">禁用</span>
-                        </label>
-                    </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        标识符 <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="slug" required
+                           value="<?= h($menu['slug'] ?? '') ?>"
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-mono text-sm"
+                           placeholder="如：main-nav">
+                    <p class="text-xs text-slate-500 mt-1">前台模板通过此标识符调用菜单</p>
                 </div>
             </div>
-
-            <!-- Menu Items -->
-            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fas fa-list text-indigo-500"></i>
-                        菜单项
-                    </h2>
-                    <button type="button" onclick="addMenuItem()"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-                        <i class="fas fa-plus"></i>
-                        添加菜单项
-                    </button>
-                </div>
-
-                <!-- Menu Items Table -->
-                <div id="menu-items-container" class="space-y-3">
-                    <?php if (!empty($flatItems)): ?>
-                        <?php foreach ($flatItems as $idx => $item): 
-                            $level = 0;
-                            foreach ($flatItems as $p) {
-                                if ($p['id'] == $item['parent_id']) {
-                                    $level = 1;
-                                    break;
-                                }
-                            }
-                        ?>
-                            <div class="menu-item bg-white border border-slate-200 rounded-lg p-4" data-id="<?= $item['id'] ?>">
-                                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                                    <!-- 菜单文字 -->
-                                    <div class="md:col-span-3">
-                                        <label class="block text-xs font-medium text-slate-500 mb-1">菜单文字 <span class="text-rose-500">*</span></label>
-                                        <input type="text" name="item_title[]" required
-                                               value="<?= h($item['title']) ?>"
-                                               class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                                               placeholder="如：产品中心">
-                                    </div>
-                                    
-                                    <!-- 链接地址 -->
-                                    <div class="md:col-span-3">
-                                        <label class="block text-xs font-medium text-slate-500 mb-1">链接地址 <span class="text-rose-500">*</span></label>
-                                        <input type="text" name="item_url[]" required
-                                               value="<?= h($item['url']) ?>"
-                                               class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                                               placeholder="如：/products">
-                                    </div>
-                                    
-                                    <!-- 父级菜单 -->
-                                    <div class="md:col-span-3">
-                                        <label class="block text-xs font-medium text-slate-500 mb-1">父级菜单</label>
-                                        <select name="item_parent_id[]" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
-                                            <option value="0">-- 顶级菜单 --</option>
-                                            <?php foreach ($topLevelItems as $parentItem): 
-                                                if ($parentItem['id'] == $item['id']) continue; // 不能选自己
-                                            ?>
-                                                <option value="<?= $parentItem['id'] ?>" <?= ($item['parent_id'] ?? 0) == $parentItem['id'] ? 'selected' : '' ?>>
-                                                    <?= h($parentItem['title']) ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    
-                                    <!-- 排序 -->
-                                    <div class="md:col-span-2">
-                                        <label class="block text-xs font-medium text-slate-500 mb-1">排序</label>
-                                        <input type="number" name="item_sort_order[]"
-                                               value="<?= $item['sort_order'] ?? $idx ?>"
-                                               class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                                               placeholder="0">
-                                    </div>
-                                    
-                                    <!-- 删除按钮 -->
-                                    <div class="md:col-span-1">
-                                        <button type="button" onclick="removeMenuItem(this)"
-                                                class="w-full px-3 py-2 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
-                                                title="删除">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- 展开/收起详情 -->
-                                    <div class="md:col-span-12">
-                                        <button type="button" onclick="toggleDetails(this)" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                                            <i class="fas fa-chevron-down mr-1"></i>更多设置
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- 更多选项（默认隐藏） -->
-                                    <div class="more-details hidden md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
-                                        <div>
-                                            <label class="block text-xs font-medium text-slate-500 mb-1">打开方式</label>
-                                            <select name="item_target[]" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
-                                                <option value="_self" <?= ($item['target'] ?? '_self') === '_self' ? 'selected' : '' ?>>当前窗口</option>
-                                                <option value="_blank" <?= ($item['target'] ?? '') === '_blank' ? 'selected' : '' ?>>新窗口</option>
-                                            </select>
-                                        </div>
-                                        <div class="md:col-span-2">
-                                            <label class="block text-xs font-medium text-slate-500 mb-1">CSS 类名</label>
-                                            <input type="text" name="item_css_class[]"
-                                                   value="<?= h($item['css_class'] ?? '') ?>"
-                                                   class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                                                   placeholder="自定义CSS类名（可选）">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Empty State -->
-                <div id="empty-items-state" class="text-center py-12 border-2 border-dashed border-slate-300 rounded-xl <?= !empty($flatItems) ? 'hidden' : '' ?>">
-                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                        <i class="fas fa-list text-2xl"></i>
-                    </div>
-                    <p class="text-slate-500">还没有添加任何菜单项</p>
-                    <button type="button" onclick="addMenuItem()"
-                            class="mt-3 text-indigo-600 font-medium hover:text-indigo-700">
-                        添加第一个菜单项
-                    </button>
-                </div>
+            
+            <div class="mt-4">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">描述</label>
+                <textarea name="description" rows="2"
+                          class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none resize-none"
+                          placeholder="菜单用途说明（可选）"><?= h($menu['description'] ?? '') ?></textarea>
+            </div>
+            
+            <div class="mt-4 flex items-center gap-6">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="status" value="active" 
+                           <?= ($menu['status'] ?? 'active') === 'active' ? 'checked' : '' ?>
+                           class="w-4 h-4 text-indigo-600">
+                    <span class="text-sm text-slate-700">启用</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="status" value="inactive" 
+                           <?= ($menu['status'] ?? '') === 'inactive' ? 'checked' : '' ?>
+                           class="w-4 h-4 text-slate-400">
+                    <span class="text-sm text-slate-700">禁用</span>
+                </label>
             </div>
         </div>
 
-        <!-- Form Actions -->
-        <div class="mt-8 pt-6 border-t border-slate-200 flex items-center justify-end gap-4">
+        <!-- 菜单项管理 -->
+        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fas fa-list text-indigo-500"></i>
+                    菜单项
+                </h2>
+                <span class="text-sm text-slate-500">可添加 <?= count($topLevelItems) ?> 个顶级菜单，每个顶级菜单下可添加子菜单</span>
+            </div>
+
+            <?php if (empty($topLevelItems) && $isEdit): ?>
+                <div class="text-center py-8 border-2 border-dashed border-slate-300 rounded-xl">
+                    <p class="text-slate-500 mb-2">还没有添加任何菜单项</p>
+                    <p class="text-sm text-slate-400">请在下方添加第一个顶级菜单</p>
+                </div>
+            <?php endif; ?>
+
+            <!-- 顶级菜单列表 -->
+            <div class="space-y-4">
+                <?php 
+                $topIndex = 0;
+                foreach ($topLevelItems as $topItem): 
+                    $children = $groupedItems[$topItem['id']] ?? [];
+                ?>
+                    <!-- 顶级菜单 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="bg-indigo-50 px-4 py-3 border-b border-indigo-100 flex items-center justify-between">
+                            <span class="font-semibold text-indigo-900">
+                                <i class="fas fa-bars mr-2"></i>顶级菜单 #<?= $topIndex + 1 ?>: <?= h($topItem['title']) ?>
+                            </span>
+                            <span class="text-xs text-indigo-600 bg-indigo-100 px-2 py-1 rounded">排序: <?= $topItem['sort_order'] ?? 0 ?></span>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+                                <input type="hidden" name="items[<?= $topIndex ?>][id]" value="<?= $topItem['id'] ?>">
+                                <input type="hidden" name="items[<?= $topIndex ?>][parent_id]" value="0">
+                                
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">菜单文字</label>
+                                    <input type="text" name="items[<?= $topIndex ?>][title]" required
+                                           value="<?= h($topItem['title']) ?>"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+                                </div>
+                                
+                                <div class="md:col-span-4">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">链接地址</label>
+                                    <input type="text" name="items[<?= $topIndex ?>][url]" required
+                                           value="<?= h($topItem['url']) ?>"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                           placeholder="如：/products">
+                                </div>
+                                
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">排序</label>
+                                    <input type="number" name="items[<?= $topIndex ?>][sort_order]"
+                                           value="<?= $topItem['sort_order'] ?? 0 ?>"
+                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+                                </div>
+                                
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">打开方式</label>
+                                    <select name="items[<?= $topIndex ?>][target]" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
+                                        <option value="_self" <?= ($topItem['target'] ?? '_self') === '_self' ? 'selected' : '' ?>>当前窗口</option>
+                                        <option value="_blank" <?= ($topItem['target'] ?? '') === '_blank' ? 'selected' : '' ?>>新窗口</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="md:col-span-1">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">&nbsp;</label>
+                                    <a href="<?= url('/admin/appearance/menus/delete-item?id=' . $topItem['id'] . '&menu_id=' . ($menu['id'] ?? 0)) ?>" 
+                                       class="inline-flex items-center justify-center w-full px-3 py-2 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
+                                       onclick="return confirm('确定删除此菜单项及其子菜单吗？')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- 子菜单列表 -->
+                            <?php if (!empty($children)): ?>
+                                <div class="mt-4 pl-6 border-l-2 border-slate-200 space-y-3">
+                                    <p class="text-xs font-medium text-slate-500 mb-2">子菜单（<?= count($children) ?>个）</p>
+                                    <?php 
+                                    $childIndex = 0;
+                                    foreach ($children as $child): 
+                                    ?>
+                                        <div class="bg-slate-50 rounded-lg p-3">
+                                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                                                <input type="hidden" name="items[<?= $topIndex ?>][children][<?= $childIndex ?>][id]" value="<?= $child['id'] ?>">
+                                                
+                                                <div class="md:col-span-3">
+                                                    <input type="text" name="items[<?= $topIndex ?>][children][<?= $childIndex ?>][title]" required
+                                                           value="<?= h($child['title']) ?>"
+                                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                                           placeholder="子菜单文字">
+                                                </div>
+                                                
+                                                <div class="md:col-span-4">
+                                                    <input type="text" name="items[<?= $topIndex ?>][children][<?= $childIndex ?>][url]" required
+                                                           value="<?= h($child['url']) ?>"
+                                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                                           placeholder="链接地址">
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <input type="number" name="items[<?= $topIndex ?>][children][<?= $childIndex ?>][sort_order]"
+                                                           value="<?= $child['sort_order'] ?? 0 ?>"
+                                                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                                           placeholder="排序">
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <select name="items[<?= $topIndex ?>][children][<?= $childIndex ?>][target]" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
+                                                        <option value="_self" <?= ($child['target'] ?? '_self') === '_self' ? 'selected' : '' ?>>当前窗口</option>
+                                                        <option value="_blank" <?= ($child['target'] ?? '') === '_blank' ? 'selected' : '' ?>>新窗口</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="md:col-span-1">
+                                                    <a href="<?= url('/admin/appearance/menus/delete-item?id=' . $child['id'] . '&menu_id=' . ($menu['id'] ?? 0)) ?>" 
+                                                       class="inline-flex items-center justify-center w-full px-3 py-2 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
+                                                       onclick="return confirm('确定删除此子菜单吗？')">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php 
+                                    $childIndex++;
+                                    endforeach; 
+                                    ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <!-- 添加子菜单按钮 -->
+                            <div class="mt-3 pt-3 border-t border-slate-100">
+                                <a href="<?= url('/admin/appearance/menus/add-child?parent_id=' . $topItem['id'] . '&menu_id=' . ($menu['id'] ?? 0)) ?>" 
+                                   class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                                    <i class="fas fa-plus-circle"></i>
+                                    添加子菜单
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php 
+                $topIndex++;
+                endforeach; 
+                ?>
+            </div>
+
+            <!-- 添加顶级菜单按钮 -->
+            <?php if ($isEdit): ?>
+                <div class="mt-4 text-center">
+                    <a href="<?= url('/admin/appearance/menus/add-item?menu_id=' . $menu['id']) ?>" 
+                       class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/25">
+                        <i class="fas fa-plus"></i>
+                        添加顶级菜单项
+                    </a>
+                </div>
+            <?php else: ?>
+                <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    请先保存菜单基本信息，然后才能添加菜单项
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div class="flex items-center justify-end gap-4 pt-6 border-t border-slate-200">
             <a href="<?= url('/admin/appearance/menus') ?>" 
                class="px-6 py-2.5 text-slate-700 font-medium bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">
                 返回列表
@@ -284,220 +286,19 @@ $topLevelItems = array_filter($flatItems, fn($item) => ($item['parent_id'] ?? 0)
     </form>
 </div>
 
-<!-- Menu Item Template -->
-<template id="menu-item-template">
-    <div class="menu-item bg-white border border-slate-200 rounded-lg p-4" data-id="0">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-            <!-- 菜单文字 -->
-            <div class="md:col-span-3">
-                <label class="block text-xs font-medium text-slate-500 mb-1">菜单文字 <span class="text-rose-500">*</span></label>
-                <input type="text" name="item_title[]" required
-                       class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                       placeholder="如：产品中心">
-            </div>
-            
-            <!-- 链接地址 -->
-            <div class="md:col-span-3">
-                <label class="block text-xs font-medium text-slate-500 mb-1">链接地址 <span class="text-rose-500">*</span></label>
-                <input type="text" name="item_url[]" required
-                       class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                       placeholder="如：/products">
-            </div>
-            
-            <!-- 父级菜单 -->
-            <div class="md:col-span-3">
-                <label class="block text-xs font-medium text-slate-500 mb-1">父级菜单</label>
-                <select name="item_parent_id[]" class="parent-select w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
-                    <option value="0">-- 顶级菜单 --</option>
-                </select>
-            </div>
-            
-            <!-- 排序 -->
-            <div class="md:col-span-2">
-                <label class="block text-xs font-medium text-slate-500 mb-1">排序</label>
-                <input type="number" name="item_sort_order[]" value="0"
-                       class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                       placeholder="0">
-            </div>
-            
-            <!-- 删除按钮 -->
-            <div class="md:col-span-1">
-                <button type="button" onclick="removeMenuItem(this)"
-                        class="w-full px-3 py-2 text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
-                        title="删除">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
-            
-            <!-- 展开/收起详情 -->
-            <div class="md:col-span-12">
-                <button type="button" onclick="toggleDetails(this)" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                    <i class="fas fa-chevron-down mr-1"></i>更多设置
-                </button>
-            </div>
-            
-            <!-- 更多选项（默认隐藏） -->
-            <div class="more-details hidden md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
-                <div>
-                    <label class="block text-xs font-medium text-slate-500 mb-1">打开方式</label>
-                    <select name="item_target[]" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
-                        <option value="_self">当前窗口</option>
-                        <option value="_blank">新窗口</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-slate-500 mb-1">CSS 类名</label>
-                    <input type="text" name="item_css_class[]"
-                           class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                           placeholder="自定义CSS类名（可选）">
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script>
-// 切换详情显示/隐藏
-function toggleDetails(btn) {
-    const item = btn.closest('.menu-item');
-    const details = item.querySelector('.more-details');
-    const icon = btn.querySelector('i');
-    
-    if (details.classList.contains('hidden')) {
-        details.classList.remove('hidden');
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
-        btn.innerHTML = '<i class="fas fa-chevron-up mr-1"></i>收起设置';
-    } else {
-        details.classList.add('hidden');
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-        btn.innerHTML = '<i class="fas fa-chevron-down mr-1"></i>更多设置';
-    }
-}
-
-// 更新父级选择框选项
-function updateParentSelects() {
-    const container = document.getElementById('menu-items-container');
-    const allTitles = [];
-    
-    // 收集所有菜单项标题
-    container.querySelectorAll('.menu-item').forEach((item, index) => {
-        const titleInput = item.querySelector('input[name="item_title[]"]');
-        const title = titleInput ? (titleInput.value || '菜单项 ' + (index + 1)) : '菜单项 ' + (index + 1);
-        allTitles.push({ index: index, title: title });
-    });
-    
-    // 更新每个选择框
-    container.querySelectorAll('.menu-item').forEach((item, itemIndex) => {
-        const select = item.querySelector('select[name="item_parent_id[]"]');
-        if (!select) return;
-        
-        const currentValue = select.value;
-        
-        // 重建选项
-        let optionsHtml = '<option value="0">-- 顶级菜单 --</option>';
-        allTitles.forEach((t, idx) => {
-            if (idx !== itemIndex) { // 不能选自己
-                optionsHtml += `<option value="${idx}">${h(t.title)}</option>`;
-            }
-        });
-        
-        select.innerHTML = optionsHtml;
-        
-        // 尝试恢复之前的值
-        if (currentValue && currentValue !== '0') {
-            const prevIdx = parseInt(currentValue);
-            if (prevIdx >= 0 && prevIdx < allTitles.length && prevIdx !== itemIndex) {
-                select.value = currentValue;
-            } else {
-                select.value = '0';
-            }
-        }
-    });
-}
-
-// HTML转义
-function h(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// 添加菜单项
-function addMenuItem() {
-    const template = document.getElementById('menu-item-template');
-    const container = document.getElementById('menu-items-container');
-    const emptyState = document.getElementById('empty-items-state');
-    
-    const clone = template.content.cloneNode(true);
-    const itemDiv = clone.querySelector('.menu-item');
-    
-    // 设置排序值
-    const itemCount = container.querySelectorAll('.menu-item').length;
-    const sortInput = itemDiv.querySelector('input[name="item_sort_order[]"]');
-    if (sortInput) {
-        sortInput.value = itemCount;
-    }
-    
-    container.appendChild(itemDiv);
-    
-    // 隐藏空状态
-    if (emptyState) {
-        emptyState.classList.add('hidden');
-    }
-    
-    // 更新父级选择框
-    updateParentSelects();
-    
-    // 聚焦到新输入框
-    const newTitleInput = itemDiv.querySelector('input[name="item_title[]"]');
-    if (newTitleInput) {
-        newTitleInput.focus();
-    }
-}
-
-// 删除菜单项
-function removeMenuItem(btn) {
-    const item = btn.closest('.menu-item');
-    item.remove();
-    
-    // 显示空状态
-    const container = document.getElementById('menu-items-container');
-    const emptyState = document.getElementById('empty-items-state');
-    if (container.children.length === 0 && emptyState) {
-        emptyState.classList.remove('hidden');
-    }
-    
-    // 更新父级选择框
-    updateParentSelects();
-}
-
-// Auto-generate slug from name
-document.getElementById('name')?.addEventListener('blur', function() {
-    const slugInput = document.getElementById('slug');
+// 自动生成标识符
+document.querySelector('input[name="name"]')?.addEventListener('blur', function() {
+    const slugInput = document.querySelector('input[name="slug"]');
     if (slugInput && !slugInput.value) {
         const name = this.value.trim();
         if (name) {
-            const slug = name.toLowerCase()
+            slugInput.value = name.toLowerCase()
                 .replace(/[^\w\s-]/g, '')
                 .replace(/[\s_]+/g, '-')
                 .replace(/-+/g, '-')
                 .replace(/^-+|-+$/g, '');
-            slugInput.value = slug || 'menu-' + Date.now();
         }
     }
-});
-
-// 监听标题变化，更新父级选择框
-document.addEventListener('input', function(e) {
-    if (e.target.name === 'item_title[]') {
-        updateParentSelects();
-    }
-});
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateParentSelects();
 });
 </script>

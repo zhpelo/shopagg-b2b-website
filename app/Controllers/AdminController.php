@@ -1737,7 +1737,6 @@ class AdminController extends Controller {
      */
     public function menuList(): void {
         $menus = $this->menuModel->getAll();
-        // 为每个菜单加载菜单项数量
         foreach ($menus as &$menu) {
             $menu['item_count'] = count($this->menuModel->getItems((int)$menu['id']));
         }
@@ -1751,7 +1750,6 @@ class AdminController extends Controller {
         $this->renderAdmin('新建菜单', $this->renderView('admin/menus/form', [
             'action' => '/admin/appearance/menus/create',
             'menu' => null,
-            'items' => [],
             'flatItems' => []
         ]));
     }
@@ -1772,18 +1770,12 @@ class AdminController extends Controller {
             'name' => $name,
             'slug' => $slug,
             'description' => trim((string)($_POST['description'] ?? '')),
-            'location' => $_POST['location'] ?? 'header',
             'status' => $_POST['status'] ?? 'active',
-            'sort_order' => (int)($_POST['sort_order'] ?? 0),
+            'sort_order' => 0,
         ];
         
         $menuId = $this->menuModel->create($menuData);
-        
-        // 处理菜单项
-        $this->processMenuItems($menuId);
-        
-        // 保存后停留在编辑页面，带上成功消息
-        $this->redirect('/admin/appearance/menus/edit?id=' . $menuId . '&success=' . urlencode('菜单已保存'));
+        $this->redirect('/admin/appearance/menus/edit?id=' . $menuId . '&success=' . urlencode('菜单已创建，请添加菜单项'));
     }
 
     /**
@@ -1796,19 +1788,17 @@ class AdminController extends Controller {
             $this->redirect('/admin/appearance/menus');
         }
         
-        // 获取扁平化的菜单项列表（用于选择父级）
         $flatItems = $this->menuModel->getItems((int)$menu['id']);
         
         $this->renderAdmin('编辑菜单', $this->renderView('admin/menus/form', [
             'action' => '/admin/appearance/menus/edit?id=' . $id,
             'menu' => $menu,
-            'items' => $menu['items'] ?? [],
             'flatItems' => $flatItems
         ]));
     }
 
     /**
-     * 更新菜单
+     * 更新菜单 - 简洁版
      */
     public function menuUpdate(): void {
         csrf_check();
@@ -1819,6 +1809,7 @@ class AdminController extends Controller {
             $this->redirect('/admin/appearance/menus');
         }
         
+        // 更新菜单基本信息
         $name = trim((string)($_POST['name'] ?? ''));
         $slug = trim((string)($_POST['slug'] ?? ''));
         if ($slug === '') {
@@ -1829,18 +1820,39 @@ class AdminController extends Controller {
             'name' => $name,
             'slug' => $slug,
             'description' => trim((string)($_POST['description'] ?? '')),
-            'location' => $_POST['location'] ?? 'header',
             'status' => $_POST['status'] ?? 'active',
-            'sort_order' => (int)($_POST['sort_order'] ?? 0),
+            'sort_order' => 0,
         ];
-        
         $this->menuModel->update($id, $menuData);
         
-        // 处理菜单项（先删除旧的，再添加新的）
-        $this->menuModel->deleteAllItems($id);
-        $this->processMenuItems($id);
+        // 更新现有的菜单项
+        $items = $_POST['items'] ?? [];
+        foreach ($items as $topIndex => $topItem) {
+            // 更新顶级菜单项
+            if (!empty($topItem['id'])) {
+                $this->menuModel->updateItem((int)$topItem['id'], [
+                    'title' => trim($topItem['title'] ?? ''),
+                    'url' => trim($topItem['url'] ?? ''),
+                    'target' => $topItem['target'] ?? '_self',
+                    'sort_order' => (int)($topItem['sort_order'] ?? 0),
+                    'parent_id' => 0,
+                ]);
+            }
+            
+            // 更新子菜单项
+            $children = $topItem['children'] ?? [];
+            foreach ($children as $childItem) {
+                if (!empty($childItem['id'])) {
+                    $this->menuModel->updateItem((int)$childItem['id'], [
+                        'title' => trim($childItem['title'] ?? ''),
+                        'url' => trim($childItem['url'] ?? ''),
+                        'target' => $childItem['target'] ?? '_self',
+                        'sort_order' => (int)($childItem['sort_order'] ?? 0),
+                    ]);
+                }
+            }
+        }
         
-        // 保存后停留在当前编辑页面，带上成功消息
         $this->redirect('/admin/appearance/menus/edit?id=' . $id . '&success=' . urlencode('菜单已保存'));
     }
 
@@ -1855,92 +1867,88 @@ class AdminController extends Controller {
         $this->redirect('/admin/appearance/menus?success=菜单已删除');
     }
 
-
+    /**
+     * 添加顶级菜单项
+     */
+    public function menuAddItem(): void {
+        $menuId = (int)($_GET['menu_id'] ?? 0);
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            csrf_check();
+            
+            $title = trim((string)($_POST['title'] ?? ''));
+            if ($title) {
+                $this->menuModel->addItem($menuId, [
+                    'title' => $title,
+                    'url' => trim((string)($_POST['url'] ?? '#')),
+                    'target' => $_POST['target'] ?? '_self',
+                    'parent_id' => 0,
+                    'css_class' => '',
+                    'sort_order' => (int)($_POST['sort_order'] ?? 0),
+                    'status' => 'active',
+                ]);
+            }
+            
+            $this->redirect('/admin/appearance/menus/edit?id=' . $menuId . '&success=' . urlencode('菜单项已添加'));
+        }
+        
+        // 显示添加表单
+        $this->renderAdmin('添加菜单项', $this->renderView('admin/menus/add-item', [
+            'menuId' => $menuId,
+            'action' => '/admin/appearance/menus/add-item?menu_id=' . $menuId,
+        ]));
+    }
 
     /**
-     * 处理菜单项数据 - 简化版
+     * 添加子菜单项
      */
-    private function processMenuItems(int $menuId): void {
-        $titles = $_POST['item_title'] ?? [];
-        $urls = $_POST['item_url'] ?? [];
-        $targets = $_POST['item_target'] ?? [];
-        $parentIds = $_POST['item_parent_id'] ?? [];
-        $cssClasses = $_POST['item_css_class'] ?? [];
-        $sortOrders = $_POST['item_sort_order'] ?? [];
+    public function menuAddChild(): void {
+        $menuId = (int)($_GET['menu_id'] ?? 0);
+        $parentId = (int)($_GET['parent_id'] ?? 0);
         
-        // 收集所有菜单项数据
-        $allItems = [];
-        foreach ($titles as $index => $title) {
-            if (empty($title)) {
-                continue;
+        // 验证父级存在
+        $parent = $this->menuModel->getItemById($parentId);
+        if (!$parent) {
+            $this->redirect('/admin/appearance/menus/edit?id=' . $menuId);
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            csrf_check();
+            
+            $title = trim((string)($_POST['title'] ?? ''));
+            if ($title) {
+                $this->menuModel->addItem($menuId, [
+                    'title' => $title,
+                    'url' => trim((string)($_POST['url'] ?? '#')),
+                    'target' => $_POST['target'] ?? '_self',
+                    'parent_id' => $parentId,
+                    'css_class' => '',
+                    'sort_order' => (int)($_POST['sort_order'] ?? 0),
+                    'status' => 'active',
+                ]);
             }
             
-            $allItems[] = [
-                'index' => (int)$index,
-                'title' => trim($title),
-                'url' => trim($urls[$index] ?? '#'),
-                'target' => $targets[$index] ?? '_self',
-                'parent_index' => (int)($parentIds[$index] ?? 0),
-                'css_class' => $cssClasses[$index] ?? '',
-                'sort_order' => (int)($sortOrders[$index] ?? $index),
-            ];
+            $this->redirect('/admin/appearance/menus/edit?id=' . $menuId . '&success=' . urlencode('子菜单已添加'));
         }
         
-        if (empty($allItems)) {
-            return;
+        $this->renderAdmin('添加子菜单', $this->renderView('admin/menus/add-child', [
+            'menuId' => $menuId,
+            'parent' => $parent,
+            'action' => '/admin/appearance/menus/add-child?menu_id=' . $menuId . '&parent_id=' . $parentId,
+        ]));
+    }
+
+    /**
+     * 删除菜单项
+     */
+    public function menuDeleteItem(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        $menuId = (int)($_GET['menu_id'] ?? 0);
+        
+        if ($id) {
+            $this->menuModel->deleteItem($id);
         }
         
-        // 按排序值排序
-        usort($allItems, fn($a, $b) => $a['sort_order'] <=> $b['sort_order']);
-        
-        // 分离顶级菜单（parent_index = 0）和子菜单
-        $topLevelItems = array_filter($allItems, fn($item) => $item['parent_index'] === 0);
-        $childItems = array_filter($allItems, fn($item) => $item['parent_index'] !== 0);
-        
-        // 保存所有菜单项
-        $indexToDbId = []; // 表单索引 -> 新数据库ID 映射
-        $sequence = 0;
-        
-        // 第一阶段：保存顶级菜单
-        foreach ($topLevelItems as $item) {
-            $itemData = [
-                'title' => $item['title'],
-                'url' => $item['url'],
-                'target' => $item['target'],
-                'parent_id' => 0,
-                'css_class' => $item['css_class'],
-                'sort_order' => $sequence++,
-                'status' => 'active',
-            ];
-            
-            $newId = $this->menuModel->addItem($menuId, $itemData);
-            $indexToDbId[$item['index']] = $newId;
-        }
-        
-        // 第二阶段：保存子菜单
-        foreach ($childItems as $item) {
-            $parentIndex = $item['parent_index'];
-            
-            // 检查父级是否已保存（parent_index 指向父级在表单中的索引）
-            if (!isset($indexToDbId[$parentIndex])) {
-                // 如果指定的父级不存在，设为顶级菜单
-                $parentDbId = 0;
-            } else {
-                $parentDbId = $indexToDbId[$parentIndex];
-            }
-            
-            $itemData = [
-                'title' => $item['title'],
-                'url' => $item['url'],
-                'target' => $item['target'],
-                'parent_id' => $parentDbId,
-                'css_class' => $item['css_class'],
-                'sort_order' => $sequence++,
-                'status' => 'active',
-            ];
-            
-            $newId = $this->menuModel->addItem($menuId, $itemData);
-            $indexToDbId[$item['index']] = $newId;
-        }
+        $this->redirect('/admin/appearance/menus/edit?id=' . $menuId . '&success=' . urlencode('菜单项已删除'));
     }
 }

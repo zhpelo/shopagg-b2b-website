@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php endif; ?>
 
 <!-- Value Proposition -->
-<section class="relative z-10 -mt-12 px-4">
+<section class="relative z-10 -mt-32 px-4">
     <div class="container mx-auto max-w-6xl">
         <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
             <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
