@@ -19,7 +19,6 @@ return new class {
             name VARCHAR(100) NOT NULL,
             slug VARCHAR(100) NOT NULL UNIQUE,
             description TEXT,
-            location VARCHAR(50) DEFAULT "header",
             status VARCHAR(20) DEFAULT "active",
             sort_order INTEGER DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -45,17 +44,15 @@ return new class {
         // 创建索引
         $db->exec('CREATE INDEX IF NOT EXISTS idx_menus_slug ON menus(slug)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_menus_status ON menus(status)');
-        $db->exec('CREATE INDEX IF NOT EXISTS idx_menus_location ON menus(location)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_menu_items_menu_id ON menu_items(menu_id)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_menu_items_parent_id ON menu_items(parent_id)');
         $db->exec('CREATE INDEX IF NOT EXISTS idx_menu_items_status ON menu_items(status)');
 
         // 插入默认的主导航菜单
-        $stmt = $db->prepare('INSERT INTO menus (name, slug, description, location, status, sort_order) VALUES (:name, :slug, :description, :location, :status, :sort_order)');
+        $stmt = $db->prepare('INSERT INTO menus (name, slug, description, status, sort_order) VALUES (:name, :slug, :description, :status, :sort_order)');
         $stmt->bindValue(':name', '主导航菜单', SQLITE3_TEXT);
         $stmt->bindValue(':slug', 'main-nav', SQLITE3_TEXT);
         $stmt->bindValue(':description', '网站顶部主导航', SQLITE3_TEXT);
-        $stmt->bindValue(':location', 'header', SQLITE3_TEXT);
         $stmt->bindValue(':status', 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', 1, SQLITE3_INTEGER);
         $stmt->execute();

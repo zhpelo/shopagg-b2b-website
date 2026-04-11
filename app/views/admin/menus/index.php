@@ -53,11 +53,6 @@
                                             <i class="fas fa-link text-xs"></i>
                                             <?= h($menu['slug']) ?>
                                         </span>
-                                        <span class="mx-2 text-slate-300">|</span>
-                                        <span class="inline-flex items-center gap-1">
-                                            <i class="fas fa-map-marker-alt text-xs"></i>
-                                            <?= $menu['location'] === 'header' ? '顶部导航' : ($menu['location'] === 'footer' ? '页脚' : '其他') ?>
-                                        </span>
                                     </p>
                                 </div>
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <?= $menu['status'] === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' ?>">
