@@ -276,7 +276,7 @@ $treeItems = buildItemTree($grouped);
 
     // ============ 数据 ============
     let menuItems = <?= json_encode($treeItems, JSON_UNESCAPED_UNICODE) ?>;
-    let tempIdCounter = Date.now();
+    let tempIdCounter = 0;
     const menuId = <?= (int)($menu['id'] ?? 0) ?>;
 
     function nextTempId() { return --tempIdCounter; }

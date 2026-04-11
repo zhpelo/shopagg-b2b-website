@@ -149,8 +149,4 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/appearance/menus/edit', [AdminController::class, 'menuEdit']);
     $router->add('POST', '/admin/appearance/menus/edit', [AdminController::class, 'menuUpdate']);
     $router->add('GET', '/admin/appearance/menus/delete', [AdminController::class, 'menuDelete']);
-    $router->add('GET', '/admin/appearance/menus/add-item', [AdminController::class, 'menuAddItem']);
-    $router->add('POST', '/admin/appearance/menus/add-item', [AdminController::class, 'menuAddItem']);
-    $router->add('POST', '/admin/appearance/menus/add-child', [AdminController::class, 'menuAddChild']);
-    $router->add('GET', '/admin/appearance/menus/delete-item', [AdminController::class, 'menuDeleteItem']);
 }
