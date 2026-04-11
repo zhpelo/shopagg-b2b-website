@@ -6,6 +6,7 @@ storage/blocks/
 .DS_Store
 .htaccess
 .env
-storage/logs/*.log
+storage/
 uploads/logs/*.log
 themes/Food-Industry-B2B-For-Shopagg-Theme
+
