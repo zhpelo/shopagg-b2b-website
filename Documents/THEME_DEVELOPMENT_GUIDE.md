@@ -1,0 +1,1081 @@
+# 网站模板开发指南
+
+> 适用版本：当前主线（SQLite + PHP 8.1+）  
+> 目标读者：有 PHP/HTML/CSS 基础的模板开发者
+
+---
+
+## 目录
+
+1. [系统架构概览](#1-系统架构概览)
+2. [目录结构规范](#2-目录结构规范)
+3. [渲染流程详解](#3-渲染流程详解)
+4. [模板文件清单与变量参考](#4-模板文件清单与变量参考)
+5. [全局辅助函数参考](#5-全局辅助函数参考)
+6. [主题级辅助函数 functions.php](#6-主题级辅助函数-functionsphp)
+7. [区块配置系统 blocks.php](#7-区块配置系统-blocksphp)
+8. [菜单系统](#8-菜单系统)
+9. [样式规范 style.css](#9-样式规范-stylecss)
+10. [如何创建一套新主题](#10-如何创建一套新主题)
+11. [如何扩展后端功能](#11-如何扩展后端功能)
+12. [安全规范](#12-安全规范)
+13. [常见问题与调试](#13-常见问题与调试)
+
+---
+
+## 1. 系统架构概览
+
+本项目采用 **轻量级 MVC 架构**，不依赖任何外部 PHP 框架：
+
+```
+请求 → index.php → Router → Controller（SiteController）
+                                 ↓
+                         Controller::render(theme, view, data)
+                                 ↓
+              header.php + {view}.php + footer.php  ←── functions.php（自动加载）
+```
+
+- **数据层**：SQLite3，模型位于 `app/Models/`
+- **视图层**：`themes/{主题名}/` 目录下的 PHP 模板文件
+- **前端**：Tailwind CSS（CDN JIT 模式）+ Font Awesome 6 + Swiper.js（按需引入）
+- **品牌色**：通过 `block('brand_colors', ...)` 动态注入 Tailwind 配置，无需编译
+
+---
+
+## 2. 目录结构规范
+
+### 2.1 主题目录
+
+每套主题存放在 `themes/{主题名}/`，**必须包含**以下文件：
+
+```
+themes/
+└── my-theme/
+    ├── header.php          ← HTML <head> + 导航栏（必须）
+    ├── footer.php          ← 页脚 + 闭合标签（必须）
+    ├── home.php            ← 首页（必须）
+    ├── product_list.php    ← 产品列表（必须）
+    ├── product_detail.php  ← 产品详情（必须）
+    ├── post_list.php       ← 文章列表（必须）
+    ├── post_detail.php     ← 文章详情（必须）
+    ├── case_list.php       ← 案例列表（必须）
+    ├── case_detail.php     ← 案例详情（必须）
+    ├── page_detail.php     ← 独立页面（必须）
+    ├── contact.php         ← 联系我们（必须）
+    ├── about.php           ← 关于我们（必须）
+    ├── thanks.php          ← 表单提交感谢页（必须）
+    ├── 404.php             ← 404 错误页（必须）
+    ├── list.php            ← 通用列表（必须）
+    ├── functions.php       ← 主题辅助函数（必须，可为空文件）
+    ├── blocks.php          ← 区块配置默认值（必须）
+    └── style.css           ← 主题样式（必须，可为空文件）
+```
+
+> **关键约定**：模板文件只输出 `<body>` 内容。  
+> `header.php` 负责输出完整的 `<!DOCTYPE html>...<nav>...</nav><main>`，  
+> `footer.php` 负责闭合 `</main>`、输出页脚和 `</body></html>`。
+
+### 2.2 系统目录（禁止修改）
+
+```
+app/
+├── Core/           ← Router / Database / Controller 核心
+├── Controllers/    ← SiteController + AdminController
+├── Models/         ← 数据模型
+├── Helpers/        ← 安全辅助类
+├── Migrations/     ← 数据库迁移
+├── Helpers.php     ← 全局辅助函数（模板可直接调用）
+└── routes.php      ← 路由注册
+storage/
+├── site.db         ← SQLite 数据库（Web 禁止访问）
+├── blocks/         ← 用户区块配置覆盖
+├── backups/        ← 数据库备份
+└── logs/           ← 运行日志
+```
+
+---
+
+## 3. 渲染流程详解
+
+### 3.1 Controller 如何调用模板
+
+`SiteController` 继承 `BaseController`，`BaseController` 继承 `Core\Controller`。  
+所有前台页面通过 `renderSite($view, $data)` 渲染：
+
+```php
+// BaseController 内部：
+protected function renderSite(string $view, array $data = []): void {
+    $theme = $this->siteData['site']['theme'] ?? 'default';
+    $this->render($theme, $view, array_merge($this->siteData, $data));
+}
+```
+
+`Core\Controller::render()` 按以下顺序执行：
+
+1. 确定主题路径（若主题不存在则回退到 `default`）
+2. `require_once functions.php`（主题辅助函数）
+3. `extract($data)`——将数据解包为局部变量
+4. `include header.php`
+5. `include {view}.php`
+6. `include footer.php`
+
+### 3.2 所有模板共享的变量
+
+以下变量在**所有**模板中均可直接使用：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$site` | `array` | 站点设置（见下表） |
+| `$seo` | `array` | 当前页面 SEO 信息（`title` / `description` / `keywords` / `canonical`） |
+| `$lang` | `string` | 当前语言代码，如 `'en'` |
+| `$currentTheme` | `string` | 当前主题名称 |
+
+**`$site` 数组常用键：**
+
+| 键 | 说明 | 设置位置 |
+|----|------|----------|
+| `name` | 网站/公司名称 | 后台「基础设置」 |
+| `tagline` | 标语/副标题 | 后台「基础设置」 |
+| `logo` | Logo 图片路径（`/uploads/...`） | 后台「基础设置」 |
+| `favicon` | Favicon 路径 | 后台「基础设置」 |
+| `og_image` | Open Graph 图片路径 | 后台「基础设置」 |
+| `company_phone` | 联系电话 | 后台「联系设置」 |
+| `company_email` | 邮箱 | 后台「联系设置」 |
+| `company_address` | 地址 | 后台「联系设置」 |
+| `whatsapp` | WhatsApp（号码或完整链接） | 后台「联系设置」 |
+| `facebook` / `instagram` / `linkedin` / `youtube` / `twitter` | 社交媒体链接 | 后台「联系设置」 |
+| `company_bio` | 公司简介 | 后台「公司设置」 |
+| `company_response_time` | 平均响应时间 | 后台「公司设置」 |
+| `company_main_markets` | 主要市场 | 后台「公司设置」 |
+| `seo_title` / `seo_description` / `seo_keywords` | 全局 SEO | 后台「SEO 设置」 |
+| `theme` | 当前主题名 | 后台「外观」 |
+
+---
+
+## 4. 模板文件清单与变量参考
+
+### 4.1 `header.php` — 页头
+
+**职责**：输出完整 HTML 头部（`<head>` 标签）、导航栏和 `<main>` 开始标签。
+
+**可用额外变量**：`$menuItems`（主导航菜单项数组，通过 `get_menu_items('main-nav')` 获取）
+
+**必须包含的结构**：
+```html
+<!DOCTYPE html>
+<html lang="<?= h($lang ?? 'en') ?>">
+<head>
+    <!-- SEO meta / Tailwind / FontAwesome / style.css -->
+</head>
+<body>
+    <nav>...</nav>
+    <main>
+```
+
+**品牌色注入**（Tailwind 动态配置，必须保留此模式）：
+```php
+$brandPrimary     = block('brand_colors', 'primary');
+$brandPrimaryDark = block('brand_colors', 'primary_dark');
+// ... 计算色阶 ...
+```
+```js
+tailwind.config = {
+    theme: { extend: { colors: { brand: { 500: '<?= $brandPrimary ?>', ... } } } }
+}
+```
+
+### 4.2 `footer.php` — 页脚
+
+**职责**：闭合 `</main>`，输出页脚内容、浮动联系窗口、全局 JS 脚本，最后输出 `</body></html>`。
+
+**必须以此开头**：
+```php
+</main>
+```
+
+**惯用的全局脚本插入点**：
+```php
+<?= get_footer_code() ?>  <!-- 后台自定义脚本注入 -->
+</body>
+</html>
+```
+
+### 4.3 `home.php` — 首页
+
+**额外变量**：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$products` | `array` | 最新产品列表（最多 6 条） |
+| `$cases` | `array` | 成功案例列表（最多 6 条） |
+
+**产品项字段**：`id`, `title`, `slug`, `summary`, `cover`, `banner_image`, `status`, `url`  
+**案例项字段**：`id`, `title`, `slug`, `summary`, `cover`, `url`
+
+### 4.4 `product_list.php` — 产品列表
+
+**额外变量**：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$title` | `string` | 页面标题（分类名或 "All Products"） |
+| `$items` | `array` | 产品数组，每项含 `url` |
+| `$categories` | `array` | 产品分类树（含 `children`） |
+| `$current_category` | `array\|null` | 当前筛选分类，无筛选时为 `null` |
+
+**分类树结构**：
+```php
+[
+  ['id' => 1, 'name' => '...', 'slug' => '...', 'children' => [
+    ['id' => 3, 'name' => '...', 'children' => []]
+  ]],
+]
+```
+
+### 4.5 `product_detail.php` — 产品详情
+
+**额外变量**：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$item` | `array` | 产品详情（含 `title`, `content`, `summary`, `cover`, `slug` 等） |
+| `$images` | `array` | 图片路径数组（用于相册轮播） |
+| `$category` | `array\|null` | 所属分类（用于面包屑） |
+| `$price_tiers` | `array` | 价格阶梯数组，结构 `[['qty', 'price', 'unit'], ...]` |
+| `$related_products` | `array` | 相关产品列表 |
+
+**富文本输出**（必须使用 `process_rich_text`，确保图片 URL 正确）：
+```php
+<?= process_rich_text($item['content']) ?>
+```
+
+### 4.6 `post_list.php` — 文章列表
+
+**额外变量**：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$title` | `string` | 页面标题 |
+| `$items` | `array` | 文章列表 |
+| `$categories` | `array` | 文章分类树 |
+| `$current_category` | `array\|null` | 当前筛选分类 |
+| `$pagination` | `array` | 分页数据（`current_page`, `total_pages`, `per_page`） |
+
+### 4.7 `post_detail.php` — 文章详情
+
+**额外变量**：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$item` | `array` | 文章数据（`title`, `content`, `cover`, `created_at`, `summary`） |
+| `$related_posts` | `array` | 相关文章列表 |
+
+### 4.8 `case_list.php` / `case_detail.php`
+
+结构与文章列表/详情相同，只是 URL 前缀为 `/case/`。
+
+### 4.9 `page_detail.php` — 独立页面
+
+**额外变量**：`$item`（字段与文章相同）
+
+### 4.10 `contact.php`、`about.php`
+
+无额外业务变量，所有数据均从 `$site` 读取。
+
+### 4.11 `thanks.php`、`404.php`、`list.php`
+
+**`thanks.php`**：无额外变量。  
+**`404.php`**：无额外变量。  
+**`list.php`**（通用列表后备模板）：
+
+| 变量 | 类型 | 说明 |
+|------|------|------|
+| `$title` | `string` | 页面标题 |
+| `$items` | `array` | 列表数据（需含 `title`, `url`, `summary`） |
+| `$show_image` | `bool` | 是否显示封面图 |
+| `$show_category` | `bool` | 是否显示分类标签 |
+
+---
+
+## 5. 全局辅助函数参考
+
+这些函数在 `app/Helpers.php` 中定义，在**所有模板中均可直接调用**。
+
+### 5.1 安全函数
+
+```php
+// HTML 转义（输出任何用户数据都必须用）
+h($value): string
+
+// 生成 CSRF Token（表单中插入）
+csrf_token(): string
+
+// 验证 CSRF Token（POST 处理前调用，模板一般不直接用）
+csrf_check(): void
+```
+
+### 5.2 URL 函数
+
+```php
+// 生成站内 URL（自动处理二级目录部署）
+url('/products'): string           // → '/products' 或 '/subdomain/products'
+
+// 生成完整 URL（含域名）
+base_url(): string                 // → 'https://example.com'
+
+// 生成资源 URL（图片、CSS 等）
+asset_url('/uploads/img.jpg'): string
+
+// 获取 URL base path（二级目录）
+base_path(): string
+```
+
+> **规范**：模板中所有站内链接必须通过 `url()` 生成，绝不能硬编码路径。
+
+### 5.3 主题函数
+
+```php
+// 获取主题目录绝对路径
+get_stylesheet_directory(): string  // → '/var/www/.../themes/default'
+
+// 获取主题目录 URL
+get_stylesheet_directory_uri(): string  // → 'https://example.com/themes/default'
+```
+
+引入主题内资源：
+```html
+<link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
+```
+
+### 5.4 数据查询函数
+
+```php
+// 获取产品列表
+get_products([
+    'limit'    => 10,       // 条数，0 = 不限制
+    'category' => 3,        // 分类 ID
+    'featured' => true,     // 只取推荐产品
+    'status'   => 'active', // 状态过滤
+]): array
+
+// 获取文章列表（type 可为 'post'/'case'/'page'）
+get_posts([
+    'limit'    => 5,
+    'category' => 0,
+    'type'     => 'post',
+]): array
+
+// 获取案例列表（等同于 get_posts(['type'=>'case'])）
+get_cases(['limit' => 6]): array
+
+// 获取产品分类树
+get_product_categories(): array
+
+// 获取文章分类树
+get_post_categories(): array
+```
+
+**返回的列表项均包含 `url` 字段**（已经过 `url()` 处理）。
+
+### 5.5 图片处理函数
+
+```php
+// 输出图片 URL，无图时返回占位图
+get_image_url(?string $image, int $width, int $height, string $text): string
+
+// 纯占位图 URL
+placeholder_url(800, 400, 'Product'): string
+```
+
+### 5.6 富文本函数
+
+```php
+// 输出富文本（处理图片 URL 的二级目录兼容）
+process_rich_text(string $html): string
+
+// 截取富文本前 N 字符（自动 strip_tags）
+// 使用示例：
+mb_substr(strip_tags($post['content']), 0, 150)
+```
+
+### 5.7 格式化函数
+
+```php
+// 格式化日期
+format_date(string $date, string $format = 'Y-m-d'): string
+
+// 生成 slug（URL 友好名称）
+slugify(string $text): string
+```
+
+### 5.8 区块函数
+
+```php
+// 读取单个区块字段值（带默认值）
+block(string $blockKey, string $fieldKey, string $fallback = ''): string
+
+// 读取整个区块的所有字段值（已合并用户配置与默认值）
+block_all(string $blockKey): array
+```
+
+详见 [第 7 节「区块配置系统」](#7-区块配置系统-blocksphp)。
+
+### 5.9 菜单函数
+
+```php
+// 获取菜单项数组
+get_menu_items(string $menuSlug = 'main-nav'): array
+
+// 渲染单个菜单项（含下拉子菜单）
+render_menu_item(array $item, bool $isMobile = false): void
+
+// 渲染完整菜单
+render_menu(string $menuSlug, bool $isMobile = false): void
+```
+
+详见 [第 8 节「菜单系统」](#8-菜单系统)。
+
+### 5.10 Head/Footer 代码注入
+
+```php
+// 输出后台配置的 <head> 自定义代码（分析脚本等）
+get_head_code(): string
+
+// 输出后台配置的 </body> 前自定义代码
+get_footer_code(): string
+```
+
+**必须**在 `header.php` 的 `</head>` 前调用 `get_head_code()`，  
+在 `footer.php` 的 `</body>` 前调用 `get_footer_code()`。
+
+---
+
+## 6. 主题级辅助函数 `functions.php`
+
+`functions.php` 在每次渲染时自动 `require_once`，可在此文件中定义本主题专属的 PHP 函数。
+
+### 6.1 定义规范
+
+所有函数**必须**用 `function_exists()` 包裹，防止多次 include 导致重复定义：
+
+```php
+if (!function_exists('my_custom_function')) {
+    function my_custom_function(array $args): string {
+        // ...
+        return '';
+    }
+}
+```
+
+### 6.2 内置的主题辅助函数（default 主题）
+
+| 函数 | 说明 |
+|------|------|
+| `get_carousel_products(int $limit = 3): array` | 获取轮播图数据（优先 Slider 系统，回退到产品） |
+| `get_slider_items(string $sliderSlug): array` | 从 Slider 管理系统获取幻灯片 |
+| `render_product_card(array $product): void` | 输出产品卡片 HTML |
+| `render_post_card(array $post): void` | 输出文章卡片 HTML |
+| `get_menu_items(string $menuSlug): array` | 获取菜单（带静态缓存） |
+| `render_menu_item(array $item, bool $isMobile): void` | 渲染带下拉的菜单项 |
+| `render_menu(string $menuSlug, bool $isMobile): void` | 渲染完整菜单 |
+
+### 6.3 在 functions.php 中访问数据库
+
+可以直接实例化 Model：
+
+```php
+if (!function_exists('get_featured_posts')) {
+    function get_featured_posts(int $limit = 3): array {
+        $model = new \App\Models\PostModel();
+        return $model->getList($limit, true, 'post');
+    }
+}
+```
+
+---
+
+## 7. 区块配置系统 `blocks.php`
+
+区块系统允许非技术用户在后台「外观 → 模板区块」界面修改模板中的文字、图片、颜色等内容，**无需编辑代码**。
+
+### 7.1 文件职责
+
+| 文件 | 说明 |
+|------|------|
+| `themes/{theme}/blocks.php` | **开发者编写**：定义区块结构和默认值 |
+| `storage/blocks/{theme}.php` | **系统自动生成**：用户在后台修改后的覆盖值 |
+
+用户配置文件只存储与默认值**不同**的字段，系统合并时以用户值优先。
+
+### 7.2 blocks.php 编写格式
+
+```php
+<?php
+return [
+
+    // 区块键（用于 block() 调用）
+    'my_section' => [
+        'label'       => '首页 - 我的区块',   // 后台显示名
+        'description' => '对开发者和运营的说明',
+        'fields' => [
+
+            // text：单行文字
+            'heading' => [
+                'type'    => 'text',
+                'label'   => '标题',
+                'default' => 'Default Heading',
+            ],
+
+            // textarea：多行文字
+            'description' => [
+                'type'    => 'textarea',
+                'label'   => '描述文字',
+                'default' => 'Some description here.',
+            ],
+
+            // image：图片（存储 /uploads/... 路径）
+            'banner' => [
+                'type'    => 'image',
+                'label'   => '背景图片',
+                'default' => '',
+            ],
+
+            // icon：Font Awesome 图标类名
+            'icon' => [
+                'type'    => 'icon',
+                'label'   => '图标',
+                'default' => 'fas fa-star',
+            ],
+
+            // color：颜色值（HEX 格式，如 #0ea5e9）
+            'bg_color' => [
+                'type'    => 'color',
+                'label'   => '背景颜色',
+                'default' => '#f0f9ff',
+            ],
+
+            // select：下拉选择
+            'layout' => [
+                'type'    => 'select',
+                'label'   => '布局',
+                'default' => 'left',
+                'options' => [
+                    'left'   => '图左文右',
+                    'right'  => '图右文左',
+                    'center' => '居中',
+                ],
+            ],
+        ],
+    ],
+
+];
+```
+
+### 7.3 在模板中使用区块
+
+```php
+<!-- 读取单个字段（自动使用默认值） -->
+<h2><?= h(block('my_section', 'heading')) ?></h2>
+
+<!-- 带自定义后备值（当默认值也为空时使用） -->
+<p><?= h(block('my_section', 'description', 'Fallback text')) ?></p>
+
+<!-- 图片字段 -->
+<?php $img = block('my_section', 'banner'); ?>
+<?php if ($img): ?>
+    <img src="<?= asset_url(h($img)) ?>" alt="...">
+<?php endif; ?>
+
+<!-- 图标字段 -->
+<i class="<?= h(block('my_section', 'icon')) ?>"></i>
+
+<!-- 颜色字段（内联样式） -->
+<section style="background-color: <?= h(block('my_section', 'bg_color')) ?>">
+
+<!-- 读取整个区块（用于循环渲染） -->
+<?php $section = block_all('my_section'); ?>
+<h2><?= h($section['heading'] ?? '') ?></h2>
+```
+
+### 7.4 品牌色区块（特殊）
+
+`brand_colors` 区块已被 `header.php` 集成到 Tailwind 配置中，自动生成 `brand-50` 到 `brand-900` 色阶。  
+在模板中只需正常使用 Tailwind 的 `brand-xxx` 类，无需额外处理。
+
+```html
+<a class="bg-brand-600 hover:bg-brand-700 text-white">按钮</a>
+<span class="text-brand-500">强调色</span>
+```
+
+---
+
+## 8. 菜单系统
+
+### 8.1 菜单 Slug 约定
+
+| Slug | 用途 |
+|------|------|
+| `main-nav` | 顶部主导航 |
+| `footer` | 页脚 Quick Links |
+
+### 8.2 渲染菜单
+
+```php
+<!-- 桌面端：render_menu(slug, isMobile=false) -->
+<?php render_menu('main-nav', false); ?>
+
+<!-- 移动端：render_menu(slug, isMobile=true) -->
+<?php render_menu('main-nav', true); ?>
+```
+
+`render_menu()` 内部遍历菜单项并调用 `render_menu_item()`，支持**二级下拉菜单**（桌面端 hover 下拉，移动端展开）。
+
+### 8.3 手动遍历菜单
+
+如需完全自定义渲染逻辑：
+
+```php
+<?php $navItems = get_menu_items('main-nav'); ?>
+<?php foreach ($navItems as $item): ?>
+    <a href="<?= h($item['url']) ?>" target="<?= h($item['target'] ?? '_self') ?>">
+        <?= h($item['title']) ?>
+    </a>
+    <?php if (!empty($item['children'])): ?>
+        <!-- 渲染子菜单 -->
+    <?php endif; ?>
+<?php endforeach; ?>
+```
+
+**菜单项字段**：`id`, `title`, `url`, `target`（`_self`/`_blank`）, `css_class`, `children`（数组，结构相同）
+
+---
+
+## 9. 样式规范 `style.css`
+
+### 9.1 与 Tailwind 共存
+
+本项目以 Tailwind CSS（CDN JIT）为主，`style.css` 用于：
+- 无法用 Tailwind 表达的复杂 CSS（如关键帧动画）
+- Tailwind 第三方组件的样式覆盖（如 Swiper 自定义样式）
+- 浮动联系窗口等固定样式组件
+
+```css
+/* themes/default/style.css */
+
+/* ============================================================
+   浮动联系窗口
+   ============================================================ */
+.site-float-contact { /* ... */ }
+.site-float-contact__toggle { /* ... */ }
+
+/* ============================================================
+   富文本内容样式（与 Tailwind Typography 配合）
+   ============================================================ */
+.rich-content img { max-width: 100%; height: auto; }
+.rich-content table { width: 100%; border-collapse: collapse; }
+
+/* ============================================================
+   Swiper 自定义
+   ============================================================ */
+.hero-banner .swiper-slide { height: 75vh; min-height: 480px; }
+```
+
+### 9.2 CSS 类命名规范
+
+- Tailwind 工具类：直接使用
+- 自定义组件：使用 `site-` 前缀（如 `.site-float-contact`）
+- 主题专属局部：使用主题名前缀（如 `.default-hero`）
+
+### 9.3 引入方式
+
+在 `header.php` 中引入（已有约定写法，不要改动引入位置）：
+
+```html
+<link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
+```
+
+---
+
+## 10. 如何创建一套新主题
+
+### Step 1：复制 default 主题
+
+```bash
+cp -r themes/default themes/my-theme
+```
+
+### Step 2：修改视觉设计
+
+- 编辑 `header.php`：修改导航样式、Logo 位置
+- 编辑 `footer.php`：修改页脚布局
+- 编辑 `style.css`：添加自定义样式
+- 编辑各页面模板：修改 HTML 结构和 Tailwind 类
+
+### Step 3：更新 blocks.php
+
+根据新主题的文案需求，修改 `blocks.php` 中的默认值和字段定义：
+
+```php
+'header' => [
+    'label' => 'Header',
+    'fields' => [
+        'cta_text' => ['type' => 'text', 'label' => 'CTA 按钮文字', 'default' => 'Get Quote'],
+        'cta_url'  => ['type' => 'text', 'label' => 'CTA 按钮链接', 'default' => '/contact'],
+    ],
+],
+```
+
+### Step 4：在后台启用主题
+
+进入后台「外观 → 基础设置」，将主题切换为 `my-theme`。  
+系统自动从新主题的 `blocks.php` 加载默认值。
+
+### Step 5：验证
+
+```bash
+# PHP 语法检查
+for f in themes/my-theme/*.php; do php -l "$f"; done
+```
+
+访问网站各主要页面：首页、产品列表、产品详情、文章列表、联系页、关于页。
+
+---
+
+## 11. 如何扩展后端功能
+
+### 11.1 添加新的前台页面
+
+**示例**：添加 `/team` 团队页面
+
+**Step 1：创建模板文件**
+
+```php
+// themes/default/team.php
+<?php
+/**
+ * 页面模板：团队介绍
+ * 变量：$members（成员数组）
+ */
+?>
+<section class="py-12">
+    <div class="container mx-auto px-4 lg:px-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8"><?= h($title) ?></h1>
+        <!-- ... -->
+    </div>
+</section>
+```
+
+**Step 2：在 SiteController 添加方法**
+
+```php
+// app/Controllers/SiteController.php
+public function team(): void {
+    // 数据准备
+    $members = [
+        ['name' => 'Alice', 'role' => 'CEO'],
+        // ...
+    ];
+
+    $this->renderSite('team', [
+        'title'   => 'Our Team',
+        'members' => $members,
+        'seo'     => ['title' => 'Team - ' . $this->siteData['site']['name']],
+    ]);
+}
+```
+
+**Step 3：注册路由**
+
+```php
+// app/routes.php
+$router->add('GET', '/team', [SiteController::class, 'team']);
+```
+
+### 11.2 自定义数据模型
+
+在 `app/Models/` 目录下创建新模型，继承 `BaseModel`：
+
+```php
+<?php
+namespace App\Models;
+
+class TeamMember extends BaseModel {
+    protected string $table = 'team_members';
+
+    public function getActive(): array {
+        $result = $this->db->query(
+            "SELECT * FROM {$this->table} WHERE status = 'active' ORDER BY sort_order ASC"
+        );
+        $rows = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+}
+```
+
+> **安全**：所有动态参数必须用 `prepare()` + `bindValue()` 绑定，**永远不要**字符串拼接 SQL。
+
+### 11.3 添加数据库迁移
+
+在 `app/Migrations/` 添加迁移文件（文件名格式：`YYYYMMDDHHmmss_create_xxx_table.php`）：
+
+```php
+<?php
+class Migration_20260412120000_create_team_members_table {
+    public function up(\SQLite3 $db): void {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS team_members (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                name        TEXT NOT NULL,
+                role        TEXT,
+                bio         TEXT,
+                photo       TEXT,
+                status      TEXT DEFAULT 'active',
+                sort_order  INTEGER DEFAULT 0,
+                created_at  TEXT DEFAULT (datetime('now'))
+            )
+        ");
+    }
+
+    public function down(\SQLite3 $db): void {
+        $db->exec("DROP TABLE IF EXISTS team_members");
+    }
+}
+```
+
+迁移在下次访问时自动执行（通过 `Migrator::runAllPending()`）。
+
+### 11.4 在后台添加管理页面
+
+**Step 1：在 AdminController 添加方法**
+
+```php
+// app/Controllers/AdminController.php
+public function teamList(): void {
+    $this->requireAuth();
+    $members = (new \App\Models\TeamMember())->getActive();
+    $this->renderAdmin('团队管理', $this->renderView('admin/team/index', [
+        'members' => $members,
+    ]));
+}
+```
+
+**Step 2：创建视图**
+
+```php
+// app/views/admin/team/index.php
+<div class="p-6">
+    <h2 class="text-xl font-bold mb-4">团队成员</h2>
+    <!-- 列表 -->
+</div>
+```
+
+**Step 3：注册路由**
+
+```php
+// app/routes.php
+$router->add('GET',  '/admin/team',          [AdminController::class, 'teamList']);
+$router->add('POST', '/admin/team/save',     [AdminController::class, 'teamSave']);
+```
+
+**Step 4：在后台导航中添加入口**
+
+```php
+// app/views/admin/layout.php
+<a href="<?= url('/admin/team') ?>">团队管理</a>
+```
+
+### 11.5 在模板中访问新数据
+
+通过 `functions.php` 封装查询，在模板中调用：
+
+```php
+// themes/default/functions.php
+if (!function_exists('get_team_members')) {
+    function get_team_members(): array {
+        try {
+            return (new \App\Models\TeamMember())->getActive();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+}
+```
+
+```php
+// themes/default/about.php 或 team.php
+<?php $members = get_team_members(); ?>
+<?php foreach ($members as $m): ?>
+    <div><?= h($m['name']) ?></div>
+<?php endforeach; ?>
+```
+
+---
+
+## 12. 安全规范
+
+### 12.1 输出转义（最高优先级）
+
+**任何变量输出到 HTML 前，都必须用 `h()` 转义**：
+
+```php
+<!-- 正确 -->
+<h1><?= h($item['title']) ?></h1>
+<img src="<?= asset_url(h($image)) ?>" alt="<?= h($alt) ?>">
+
+<!-- 危险！禁止 -->
+<h1><?= $item['title'] ?></h1>
+<h1><?php echo $item['title']; ?></h1>
+```
+
+唯一例外：`process_rich_text()` 输出的富文本内容（已在函数内部处理），但仍要确保该内容来自已信任的存储（非直接用户输入）。
+
+### 12.2 CSRF 防护
+
+所有 POST 表单**必须**包含 CSRF Token：
+
+```html
+<form method="post" action="<?= url('/contact') ?>">
+    <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+    <!-- 其他字段 -->
+</form>
+```
+
+### 12.3 URL 生成
+
+所有站内链接通过 `url()` 生成，**禁止**直接拼接路径字符串。
+
+### 12.4 数据库查询
+
+**禁止**直接拼接 SQL，必须用 prepare + bindValue：
+
+```php
+// 正确
+$stmt = $db->prepare("SELECT * FROM products WHERE slug = :slug");
+$stmt->bindValue(':slug', $slug, SQLITE3_TEXT);
+
+// 危险！禁止
+$db->query("SELECT * FROM products WHERE slug = '$slug'");
+```
+
+### 12.5 文件上传
+
+所有图片上传使用 `save_uploaded_image($file)` 函数，它自动验证：
+- 文件大小（≤ 5MB）
+- MIME 类型（仅允许 JPEG/PNG/GIF/WebP）
+- 使用随机文件名（防止路径遍历）
+
+### 12.6 敏感目录保护
+
+- `storage/` 目录有 `.htaccess` 禁止 Web 访问
+- `app/` 目录无需单独保护（不在 Web 根目录内）
+- 根目录 `.htaccess` 已拦截 `.db`/`.sqlite`/`.env` 等敏感文件类型的直接访问
+
+---
+
+## 13. 常见问题与调试
+
+### Q1：修改模板后没有看到变化？
+
+- 确认修改的是正确主题目录（后台「外观」确认当前主题名）
+- 清除浏览器缓存（Tailwind CDN JIT 是实时生成的，不会缓存 CSS 文件）
+- 检查 PHP 错误日志：`storage/logs/`
+
+### Q2：图片不显示？
+
+```php
+// 模板调试：检查图片路径
+var_dump($item['cover']);
+var_dump(asset_url($item['cover']));
+```
+
+常见原因：
+- 图片路径以 `/uploads/` 开头时，用 `asset_url()` 生成完整路径
+- 图片路径为空时，用 `get_image_url()` 自动回退到占位图
+
+### Q3：URL 在二级目录部署时链接错误？
+
+所有内部链接必须使用 `url()` 函数，`url('/products')` 会自动处理 base path。  
+排查方法：检查 `index.php` 中 `APP_BASE_PATH` 的定义是否正确。
+
+### Q4：block() 返回空字符串？
+
+1. 检查 `themes/{theme}/blocks.php` 中是否定义了该区块和字段
+2. 确认 `block('block_key', 'field_key')` 的 key 拼写与 `blocks.php` 中的完全一致
+3. 检查用户存储文件 `storage/blocks/{theme}.php` 是否有语法错误
+
+### Q5：Tailwind 新增的 `brand-xxx` 类不生效？
+
+Tailwind CDN JIT 模式只扫描 HTML 中出现的类名，动态拼接的类名无法检测。  
+**解法**：将完整的 Tailwind 类名写在 PHP 字符串中，不要动态拼接：
+
+```php
+// 错误（JIT 扫描不到）
+$cls = 'bg-brand-' . $shade;
+
+// 正确（JIT 能扫描到完整类名）
+$cls = match($shade) {
+    '500' => 'bg-brand-500',
+    '600' => 'bg-brand-600',
+    default => 'bg-brand-500',
+};
+```
+
+### Q6：富文本图片路径错误？
+
+在**保存**富文本时调用 `normalize_rich_text()` 移除 base path；  
+在**输出**富文本时调用 `process_rich_text()` 添加 base path：
+
+```php
+// 保存：
+$content = normalize_rich_text($_POST['content']);
+
+// 输出：
+echo process_rich_text($item['content']);
+```
+
+### Q7：开发环境中如何查看 PHP 错误？
+
+在 `index.php` 顶部临时开启错误显示（生产环境绝对不要这样做）：
+```php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+```
+
+---
+
+## 附录 A：路由与模板对应关系
+
+| HTTP 方法 | URL 路径 | Controller 方法 | 渲染的模板 |
+|-----------|----------|-----------------|-----------|
+| GET | `/` | `SiteController::home` | `home.php` |
+| GET | `/products` | `SiteController::products` | `product_list.php` |
+| GET | `/product/:slug` | `SiteController::productDetail` | `product_detail.php` |
+| GET | `/blog` | `SiteController::posts` | `post_list.php` |
+| GET | `/blog/:slug` | `SiteController::postDetail` | `post_detail.php` |
+| GET | `/cases` | `SiteController::cases` | `case_list.php` |
+| GET | `/case/:slug` | `SiteController::caseDetail` | `case_detail.php` |
+| GET | `/page/:slug` | `SiteController::pageDetail` | `page_detail.php` |
+| GET | `/about` | `SiteController::about` | `about.php` |
+| GET | `/contact` | `SiteController::contact` | `contact.php` |
+| POST | `/contact` | `SiteController::contactSubmit` | 重定向到 `/thanks` |
+| GET | `/thanks` | `SiteController::thanks` | `thanks.php` |
+
+---
+
+## 附录 B：可用 blocks.php 字段类型速查
+
+| type | 说明 | 后台表现 | 返回值 |
+|------|------|----------|--------|
+| `text` | 单行文字 | `<input type="text">` | string |
+| `textarea` | 多行文字 | `<textarea>` | string（含换行符） |
+| `image` | 图片路径 | 媒体选择器 + 文件路径输入框 | string（`/uploads/...`） |
+| `icon` | Font Awesome 图标 | 文字输入框 + 图标预览 | string（`fas fa-star`） |
+| `color` | 颜色 | 颜色选择器 + HEX 输入框 | string（`#0ea5e9`） |
+| `select` | 下拉选择 | `<select>` | string（选项 key） |
+
+---
+
+*文档版本：2026-04-11 | 项目：shopagg B2B 企业官网模板*
