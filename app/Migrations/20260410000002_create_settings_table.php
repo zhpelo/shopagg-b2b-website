@@ -15,15 +15,15 @@ return new class {
         
         // 默认设置
         $settings = [
-            'site_name' => 'Global B2B Solutions',
+            'site_name' => 'SHOPAGG B2B企业官网',
             'site_tagline' => 'Trusted manufacturing partner for global buyers',
             'company_about' => 'We are a manufacturing and exporting company focused on quality, compliance, and fast delivery for global B2B clients.',
             'company_address' => 'No. 88, Industrial Park, Shenzhen, China',
-            'company_email' => 'sales@example.com',
-            'company_phone' => '+86-000-0000-0000',
+            'company_email' => 'sales@shopagg.com',
+            'company_phone' => '+86-123456789',
             'theme' => 'default',
             'default_lang' => 'en',
-            'whatsapp' => ''
+            'whatsapp' => '86123456789'
         ];
         
         foreach ($settings as $k => $v) {
