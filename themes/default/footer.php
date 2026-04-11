@@ -249,13 +249,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     <!-- Quick Links -->
                     <div>
+                        <?php
+                        $footerMenuItems = get_menu_items('footer');
+                        if (empty($footerMenuItems)) {
+                            // 未配置 footer 菜单时使用默认链接
+                            $footerMenuItems = [
+                                ['title' => 'Products', 'url' => '/products', 'target' => '_self', 'children' => []],
+                                ['title' => 'Cases', 'url' => '/cases', 'target' => '_self', 'children' => []],
+                                ['title' => 'Blog', 'url' => '/blog', 'target' => '_self', 'children' => []],
+                                ['title' => 'About Us', 'url' => '/about', 'target' => '_self', 'children' => []],
+                                ['title' => 'Contact', 'url' => '/contact', 'target' => '_self', 'children' => []],
+                            ];
+                        }
+                        ?>
                         <h4 class="font-semibold text-gray-900 mb-4">Quick Links</h4>
                         <div class="space-y-2">
-                            <a href="<?= url('/products') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Products</a>
-                            <a href="<?= url('/cases') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Cases</a>
-                            <a href="<?= url('/blog') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Blog</a>
-                            <a href="<?= url('/about') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">About Us</a>
-                            <a href="<?= url('/contact') ?>" class="block text-gray-600 hover:text-brand-600 transition-colors">Contact</a>
+                            <?php foreach ($footerMenuItems as $fItem): ?>
+                                <a href="<?= url(h($fItem['url'])) ?>" class="block text-gray-600 hover:text-brand-600 transition-colors"
+                                   <?= ($fItem['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : '' ?>><?= h($fItem['title']) ?></a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
