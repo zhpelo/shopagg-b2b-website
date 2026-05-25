@@ -80,7 +80,7 @@
                         <?php endif; ?>
 
                         <?php if ($user_role === 'admin'): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'appearance' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/sliders') ?>">
+                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'appearance' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/themes') ?>">
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-paint-brush"></i></span>外观区块
                             </a>
                         <?php endif; ?>
@@ -162,6 +162,9 @@
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                         </a>
                     <?php elseif ($active_group === 'appearance'): ?>
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/themes') || $current_path === '/admin/appearance' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/themes') ?>">
+                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-swatchbook"></i></span>网站模版
+                        </a>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/block') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/blocks') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-puzzle-piece"></i></span>模板区块
                         </a>

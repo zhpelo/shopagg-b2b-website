@@ -43,6 +43,37 @@ class AdminController extends Controller {
     private Slider $sliderModel;
     private Menu $menuModel;
 
+    private const THEME_REQUIRED_FILES = [
+        'header.php',
+        'footer.php',
+        'home.php',
+        'product_list.php',
+        'product_detail.php',
+        'post_list.php',
+        'post_detail.php',
+        'case_list.php',
+        'case_detail.php',
+        'page_detail.php',
+        'contact.php',
+        'about.php',
+        'thanks.php',
+        '404.php',
+        'list.php',
+        'functions.php',
+        'blocks.php',
+        'style.css',
+    ];
+
+    private const THEME_METADATA_FIELDS = [
+        'Theme Name' => 'name',
+        'Theme URI' => 'theme_uri',
+        'Author' => 'author',
+        'Author URI' => 'author_uri',
+        'Description' => 'description',
+        'Version' => 'version',
+        'License' => 'license',
+    ];
+
     /**
      * 构造函数 - 初始化模型和执行认证检查
      */
@@ -81,6 +112,10 @@ class AdminController extends Controller {
                 $this->redirect('/admin/login');
             }
             // 无权限则重定向到首页
+            $this->redirect('/admin');
+        }
+
+        if (str_starts_with($path, '/admin/appearance') && AuthManager::getUserRole() !== 'admin') {
             $this->redirect('/admin');
         }
     }
@@ -240,17 +275,14 @@ class AdminController extends Controller {
     public function settings(): void {
         $tab = $this->resolveSettingsTab();
         $settings = $this->settingModel->getAll();
-        
-        // Scan for available themes
-        $themesDir = APP_ROOT . '/themes';
-        $availableThemes = [];
-        if (is_dir($themesDir)) {
-            $dirs = array_filter(glob("{$themesDir}/*"), 'is_dir');
-            foreach ($dirs as $d) {
-                $availableThemes[] = basename($d);
-            }
+
+        $availableThemes = array_map(
+            static fn(array $theme): string => $theme['slug'],
+            $this->getInstalledThemes(true)
+        );
+        if (empty($availableThemes)) {
+            $availableThemes = ['default'];
         }
-        if (empty($availableThemes)) $availableThemes = ['default'];
 
         $theme = $settings['theme'] ?? 'default';
         if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
@@ -294,6 +326,17 @@ class AdminController extends Controller {
     public function saveSettings(): void {
         csrf_check();
         $tab = $this->resolveSettingsTab();
+
+        if ($tab === 'general' && isset($_POST['theme'])) {
+            $validThemes = array_map(
+                static fn(array $theme): string => $theme['slug'],
+                $this->getInstalledThemes(true)
+            );
+            $submittedTheme = trim((string)$_POST['theme']);
+            if (!in_array($submittedTheme, $validThemes, true)) {
+                $_POST['theme'] = $this->settingModel->get('theme', 'default');
+            }
+        }
         
         // Special handling for media tab JSON conversion
         if ($tab === 'media') {
@@ -1582,6 +1625,605 @@ class AdminController extends Controller {
         
         $result = $this->updater->runMigrations();
         $this->json($result);
+    }
+
+    // --- Appearance / Themes Management (外观区块 - 网站模版) ---
+
+    /**
+     * 网站模版列表
+     */
+    public function themeList(): void {
+        $themes = $this->getInstalledThemes();
+        $currentTheme = $this->settingModel->get('theme', 'default');
+        $currentThemeName = $currentTheme;
+        foreach ($themes as $theme) {
+            if ($theme['is_active']) {
+                $currentThemeName = $theme['name'];
+                break;
+            }
+        }
+
+        $this->renderAdmin('网站模版', $this->renderView('admin/themes/index', [
+            'themes' => $themes,
+            'requiredFiles' => self::THEME_REQUIRED_FILES,
+            'currentTheme' => $currentTheme,
+            'currentThemeName' => $currentThemeName,
+        ]));
+    }
+
+    /**
+     * 上传网站主题 zip 压缩包
+     */
+    public function themeUpload(): void {
+        csrf_check();
+
+        try {
+            $file = $_FILES['theme_zip'] ?? null;
+            if (!is_array($file)) {
+                throw new \RuntimeException('请选择一个 zip 压缩包');
+            }
+
+            $result = $this->installThemeFromUpload($file);
+            $this->redirect('/admin/appearance/themes?success=' . urlencode('主题已上传：' . $result['name']));
+        } catch (\RuntimeException $e) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    /**
+     * 启用指定主题
+     */
+    public function themeActivate(): void {
+        csrf_check();
+
+        $theme = trim((string)($_POST['theme'] ?? ''));
+        $validThemes = array_map(
+            static fn(array $item): string => $item['slug'],
+            $this->getInstalledThemes(true)
+        );
+
+        if ($theme === '' || !in_array($theme, $validThemes, true)) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('无法启用该主题，主题不存在或不符合要求'));
+        }
+
+        $this->settingModel->set('theme', $theme);
+
+        $themeName = $theme;
+        foreach ($this->getInstalledThemes(true) as $item) {
+            if ($item['slug'] === $theme) {
+                $themeName = $item['name'];
+                break;
+            }
+        }
+
+        $this->redirect('/admin/appearance/themes?success=' . urlencode('已启用主题：' . $themeName));
+    }
+
+    /**
+     * 读取 themes 目录下的主题列表
+     */
+    private function getInstalledThemes(bool $validOnly = false): array {
+        $themesDir = $this->getThemesDirectory();
+        $currentTheme = $this->settingModel->get('theme', 'default');
+        $themes = [];
+
+        if (!is_dir($themesDir)) {
+            return $themes;
+        }
+
+        $directories = glob($themesDir . '/*');
+        if ($directories === false) {
+            return $themes;
+        }
+
+        foreach ($directories as $directory) {
+            if (!is_dir($directory)) {
+                continue;
+            }
+
+            $slug = basename($directory);
+            if ($slug === '' || str_starts_with($slug, '.')) {
+                continue;
+            }
+
+            $theme = $this->inspectThemeDirectory($directory, $slug, $currentTheme);
+            if ($validOnly && !$theme['is_valid']) {
+                continue;
+            }
+
+            $themes[] = $theme;
+        }
+
+        usort($themes, static function (array $left, array $right): int {
+            if ($left['is_active'] !== $right['is_active']) {
+                return $left['is_active'] ? -1 : 1;
+            }
+
+            return strnatcasecmp($left['name'], $right['name']);
+        });
+
+        return $themes;
+    }
+
+    /**
+     * 读取单个主题目录信息
+     */
+    private function inspectThemeDirectory(string $themePath, string $slug, string $currentTheme): array {
+        $validation = $this->validateThemeDirectory($themePath);
+        $metadata = $validation['metadata'];
+        $previewPath = $themePath . '/screenshot.jpg';
+
+        return [
+            'slug' => $slug,
+            'name' => $metadata['name'] !== '' ? $metadata['name'] : $slug,
+            'description' => $metadata['description'],
+            'version' => $metadata['version'],
+            'author' => $metadata['author'],
+            'author_uri' => $metadata['author_uri'],
+            'theme_uri' => $metadata['theme_uri'],
+            'license' => $metadata['license'],
+            'preview_url' => is_file($previewPath) ? asset_url('/themes/' . rawurlencode($slug) . '/screenshot.jpg') : null,
+            'is_active' => $slug === $currentTheme,
+            'is_valid' => $validation['valid'],
+            'missing_files' => $validation['missing_files'],
+            'metadata_errors' => $validation['metadata_errors'],
+            'errors' => $validation['errors'],
+        ];
+    }
+
+    /**
+     * 校验主题目录是否满足系统要求
+     */
+    private function validateThemeDirectory(string $themePath): array {
+        $missingFiles = [];
+        foreach (self::THEME_REQUIRED_FILES as $requiredFile) {
+            if (!is_file($themePath . '/' . $requiredFile)) {
+                $missingFiles[] = $requiredFile;
+            }
+        }
+
+        $styleFile = $themePath . '/style.css';
+        $metadata = is_file($styleFile)
+            ? $this->parseThemeMetadataFromFile($styleFile)
+            : $this->emptyThemeMetadata();
+
+        $metadataErrors = [];
+        if (($metadata['name'] ?? '') === '') {
+            $metadataErrors[] = 'style.css 缺少 Theme Name 头部信息';
+        }
+
+        $errors = [];
+        if ($missingFiles !== []) {
+            $errors[] = '缺少必需文件：' . implode('、', $missingFiles);
+        }
+        if ($metadataErrors !== []) {
+            $errors = array_merge($errors, $metadataErrors);
+        }
+
+        return [
+            'valid' => $missingFiles === [] && $metadataErrors === [],
+            'missing_files' => $missingFiles,
+            'metadata_errors' => $metadataErrors,
+            'errors' => $errors,
+            'metadata' => $metadata,
+        ];
+    }
+
+    /**
+     * 解析 style.css 顶部主题元数据
+     */
+    private function parseThemeMetadataFromFile(string $styleFile): array {
+        $content = file_get_contents($styleFile, false, null, 0, 8192);
+        if ($content === false) {
+            return $this->emptyThemeMetadata();
+        }
+
+        $metadata = $this->emptyThemeMetadata();
+        foreach (self::THEME_METADATA_FIELDS as $label => $key) {
+            if (preg_match('/^[ \t\/*#@]*' . preg_quote($label, '/') . ':\s*(.+)$/mi', $content, $matches) === 1) {
+                $metadata[$key] = trim((string)$matches[1]);
+            }
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * 返回空主题元数据结构
+     */
+    private function emptyThemeMetadata(): array {
+        return [
+            'name' => '',
+            'theme_uri' => '',
+            'author' => '',
+            'author_uri' => '',
+            'description' => '',
+            'version' => '',
+            'license' => '',
+        ];
+    }
+
+    /**
+     * 安装上传的主题压缩包
+     */
+    private function installThemeFromUpload(array $file): array {
+        $this->assertValidThemeUpload($file);
+
+        $archive = $this->openThemeArchive((string)$file['tmp_name']);
+        $workspace = $this->createTempDirectory('theme-upload-');
+
+        try {
+            $this->extractThemeArchive($archive, $workspace);
+            $package = $this->findThemePackage($workspace);
+
+            if (!$package['validation']['valid']) {
+                throw new \RuntimeException('此文件不符合网站主题的要求：' . implode('；', $package['validation']['errors']));
+            }
+
+            $metadata = $package['validation']['metadata'];
+            $slug = $this->resolveInstalledThemeSlug(
+                $package['path'],
+                $workspace,
+                (string)$file['name'],
+                $metadata
+            );
+
+            $targetPath = $this->getThemesDirectory() . '/' . $slug;
+            if (file_exists($targetPath)) {
+                throw new \RuntimeException('此文件不符合网站主题的要求：主题目录已存在，请先删除同名主题');
+            }
+
+            $this->ensureDirectory($this->getThemesDirectory());
+            $this->moveDirectory($package['path'], $targetPath);
+
+            return [
+                'slug' => $slug,
+                'name' => $metadata['name'] !== '' ? $metadata['name'] : $slug,
+            ];
+        } finally {
+            $archive->close();
+            $this->deleteDirectory($workspace);
+        }
+    }
+
+    /**
+     * 选择压缩包中的唯一主题目录
+     */
+    private function findThemePackage(string $workspace): array {
+        $candidates = $this->collectThemeCandidateDirectories($workspace);
+        if ($candidates === []) {
+            throw new \RuntimeException('此文件不符合网站主题的要求：压缩包中未找到主题目录或 style.css');
+        }
+
+        $inspections = [];
+        $validPackages = [];
+
+        foreach ($candidates as $candidate) {
+            $inspection = [
+                'path' => $candidate,
+                'validation' => $this->validateThemeDirectory($candidate),
+            ];
+            $inspections[] = $inspection;
+
+            if ($inspection['validation']['valid']) {
+                $validPackages[] = $inspection;
+            }
+        }
+
+        if (count($validPackages) > 1) {
+            throw new \RuntimeException('此文件不符合网站主题的要求：压缩包中包含多个可安装主题');
+        }
+
+        if (count($validPackages) === 1) {
+            return $validPackages[0];
+        }
+
+        usort($inspections, fn(array $left, array $right): int => $this->relativeThemeCandidateDepth($workspace, $left['path']) <=> $this->relativeThemeCandidateDepth($workspace, $right['path']));
+
+        return $inspections[0];
+    }
+
+    /**
+     * 收集压缩包里包含 style.css 的候选主题目录
+     */
+    private function collectThemeCandidateDirectories(string $workspace): array {
+        $candidates = [];
+
+        if (is_file($workspace . '/style.css')) {
+            $candidates[$workspace] = $workspace;
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($workspace, \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $fileInfo) {
+            if (!$fileInfo->isFile() || strtolower($fileInfo->getFilename()) !== 'style.css') {
+                continue;
+            }
+
+            $candidate = $fileInfo->getPath();
+            $relativePath = ltrim(str_replace($workspace, '', $candidate), DIRECTORY_SEPARATOR);
+            if ($this->isIgnoredThemeExtractPath($relativePath)) {
+                continue;
+            }
+
+            $candidates[$candidate] = $candidate;
+        }
+
+        return array_values($candidates);
+    }
+
+    /**
+     * 计算候选主题目录相对深度，用于优先取最靠近根目录的候选项
+     */
+    private function relativeThemeCandidateDepth(string $workspace, string $candidate): int {
+        $relativePath = trim(str_replace($workspace, '', $candidate), DIRECTORY_SEPARATOR);
+        if ($relativePath === '') {
+            return 0;
+        }
+
+        return substr_count($relativePath, DIRECTORY_SEPARATOR) + 1;
+    }
+
+    /**
+     * 检查上传文件基础合法性
+     */
+    private function assertValidThemeUpload(array $file): void {
+        $error = (int)($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($error !== UPLOAD_ERR_OK) {
+            throw new \RuntimeException($this->themeUploadErrorMessage($error));
+        }
+
+        $tmpName = (string)($file['tmp_name'] ?? '');
+        if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+            throw new \RuntimeException('上传文件无效，请重新选择 zip 压缩包');
+        }
+
+        $extension = strtolower(pathinfo((string)($file['name'] ?? ''), PATHINFO_EXTENSION));
+        if ($extension !== 'zip') {
+            throw new \RuntimeException('仅支持上传 zip 格式的主题压缩包');
+        }
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = (string)$finfo->file($tmpName);
+        if ($mimeType !== '' && !str_contains($mimeType, 'zip') && $mimeType !== 'application/octet-stream') {
+            throw new \RuntimeException('仅支持上传 zip 格式的主题压缩包');
+        }
+    }
+
+    /**
+     * 打开 zip 压缩包
+     */
+    private function openThemeArchive(string $tmpName): \ZipArchive {
+        $archive = new \ZipArchive();
+        if ($archive->open($tmpName) !== true) {
+            throw new \RuntimeException('无法读取 zip 压缩包，请检查文件是否损坏');
+        }
+
+        return $archive;
+    }
+
+    /**
+     * 安全解压主题压缩包到临时目录
+     */
+    private function extractThemeArchive(\ZipArchive $archive, string $workspace): void {
+        $this->ensureDirectory($workspace);
+
+        for ($i = 0; $i < $archive->numFiles; $i++) {
+            $entryName = $archive->getNameIndex($i);
+            if ($entryName === false) {
+                continue;
+            }
+
+            $normalized = $this->normalizeThemeArchiveEntry($entryName);
+            if ($normalized === null || $this->isIgnoredThemeExtractPath($normalized['path'])) {
+                continue;
+            }
+
+            $targetPath = $workspace . '/' . $normalized['path'];
+            if ($normalized['is_dir']) {
+                $this->ensureDirectory($targetPath);
+                continue;
+            }
+
+            $this->ensureDirectory(dirname($targetPath));
+
+            $stream = $archive->getStream($entryName);
+            if ($stream === false) {
+                throw new \RuntimeException('无法解压主题压缩包，请重新打包后上传');
+            }
+
+            $output = fopen($targetPath, 'wb');
+            if ($output === false) {
+                fclose($stream);
+                throw new \RuntimeException('无法写入 themes 临时目录，请检查文件权限');
+            }
+
+            stream_copy_to_stream($stream, $output);
+            fclose($stream);
+            fclose($output);
+        }
+    }
+
+    /**
+     * 规范化 zip 条目路径，阻止目录穿越
+     */
+    private function normalizeThemeArchiveEntry(string $entryName): ?array {
+        $entryName = str_replace('\\', '/', $entryName);
+        $isDirectory = str_ends_with($entryName, '/');
+        $trimmed = trim($entryName, '/');
+
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $segments = explode('/', $trimmed);
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
+                throw new \RuntimeException('此文件不符合网站主题的要求：压缩包包含非法目录结构');
+            }
+        }
+
+        return [
+            'path' => implode('/', $segments),
+            'is_dir' => $isDirectory,
+        ];
+    }
+
+    /**
+     * 忽略压缩包中的系统垃圾文件
+     */
+    private function isIgnoredThemeExtractPath(string $relativePath): bool {
+        if ($relativePath === '') {
+            return false;
+        }
+
+        $segments = explode('/', str_replace('\\', '/', $relativePath));
+        foreach ($segments as $segment) {
+            if ($segment === '__MACOSX' || $segment === '.DS_Store') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 生成最终主题目录名
+     */
+    private function resolveInstalledThemeSlug(string $candidatePath, string $workspace, string $originalName, array $metadata): string {
+        $candidateName = basename($candidatePath);
+        if ($candidatePath === $workspace) {
+            $candidateName = (string)($metadata['name'] !== '' ? $metadata['name'] : pathinfo($originalName, PATHINFO_FILENAME));
+        }
+
+        return $this->sanitizeThemeDirectoryName($candidateName);
+    }
+
+    /**
+     * 清洗主题目录名，仅保留安全字符
+     */
+    private function sanitizeThemeDirectoryName(string $name): string {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('/[^a-z0-9_-]+/i', '-', $slug);
+        $slug = trim((string)$slug, '-_');
+
+        if ($slug === '') {
+            $slug = 'theme-' . date('YmdHis');
+        }
+
+        return $slug;
+    }
+
+    /**
+     * 创建临时目录
+     */
+    private function createTempDirectory(string $prefix): string {
+        $baseDirectory = APP_ROOT . '/storage/tmp';
+        $this->ensureDirectory($baseDirectory);
+
+        $directory = $baseDirectory . '/' . $prefix . bin2hex(random_bytes(8));
+        $this->ensureDirectory($directory);
+
+        return $directory;
+    }
+
+    /**
+     * 确保目录存在
+     */
+    private function ensureDirectory(string $directory): void {
+        if (is_dir($directory)) {
+            return;
+        }
+
+        if (!mkdir($directory, 0755, true) && !is_dir($directory)) {
+            throw new \RuntimeException('无法创建目录：' . $directory);
+        }
+    }
+
+    /**
+     * 移动目录，rename 失败时退回复制
+     */
+    private function moveDirectory(string $source, string $destination): void {
+        if (@rename($source, $destination)) {
+            return;
+        }
+
+        $this->copyDirectory($source, $destination);
+        $this->deleteDirectory($source);
+    }
+
+    /**
+     * 递归复制目录
+     */
+    private function copyDirectory(string $source, string $destination): void {
+        $this->ensureDirectory($destination);
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $item) {
+            $targetPath = $destination . '/' . $iterator->getSubPathName();
+            if ($item->isDir()) {
+                $this->ensureDirectory($targetPath);
+                continue;
+            }
+
+            $this->ensureDirectory(dirname($targetPath));
+            if (!copy($item->getPathname(), $targetPath)) {
+                throw new \RuntimeException('无法复制主题文件：' . $item->getFilename());
+            }
+        }
+    }
+
+    /**
+     * 递归删除目录
+     */
+    private function deleteDirectory(string $directory): void {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                @rmdir($item->getPathname());
+                continue;
+            }
+
+            @unlink($item->getPathname());
+        }
+
+        @rmdir($directory);
+    }
+
+    /**
+     * 主题上传错误提示
+     */
+    private function themeUploadErrorMessage(int $errorCode): string {
+        return match ($errorCode) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => '上传失败：zip 文件超出服务器允许大小',
+            UPLOAD_ERR_PARTIAL => '上传失败：zip 文件只上传了一部分',
+            UPLOAD_ERR_NO_FILE => '请选择一个 zip 压缩包',
+            UPLOAD_ERR_NO_TMP_DIR => '上传失败：服务器缺少临时目录',
+            UPLOAD_ERR_CANT_WRITE => '上传失败：服务器无法写入上传文件',
+            UPLOAD_ERR_EXTENSION => '上传失败：服务器扩展阻止了文件上传',
+            default => '上传失败，请稍后重试',
+        };
+    }
+
+    /**
+     * themes 目录路径
+     */
+    private function getThemesDirectory(): string {
+        return APP_ROOT . '/themes';
     }
 
     // --- Appearance / Sliders Management (外观区块 - 轮播图管理) ---

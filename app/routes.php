@@ -133,8 +133,13 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/settings-updater/migrations', [AdminController::class, 'updaterMigrationStatus']);
     $router->add('POST', '/admin/settings-updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
 
+    // 后台：外观区块 - 网站模版
+    $router->add('GET', '/admin/appearance', [AdminController::class, 'themeList']);
+    $router->add('GET', '/admin/appearance/themes', [AdminController::class, 'themeList']);
+    $router->add('POST', '/admin/appearance/themes/upload', [AdminController::class, 'themeUpload']);
+    $router->add('POST', '/admin/appearance/themes/activate', [AdminController::class, 'themeActivate']);
+
     // 后台：外观区块 - 轮播图管理
-    $router->add('GET', '/admin/appearance', [AdminController::class, 'sliderList']);
     $router->add('GET', '/admin/appearance/sliders', [AdminController::class, 'sliderList']);
     $router->add('GET', '/admin/appearance/sliders/create', [AdminController::class, 'sliderCreate']);
     $router->add('POST', '/admin/appearance/sliders/create', [AdminController::class, 'sliderStore']);
