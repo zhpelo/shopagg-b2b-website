@@ -59,7 +59,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                             </span>
                             <div>
                                 <h2 class="text-lg font-bold text-slate-900">主题上传</h2>
-                                <p class="text-sm text-slate-500">参考 WordPress 主题上传流程，上传后自动校验并解压到 `/themes`。</p>
+                                <p class="text-sm text-slate-500">上传后自动校验文件内容并解压到 `/themes`目录。</p>
                             </div>
                         </div>
 
