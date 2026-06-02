@@ -141,7 +141,7 @@ License: MIT
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             <?php foreach ($themes as $theme): ?>
                 <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                    <div class="aspect-[16/10] overflow-hidden border-b border-slate-200 bg-slate-100">
+                    <div class="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
                         <?php if (!empty($theme['preview_url'])): ?>
                             <img src="<?= h($theme['preview_url']) ?>" alt="<?= h($theme['name']) ?>" class="h-full w-full object-cover">
                         <?php else: ?>
