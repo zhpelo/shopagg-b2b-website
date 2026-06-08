@@ -55,7 +55,7 @@ $tips = $contentConfig['tips'] ?? [];
                         <span class="text-sm font-medium text-slate-700"><?= h($singular) ?>标题 <span class="text-rose-500">*</span></span>
                         <span class="relative block">
                             <i class="fas fa-heading pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-base text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="title" value="<?= h($item['title'] ?? '') ?>" required placeholder="输入<?= h($singular) ?>标题">
+                            <input id="content-title" class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-base text-slate-700 outline-none transition placeholder:text-slate-400 <?= h($accentFocusClass) ?>" name="title" value="<?= h($item['title'] ?? '') ?>" required placeholder="输入<?= h($singular) ?>标题" data-slug-source>
                         </span>
                     </label>
 
@@ -63,9 +63,9 @@ $tips = $contentConfig['tips'] ?? [];
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
                         <span class="relative block">
                             <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 <?= h($accentFocusClass) ?>" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="<?= h($contentConfig['slug_placeholder'] ?? 'auto-slug') ?>">
+                            <input id="content-slug" class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 font-mono text-sm <?= h($accentFocusClass) ?>" name="slug" value="<?= h($item['slug'] ?? '') ?>" placeholder="<?= h($contentConfig['slug_placeholder'] ?? 'auto-slug') ?>" data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
                         </span>
-                        <span class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</span>
+                        <span class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符；留空则自动生成</span>
                     </label>
 
                     <label class="block space-y-2">

@@ -98,7 +98,8 @@ $treeItems = buildItemTree($grouped);
                     <input type="text" name="name" required
                            value="<?= h($menu['name'] ?? '') ?>"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                           placeholder="如：主导航">
+                           placeholder="如：主导航"
+                           data-slug-source>
                 </div>
 
                 <div>
@@ -108,8 +109,9 @@ $treeItems = buildItemTree($grouped);
                     <input type="text" name="slug" required
                            value="<?= h($menu['slug'] ?? '') ?>"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-mono text-sm"
-                           placeholder="如：main-nav">
-                    <p class="text-xs text-slate-500 mt-1">前台模板通过此标识符调用菜单</p>
+                           placeholder="如：main-nav"
+                           data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
+                    <p class="text-xs text-slate-500 mt-1">前台模板通过此标识符调用菜单。仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符</p>
                 </div>
             </div>
 
@@ -257,20 +259,6 @@ $treeItems = buildItemTree($grouped);
 (function() {
     const isEdit = <?= $isEdit ? 'true' : 'false' ?>;
     if (!isEdit) {
-        // 新建模式仅做 slug 自动生成
-        document.querySelector('input[name="name"]')?.addEventListener('blur', function() {
-            const slugInput = document.querySelector('input[name="slug"]');
-            if (slugInput && !slugInput.value) {
-                const name = this.value.trim();
-                if (name) {
-                    slugInput.value = name.toLowerCase()
-                        .replace(/[^\w\s-]/g, '')
-                        .replace(/[\s_]+/g, '-')
-                        .replace(/-+/g, '-')
-                        .replace(/^-+|-+$/g, '');
-                }
-            }
-        });
         return;
     }
 
@@ -651,19 +639,5 @@ $treeItems = buildItemTree($grouped);
     rebuildFlatIndex();
     renderAll();
 
-    // slug 自动生成
-    document.querySelector('input[name="name"]')?.addEventListener('blur', function() {
-        const slugInput = document.querySelector('input[name="slug"]');
-        if (slugInput && !slugInput.value) {
-            const name = this.value.trim();
-            if (name) {
-                slugInput.value = name.toLowerCase()
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/[\s_]+/g, '-')
-                    .replace(/-+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-            }
-        }
-    });
 })();
 </script>

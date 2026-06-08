@@ -30,19 +30,45 @@ function h($s): string {
 }
 
 /**
+ * 过滤并规范化用户输入的 slug
+ * 
+ * 仅保留小写字母、数字和连字符，将其它字符统一转换为连字符。
+ * 示例：'Hello World_01!' => 'hello-world-01'
+ * 
+ * @param string $text 原始文本
+ * @return string 规范化后的 slug，可能为空字符串
+ */
+function sanitize_slug_input(string $text): string {
+    $text = strtolower(trim($text));
+    $text = preg_replace('/[^a-z0-9-]+/', '-', $text) ?? '';
+    $text = preg_replace('/-+/', '-', $text) ?? '';
+    return trim($text, '-');
+}
+
+/**
+ * 验证 slug 是否符合系统要求
+ * 
+ * 仅允许小写字母、数字和中间连字符，不允许首尾连字符。
+ * 
+ * @param string $slug 待验证的 slug
+ * @return bool true 表示合法
+ */
+function is_valid_slug(string $slug): bool {
+    return preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1;
+}
+
+/**
  * 生成 URL 友好的 slug
  * 
- * 将文本转换为合法的 URL 片段，移除特殊字符并转换为小写
- * 示例：'Hello World!' => 'hello-world'
+ * 将文本转换为合法的 URL 片段，移除特殊字符并转换为小写。
+ * 若无法生成，则使用 item + 时间戳兜底。
  * 
  * @param string $text 原始文本
  * @return string URL 友好的文本
  */
 function slugify(string $text): string {
-    $text = strtolower(trim($text));
-    $text = preg_replace('/[^a-z0-9]+/i', '-', $text);
-    $text = trim($text ?? '', '-');
-    return $text === '' ? 'item' . time() : $text;
+    $slug = sanitize_slug_input($text);
+    return $slug !== '' ? $slug : 'item' . time();
 }
 
 /**

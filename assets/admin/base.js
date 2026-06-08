@@ -1465,6 +1465,62 @@ ${iconHtml}
         });
     }
 
+    function sanitizeSlugValue(value) {
+        return String(value || '')
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9-]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function normalizeSlugInputValue(input) {
+        if (!input) {
+            return;
+        }
+
+        const normalized = sanitizeSlugValue(input.value);
+        if (normalized !== input.value) {
+            input.value = normalized;
+        }
+    }
+
+    function initSlugFieldHelpers() {
+        document.querySelectorAll('form').forEach((form) => {
+            const sourceInput = form.querySelector('[data-slug-source]');
+            const slugInput = form.querySelector('[data-slug-input]');
+            if (!sourceInput || !slugInput) {
+                return;
+            }
+
+            const syncSlugFromSource = () => {
+                if (String(slugInput.value || '').trim() !== '') {
+                    return;
+                }
+
+                const normalized = sanitizeSlugValue(sourceInput.value);
+                if (normalized) {
+                    slugInput.value = normalized;
+                }
+            };
+
+            normalizeSlugInputValue(slugInput);
+
+            sourceInput.addEventListener('input', syncSlugFromSource);
+            sourceInput.addEventListener('blur', syncSlugFromSource);
+            sourceInput.addEventListener('change', syncSlugFromSource);
+
+            slugInput.addEventListener('input', () => {
+                normalizeSlugInputValue(slugInput);
+            });
+
+            slugInput.addEventListener('blur', () => {
+                normalizeSlugInputValue(slugInput);
+                syncSlugFromSource();
+            });
+        });
+    }
+
     function toFullUrl(path) {
         if (!path || /^(https?:)?\/\//i.test(path) || path.startsWith('data:')) {
             return path || '';
@@ -1671,6 +1727,7 @@ ${iconHtml}
         initProductForm();
         initSettingsGeneralPickers();
         initSettingsMediaHelpers();
+        initSlugFieldHelpers();
         initMediaExplorerPage();
     });
 

@@ -48,7 +48,7 @@ $currentId = (int)($category['id'] ?? 0);
                         <span class="text-sm font-medium text-slate-700">分类名称 <span class="text-rose-500">*</span></span>
                         <span class="relative block">
                             <i class="fas fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称">
+                            <input id="category-name" class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="name" value="<?= h($category['name'] ?? '') ?>" required placeholder="输入分类名称" data-slug-source>
                         </span>
                         <p class="text-xs text-slate-500">分类的显示名称</p>
                     </label>
@@ -57,9 +57,9 @@ $currentId = (int)($category['id'] ?? 0);
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
                         <span class="relative block">
                             <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
-                            <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug">
+                            <input id="category-slug" class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 font-mono text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug" data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
                         </span>
-                        <p class="text-xs text-slate-500">用于 URL 的标识符，留空则自动生成</p>
+                        <p class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符；留空则自动生成</p>
                     </label>
 
                     <label class="block space-y-2">

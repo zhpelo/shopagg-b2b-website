@@ -44,7 +44,8 @@ $title = $isEdit ? '编辑轮播图' : '新建轮播图';
                         <input type="text" id="name" name="name" required
                                value="<?= h($slider['name'] ?? '') ?>"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                               placeholder="如：首页轮播图">
+                               placeholder="如：首页轮播图"
+                               data-slug-source>
                     </div>
 
                     <!-- Slug -->
@@ -55,10 +56,11 @@ $title = $isEdit ? '编辑轮播图' : '新建轮播图';
                         <input type="text" id="slug" name="slug" required
                                value="<?= h($slider['slug'] ?? '') ?>"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-mono text-sm"
-                               placeholder="如：home-hero">
+                               placeholder="如：home-hero"
+                               data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
                         <p class="text-xs text-slate-500 mt-1.5">
                             <i class="fas fa-info-circle mr-1"></i>
-                            用于模板调用，只能包含字母、数字、连字符和下划线
+                            仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符
                         </p>
                     </div>
 
@@ -301,23 +303,6 @@ function selectImageForItem(btn) {
         }, false, { type: 'image' });
     }
 }
-
-// Auto-generate slug from name
-document.getElementById('name')?.addEventListener('blur', function() {
-    const slugInput = document.getElementById('slug');
-    if (slugInput && !slugInput.value) {
-        const name = this.value.trim();
-        if (name) {
-            // Simple slugify
-            const slug = name.toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_]+/g, '-')
-                .replace(/-+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            slugInput.value = slug || 'slider-' + Date.now();
-        }
-    }
-});
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {

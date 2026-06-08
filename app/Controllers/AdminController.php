@@ -263,6 +263,18 @@ class AdminController extends Controller {
         };
     }
 
+    /**
+     * 统一规范化后台提交的 slug
+     */
+    private function normalizeSubmittedSlug(?string $slug, string $fallbackSource): string {
+        $normalized = sanitize_slug_input((string)$slug);
+        if ($normalized === '') {
+            $normalized = slugify($fallbackSource);
+        }
+
+        return is_valid_slug($normalized) ? $normalized : slugify($fallbackSource);
+    }
+
     private function resolveSettingsTab(): string {
         $path = $this->currentAdminPath();
         if (preg_match('#^/admin/settings-([a-z\-]+)$#', $path, $matches) === 1) {
@@ -459,8 +471,7 @@ class AdminController extends Controller {
 
     private function getProductFormData(): array {
         $title = trim((string)$_POST['title']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($title);
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $title);
         
         // Handle images from hidden input or newly uploaded
         $images = $_POST['images'] ?? []; // This will be from the UI selection
@@ -752,8 +763,7 @@ class AdminController extends Controller {
     public function productCategoryStore(): void {
         csrf_check();
         $name = trim((string)$_POST['name']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($name);
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         $parentId = (int)($_POST['parent_id'] ?? 0);
         $description = trim((string)($_POST['description'] ?? ''));
         $this->categoryModel->create($name, $slug, 'product', $parentId, $description);
@@ -779,8 +789,7 @@ class AdminController extends Controller {
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
         $name = trim((string)$_POST['name']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($name);
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         $parentId = (int)($_POST['parent_id'] ?? 0);
         $description = trim((string)($_POST['description'] ?? ''));
         $this->categoryModel->update($id, $name, $slug, $parentId, $description);
@@ -816,8 +825,7 @@ class AdminController extends Controller {
     public function postCategoryStore(): void {
         csrf_check();
         $name = trim((string)$_POST['name']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($name);
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         $parentId = (int)($_POST['parent_id'] ?? 0);
         $description = trim((string)($_POST['description'] ?? ''));
         $this->categoryModel->create($name, $slug, 'post', $parentId, $description);
@@ -843,8 +851,7 @@ class AdminController extends Controller {
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
         $name = trim((string)$_POST['name']);
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') $slug = slugify($name);
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         $parentId = (int)($_POST['parent_id'] ?? 0);
         $description = trim((string)($_POST['description'] ?? ''));
         $this->categoryModel->update($id, $name, $slug, $parentId, $description);
@@ -1029,11 +1036,7 @@ class AdminController extends Controller {
     {
         $config = $this->contentConfig($type);
         $title = trim((string)($_POST['title'] ?? ''));
-        $slug = trim((string)($_POST['slug'] ?? ''));
-
-        if ($slug === '') {
-            $slug = slugify($title);
-        }
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $title);
 
         return [
             'title' => $title,
@@ -2105,9 +2108,7 @@ class AdminController extends Controller {
      * 清洗主题目录名，仅保留安全字符
      */
     private function sanitizeThemeDirectoryName(string $name): string {
-        $slug = strtolower(trim($name));
-        $slug = preg_replace('/[^a-z0-9_-]+/i', '-', $slug);
-        $slug = trim((string)$slug, '-_');
+        $slug = sanitize_slug_input($name);
 
         if ($slug === '') {
             $slug = 'theme-' . date('YmdHis');
@@ -2258,10 +2259,7 @@ class AdminController extends Controller {
         csrf_check();
         
         $name = trim((string)($_POST['name'] ?? ''));
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') {
-            $slug = slugify($name);
-        }
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         
         $sliderData = [
             'name' => $name,
@@ -2309,10 +2307,7 @@ class AdminController extends Controller {
         }
         
         $name = trim((string)($_POST['name'] ?? ''));
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') {
-            $slug = slugify($name);
-        }
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         
         $sliderData = [
             'name' => $name,
@@ -2465,10 +2460,7 @@ class AdminController extends Controller {
         csrf_check();
         
         $name = trim((string)($_POST['name'] ?? ''));
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') {
-            $slug = slugify($name);
-        }
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         
         $menuData = [
             'name' => $name,
@@ -2515,10 +2507,7 @@ class AdminController extends Controller {
         
         // 更新菜单基本信息
         $name = trim((string)($_POST['name'] ?? ''));
-        $slug = trim((string)($_POST['slug'] ?? ''));
-        if ($slug === '') {
-            $slug = slugify($name);
-        }
+        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
         
         $menuData = [
             'name' => $name,
