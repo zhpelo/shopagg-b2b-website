@@ -16,7 +16,9 @@ return [
     // 首页 - 优势卖点区块（3列）
     // ============================================================
     'home_value_props' => [
-        'label' => 'Homepage - Value Proposition',
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页优势卖点',
         'description' => '首页轮播下方的 3 列优势卖点',
         'fields' => [
             'item1_icon'  => ['type' => 'icon',  'label' => 'Item 1 Icon',  'default' => 'fas fa-check-circle'],
@@ -35,7 +37,9 @@ return [
     // 首页 - 精选产品区块
     // ============================================================
     'home_featured' => [
-        'label' => 'Homepage - Featured Products',
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页精选产品',
         'description' => '精选产品板块标题文字',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Featured Products'],
@@ -48,7 +52,9 @@ return [
     // 首页 - Why Choose Us 区块
     // ============================================================
     'home_why_us' => [
-        'label' => 'Homepage - Why Choose Us',
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页为什么选择我们',
         'description' => '为什么选择我们板块',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Why Choose Us'],
@@ -64,7 +70,9 @@ return [
     // 首页 - 案例区块
     // ============================================================
     'home_cases' => [
-        'label' => 'Homepage - Success Cases',
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页成功案例',
         'description' => '成功案例板块标题',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Success Cases'],
@@ -76,7 +84,9 @@ return [
     // 首页 - 底部 CTA 区块
     // ============================================================
     'home_cta' => [
-        'label' => 'Homepage - Bottom CTA',
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页底部行动区',
         'description' => '首页底部行动号召区块',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',     'default' => 'Ready to start your project?'],
@@ -90,7 +100,9 @@ return [
     // 页头 - Header 区块
     // ============================================================
     'header' => [
-        'label' => 'Header',
+        'group' => 'global',
+        'group_label' => '全站通用',
+        'label' => '页头导航',
         'description' => '网站顶部导航栏',
         'fields' => [
             'cta_text' => ['type' => 'text', 'label' => 'CTA Button Text', 'default' => 'Request Quote'],
@@ -102,7 +114,9 @@ return [
     // 页脚 - Footer 区块
     // ============================================================
     'footer' => [
-        'label' => 'Footer',
+        'group' => 'global',
+        'group_label' => '全站通用',
+        'label' => '页脚信息',
         'description' => '网站底部信息',
         'fields' => [
             'quick_links_title' => ['type' => 'text', 'label' => 'Quick Links Title', 'default' => 'Quick Links'],
@@ -115,7 +129,9 @@ return [
     // 浮动联系窗口
     // ============================================================
     'float_contact' => [
-        'label' => 'Floating Contact Widget',
+        'group' => 'global',
+        'group_label' => '全站通用',
+        'label' => '悬浮联系窗口',
         'description' => '右下角/左侧悬浮联系窗口',
         'fields' => [
             'toggle_text'  => ['type' => 'text', 'label' => 'Toggle Button Text', 'default' => 'Contact'],
@@ -131,7 +147,9 @@ return [
     // Contact 页面
     // ============================================================
     'page_contact' => [
-        'label' => 'Contact Page',
+        'group' => 'contact',
+        'group_label' => '联系我们页面',
+        'label' => '联系我们页内容',
         'description' => '联系我们页面',
         'fields' => [
             'label'       => ['type' => 'text', 'label' => 'Page Label',    'default' => 'Contact'],
@@ -149,7 +167,9 @@ return [
     // About 页面
     // ============================================================
     'page_about' => [
-        'label' => 'About Page',
+        'group' => 'about',
+        'group_label' => '关于我们页面',
+        'label' => '关于我们页内容',
         'description' => '关于我们页面',
         'fields' => [
             'label'       => ['type' => 'text', 'label' => 'Page Label',    'default' => 'Company Profile'],
@@ -167,7 +187,9 @@ return [
     // 品牌颜色
     // ============================================================
     'brand_colors' => [
-        'label' => 'Brand Colors',
+        'group' => 'brand',
+        'group_label' => '品牌与样式',
+        'label' => '品牌颜色',
         'description' => '品牌主色调（影响按钮、链接等）',
         'fields' => [
             'primary'    => ['type' => 'color', 'label' => 'Primary Color (Accent)', 'default' => '#0ea5e9'],
