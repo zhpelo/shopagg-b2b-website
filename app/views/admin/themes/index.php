@@ -19,7 +19,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                     <h1 class="text-2xl font-bold text-white">网站模版</h1>
                     <p class="mt-1 text-indigo-100">读取 `/themes` 目录中的网站主题，自动识别 `screenshot.jpg` 预览图，并支持上传 zip 主题包。</p>
                 </div>
-                <div class="inline-flex items-center gap-3 rounded-2xl bg-white/15 px-4 py-3 text-sm text-white backdrop-blur">
+                <div class="inline-flex items-center gap-3 rounded-2xl bg-white/15 px-4 py-3 text-sm text-white">
                     <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
                         <i class="fas fa-check-circle"></i>
                     </span>
