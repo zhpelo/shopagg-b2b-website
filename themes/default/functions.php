@@ -16,41 +16,266 @@ declare(strict_types=1);
  * - get_stylesheet_directory_uri()
  */
 
-/**
- * 获取占位图片URL
- * @param int $width 图片宽度
- * @param int $height 图片高度
- * @param string $text 显示文字
- * @return string 占位图片URL
- */
 if (!function_exists('placeholder_url')) {
     function placeholder_url(int $width = 800, int $height = 300, string $text = ''): string {
-        $url = "https://devtool.tech/api/placeholder/{$width}/{$height}";
-        $params = [];
-        if ($text) {
-            $params['text'] = urlencode($text);
-        }
-        if ($params) {
-            $url .= '?' . http_build_query($params);
-        }
-        return $url;
+        $label = trim($text) !== '' ? trim($text) : 'No image';
+        $safeLabel = htmlspecialchars(mb_substr($label, 0, 80), ENT_QUOTES, 'UTF-8');
+        $safeWidth = max(1, $width);
+        $safeHeight = max(1, $height);
+        $borderWidth = max(1, $safeWidth - 1);
+        $borderHeight = max(1, $safeHeight - 1);
+        $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" width="{$safeWidth}" height="{$safeHeight}" viewBox="0 0 {$safeWidth} {$safeHeight}" role="img" aria-label="{$safeLabel}">
+  <rect width="100%" height="100%" fill="#f1f5f9"/>
+  <rect x="0.5" y="0.5" width="{$borderWidth}" height="{$borderHeight}" fill="none" stroke="#cbd5e1"/>
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="20" fill="#64748b">{$safeLabel}</text>
+</svg>
+SVG;
+
+        return 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
     }
 }
 
-/**
- * 获取图片URL（优先使用实际图片，否则返回占位图）
- * @param string|null $image 实际图片路径
- * @param int $width 占位图宽度
- * @param int $height 占位图高度
- * @param string $text 占位图文字
- * @return string 图片URL
- */
 if (!function_exists('get_image_url')) {
     function get_image_url(?string $image, int $width = 800, int $height = 300, string $text = ''): string {
         if (!empty($image)) {
             return asset_url($image);
         }
         return placeholder_url($width, $height, $text);
+    }
+}
+
+if (!function_exists('default_theme_absolute_url')) {
+    function default_theme_absolute_url(?string $path): string {
+        $path = trim((string)$path);
+        if ($path === '') {
+            return '';
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, '//')) {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https:' : 'http:';
+            return $scheme . $path;
+        }
+
+        if (str_starts_with($path, 'data:')) {
+            return $path;
+        }
+
+        $relative = asset_url($path);
+        $basePath = base_path();
+        if ($basePath !== '' && str_starts_with($relative, $basePath . '/')) {
+            $relative = substr($relative, strlen($basePath));
+        }
+
+        return rtrim(base_url(), '/') . '/' . ltrim($relative, '/');
+    }
+}
+
+if (!function_exists('default_theme_meta_image')) {
+    function default_theme_meta_image(array $site = [], array $seo = [], array $context = []): string {
+        $candidates = [
+            $seo['image'] ?? '',
+            $context['cover'] ?? '',
+            $context['image'] ?? '',
+            $site['og_image'] ?? '',
+            $site['logo'] ?? '',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (trim((string)$candidate) !== '') {
+                return default_theme_absolute_url((string)$candidate);
+            }
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('default_theme_meta_description')) {
+    function default_theme_meta_description(string $value): string {
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags($value)) ?: '');
+        return mb_substr($value, 0, 160);
+    }
+}
+
+if (!function_exists('default_theme_hex_adjust')) {
+    function default_theme_hex_adjust(string $hex, float $factor, bool $lighten = true): string {
+        $hex = ltrim(trim($hex), '#');
+        if (!preg_match('/^[0-9a-fA-F]{6}$/', $hex)) {
+            $hex = '0ea5e9';
+        }
+
+        $channels = [
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2)),
+        ];
+
+        foreach ($channels as &$channel) {
+            $channel = $lighten
+                ? (int)round($channel + (255 - $channel) * $factor)
+                : (int)round($channel * (1 - $factor));
+            $channel = max(0, min(255, $channel));
+        }
+
+        return sprintf('#%02x%02x%02x', $channels[0], $channels[1], $channels[2]);
+    }
+}
+
+if (!function_exists('default_theme_schema_graph')) {
+    function default_theme_schema_graph(array $site = [], array $seo = [], array $context = []): array {
+        $canonical = (string)($seo['canonical'] ?? base_url());
+        $siteName = (string)($site['name'] ?? '');
+        $description = default_theme_meta_description((string)($seo['description'] ?? ($site['tagline'] ?? '')));
+        $logo = default_theme_absolute_url((string)($site['logo'] ?? ''));
+        $image = default_theme_meta_image($site, $seo, $context);
+        $organizationId = rtrim(base_url(), '/') . '#organization';
+        $websiteId = rtrim(base_url(), '/') . '#website';
+
+        $sameAs = [];
+        foreach (['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'] as $key) {
+            if (!empty($site[$key]) && str_starts_with((string)$site[$key], 'http')) {
+                $sameAs[] = (string)$site[$key];
+            }
+        }
+
+        $graph = [
+            [
+                '@type' => 'Organization',
+                '@id' => $organizationId,
+                'name' => $siteName,
+                'url' => rtrim(base_url(), '/') . '/',
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => $websiteId,
+                'url' => rtrim(base_url(), '/') . '/',
+                'name' => $siteName,
+                'publisher' => ['@id' => $organizationId],
+            ],
+            [
+                '@type' => 'WebPage',
+                '@id' => $canonical . '#webpage',
+                'url' => $canonical,
+                'name' => (string)($seo['title'] ?? $siteName),
+                'description' => $description,
+                'isPartOf' => ['@id' => $websiteId],
+                'about' => ['@id' => $organizationId],
+            ],
+        ];
+
+        if ($logo !== '') {
+            $graph[0]['logo'] = ['@type' => 'ImageObject', 'url' => $logo];
+        }
+        if ($image !== '' && !str_starts_with($image, 'data:')) {
+            $graph[2]['primaryImageOfPage'] = ['@type' => 'ImageObject', 'url' => $image];
+        }
+        if ($sameAs !== []) {
+            $graph[0]['sameAs'] = $sameAs;
+        }
+        if (!empty($site['company_phone']) || !empty($site['company_email'])) {
+            $graph[0]['contactPoint'] = [[
+                '@type' => 'ContactPoint',
+                'telephone' => (string)($site['company_phone'] ?? ''),
+                'email' => (string)($site['company_email'] ?? ''),
+                'contactType' => 'sales',
+                'availableLanguage' => ['English'],
+            ]];
+        }
+
+        if (($context['type'] ?? '') === 'product' && !empty($context['item'])) {
+            $item = $context['item'];
+            $productImages = [];
+            foreach ((array)($context['images'] ?? []) as $img) {
+                $absolute = default_theme_absolute_url((string)$img);
+                if ($absolute !== '' && !str_starts_with($absolute, 'data:')) {
+                    $productImages[] = $absolute;
+                }
+            }
+            if ($productImages === [] && !empty($item['cover'])) {
+                $productImages[] = default_theme_absolute_url((string)$item['cover']);
+            }
+
+            $product = [
+                '@type' => 'Product',
+                '@id' => $canonical . '#product',
+                'name' => (string)($item['title'] ?? ''),
+                'url' => $canonical,
+                'brand' => ['@id' => $organizationId],
+            ];
+            if (!empty($item['id'])) {
+                $product['sku'] = (string)$item['id'];
+            }
+            if (!empty($item['category_name'])) {
+                $product['category'] = (string)$item['category_name'];
+            }
+            if ($productImages !== []) {
+                $product['image'] = array_values(array_unique($productImages));
+            }
+
+            $productDescription = default_theme_meta_description((string)($item['seo_description'] ?? ''));
+            if ($productDescription === '') {
+                $productDescription = default_theme_meta_description((string)($item['summary'] ?? ''));
+            }
+            if ($productDescription === '') {
+                $productDescription = $description;
+            }
+            $product['description'] = $productDescription;
+
+            $prices = array_values(array_filter((array)($context['price_tiers'] ?? []), static fn($tier): bool => isset($tier['price']) && (float)$tier['price'] > 0));
+            if ($prices !== []) {
+                $priceValues = array_map(static fn($tier): float => (float)$tier['price'], $prices);
+                $currency = preg_replace('/[^A-Z]/', '', strtoupper((string)($prices[0]['currency'] ?? 'USD'))) ?: 'USD';
+                if (strlen($currency) !== 3) {
+                    $currency = 'USD';
+                }
+                $product['offers'] = [
+                    '@type' => count($prices) > 1 ? 'AggregateOffer' : 'Offer',
+                    'priceCurrency' => $currency,
+                    'availability' => 'https://schema.org/InStock',
+                    'url' => $canonical,
+                ];
+                if (count($prices) > 1) {
+                    $product['offers']['lowPrice'] = (string)min($priceValues);
+                    $product['offers']['highPrice'] = (string)max($priceValues);
+                    $product['offers']['offerCount'] = count($prices);
+                } else {
+                    $product['offers']['price'] = (string)$priceValues[0];
+                }
+            }
+
+            $graph[] = $product;
+        }
+
+        if (in_array(($context['type'] ?? ''), ['article', 'case', 'page'], true) && !empty($context['item'])) {
+            $item = $context['item'];
+            $articleImage = default_theme_absolute_url((string)($item['cover'] ?? ''));
+            $article = [
+                '@type' => ($context['type'] ?? '') === 'article' ? 'BlogPosting' : 'Article',
+                '@id' => $canonical . '#article',
+                'headline' => (string)($item['title'] ?? ''),
+                'description' => default_theme_meta_description((string)($item['seo_description'] ?? $item['summary'] ?? $description)),
+                'url' => $canonical,
+                'author' => ['@id' => $organizationId],
+                'publisher' => ['@id' => $organizationId],
+            ];
+            if (!empty($item['created_at'])) {
+                $article['datePublished'] = date('c', strtotime((string)$item['created_at']));
+            }
+            if ($articleImage !== '' && !str_starts_with($articleImage, 'data:')) {
+                $article['image'] = [$articleImage];
+            }
+            $graph[] = $article;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => $graph,
+        ];
     }
 }
 
@@ -141,62 +366,6 @@ if (!function_exists('get_slider_items')) {
             // 如果发生错误，返回空数组
             return [];
         }
-    }
-}
-
-// 渲染产品卡片 - Tailwind 版本
-if (!function_exists('render_product_card')) {
-    function render_product_card(array $product): void {
-        $image = $product['image'] ?? ($product['cover'] ?? '');
-        ?>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
-            <a href="<?= url('/product/' . $product['slug']) ?>" class="block aspect-square overflow-hidden bg-gray-100">
-                <img src="<?= asset_url(h($image)) ?>" 
-                     alt="<?= h($product['name']) ?>" 
-                     class="w-full h-full object-cover hover:scale-105 transition-transform">
-            </a>
-            <div class="p-5 flex-grow flex flex-col">
-                <h3 class="text-lg font-bold text-gray-900 mb-2">
-                    <a href="<?= url('/product/' . $product['slug']) ?>" class="hover:text-brand-600 transition-colors">
-                        <?= h($product['name']) ?>
-                    </a>
-                </h3>
-                <p class="text-gray-600 text-sm flex-grow line-clamp-3"><?= h($product['description']) ?></p>
-                <a href="<?= url('/product/' . $product['slug']) ?>" 
-                   class="mt-4 block w-full text-center px-4 py-2 border border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors">
-                    查看详情
-                </a>
-            </div>
-        </div>
-        <?php
-    }
-}
-
-// 渲染文章卡片 - Tailwind 版本
-if (!function_exists('render_post_card')) {
-    function render_post_card(array $post): void {
-        ?>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
-            <div class="p-5">
-                <h3 class="text-lg font-bold text-gray-900 mb-2">
-                    <a href="<?= url('/post/' . $post['id']) ?>" class="hover:text-brand-600 transition-colors">
-                        <?= h($post['title']) ?>
-                    </a>
-                </h3>
-                <p class="text-sm text-gray-500 mb-3">
-                    <i class="far fa-calendar-alt mr-1"></i>
-                    <?= date('Y-m-d', strtotime($post['created_at'])) ?>
-                </p>
-                <p class="text-gray-600 text-sm line-clamp-3 mb-4">
-                    <?= process_rich_text($post['content'], 150) ?>
-                </p>
-                <a href="<?= url('/post/' . $post['id']) ?>" 
-                   class="inline-flex items-center text-brand-600 font-medium hover:text-brand-700 transition-colors">
-                    阅读更多 →
-                </a>
-            </div>
-        </div>
-        <?php
     }
 }
 

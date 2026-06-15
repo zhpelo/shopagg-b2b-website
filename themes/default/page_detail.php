@@ -7,8 +7,8 @@
 ?>
 <section class="py-8 lg:py-12">
     <div class="container mx-auto px-4 lg:px-8">
-        <nav class="mb-6 text-sm" aria-label="breadcrumb">
-            <ol class="flex flex-wrap items-center gap-2 text-gray-500">
+        <nav class="mb-6 overflow-x-auto pb-1 text-sm" aria-label="breadcrumb">
+            <ol class="flex min-w-max items-center gap-2 text-gray-500">
                 <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
                 <li><a href="<?= url('/page/' . h($item['slug'])) ?>" class="hover:text-brand-600">Page</a></li>
@@ -33,12 +33,12 @@
                         <?php endif; ?>
                     </div>
                     <div class="space-y-2 text-sm text-gray-500">
-                        <p class="flex items-center justify-end">
+                        <p class="flex items-center lg:justify-end">
                             <i class="far fa-calendar mr-2"></i>
                             发布于 <?= format_date($item['created_at'], 'Y-m-d') ?>
                         </p>
                         <?php if (!empty($item['updated_at']) && $item['updated_at'] !== $item['created_at']): ?>
-                            <p class="flex items-center justify-end">
+                            <p class="flex items-center lg:justify-end">
                                 <i class="fas fa-rotate mr-2"></i>
                                 更新于 <?= format_date($item['updated_at'], 'Y-m-d') ?>
                             </p>
@@ -51,7 +51,10 @@
                 <figure class="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
                     <img src="<?= asset_url(h($item['cover'])) ?>"
                          alt="<?= h($item['title']) ?>"
-                         class="max-h-[520px] w-full object-cover">
+                         class="max-h-[520px] w-full object-cover"
+                         loading="eager"
+                         decoding="async"
+                         fetchpriority="high">
                 </figure>
             <?php endif; ?>
 
@@ -61,17 +64,17 @@
                 </article>
             </div>
 
-            <div class="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-900 px-6 py-5 text-white shadow-lg">
+            <div class="mt-8 flex flex-col justify-between gap-4 rounded-2xl bg-slate-900 px-6 py-5 text-white shadow-lg lg:flex-row lg:items-center">
                 <div>
                     <p class="text-sm uppercase tracking-[0.18em] text-white/60">Need help?</p>
                     <p class="mt-1 text-lg font-semibold">如果你对本页面内容有疑问，欢迎直接联系我们。</p>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="<?= url('/') ?>" class="inline-flex items-center rounded-lg border border-white/20 px-4 py-2.5 font-medium text-white transition hover:bg-white/10">
+                <div class="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:flex-wrap">
+                    <a href="<?= url('/') ?>" class="inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 font-medium text-white transition hover:bg-white/10">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Back Home
                     </a>
-                    <a href="<?= url('/contact') ?>" class="inline-flex items-center rounded-lg bg-brand-600 px-5 py-2.5 font-medium text-white transition hover:bg-brand-700">
+                    <a href="<?= url('/contact') ?>" class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-5 py-2.5 font-medium text-white transition hover:bg-brand-700">
                         <i class="fas fa-envelope mr-2"></i>
                         Contact Us
                     </a>

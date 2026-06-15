@@ -7,16 +7,16 @@
  */
 ?>
 <!-- Hero Section -->
-<section class="bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 pt-16 pb-12">
+<section class="bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 pt-10 pb-10 lg:pt-16 lg:pb-12">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
                 <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3"><?= h(block('page_about', 'label')) ?></p>
-                <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-3 font-serif"><?= h($site['name'] ?? 'Company') ?></h1>
-                <p class="text-xl text-gray-600 mb-6"><?= h($site['tagline'] ?? 'General Information') ?></p>
+                <h1 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-3 font-serif"><?= h($site['name'] ?? 'Company') ?></h1>
+                <p class="text-lg text-gray-600 mb-6 lg:text-xl"><?= h($site['tagline'] ?? 'General Information') ?></p>
                 
                 <!-- KPIs -->
-                <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="grid grid-cols-1 gap-3 mb-8 sm:grid-cols-3 sm:gap-4">
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                         <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Rating</span>
                         <span class="text-lg font-bold text-gray-900"><?= h($site['company_rating'] ?? '5.0/5') ?></span>
@@ -31,11 +31,11 @@
                     </div>
                 </div>
                 
-                <div class="flex flex-wrap gap-4">
-                    <a href="<?= url('/contact') ?>" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-md">
+                <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+                    <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 bg-brand-600 text-white text-center font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-md sm:w-auto sm:px-8">
                         <?= h(block('page_about', 'cta_btn1')) ?>
                     </a>
-                    <a href="#company-show" class="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:border-gray-400 transition-colors">
+                    <a href="#company-show" class="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 text-center font-semibold rounded-lg hover:border-gray-400 transition-colors sm:w-auto sm:px-8">
                         <?= h(block('page_about', 'cta_btn2')) ?>
                     </a>
                 </div>
@@ -44,7 +44,9 @@
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
                     <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Company Overview') ?>" 
                          alt="Company Overview" 
-                         class="w-full h-auto">
+                         class="w-full h-auto"
+                         loading="eager"
+                         decoding="async">
                 </div>
             </div>
         </div>
@@ -64,7 +66,9 @@
                             <figure class="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
                                 <img src="<?= get_image_url($site['og_image'] ?? null, 400, 300, 'Company Profile') ?>" 
                                      alt="Company Profile" 
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover"
+                                     loading="lazy"
+                                     decoding="async">
                             </figure>
                             <a href="#company-show" class="mt-4 block w-full text-center px-4 py-2 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition-colors">
                                 <?= h(block('page_about', 'cta_btn2')) ?>
@@ -103,7 +107,7 @@
                                 </tbody>
                             </table>
                             <hr class="border-gray-100 my-4">
-                            <div class="flex gap-8">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:gap-8">
                                 <div>
                                     <span class="text-gray-500">Rating:</span>
                                     <span class="font-bold text-gray-900 ml-2"><?= h($site['company_rating'] ?? '5.0/5') ?></span>
@@ -236,7 +240,9 @@
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2">
                                     <img src="<?= asset_url(h($item['img'])) ?>" 
                                          alt="<?= h($item['title'] ?? '') ?>" 
-                                         class="w-full h-full object-cover">
+                                         class="w-full h-full object-cover"
+                                         loading="lazy"
+                                         decoding="async">
                                 </figure>
                                 <p class="text-sm text-gray-700 text-center line-clamp-1"><?= h($item['title'] ?? '') ?></p>
                             </div>
@@ -261,7 +267,9 @@
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2 bg-gray-50 border border-dashed border-gray-200">
                                     <img src="<?= asset_url(h($item['img'])) ?>" 
                                          alt="<?= h($item['title'] ?? '') ?>" 
-                                         class="w-full h-full object-contain p-2">
+                                         class="w-full h-full object-contain p-2"
+                                         loading="lazy"
+                                         decoding="async">
                                 </figure>
                                 <p class="text-sm text-gray-700 text-center line-clamp-1"><?= h($item['title'] ?? '') ?></p>
                             </div>
@@ -273,7 +281,7 @@
 
             <!-- Sidebar -->
             <div class="lg:w-3/12">
-                <div class="sticky top-24 space-y-6">
+                <div class="space-y-6 lg:sticky lg:top-24">
                     <!-- Contact Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <h3 class="font-bold text-gray-900 mb-4"><?= h(block('page_about', 'sidebar_title')) ?></h3>
@@ -285,7 +293,7 @@
                             $waDigits = preg_replace('/\D+/', '', $site['whatsapp'] ?? '');
                         ?>
                         <?php if (!empty($waDigits)): ?>
-                            <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank"
+                            <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" rel="noopener noreferrer"
                                class="block w-full text-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition-colors">
                                 <i class="fab fa-whatsapp text-green-500 mr-2"></i>
                                 <?= h(block('page_about', 'sidebar_chat')) ?>

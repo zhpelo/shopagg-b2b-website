@@ -21,6 +21,17 @@ License: MIT
   --brand-accent: #0ea5e9;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
 /* ===== Typography ===== */
 .line-clamp-1 {
   display: -webkit-box;
@@ -45,7 +56,8 @@ License: MIT
 
 /* ===== Hero Swiper ===== */
 .hero-banner {
-  height: clamp(420px, 45.4545vw, 900px);
+  min-height: 520px;
+  height: clamp(520px, 45.4545vw, 900px);
 }
 
 .hero-banner .swiper,
@@ -95,13 +107,21 @@ License: MIT
   border-color: #0ea5e9 !important;
 }
 
-/* Rich content styles are now in /app/views/admin/rich-content.css */
+/* ===== Content Safety ===== */
+.rich-content img {
+  height: auto;
+}
 
-/* ===== Sticky Sidebar ===== */
-.sticky-element {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 100px;
+.rich-content table {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .rich-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }
 
 /* ===== Smooth Scroll ===== */
@@ -110,40 +130,13 @@ html {
 }
 
 /* ===== Focus States ===== */
-button:focus,
-a:focus,
-input:focus,
-textarea:focus {
-  outline: none;
-}
-
-/* ===== Custom Scrollbar ===== */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* ===== Animation Utilities ===== */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(14, 165, 233, 0.32);
+  outline-offset: 2px;
 }
 
 /* ===== Mobile Menu Animation ===== */
@@ -151,92 +144,11 @@ textarea:focus {
   transition: all 0.3s ease;
 }
 
-/* ===== Product Card Hover ===== */
-.product-card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
-}
-
-/* ===== Image Hover Zoom ===== */
-.img-zoom {
-  transition: transform 0.5s ease;
-}
-
-.img-zoom:hover {
-  transform: scale(1.05);
-}
-
-/* ===== Button Ripple Effect ===== */
-.btn-ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-ripple::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s ease, height 0.6s ease;
-}
-
-.btn-ripple:active::after {
-  width: 300px;
-  height: 300px;
-}
-
-/* ===== Modal Backdrop ===== */
-.modal-backdrop {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-/* ===== Toast Notification ===== */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* ===== Loading Spinner ===== */
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #0ea5e9;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 /* ===== Floating Contact ===== */
 .site-float-contact {
   position: fixed;
   right: 1rem;
-  bottom: 3rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
   z-index: 45;
   display: flex;
   align-items: flex-end;
@@ -330,26 +242,20 @@ textarea:focus {
   flex-shrink: 0;
 }
 
-
 .site-float-contact__item--phone .site-float-contact__icon {
   background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
   color: #fff;
 }
-
 
 .site-float-contact__item--email .site-float-contact__icon {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   color: #fff;
 }
 
-
-
 .site-float-contact__item--whatsapp .site-float-contact__icon {
   background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
   color: #fff;
 }
-
-
 
 .site-float-contact__item--address .site-float-contact__icon {
   background: linear-gradient(135deg, #ea580c 0%, #fb923c 100%);
@@ -420,31 +326,26 @@ textarea:focus {
   font-weight: 700;
   white-space: nowrap;
 }
-.site-float-contact__social-link{
+
+.site-float-contact__social-link {
   background-color: #ffffff;
 }
-
 
 .site-float-contact__social-link--facebook .site-float-contact__social-icon {
   background: linear-gradient(135deg, #1877f2 0%, #60a5fa 100%);
 }
 
-
-
 .site-float-contact__social-link--instagram .site-float-contact__social-icon {
   background: linear-gradient(135deg, #f97316 0%, #e4405f 55%, #8b5cf6 100%);
 }
-
 
 .site-float-contact__social-link--twitter .site-float-contact__social-icon {
   background: linear-gradient(135deg, #0f172a 0%, #1da1f2 100%);
 }
 
-
 .site-float-contact__social-link--linkedin .site-float-contact__social-icon {
   background: linear-gradient(135deg, #0a66c2 0%, #38bdf8 100%);
 }
-
 
 .site-float-contact__social-link--youtube .site-float-contact__social-icon {
   background: linear-gradient(135deg, #dc2626 0%, #ff0000 100%);
@@ -596,6 +497,7 @@ textarea:focus {
 
 @media (max-width: 1023px) {
   .site-float-contact {
+    right: 0.75rem;
     align-items: flex-end;
   }
 
@@ -619,6 +521,35 @@ textarea:focus {
     visibility: visible;
     pointer-events: auto;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-banner {
+    min-height: 500px;
+    height: min(640px, calc(100svh - 4rem));
+  }
+
+  .hero-swiper .swiper-button-prev,
+  .hero-swiper .swiper-button-next {
+    display: none;
+  }
+
+  .site-float-contact__toggle {
+    width: 3.25rem;
+    height: 3.25rem;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 16px 32px rgba(2, 132, 199, 0.22);
+  }
+
+  .site-float-contact__toggle span {
+    display: none;
+  }
+
+  .site-float-contact__panel {
+    width: calc(100vw - 1.5rem);
+    max-height: min(76vh, 34rem);
   }
 }
 

@@ -9,8 +9,8 @@
 <section class="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
     <div class="container mx-auto px-4 lg:px-8 py-12">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6" aria-label="breadcrumb">
-            <ol class="flex items-center space-x-2">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+            <ol class="flex min-w-max items-center space-x-2">
                 <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
                 <li class="text-white font-medium">Cases</li>
@@ -22,7 +22,7 @@
     </div>
 </section>
 
-<section class="py-12 lg:py-16">
+<section class="py-10 lg:py-16">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <?php foreach ($items as $item): ?>
@@ -31,7 +31,9 @@
                         <a href="<?= h($item['url']) ?>" class="block aspect-video overflow-hidden">
                             <img src="<?= asset_url(h($item['cover'])) ?>" 
                                  alt="<?= h($item['title']) ?>" 
-                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                 loading="lazy"
+                                 decoding="async">
                         </a>
                     <?php endif; ?>
                     <div class="p-6">

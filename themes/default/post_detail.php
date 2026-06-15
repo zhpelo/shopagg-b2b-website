@@ -9,8 +9,8 @@ $category = $category ?? null;
 <section class="py-8">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6" aria-label="breadcrumb">
-            <ol class="flex items-center space-x-2 text-gray-500">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+            <ol class="flex min-w-max items-center space-x-2 text-gray-500">
                 <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
                 <li><a href="<?= url('/blog') ?>" class="hover:text-brand-600">Blog</a></li>
@@ -26,7 +26,7 @@ $category = $category ?? null;
         <div class="max-w-4xl mx-auto">
             <!-- Article Header -->
             <header class="mb-8">
-                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"><?= h($item['title']) ?></h1>
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight"><?= h($item['title']) ?></h1>
                 <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                     <span class="flex items-center">
                         <i class="far fa-calendar mr-2"></i>
@@ -47,7 +47,10 @@ $category = $category ?? null;
                 <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
                     <img src="<?= asset_url(h($item['cover'])) ?>" 
                          alt="<?= h($item['title']) ?>" 
-                         class="w-full h-auto">
+                         class="w-full h-auto"
+                         loading="eager"
+                         decoding="async"
+                         fetchpriority="high">
                 </figure>
             <?php endif; ?>
 
@@ -71,7 +74,7 @@ $category = $category ?? null;
             <?php endif; ?>
 
             <!-- Bottom Actions -->
-            <div class="flex flex-wrap justify-between items-center py-6 border-t border-gray-200 gap-4">
+            <div class="flex flex-col justify-between py-6 border-t border-gray-200 gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                 <div class="flex flex-wrap gap-3">
                     <?php if ($category): ?>
                         <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
@@ -87,7 +90,7 @@ $category = $category ?? null;
                     </a>
                 </div>
                 <a href="<?= url('/contact') ?>" 
-                   class="inline-flex items-center px-6 py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md">
+                   class="inline-flex w-full items-center justify-center px-6 py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md sm:w-auto">
                     <i class="fas fa-envelope mr-2"></i>
                     Contact
                 </a>

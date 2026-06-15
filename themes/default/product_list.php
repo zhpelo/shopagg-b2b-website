@@ -8,13 +8,13 @@
 $categories = $categories ?? [];
 $currentCategory = $current_category ?? null;
 
-// 递归渲染分类树
-function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
-    if (empty($items)) return;
-    foreach ($items as $cat):
-        $isActive = $currentCategoryId === (int)$cat['id'];
-        $hasChildren = !empty($cat['children']);
-        $paddingLeft = 1 + ($level * 1);
+if (!function_exists('renderProductCategoryList')) {
+    function renderProductCategoryList($items, $currentCategoryId, $level = 0): void {
+        if (empty($items)) return;
+        foreach ($items as $cat):
+            $isActive = $currentCategoryId === (int)$cat['id'];
+            $hasChildren = !empty($cat['children']);
+            $paddingLeft = 1 + ($level * 1);
 ?>
     <a href="<?= url('/products') ?>?category=<?= (int)$cat['id'] ?>" 
        class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
@@ -26,10 +26,11 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
         <?= h($cat['name']) ?>
     </a>
     <?php
-        if ($hasChildren) {
-            renderProductCategoryList($cat['children'], $currentCategoryId, $level + 1);
-        }
-    endforeach;
+            if ($hasChildren) {
+                renderProductCategoryList($cat['children'], $currentCategoryId, $level + 1);
+            }
+        endforeach;
+    }
 }
 ?>
 
@@ -37,8 +38,8 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
 <section class="bg-gradient-to-r from-rose-500 to-pink-600 text-white">
     <div class="container mx-auto px-4 lg:px-8 py-12">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6" aria-label="breadcrumb">
-            <ol class="flex items-center space-x-2">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+            <ol class="flex min-w-max items-center space-x-2">
                 <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
                 <li><a href="<?= url('/products') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>">Products</a></li>
@@ -60,11 +61,11 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
     </div>
 </section>
 
-<section class="py-12">
+<section class="py-10 lg:py-12">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Sidebar -->
-            <aside class="w-full lg:w-64 flex-shrink-0">
+            <aside class="w-full flex-shrink-0 lg:w-64">
                 <?php if (!empty($categories)): ?>
                 <!-- Categories -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
@@ -74,17 +75,19 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                             Categories
                         </h3>
                     </div>
-                    <a href="<?= url('/products') ?>" 
-                       class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
-                        <i class="fas fa-th-large w-5 mr-2 <?= !$currentCategory ? 'text-amber-500' : 'text-gray-400' ?>"></i>
-                        All Products
-                    </a>
-                    <?php renderProductCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
+                    <div class="max-h-80 overflow-y-auto lg:max-h-none lg:overflow-visible">
+                        <a href="<?= url('/products') ?>"
+                           class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
+                            <i class="fas fa-th-large w-5 mr-2 <?= !$currentCategory ? 'text-amber-500' : 'text-gray-400' ?>"></i>
+                            All Products
+                        </a>
+                        <?php renderProductCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
+                    </div>
                 </div>
                 <?php endif; ?>
 
                 <!-- Quick Quote Card -->
-                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+                <div class="bg-gradient-to-br from-slate-900 to-brand-700 rounded-xl p-5 text-white lg:p-6">
                     <h3 class="font-bold text-lg mb-3 flex items-center">
                         <i class="fas fa-file-invoice mr-2"></i>
                         Quick Quote
@@ -92,7 +95,7 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                     <p class="text-white/90 text-sm mb-4">
                         Found what you need? Send an inquiry to get a quote now.
                     </p>
-                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-indigo-600 transition-colors">
+                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-slate-900 transition-colors">
                         <i class="fas fa-envelope mr-2"></i>
                         Contact
                     </a>
@@ -121,7 +124,9 @@ function renderProductCategoryList($items, $currentCategoryId, $level = 0) {
                                 <a href="<?= h($item['url']) ?>" class="block aspect-square overflow-hidden bg-gray-100">
                                     <img src="<?= get_image_url($item['cover'] ?? null, 400, 400, h($item['title'])) ?>" 
                                          alt="<?= h($item['title']) ?>" 
-                                         class="w-full h-full object-cover hover:scale-105 transition-transform">
+                                         class="w-full h-full object-cover hover:scale-105 transition-transform"
+                                         loading="lazy"
+                                         decoding="async">
                                 </a>
                                 <div class="p-5 flex-grow flex flex-col">
                                     <div class="mb-3">

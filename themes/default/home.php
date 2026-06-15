@@ -23,6 +23,9 @@ $carouselProducts = get_carousel_products(3);
                             src="<?= get_image_url($p['image'] ?? null, 1980, 900) ?>"
                             alt="<?= h($p['title']) ?>"
                             class="w-full h-full object-cover"
+                            loading="eager"
+                            decoding="async"
+                            fetchpriority="high"
                         >
                     </div>
                     <!-- Overlay -->
@@ -42,11 +45,11 @@ $carouselProducts = get_carousel_products(3);
                                     <?= h(mb_substr(strip_tags($p['summary']), 0, 120)) ?>
                                 </p>
                             <?php endif; ?>
-                            <div class="flex flex-wrap gap-4">
-                                <a href="<?= $p['url'] ?>" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+                                <a href="<?= $p['url'] ?>" class="w-full px-6 py-3 text-center bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg sm:w-auto sm:px-8">
                                     <?= h($p['link_text'] ?? 'View Details') ?>
                                 </a>
-                                <a href="<?= url('/contact') ?>" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors">
+                                <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 text-center border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors sm:w-auto sm:px-8">
                                     Contact
                                 </a>
                             </div>
@@ -85,25 +88,25 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php endif; ?>
 
 <!-- Value Proposition -->
-<section class="relative z-10 -mt-32 px-4">
+<section class="relative z-10 -mt-10 px-4 md:-mt-20 lg:-mt-32">
     <div class="container mx-auto max-w-6xl">
-        <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+        <div class="bg-white rounded-2xl shadow-xl p-4 lg:p-8">
             <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-                <div class="p-6 text-center">
+                <div class="p-5 text-center lg:p-6">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
                         <i class="<?= h(block('home_value_props', 'item1_icon')) ?> text-2xl"></i>
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item1_title')) ?></h3>
                     <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item1_desc')) ?></p>
                 </div>
-                <div class="p-6 text-center">
+                <div class="p-5 text-center lg:p-6">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
                         <i class="<?= h(block('home_value_props', 'item2_icon')) ?> text-2xl"></i>
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item2_title')) ?></h3>
                     <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item2_desc')) ?></p>
                 </div>
-                <div class="p-6 text-center">
+                <div class="p-5 text-center lg:p-6">
                     <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
                         <i class="<?= h(block('home_value_props', 'item3_icon')) ?> text-2xl"></i>
                     </div>
@@ -116,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- Featured Products -->
-<section class="py-16 lg:py-20">
+<section class="py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-gray-200">
@@ -136,7 +139,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
                         <img src="<?= get_image_url($p['cover'] ?? null, 400, 400, h($p['title'])) ?>" 
                              alt="<?= h($p['title']) ?>" 
-                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                             loading="lazy"
+                             decoding="async">
                     </a>
                     <div class="p-5 flex-grow flex flex-col">
                         <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
@@ -151,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- Why Choose Us -->
-<section class="py-16 lg:py-20 bg-gradient-to-br from-slate-50 to-gray-100">
+<section class="py-12 lg:py-20 bg-gradient-to-br from-slate-50 to-gray-100">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -187,7 +192,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
                     <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Factory') ?>" 
                          alt="Factory" 
-                         class="w-full h-auto object-cover">
+                         class="w-full h-auto object-cover"
+                         loading="lazy"
+                         decoding="async">
                 </div>
             </div>
         </div>
@@ -195,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- Success Cases -->
-<section class="py-16 lg:py-20">
+<section class="py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3"><?= h(block('home_cases', 'heading')) ?></h2>
@@ -209,7 +216,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="aspect-[3/2] overflow-hidden">
                             <img src="<?= get_image_url($c['cover'] ?? null, 600, 400, h($c['title'])) ?>" 
                                  alt="<?= h($c['title']) ?>" 
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                 loading="lazy"
+                                 decoding="async">
                         </div>
                         <div class="p-4">
                             <h4 class="font-semibold text-gray-900 line-clamp-1"><?= h($c['title']) ?></h4>
@@ -222,17 +231,17 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 
 <!-- Bottom CTA -->
-<section class="py-16 pb-20">
+<section class="py-12 pb-20 lg:py-16">
     <div class="container mx-auto px-4 lg:px-8">
-        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-8 lg:p-16 text-center">
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-center lg:p-16">
             <!-- Decorative gradient overlay -->
             <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
             
             <div class="relative z-10">
                 <h2 class="text-2xl lg:text-4xl font-bold text-white mb-4"><?= h(block('home_cta', 'heading')) ?></h2>
                 <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto"><?= h(block('home_cta', 'text')) ?></p>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <a href="<?= url('/contact') ?>" class="px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg">
+                <div class="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+                    <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg sm:w-auto sm:px-8">
                         <?= h(block('home_cta', 'btn1_text')) ?>
                     </a>
                     <?php
@@ -240,8 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $waDigits = preg_replace('/\D+/', '', $wa);
                     if (!empty($waDigits)):
                     ?>
-                        <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" 
-                           class="px-8 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-lg inline-flex items-center gap-2">
+                        <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex w-full items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-lg sm:w-auto sm:px-8">
                             <i class="fab fa-whatsapp text-xl"></i>
                             <?= h(block('home_cta', 'btn2_text')) ?>
                         </a>

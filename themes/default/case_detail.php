@@ -13,9 +13,9 @@
                 <span class="inline-block px-3 py-1 bg-white/20 text-white text-sm font-medium rounded-full mb-4">
                     Success Case
                 </span>
-                <h1 class="text-3xl lg:text-5xl font-bold mb-4"><?= h($item['title']) ?></h1>
+                <h1 class="text-3xl lg:text-5xl font-bold mb-4 leading-tight"><?= h($item['title']) ?></h1>
                 <?php if (!empty($item['summary'])): ?>
-                    <p class="text-xl text-white/90"><?= h($item['summary']) ?></p>
+                    <p class="text-lg text-white/90 lg:text-xl"><?= h($item['summary']) ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -31,7 +31,10 @@
                     <figure class="rounded-2xl overflow-hidden shadow-lg mb-8">
                         <img src="<?= asset_url(h($item['cover'])) ?>" 
                              alt="<?= h($item['title']) ?>" 
-                             class="w-full h-auto">
+                             class="w-full h-auto"
+                             loading="eager"
+                             decoding="async"
+                             fetchpriority="high">
                     </figure>
                 <?php endif; ?>
                 

@@ -3,17 +3,25 @@
  * 页面模板：产品详情
  * 作用：展示产品图片、参数、询盘入口与相关信息。
  * 变量：$item（产品数据）、$images（图片列表）、$category（分类数据）。
- * 注意：包含 Swiper 轮播依赖。
+ * 注意：存在产品图片时加载 Swiper 轮播依赖。
  */
 $category = $category ?? null;
+$images = $images ?? [];
+$sampleCurrency = !empty($price_tiers) ? preg_replace('/[^A-Z]/', '', strtoupper((string)($price_tiers[0]['currency'] ?? 'USD'))) : 'USD';
+if ($sampleCurrency === '' || strlen($sampleCurrency) !== 3) {
+    $sampleCurrency = 'USD';
+}
+$samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['price'] * 2, 2, '.', '') : '50.00';
 ?>
+<?php if (!empty($images)): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<?php endif; ?>
 
 <section class="py-8">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6" aria-label="breadcrumb">
-            <ol class="flex items-center space-x-2 text-gray-500">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+            <ol class="flex min-w-max items-center space-x-2 text-gray-500">
                 <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
                 <li><a href="<?= url('/products') ?>" class="hover:text-brand-600">Products</a></li>
@@ -34,11 +42,14 @@ $category = $category ?? null;
                         <!-- Main Swiper -->
                         <div class="swiper main-swiper rounded-lg overflow-hidden mb-3">
                             <div class="swiper-wrapper">
-                                <?php foreach ($images as $img): ?>
+                                <?php foreach ($images as $index => $img): ?>
                                     <div class="swiper-slide aspect-square">
                                         <img src="<?= asset_url(h($img)) ?>" 
                                              alt="<?= h($item['title']) ?>" 
-                                             class="w-full h-full object-cover cursor-zoom-in">
+                                             class="w-full h-full object-cover cursor-zoom-in"
+                                             loading="<?= $index === 0 ? 'eager' : 'lazy' ?>"
+                                             decoding="async"
+                                             <?= $index === 0 ? 'fetchpriority="high"' : '' ?>>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -52,7 +63,9 @@ $category = $category ?? null;
                                     <div class="swiper-slide cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 transition-colors">
                                         <img src="<?= asset_url(h($img)) ?>" 
                                              alt="<?= h($item['title']) ?>" 
-                                             class="w-full h-full object-cover">
+                                             class="w-full h-full object-cover"
+                                             loading="lazy"
+                                             decoding="async">
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -71,8 +84,8 @@ $category = $category ?? null;
 
             <!-- Right: Product Info -->
             <div class="lg:w-5/12">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
-                    <h1 class="text-2xl font-bold text-gray-900 mb-3"><?= h($item['title']) ?></h1>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:sticky lg:top-24 lg:p-6">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-3 leading-tight"><?= h($item['title']) ?></h1>
                     
                     <div class="flex flex-wrap items-center gap-3 mb-4 text-sm text-gray-500">
                         <span class="flex items-center">
@@ -97,10 +110,10 @@ $category = $category ?? null;
                     <?php endif; ?>
 
                     <?php if (!empty($price_tiers)): ?>
-                        <div class="grid grid-cols-3 gap-3 mb-6">
+                        <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-3">
                             <?php foreach ($price_tiers as $tier): ?>
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
-                                    <div class="text-xl font-bold text-gray-900">
+                                    <div class="text-lg font-bold text-gray-900 lg:text-xl">
                                         <?= h($tier['currency']) ?>$<?= h((string)$tier['price']) ?>
                                     </div>
                                     <div class="text-sm text-gray-500">
@@ -114,7 +127,7 @@ $category = $category ?? null;
                     <hr class="border-gray-100 my-6">
 
                     <!-- Action Buttons -->
-                    <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2">
                         <button id="open-inquiry-modal" 
                                 class="px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg hover:bg-rose-600 transition-colors shadow-md">
                             Send Inquiry
@@ -125,6 +138,7 @@ $category = $category ?? null;
                         ?>
                         <a href="<?= !empty($waDigits) ? 'https://wa.me/' . h($waDigits) : '#inquiry' ?>" 
                            target="<?= !empty($waDigits) ? '_blank' : '' ?>"
+                           <?= !empty($waDigits) ? 'rel="noopener noreferrer"' : '' ?>
                            class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-md inline-flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp"></i>
                             Chat Now
@@ -132,7 +146,7 @@ $category = $category ?? null;
                     </div>
 
                     <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-4">
-                        Still deciding? Get samples of <span class="font-semibold">US$ <?= !empty($price_tiers) ? h($price_tiers[0]['currency']) . ' ' . h((string)($price_tiers[0]['price'] * 2)) : '50.00' ?>/Pieces</span>!
+                        Still deciding? Get samples of <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
                         <a href="#inquiry" class="font-semibold underline text-gray-900 hover:text-brand-600" 
                            onclick="document.getElementById('open-inquiry-modal').click(); return false;">Request Sample</a>
                     </div>
@@ -168,11 +182,15 @@ $category = $category ?? null;
                             <?php if (!empty($product['cover'])): ?>
                                 <img src="<?= asset_url(h($product['cover'])) ?>" 
                                      alt="<?= h($product['title']) ?>" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                     loading="lazy"
+                                     decoding="async">
                             <?php else: ?>
-                                <img src="<?= placeholder_url(400, 400, 'No Image') ?>" 
+                                <img src="<?= get_image_url(null, 400, 400, 'No Image') ?>"
                                      alt="<?= h($product['title']) ?>" 
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover"
+                                     loading="lazy"
+                                     decoding="async">
                             <?php endif; ?>
                         </div>
                         <div class="p-4">
@@ -195,9 +213,9 @@ $category = $category ?? null;
 <?php if (!empty($inquiry_form)): ?>
 <div id="inquiry-modal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm close-inquiry-modal"></div>
-    <div class="absolute inset-4 md:inset-10 lg:inset-20 flex items-center justify-center">
+    <div class="absolute inset-3 flex items-center justify-center md:inset-10 lg:inset-20">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-full overflow-y-auto">
-            <div class="p-6 lg:p-8 relative">
+            <div class="p-5 lg:p-8 relative">
                 <button class="close-inquiry-modal absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
                     <i class="fas fa-times text-gray-500"></i>
                 </button>
@@ -230,7 +248,7 @@ $category = $category ?? null;
                             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
                             <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
                                     <input type="text" name="name" required placeholder="Full Name"
@@ -243,7 +261,7 @@ $category = $category ?? null;
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
                                     <input type="text" name="company" placeholder="Company Ltd."
@@ -330,7 +348,13 @@ $category = $category ?? null;
         lightbox.classList.add('hidden');
         document.body.style.overflow = '';
     };
+})();
+</script>
+<?php endif; ?>
 
+<?php if (!empty($inquiry_form)): ?>
+<script>
+(function() {
     // Inquiry Modal
     const inquiryModal = document.getElementById("inquiry-modal");
     const openInquiryBtn = document.getElementById("open-inquiry-modal");

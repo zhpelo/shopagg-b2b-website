@@ -188,31 +188,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 <p class="text-gray-500 mb-6"><?= h($site['tagline']) ?></p>
                 <div class="flex space-x-3">
                     <?php if (!empty($site['facebook'])): ?>
-                        <a href="<?= h($site['facebook']) ?>" target="_blank" title="Facebook" 
+                        <a href="<?= h($site['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook"
                            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($site['instagram'])): ?>
-                        <a href="<?= h($site['instagram']) ?>" target="_blank" title="Instagram"
+                        <a href="<?= h($site['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram"
                            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
                             <i class="fab fa-instagram"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($site['twitter'])): ?>
-                        <a href="<?= h($site['twitter']) ?>" target="_blank" title="Twitter"
+                        <a href="<?= h($site['twitter']) ?>" target="_blank" rel="noopener noreferrer" title="Twitter"
                            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
                             <i class="fab fa-twitter"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($site['linkedin'])): ?>
-                        <a href="<?= h($site['linkedin']) ?>" target="_blank" title="LinkedIn"
+                        <a href="<?= h($site['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn"
                            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($site['youtube'])): ?>
-                        <a href="<?= h($site['youtube']) ?>" target="_blank" title="YouTube"
+                        <a href="<?= h($site['youtube']) ?>" target="_blank" rel="noopener noreferrer" title="YouTube"
                            class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
                             <i class="fab fa-youtube"></i>
                         </a>
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </a>
                             <?php endif; ?>
                             <?php if (!empty($site['company_address'])): ?>
-                                <a href="https://goo.gl/maps/<?= h($site['company_address']) ?>" target="_blank" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
+                                <a href="https://www.google.com/maps/search/?api=1&query=<?= rawurlencode((string)$site['company_address']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
                                     <i class="fas fa-map-marker-alt w-5 mr-2"></i>
                                     <span><?= h($site['company_address']) ?></span>
                                 </a>

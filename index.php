@@ -50,7 +50,7 @@ if (APP_DEBUG) {
 } else {
     ini_set('display_errors', '0');
     ini_set('display_startup_errors', '0');
-    error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+    error_reporting(E_ALL & ~E_DEPRECATED);
     ini_set('log_errors', '1');
     ini_set('error_log', APP_ROOT . '/uploads/logs/error.log');
 }
