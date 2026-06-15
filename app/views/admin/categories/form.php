@@ -59,7 +59,7 @@ $currentId = (int)($category['id'] ?? 0);
                             <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
                             <input id="category-slug" class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 font-mono text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($category['slug'] ?? '') ?>" placeholder="category-slug" data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
                         </span>
-                        <p class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符；留空则自动生成</p>
+                        <p class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，留空则自动生成</p>
                     </label>
 
                     <label class="block space-y-2">

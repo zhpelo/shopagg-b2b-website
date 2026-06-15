@@ -161,7 +161,7 @@
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">别名 (Slug)</span>
                         <input id="product-slug" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="slug" value="<?= h($product['slug'] ?? '') ?>" placeholder="product-slug" data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
-                        <p class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符；留空则自动生成</p>
+                        <p class="text-xs text-slate-500">仅支持小写字母、数字和连字符 `-`，留空则自动生成</p>
                     </label>
 
                     <label class="block space-y-2">
