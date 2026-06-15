@@ -118,6 +118,7 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/media', [AdminController::class, 'mediaList']);
     $router->add('GET', '/admin/media/connector', [AdminController::class, 'mediaConnector']);
     $router->add('POST', '/admin/media/delete', [AdminController::class, 'mediaDelete']);
+    $router->add('POST', '/admin/media/update', [AdminController::class, 'mediaUpdate']);
     $router->add('POST', '/admin/media/upload', [AdminController::class, 'mediaUpload']);
     $router->add('POST', '/admin/media/folder/create', [AdminController::class, 'mediaFolderCreate']);
     $router->add('POST', '/admin/media/folder/delete', [AdminController::class, 'mediaFolderDelete']);

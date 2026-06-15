@@ -168,6 +168,55 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     <input type="hidden" name="parent_dir" value="<?= h($currentDir) ?>">
 </form>
 
+<div id="page-media-edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4">
+    <div class="w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">编辑媒体信息</h2>
+                <p class="mt-1 text-sm text-slate-500">可修改媒体库展示用的标题和原始文件名，不会改动服务器上的物理文件。</p>
+            </div>
+            <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" data-media-edit-close onclick="window.closePageMediaEditModal && window.closePageMediaEditModal()" aria-label="关闭">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form method="post" action="<?= url('/admin/media/update') ?>" class="space-y-5 px-6 py-6">
+            <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+            <input type="hidden" name="dir" value="<?= h($currentDir) ?>">
+            <input type="hidden" name="path" id="page-media-edit-path" value="">
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="page-media-edit-original-name" class="mb-2 block text-sm font-medium text-slate-700">原始文件名</label>
+                    <input type="text" id="page-media-edit-original-name" name="original_name" maxlength="180" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100">
+                    <p class="mt-2 text-xs leading-5 text-slate-400">用于后台展示，不能为空，不会重命名 /uploads 目录里的真实文件。</p>
+                </div>
+                <div>
+                    <label for="page-media-edit-title" class="mb-2 block text-sm font-medium text-slate-700">标题</label>
+                    <input type="text" id="page-media-edit-title" name="title" maxlength="180" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100">
+                    <p class="mt-2 text-xs leading-5 text-slate-400">可选，用于后台和媒体选择器展示；留空时仅显示原始文件名。</p>
+                </div>
+            </div>
+
+            <div class="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 md:grid-cols-2">
+                <div>
+                    <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">存储文件名</span>
+                    <strong class="mt-1 block break-all text-slate-700" id="page-media-edit-storage-name">-</strong>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">文件路径</span>
+                    <strong class="mt-1 block break-all text-slate-700" id="page-media-edit-public-path">-</strong>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 pt-5">
+                <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50" data-media-edit-close onclick="window.closePageMediaEditModal && window.closePageMediaEditModal()">取消</button>
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card explorer-shell">
     <div class="explorer-topbar">
         <div class="explorer-topbar-left">
@@ -311,6 +360,8 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                         data-file-path="<?= h($file['public_path']) ?>"
                         data-explorer-file='<?= h(json_encode([
                                                         'name' => $file['original_name'] ?: $file['name'],
+                                                        'title' => $file['title'] ?? '',
+                                                        'original_name' => $file['original_name'] ?: $file['name'],
                                                         'path' => $file['public_path'],
                                                         'url' => asset_url($file['public_path']),
                                                         'type' => $file['type'],
@@ -335,13 +386,24 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
                             </div>
                             <div class="explorer-name-meta">
                                 <strong title="<?= h($file['original_name'] ?: $file['name']) ?>"><?= h($file['original_name'] ?: $file['name']) ?></strong>
-                                <span>存储名：<?= h($file['storage_name'] ?? $file['name']) ?></span>
+                                <span>标题：<?= h(((string)($file['title'] ?? '')) !== '' ? (string)$file['title'] : '未设置') ?> · 存储名：<?= h($file['storage_name'] ?? $file['name']) ?></span>
                             </div>
                         </div>
                         <div><?= $file['is_video'] ? '视频' : ($file['is_image'] ? '图片' : '文件') ?></div>
                         <div><?= h($file['size_formatted']) ?></div>
                         <div><?= h($file['date']) ?></div>
                         <div class="explorer-actions" >
+                            <button
+                                type="button"
+                                class="js-page-media-edit-btn inline-flex h-9 w-9 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 text-sky-600 transition hover:bg-sky-100 hover:text-sky-700"
+                                data-edit-path="<?= h($file['public_path']) ?>"
+                                data-edit-title="<?= h((string)($file['title'] ?? '')) ?>"
+                                data-edit-original-name="<?= h($file['original_name'] ?: $file['name']) ?>"
+                                data-edit-storage-name="<?= h($file['storage_name'] ?? $file['name']) ?>"
+                                onclick="window.openPageMediaEditModal && window.openPageMediaEditModal(this)"
+                                title="编辑文件信息">
+                                <i class="fas fa-pen text-xs"></i>
+                            </button>
                             <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700" data-copy-path="<?= h($file['public_path']) ?>">
                                 <i class="fas fa-copy text-xs"></i>
                             </button>
@@ -363,6 +425,10 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
             <div class="explorer-preview-panel hidden" id="explorerPreviewPanel">
                 <div class="explorer-preview-box" id="explorerPreviewBox"></div>
                 <div class="explorer-preview-meta">
+                    <div class="explorer-meta-row">
+                        <span>标题</span>
+                        <strong id="explorerPreviewTitle"></strong>
+                    </div>
                     <div class="explorer-meta-row">
                         <span>原始文件名</span>
                         <strong id="explorerPreviewName"></strong>
@@ -409,3 +475,89 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     </div>
 </div>
 
+<script>
+(function () {
+    function getEditModal() {
+        return document.getElementById('page-media-edit-modal');
+    }
+
+    window.closePageMediaEditModal = function () {
+        var modal = getEditModal();
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        document.documentElement.classList.remove('media-library-modal-open');
+        document.body.classList.remove('media-library-modal-open');
+    };
+
+    window.openPageMediaEditModal = function (button) {
+        var modal = getEditModal();
+        var pathInput = document.getElementById('page-media-edit-path');
+        var originalNameInput = document.getElementById('page-media-edit-original-name');
+        var titleInput = document.getElementById('page-media-edit-title');
+        var storageName = document.getElementById('page-media-edit-storage-name');
+        var publicPath = document.getElementById('page-media-edit-public-path');
+
+        if (!modal || !button || !pathInput || !originalNameInput || !titleInput || !storageName || !publicPath) {
+            return;
+        }
+
+        pathInput.value = button.getAttribute('data-edit-path') || '';
+        originalNameInput.value = button.getAttribute('data-edit-original-name') || '';
+        titleInput.value = button.getAttribute('data-edit-title') || '';
+        storageName.textContent = button.getAttribute('data-edit-storage-name') || '-';
+        publicPath.textContent = button.getAttribute('data-edit-path') || '-';
+
+        document.documentElement.classList.add('media-library-modal-open');
+        document.body.classList.add('media-library-modal-open');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        originalNameInput.focus();
+        originalNameInput.select();
+    };
+
+    function bindMediaEditModal() {
+        var buttons = document.querySelectorAll('.js-page-media-edit-btn');
+        var closeButtons = document.querySelectorAll('[data-media-edit-close]');
+        var modal = getEditModal();
+        var i = 0;
+
+        for (i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.openPageMediaEditModal(this);
+            });
+        }
+
+        for (i = 0; i < closeButtons.length; i++) {
+            closeButtons[i].addEventListener('click', window.closePageMediaEditModal);
+        }
+
+        if (modal) {
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    window.closePageMediaEditModal();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                window.closePageMediaEditModal();
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindMediaEditModal);
+        return;
+    }
+
+    bindMediaEditModal();
+})();
+</script>

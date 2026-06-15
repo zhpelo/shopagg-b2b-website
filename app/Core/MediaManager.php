@@ -204,6 +204,63 @@ class MediaManager
         ];
     }
 
+    public function updateFileMetadata(string $path, string $title, string $originalName): array
+    {
+        $this->synchronizeIndex();
+
+        $absolutePath = $this->absoluteFilePath($path);
+        if (!is_file($absolutePath)) {
+            throw new \RuntimeException('文件不存在');
+        }
+
+        $originalName = trim($originalName);
+        if ($originalName === '') {
+            throw new \RuntimeException('原始文件名不能为空');
+        }
+
+        $publicPath = $this->absolutePathToPublicPath($absolutePath);
+        $existing = $this->findMediaRecordByPublicPath($publicPath);
+        $updatedAt = gmdate('c');
+        $metadata = [
+            'original_name' => $this->sanitizeOriginalFilename($originalName),
+            'title' => $this->sanitizeMediaTitle($title),
+            'updated_at' => $updatedAt,
+        ];
+
+        if ($existing === null) {
+            $directory = $this->directoryFromAbsolutePath($absolutePath);
+            $record = $this->buildMediaMetadata($absolutePath, $directory, $metadata + [
+                'created_at' => $updatedAt,
+            ]);
+            $record['updated_at'] = $updatedAt;
+            $this->upsertMediaRecord($record);
+
+            return $this->hydrateMediaRecord($record);
+        }
+
+        $stmt = $this->db->prepare(
+            'UPDATE media_files
+                SET original_name = :original_name,
+                    title = :title,
+                    updated_at = :updated_at
+              WHERE public_path = :public_path'
+        );
+        $stmt->bindValue(':original_name', $metadata['original_name'], SQLITE3_TEXT);
+        $stmt->bindValue(':title', $metadata['title'], SQLITE3_TEXT);
+        $stmt->bindValue(':updated_at', $updatedAt, SQLITE3_TEXT);
+        $stmt->bindValue(':public_path', $publicPath, SQLITE3_TEXT);
+
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('文件信息更新失败');
+        }
+
+        $existing['original_name'] = $metadata['original_name'];
+        $existing['title'] = $metadata['title'];
+        $existing['updated_at'] = $updatedAt;
+
+        return $this->hydrateMediaRecord($existing);
+    }
+
     public function createFolder(string $parentDirectory, string $folderName): array
     {
         $parentDirectory = $this->normalizeDirectory($parentDirectory);
@@ -898,6 +955,19 @@ class MediaManager
         return $this->hydrateRows($result);
     }
 
+    private function findMediaRecordByPublicPath(string $publicPath): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM media_files WHERE public_path = :public_path LIMIT 1');
+        $stmt->bindValue(':public_path', $publicPath, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        if (!$result instanceof SQLite3Result) {
+            return null;
+        }
+
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        return is_array($row) ? $row : null;
+    }
+
     private function hydrateRows(SQLite3Result|false $result): array
     {
         $rows = [];
@@ -989,6 +1059,12 @@ class MediaManager
         }
 
         return mb_substr($name, 0, 180);
+    }
+
+    private function sanitizeMediaTitle(string $title): string
+    {
+        $title = preg_replace('/\s+/', ' ', trim($title)) ?: '';
+        return mb_substr($title, 0, 180);
     }
 
     private function generateStoredFilename(string $originalName, string $type, string $extension): string

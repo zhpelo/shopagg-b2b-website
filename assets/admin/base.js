@@ -1579,6 +1579,7 @@ ${iconHtml}
             box.innerHTML = `<img src="${escapeHtmlAttr(file.url || '')}" alt="">`;
         }
 
+        document.getElementById('explorerPreviewTitle').textContent = file.title || '-';
         document.getElementById('explorerPreviewName').textContent = file.name || '';
         document.getElementById('explorerPreviewStorage').textContent = file.storage_name || '';
         document.getElementById('explorerPreviewType').textContent = file.type === 'video' ? '视频' : (file.type === 'image' ? '图片' : '文件');
@@ -1586,6 +1587,44 @@ ${iconHtml}
         document.getElementById('explorerPreviewSize').textContent = [file.size || '', file.dimensions || ''].filter(Boolean).join(' · ') || '-';
         document.getElementById('explorerPreviewDate').textContent = file.date || '';
         document.getElementById('explorerPreviewPath').value = file.path || '';
+    }
+
+    function closePageMediaEditModal() {
+        const modal = document.getElementById('page-media-edit-modal');
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        document.documentElement.classList.remove('media-library-modal-open');
+        document.body.classList.remove('media-library-modal-open');
+    }
+
+    function openPageMediaEditModal(button) {
+        const modal = document.getElementById('page-media-edit-modal');
+        const pathInput = document.getElementById('page-media-edit-path');
+        const originalNameInput = document.getElementById('page-media-edit-original-name');
+        const titleInput = document.getElementById('page-media-edit-title');
+        const storageName = document.getElementById('page-media-edit-storage-name');
+        const publicPath = document.getElementById('page-media-edit-public-path');
+        if (!modal || !pathInput || !originalNameInput || !titleInput || !storageName || !publicPath) {
+            return;
+        }
+
+        pathInput.value = button.dataset.editPath || '';
+        originalNameInput.value = button.dataset.editOriginalName || '';
+        titleInput.value = button.dataset.editTitle || '';
+        storageName.textContent = button.dataset.editStorageName || '-';
+        publicPath.textContent = button.dataset.editPath || '-';
+
+        document.documentElement.classList.add('media-library-modal-open');
+        document.body.classList.add('media-library-modal-open');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        originalNameInput.focus();
+        originalNameInput.select();
     }
 
     function submitSingleMediaDelete(path) {
@@ -1690,6 +1729,31 @@ ${iconHtml}
             });
         });
 
+        document.querySelectorAll('.js-page-media-edit-btn').forEach((btn) => {
+            btn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openPageMediaEditModal(btn);
+            });
+        });
+
+        const editModal = document.getElementById('page-media-edit-modal');
+        if (editModal) {
+            editModal.querySelectorAll('[data-media-edit-close]').forEach((btn) => {
+                btn.addEventListener('click', closePageMediaEditModal);
+            });
+            editModal.addEventListener('click', (event) => {
+                if (event.target === editModal) {
+                    closePageMediaEditModal();
+                }
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !editModal.classList.contains('hidden')) {
+                    closePageMediaEditModal();
+                }
+            });
+        }
+
         setExplorerSelectedCount();
     }
 
@@ -1712,6 +1776,8 @@ ${iconHtml}
     window.submitSingleMediaDelete = submitSingleMediaDelete;
     window.submitPageBulkDelete = submitPageBulkDelete;
     window.addMediaRow = addMediaRow;
+    window.openPageMediaEditModal = openPageMediaEditModal;
+    window.closePageMediaEditModal = closePageMediaEditModal;
     window.selectMediaPreview = selectMediaPreview;
     window.selectExplorerFile = selectExplorerFile;
 })();

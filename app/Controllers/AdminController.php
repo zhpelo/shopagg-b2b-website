@@ -587,6 +587,37 @@ class AdminController extends Controller {
         }
     }
 
+    public function mediaUpdate(): void
+    {
+        $this->ensureMediaAccess();
+        csrf_check();
+        $directory = (string)($_POST['dir'] ?? '');
+
+        try {
+            $file = $this->mediaManager->updateFileMetadata(
+                (string)($_POST['path'] ?? ''),
+                (string)($_POST['title'] ?? ''),
+                (string)($_POST['original_name'] ?? '')
+            );
+            $message = '文件信息已更新';
+
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->successResponse([
+                    'file' => $file,
+                    'messages' => [$message],
+                ]));
+            }
+
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&success=' . urlencode($message));
+        } catch (\RuntimeException $e) {
+            if ($this->wantsJsonResponse()) {
+                $this->json($this->mediaManager->errorResponse($e->getMessage()), 400);
+            }
+
+            $this->redirect('/admin/media?dir=' . urlencode($this->safeMediaDirectory($directory)) . '&error=' . urlencode($e->getMessage()));
+        }
+    }
+
     public function mediaFolderCreate(): void
     {
         $this->ensureMediaAccess();
