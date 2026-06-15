@@ -171,14 +171,18 @@
 
                     <label class="block space-y-2">
                         <span class="text-sm font-medium text-slate-700">产品分类</span>
-                        <select class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="category_id">
-                            <option value="0">选择分类</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= (int)$cat['id'] ?>" <?= (int)($product['category_id'] ?? 0) === (int)$cat['id'] ? 'selected' : '' ?>>
-                                    <?= h($cat['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <span class="relative block">
+                            <i class="fas fa-folder-tree pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                            <select class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="category_id">
+                                <option value="0">选择分类</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= (int)$cat['id'] ?>" <?= (int)($product['category_id'] ?? 0) === (int)$cat['id'] ? 'selected' : '' ?>>
+                                        <?= h($cat['display_name'] ?? $cat['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </span>
+                        <p class="text-xs text-slate-500">按父子层级显示分类，子分类会自动缩进。</p>
                     </label>
                 </div>
             </div>

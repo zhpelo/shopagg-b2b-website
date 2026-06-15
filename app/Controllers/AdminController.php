@@ -423,7 +423,7 @@ class AdminController extends Controller {
     }
 
     public function productCreate(): void {
-        $categories = $this->categoryModel->getAll();
+        $categories = $this->categoryModel->getFlatTree('product');
         $this->renderAdmin('新建产品', $this->renderView('admin/products/form', [
             'action' => '/admin/products/create',
             'categories' => $categories
@@ -443,7 +443,7 @@ class AdminController extends Controller {
         $product = $this->productModel->getById($id);
         if (!$product) $this->redirect('/admin/products');
         
-        $categories = $this->categoryModel->getAll();
+        $categories = $this->categoryModel->getFlatTree('product');
         $prices = $this->productModel->getPrices($id);
         
         $this->renderAdmin('编辑产品', $this->renderView('admin/products/form', [
