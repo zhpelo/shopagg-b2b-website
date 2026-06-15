@@ -20,7 +20,7 @@ $carouselProducts = get_carousel_products(3);
                     <!-- Background Image -->
                     <div class="absolute inset-0">
                         <img
-                            src="<?= get_image_url($p['banner_image'] ?? null, 1980, 900) ?>"
+                            src="<?= get_image_url($p['image'] ?? null, 1980, 900) ?>"
                             alt="<?= h($p['title']) ?>"
                             class="w-full h-full object-cover"
                         >

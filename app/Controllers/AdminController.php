@@ -488,6 +488,8 @@ class AdminController extends Controller {
             }
         }
 
+        $images = array_values(array_unique(array_filter(array_map('strval', $images))));
+
         return [
             'title' => $title,
             'slug' => $slug,
@@ -498,8 +500,7 @@ class AdminController extends Controller {
             'product_type' => trim((string)($_POST['product_type'] ?? '')),
             'vendor' => trim((string)($_POST['vendor'] ?? '')),
             'tags' => trim((string)($_POST['tags'] ?? '')),
-            'banner_image' => trim((string)($_POST['banner_image'] ?? '')),
-            'images_json' => json_encode(array_values(array_unique(array_filter($images)))),
+            'images_json' => json_encode($images),
             'seo_title' => trim((string)($_POST['seo_title'] ?? '')),
             'seo_keywords' => trim((string)($_POST['seo_keywords'] ?? '')),
             'seo_description' => trim((string)($_POST['seo_description'] ?? '')),

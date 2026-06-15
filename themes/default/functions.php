@@ -55,7 +55,7 @@ if (!function_exists('get_image_url')) {
 }
 
 // 获取轮播产品（性能优化版）
-// 优先获取有横幅图片的产品，不足时补充最新产品
+// 优先获取有首图的产品，不足时补充最新产品
 if (!function_exists('get_carousel_products')) {
     function get_carousel_products(int $limit = 3): array {
         static $cache = null; // 简单静态缓存，避免重复查询
@@ -74,7 +74,7 @@ if (!function_exists('get_carousel_products')) {
         // 回退到旧的产品轮播逻辑
         $featuredProducts = get_products(['limit' => $limit, 'featured' => true]);
 
-        // 2. 如果不够数量，补充最新产品（排除已有横幅图片的产品）
+        // 2. 如果不够数量，补充最新产品（排除已选中的产品）
         if (count($featuredProducts) < $limit) {
             $remaining = $limit - count($featuredProducts);
             $excludeIds = array_column($featuredProducts, 'id');
@@ -99,9 +99,8 @@ if (!function_exists('get_carousel_products')) {
                 'id' => $product['id'],
                 'title' => $product['title'],
                 'summary' => $product['summary'],
-                'banner_image' => $product['banner_image'],
                 'url' => url('/product/' . $product['slug']),
-                'image' => $product['cover'] // 备用图片
+                'image' => $product['cover'],
             ];
         }
 
@@ -131,7 +130,6 @@ if (!function_exists('get_slider_items')) {
                     'id' => $item['id'],
                     'title' => $item['title'],
                     'subtitle' => $item['subtitle'],
-                    'banner_image' => $item['image'],
                     'url' => $item['link_url'] ?: '#',
                     'link_text' => $item['link_text'] ?: 'View Details',
                     'image' => $item['image'],
@@ -149,7 +147,7 @@ if (!function_exists('get_slider_items')) {
 // 渲染产品卡片 - Tailwind 版本
 if (!function_exists('render_product_card')) {
     function render_product_card(array $product): void {
-        $image = !empty($product['banner_image']) ? $product['banner_image'] : $product['image'];
+        $image = $product['image'] ?? ($product['cover'] ?? '');
         ?>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
             <a href="<?= url('/product/' . $product['slug']) ?>" class="block aspect-square overflow-hidden bg-gray-100">

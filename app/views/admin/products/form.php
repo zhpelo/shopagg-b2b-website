@@ -59,7 +59,7 @@
                             <div class="media-item" data-url="<?= h($img) ?>">
                                 <img src="<?= h(url($img)) ?>">
                                 <input type="hidden" name="images[]" value="<?= h($img) ?>">
-                                <button type="button" class="remove-media inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-white transition hover:bg-rose-500" aria-label="移除图片">
+                                <button type="button" class="media-remove-btn remove-media" aria-label="移除图片">
                                     <i class="fas fa-times text-xs"></i>
                                 </button>
                             </div>
@@ -87,33 +87,7 @@
                     </div>
                     <p class="mt-3 text-xs text-slate-500">支持 JPG、PNG、GIF、WebP 格式图片</p>
                 </div>
-            </div>
-
-            <!-- 横幅图片 -->
-            <div class="card mb-5 p-8">
-                <div class="section-title">
-                    <span class="icon-box primary"><i class="fas fa-image"></i></span>
-                    横幅图片
-                </div>
-                <p class="mb-4 text-xs text-slate-500">选择一张图片作为商品页面的横幅展示（可选）</p>
-
-                <div id="banner-preview" class="mb-4 <?= empty($product['banner_image']) ? 'hidden' : '' ?>">
-                    <div class="banner-image-container relative inline-block">
-                        <img id="banner-image" src="<?= h(url($product['banner_image'] ?? '')) ?>" alt="横幅图片" class="max-w-[300px] max-h-[200px] rounded-lg border-2 border-gray-200">
-                        <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-white transition hover:bg-rose-500 absolute top-2 right-2" id="remove-banner" aria-label="移除横幅">
-                            <i class="fas fa-times text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <input type="hidden" name="banner_image" id="banner-input" value="<?= h($product['banner_image'] ?? '') ?>">
-
-                <div id="banner-placeholder" class="media-placeholder <?= !empty($product['banner_image']) ? 'hidden' : '' ?>">
-                    <button type="button" class="open-banner-library-btn inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span>选择横幅图片</span>
-                    </button>
-                </div>
+                <p class="mt-4 text-xs text-slate-500">拖拽调整顺序后，首张图片会作为产品主展示图使用。</p>
             </div>
 
             <!-- 价格 -->

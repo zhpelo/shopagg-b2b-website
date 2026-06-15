@@ -1279,7 +1279,7 @@ ${iconHtml}
             div.innerHTML = `
 <img src="${escapeHtmlAttr(imgSrc)}">
 <input type="hidden" name="images[]" value="${escapeHtmlAttr(url)}">
-<button type="button" class="remove-media inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-white transition hover:bg-rose-500" aria-label="移除图片">
+<button type="button" class="media-remove-btn remove-media" aria-label="移除图片">
 <i class="fas fa-times text-xs"></i>
 </button>
 `;
@@ -1302,30 +1302,6 @@ ${iconHtml}
                 removeButton.closest('.media-item')?.remove();
                 checkMediaState();
             }
-        });
-
-        const bannerInput = document.getElementById('banner-input');
-        const bannerPreview = document.getElementById('banner-preview');
-        const bannerImage = document.getElementById('banner-image');
-        const bannerPlaceholder = document.getElementById('banner-placeholder');
-        const removeBannerBtn = document.getElementById('remove-banner');
-        document.querySelectorAll('.open-banner-library-btn').forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                event.preventDefault();
-                openMediaLibrary((url) => {
-                    const imgSrc = `${window.APP_BASE_PATH || ''}${url}`;
-                    if (bannerInput) bannerInput.value = url;
-                    if (bannerImage) bannerImage.src = imgSrc;
-                    bannerPreview?.style.setProperty('display', 'block');
-                    bannerPlaceholder?.style.setProperty('display', 'none');
-                }, false);
-            });
-        });
-
-        removeBannerBtn?.addEventListener('click', () => {
-            if (bannerInput) bannerInput.value = '';
-            bannerPreview?.style.setProperty('display', 'none');
-            bannerPlaceholder?.style.setProperty('display', 'block');
         });
 
         document.getElementById('file-upload-input')?.addEventListener('change', async function () {
