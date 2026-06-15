@@ -256,7 +256,7 @@ class SiteController extends BaseController {
         $db = \App\Core\Database::getInstance();
         $urls = [base_url() . '/', base_url() . '/products', base_url() . '/cases', base_url() . '/blog', base_url() . '/contact'];
         
-        $res = $db->query("SELECT slug FROM products WHERE status = 'active'");  // 只索引已上架产品
+        $res = $db->query("SELECT slug FROM products WHERE status = 'active' AND deleted_at IS NULL");  // 只索引已上架且未删除产品
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/product/' . $r['slug'];
         $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'case'");
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/case/' . $r['slug'];

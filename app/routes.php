@@ -53,6 +53,9 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/products/edit', [AdminController::class, 'productEdit']);
     $router->add('POST', '/admin/products/edit', [AdminController::class, 'productUpdate']);
     $router->add('GET', '/admin/products/delete', [AdminController::class, 'productDelete']);
+    $router->add('GET', '/admin/products/restore', [AdminController::class, 'productRestore']);
+    $router->add('GET', '/admin/products/permanent-delete', [AdminController::class, 'productPermanentDelete']);
+    $router->add('POST', '/admin/products/bulk', [AdminController::class, 'productBulkAction']);
 
     // 后台：产品分类
     $router->add('GET', '/admin/product-categories', [AdminController::class, 'productCategoryList']);

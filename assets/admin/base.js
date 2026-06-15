@@ -1377,6 +1377,39 @@ ${iconHtml}
         });
     }
 
+    function initBulkSelectionControls() {
+        document.querySelectorAll('[data-bulk-select-all]').forEach((toggle) => {
+            const form = toggle.closest('form');
+            if (!form) {
+                return;
+            }
+
+            const getItems = () => Array.from(form.querySelectorAll('[data-bulk-item]'));
+            const actions = Array.from(form.querySelectorAll('[data-bulk-action]'));
+            const updateState = () => {
+                const items = getItems();
+                const checked = items.filter((item) => item.checked);
+                toggle.checked = items.length > 0 && checked.length === items.length;
+                toggle.indeterminate = checked.length > 0 && checked.length < items.length;
+                actions.forEach((action) => {
+                    action.disabled = checked.length === 0;
+                });
+            };
+
+            toggle.addEventListener('change', () => {
+                getItems().forEach((item) => {
+                    item.checked = toggle.checked;
+                });
+                updateState();
+            });
+
+            getItems().forEach((item) => {
+                item.addEventListener('change', updateState);
+            });
+            updateState();
+        });
+    }
+
     function renderSettingsPickerPreview(container, url, fit) {
         const objectClass = fit === 'cover' ? 'h-full w-full object-cover' : 'max-h-full max-w-full object-contain';
         container.innerHTML = `<img src="${escapeHtmlAttr(url)}" alt="" class="${objectClass}">`;
@@ -1793,6 +1826,7 @@ ${iconHtml}
         initPostForm();
         initProductForm();
         initCollapsibleSections();
+        initBulkSelectionControls();
         initSettingsGeneralPickers();
         initSettingsMediaHelpers();
         initSlugFieldHelpers();

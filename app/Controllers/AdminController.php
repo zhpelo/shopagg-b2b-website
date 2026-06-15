@@ -169,8 +169,8 @@ class AdminController extends Controller {
         // 一次查询获取全部基础统计，减少 DB 往返
         $row = $this->db->querySingle(
             "SELECT
-                (SELECT COUNT(*) FROM products) AS products,
-                (SELECT COUNT(*) FROM products WHERE status = 'active') AS active_products,
+                (SELECT COUNT(*) FROM products WHERE deleted_at IS NULL) AS products,
+                (SELECT COUNT(*) FROM products WHERE status = 'active' AND deleted_at IS NULL) AS active_products,
                 (SELECT COUNT(*) FROM posts WHERE post_type = 'case') AS cases,
                 (SELECT COUNT(*) FROM posts WHERE post_type = 'post') AS posts,
                 (SELECT COUNT(*) FROM posts WHERE post_type = 'page') AS pages,
@@ -418,8 +418,18 @@ class AdminController extends Controller {
 
     // --- Products ---
     public function productList(): void {
-        $products = $this->productModel->getList();
-        $this->renderAdmin('产品管理', $this->renderView('admin/products/index', ['products' => $products]));
+        $filters = $this->getProductListFilters();
+        $products = $this->productModel->getAdminList($filters);
+        $categories = $this->categoryModel->getFlatTree('product');
+        $counts = $this->productModel->getAdminCounts();
+
+        $this->renderAdmin('产品管理', $this->renderView('admin/products/index', [
+            'products' => $products,
+            'categories' => $categories,
+            'filters' => $filters,
+            'counts' => $counts,
+            'returnPath' => $this->currentAdminRequestPath(),
+        ]));
     }
 
     public function productCreate(): void {
@@ -465,8 +475,97 @@ class AdminController extends Controller {
 
     public function productDelete(): void {
         $id = (int)($_GET['id'] ?? 0);
-        $this->productModel->delete($id);
-        $this->redirect('/admin/products');
+        if ($id > 0) {
+            $this->productModel->softDelete($id);
+        }
+        $this->redirect($this->getProductReturnPath());
+    }
+
+    public function productRestore(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id > 0) {
+            $this->productModel->restore($id);
+        }
+        $this->redirect($this->getProductReturnPath('/admin/products?trash=1'));
+    }
+
+    public function productPermanentDelete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id > 0) {
+            $this->productModel->permanentDelete($id);
+        }
+        $this->redirect($this->getProductReturnPath('/admin/products?trash=1'));
+    }
+
+    public function productBulkAction(): void {
+        csrf_check();
+        $ids = $_POST['product_ids'] ?? [];
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $action = (string)($_POST['bulk_action'] ?? '');
+        switch ($action) {
+            case 'activate':
+                $this->productModel->bulkUpdateStatus($ids, 'active');
+                break;
+            case 'deactivate':
+                $this->productModel->bulkUpdateStatus($ids, 'inactive');
+                break;
+            case 'delete':
+                $this->productModel->bulkSoftDelete($ids);
+                break;
+            case 'restore':
+                $this->productModel->bulkRestore($ids);
+                break;
+            case 'permanent_delete':
+                $this->productModel->bulkPermanentDelete($ids);
+                break;
+        }
+
+        $this->redirect($this->getProductReturnPath());
+    }
+
+    private function getProductListFilters(): array {
+        $status = (string)($_GET['status'] ?? '');
+        if (!in_array($status, ['active', 'inactive', 'draft', 'archived'], true)) {
+            $status = '';
+        }
+
+        $sort = (string)($_GET['sort'] ?? '');
+        if (!in_array($sort, ['latest', 'oldest', 'title_asc', 'title_desc', 'updated_desc', 'updated_asc', 'status_asc', 'category_asc', 'deleted_desc'], true)) {
+            $sort = '';
+        }
+
+        return [
+            'q' => trim((string)($_GET['q'] ?? '')),
+            'status' => $status,
+            'category_id' => max(0, (int)($_GET['category_id'] ?? 0)),
+            'sort' => $sort,
+            'trash' => (string)($_GET['trash'] ?? '') === '1',
+        ];
+    }
+
+    private function currentAdminRequestPath(): string {
+        $uri = (string)($_SERVER['REQUEST_URI'] ?? '/admin/products');
+        $path = AuthManager::normalizePath(parse_url($uri, PHP_URL_PATH) ?: '/admin/products');
+        $query = (string)(parse_url($uri, PHP_URL_QUERY) ?? '');
+        return $path . ($query !== '' ? '?' . $query : '');
+    }
+
+    private function getProductReturnPath(string $fallback = '/admin/products'): string {
+        $returnTo = trim((string)($_POST['return_to'] ?? $_GET['return_to'] ?? ''));
+        if ($returnTo === '') {
+            $returnTo = $fallback;
+        }
+
+        $path = AuthManager::normalizePath(parse_url($returnTo, PHP_URL_PATH) ?: '');
+        if ($path !== '/admin/products') {
+            return $fallback;
+        }
+
+        $query = (string)(parse_url($returnTo, PHP_URL_QUERY) ?? '');
+        return $path . ($query !== '' ? '?' . $query : '');
     }
 
     private function getProductFormData(): array {
