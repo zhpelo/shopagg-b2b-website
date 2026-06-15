@@ -1469,18 +1469,20 @@ ${iconHtml}
                 return;
             }
 
+            normalizeSlugInputValue(slugInput);
+            let autoSyncSlug = String(slugInput.value || '').trim() === '';
+
             const syncSlugFromSource = () => {
-                if (String(slugInput.value || '').trim() !== '') {
+                if (!autoSyncSlug && String(slugInput.value || '').trim() !== '') {
                     return;
                 }
 
+                autoSyncSlug = true;
                 const normalized = sanitizeSlugValue(sourceInput.value);
-                if (normalized) {
-                    slugInput.value = normalized;
-                }
+                slugInput.value = normalized;
             };
 
-            normalizeSlugInputValue(slugInput);
+            syncSlugFromSource();
 
             sourceInput.addEventListener('input', syncSlugFromSource);
             sourceInput.addEventListener('blur', syncSlugFromSource);
@@ -1488,6 +1490,7 @@ ${iconHtml}
 
             slugInput.addEventListener('input', () => {
                 normalizeSlugInputValue(slugInput);
+                autoSyncSlug = String(slugInput.value || '').trim() === '';
             });
 
             slugInput.addEventListener('blur', () => {
