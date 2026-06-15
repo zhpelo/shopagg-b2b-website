@@ -1353,6 +1353,30 @@ ${iconHtml}
         });
     }
 
+    function initCollapsibleSections() {
+        document.querySelectorAll('[data-collapsible-trigger]').forEach((trigger) => {
+            const panelId = trigger.getAttribute('aria-controls') || '';
+            const panel = panelId ? document.getElementById(panelId) : null;
+            if (!panel) {
+                return;
+            }
+
+            const icon = trigger.querySelector('[data-collapsible-icon]');
+            const setExpanded = (expanded) => {
+                trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                panel.classList.toggle('hidden', !expanded);
+                if (icon) {
+                    icon.style.transform = expanded ? 'rotate(180deg)' : '';
+                }
+            };
+
+            setExpanded(trigger.getAttribute('aria-expanded') === 'true');
+            trigger.addEventListener('click', () => {
+                setExpanded(trigger.getAttribute('aria-expanded') !== 'true');
+            });
+        });
+    }
+
     function renderSettingsPickerPreview(container, url, fit) {
         const objectClass = fit === 'cover' ? 'h-full w-full object-cover' : 'max-h-full max-w-full object-contain';
         container.innerHTML = `<img src="${escapeHtmlAttr(url)}" alt="" class="${objectClass}">`;
@@ -1768,6 +1792,7 @@ ${iconHtml}
         initPriceTierManager();
         initPostForm();
         initProductForm();
+        initCollapsibleSections();
         initSettingsGeneralPickers();
         initSettingsMediaHelpers();
         initSlugFieldHelpers();

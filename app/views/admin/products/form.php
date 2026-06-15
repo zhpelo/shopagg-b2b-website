@@ -189,13 +189,18 @@
 
             <!-- 产品组织 -->
             <div class="card mb-5 p-6">
-                <div class="section-title">
-                    <span class="icon-box info"><i class="fas fa-sitemap"></i></span>
-                    产品组织
-                </div>
+                <button type="button" class="section-title w-full cursor-pointer justify-between rounded-xl border-0 bg-transparent p-0 m-0 text-left" aria-expanded="false" aria-controls="product-organization-panel" data-collapsible-trigger>
+                    <span class="flex items-center gap-3">
+                        <span class="icon-box info"><i class="fas fa-sitemap"></i></span>
+                        <span>产品组织</span>
+                    </span>
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition">
+                        <i class="fas fa-chevron-down text-xs transition-transform" data-collapsible-icon></i>
+                    </span>
+                </button>
 
-                <div class="space-y-4">
-                    <label class="block space-y-2">
+                <div id="product-organization-panel" class="hidden space-y-4" data-collapsible-panel>
+                    <label class="block space-y-2 mt-3">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">产品类型</span>
                         <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="product_type" value="<?= h($product['product_type'] ?? '') ?>" placeholder="如：服装、电子产品">
                     </label>
@@ -212,14 +217,18 @@
 
             <!-- SEO 设置 -->
             <div class="card mb-5 p-6">
-                <div class="section-title">
-                    <span class="icon-box success"><i class="fas fa-search"></i></span>
-                    SEO 设置
-                </div>
-                <p class="mb-3 text-xs text-slate-500">留空则使用产品标题和摘要作为默认值</p>
+                <button type="button" class="section-title w-full cursor-pointer justify-between rounded-xl border-0 bg-transparent p-0 m-0 text-left" aria-expanded="false" aria-controls="product-seo-panel" data-collapsible-trigger>
+                    <span class="flex items-center gap-3">
+                        <span class="icon-box success"><i class="fas fa-search"></i></span>
+                        <span>SEO 设置</span>
+                    </span>
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition">
+                        <i class="fas fa-chevron-down text-xs transition-transform" data-collapsible-icon></i>
+                    </span>
+                </button>
 
-                <div class="space-y-4">
-                    <label class="block space-y-2">
+                <div id="product-seo-panel" class="hidden" data-collapsible-panel>
+                    <label class="block space-y-2 mt-3">
                         <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SEO 标题</span>
                         <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="seo_title" value="<?= h($product['seo_title'] ?? '') ?>" placeholder="页面标题 (留空使用产品标题)">
                     </label>
