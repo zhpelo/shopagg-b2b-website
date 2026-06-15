@@ -17,7 +17,7 @@ class Product extends BaseModel {
     ];
 
     public function getList(int $limit = 0, bool $activeOnly = false): array {
-        $query = "SELECT products.*, product_categories.name AS category_name
+        $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id";
         $where = ['products.deleted_at IS NULL'];
         if ($activeOnly) {
@@ -37,7 +37,7 @@ class Product extends BaseModel {
             $sort = !empty($filters['trash']) ? 'deleted_desc' : 'latest';
         }
 
-        $query = "SELECT products.*, product_categories.name AS category_name
+        $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products
             LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE " . implode(' AND ', $where) . "
@@ -77,7 +77,7 @@ class Product extends BaseModel {
     }
 
     public function getBySlug(string $slug): ?array {
-        $item = $this->fetchOne("SELECT products.*, product_categories.name AS category_name
+        $item = $this->fetchOne("SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.slug = :s AND products.deleted_at IS NULL", [':s' => $slug]);
         if ($item) {
@@ -220,7 +220,7 @@ class Product extends BaseModel {
     }
 
     public function getByCategory(int $categoryId, int $limit = 0): array {
-        $query = "SELECT products.*, product_categories.name AS category_name
+        $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products
             LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.category_id = :cid AND products.status = 'active' AND products.deleted_at IS NULL
@@ -231,7 +231,7 @@ class Product extends BaseModel {
     }
 
     public function getLatest(int $limit = 6): array {
-        $query = "SELECT products.*, product_categories.name AS category_name
+        $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.status = 'active' AND products.deleted_at IS NULL
             ORDER BY products.id DESC
@@ -241,7 +241,7 @@ class Product extends BaseModel {
     }
 
     public function getFeatured(int $limit = 6): array {
-        $query = "SELECT products.*, product_categories.name AS category_name
+        $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
             WHERE products.status = 'active' AND products.deleted_at IS NULL AND products.images_json IS NOT NULL AND products.images_json != '' AND products.images_json != '[]'
             ORDER BY products.id DESC

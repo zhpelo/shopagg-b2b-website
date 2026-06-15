@@ -30,13 +30,44 @@ class SiteController extends BaseController {
     }
 
     public function products(): void {
+        if (isset($_GET['category'])) {
+            $category = (new Category())->getById((int)$_GET['category']);
+            if (!$category || ($category['type'] ?? 'product') !== 'product') {
+                $this->notFound();
+                return;
+            }
+
+            header('Location: ' . product_category_url($category), true, 301);
+            exit;
+        }
+
+        $this->renderProductList(null);
+    }
+
+    public function productCategory(string $slug): void {
+        $categoryModel = new Category();
+        $currentCategory = $categoryModel->getBySlug($slug, 'product');
+        if (!$currentCategory) {
+            $this->notFound();
+            return;
+        }
+
+        $canonical = product_category_url($currentCategory);
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
+        $expectedPath = parse_url($canonical, PHP_URL_PATH) ?: '';
+        if ($currentPath !== $expectedPath) {
+            header('Location: ' . $canonical, true, 301);
+            exit;
+        }
+
+        $this->renderProductList($currentCategory);
+    }
+
+    private function renderProductList(?array $currentCategory): void {
         $categoryModel = new Category();
         $productModel = new Product();
-        
-        // 获取当前分类ID
-        $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
-        $currentCategory = $categoryId > 0 ? $categoryModel->getById($categoryId) : null;
-        
+        $categoryId = $currentCategory ? (int)$currentCategory['id'] : 0;
+
         // 获取产品列表
         if ($categoryId > 0) {
             $items = $productModel->getByCategory($categoryId);
@@ -49,13 +80,21 @@ class SiteController extends BaseController {
         $categories = $categoryModel->getTree('product');
         
         $title = $currentCategory ? $currentCategory['name'] : 'All Products';
+        $seoDescription = trim((string)($currentCategory['description'] ?? ''));
+        if ($seoDescription === '') {
+            $seoDescription = (string)($this->siteData['site']['seo_description'] ?: $this->siteData['site']['tagline'] ?? '');
+        }
         
         $this->renderSite('product_list', [
             'title' => $title,
             'items' => $items,
             'categories' => $categories,
             'current_category' => $currentCategory,
-            'seo' => ['title' => $title . ' - ' . $this->siteData['site']['name']]
+            'seo' => [
+                'title' => $title . ' - ' . $this->siteData['site']['name'],
+                'description' => $seoDescription,
+                'canonical' => $currentCategory ? base_url() . '/product-category/' . rawurlencode((string)$currentCategory['slug']) : base_url() . '/products',
+            ]
         ]);
     }
 
@@ -256,6 +295,8 @@ class SiteController extends BaseController {
         $db = \App\Core\Database::getInstance();
         $urls = [base_url() . '/', base_url() . '/products', base_url() . '/cases', base_url() . '/blog', base_url() . '/contact'];
         
+        $res = $db->query("SELECT slug FROM product_categories WHERE type = 'product'");
+        while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/product-category/' . rawurlencode((string)$r['slug']);
         $res = $db->query("SELECT slug FROM products WHERE status = 'active' AND deleted_at IS NULL");  // 只索引已上架且未删除产品
         while ($r = $res->fetchArray(SQLITE3_ASSOC)) $urls[] = base_url() . '/product/' . $r['slug'];
         $res = $db->query("SELECT slug FROM posts WHERE status = 'active' AND post_type = 'case'");

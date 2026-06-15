@@ -139,6 +139,18 @@ function url(string $path = ''): string {
 }
 
 /**
+ * 生成前台产品分类 URL
+ */
+function product_category_url(array $category): string {
+    $slug = trim((string)($category['slug'] ?? $category['category_slug'] ?? ''));
+    if ($slug !== '') {
+        return url('/product-category/' . rawurlencode($slug));
+    }
+
+    return url('/products') . '?category=' . (int)($category['id'] ?? $category['category_id'] ?? 0);
+}
+
+/**
  * 获取完整的应用 URL（包含协议和域名）
  * 
  * 自动检测 HTTP/HTTPS 协议，用于生成绝对 URL

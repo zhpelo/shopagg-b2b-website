@@ -13,6 +13,7 @@ function register_routes(Router $router): void {
     // 前台
     $router->add('GET', '/', [SiteController::class, 'home']);
     $router->add('GET', '/products', [SiteController::class, 'products']);
+    $router->add('GET', '/product-category/:slug', [SiteController::class, 'productCategory']);
     $router->add('GET', '/product/:slug', [SiteController::class, 'productDetail']);
     $router->add('GET', '/cases', [SiteController::class, 'cases']);
     $router->add('GET', '/case/:slug', [SiteController::class, 'caseDetail']);

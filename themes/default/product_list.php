@@ -16,7 +16,7 @@ if (!function_exists('renderProductCategoryList')) {
             $hasChildren = !empty($cat['children']);
             $paddingLeft = 1 + ($level * 1);
 ?>
-    <a href="<?= url('/products') ?>?category=<?= (int)$cat['id'] ?>" 
+    <a href="<?= h(product_category_url($cat)) ?>"
        class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-amber-50 text-amber-600 border-l-4 border-amber-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
        style="padding-left: <?= $paddingLeft ?>rem;">
         <?php if ($level > 0): ?>
@@ -131,7 +131,7 @@ if (!function_exists('renderProductCategoryList')) {
                                 <div class="p-5 flex-grow flex flex-col">
                                     <div class="mb-3">
                                         <?php if (!empty($item['category_name'])): ?>
-                                            <a href="<?= url('/products') ?>?category=<?= (int)$item['category_id'] ?>" 
+                                            <a href="<?= h(product_category_url($item)) ?>"
                                                class="inline-block px-3 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
                                                 <?= h($item['category_name']) ?>
                                             </a>

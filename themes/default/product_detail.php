@@ -27,7 +27,7 @@ $samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['pric
                 <li><a href="<?= url('/products') ?>" class="hover:text-brand-600">Products</a></li>
                 <?php if ($category): ?>
                     <li><i class="fas fa-chevron-right text-xs"></i></li>
-                    <li><a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" class="hover:text-brand-600"><?= h($category['name']) ?></a></li>
+                    <li><a href="<?= h(product_category_url($category)) ?>" class="hover:text-brand-600"><?= h($category['name']) ?></a></li>
                 <?php endif; ?>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
                 <li class="text-gray-900 font-medium"><?= h($item['title']) ?></li>
@@ -93,7 +93,7 @@ $samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['pric
                             <?= format_date($item['created_at'], 'Y-m-d') ?>
                         </span>
                         <?php if ($category): ?>
-                            <a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" 
+                            <a href="<?= h(product_category_url($category)) ?>"
                                class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
                                 <i class="fas fa-folder mr-1"></i>
                                 <?= h($category['name']) ?>
@@ -154,7 +154,7 @@ $samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['pric
                     <!-- More in category -->
                     <?php if ($category): ?>
                         <div class="mt-6 pt-6 border-t border-gray-100">
-                            <a href="<?= url('/products') ?>?category=<?= (int)$category['id'] ?>" 
+                            <a href="<?= h(product_category_url($category)) ?>"
                                class="inline-flex items-center px-4 py-2 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors">
                                 <i class="fas fa-folder mr-2"></i>
                                 More in this category

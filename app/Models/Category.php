@@ -29,6 +29,16 @@ class Category extends BaseModel {
     }
 
     /**
+     * 按 slug 获取分类
+     */
+    public function getBySlug(string $slug, string $type = 'product'): ?array {
+        return $this->fetchOne(
+            "SELECT * FROM product_categories WHERE slug = :slug AND type = :type",
+            [':slug' => $slug, ':type' => $type]
+        );
+    }
+
+    /**
      * 获取子分类
      */
     public function getChildren(int $parentId, string $type = ''): array {
