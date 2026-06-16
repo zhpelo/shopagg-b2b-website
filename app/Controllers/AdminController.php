@@ -17,6 +17,8 @@ use App\Models\User;
 use App\Models\Updater;
 use App\Models\Slider;
 use App\Models\Menu;
+use App\Models\AppStoreThemeInstall;
+use App\Services\AppStoreClient;
 use SQLite3;
 
 /**
@@ -42,6 +44,7 @@ class AdminController extends Controller {
     private Updater $updater;
     private Slider $sliderModel;
     private Menu $menuModel;
+    private AppStoreThemeInstall $appStoreThemeInstallModel;
 
     private const THEME_REQUIRED_FILES = [
         'header.php',
@@ -91,6 +94,7 @@ class AdminController extends Controller {
         $this->updater = new Updater();
         $this->sliderModel = new Slider();
         $this->menuModel = new Menu();
+        $this->appStoreThemeInstallModel = new AppStoreThemeInstall();
         
         // 执行认证和授权检查
         $this->performAuthChecks();
@@ -1768,6 +1772,7 @@ class AdminController extends Controller {
      */
     public function themeList(): void {
         $themes = $this->getInstalledThemes();
+        $appStore = $this->buildAppStoreThemeState($themes);
         $currentTheme = $this->settingModel->get('theme', 'default');
         $currentThemeName = $currentTheme;
         foreach ($themes as $theme) {
@@ -1782,6 +1787,7 @@ class AdminController extends Controller {
             'requiredFiles' => self::THEME_REQUIRED_FILES,
             'currentTheme' => $currentTheme,
             'currentThemeName' => $currentThemeName,
+            'appStore' => $appStore,
         ]));
     }
 
@@ -1831,6 +1837,281 @@ class AdminController extends Controller {
         }
 
         $this->redirect('/admin/appearance/themes?success=' . urlencode('已启用主题：' . $themeName));
+    }
+
+    /**
+     * 保存 App Store 连接配置
+     */
+    public function themeAppStoreSettings(): void {
+        csrf_check();
+
+        $apiToken = trim((string)($_POST['api_token'] ?? ''));
+        $clearToken = isset($_POST['clear_token']) && (string)$_POST['clear_token'] === '1';
+
+        if ($clearToken) {
+            $this->settingModel->set('app_store_api_token', '');
+            unset($_SESSION['app_store_wechat_pay']);
+            $this->redirect('/admin/appearance/themes?success=' . urlencode('已解除当前站点的 ShopAGG 账户绑定'));
+        }
+
+        if ($apiToken === '') {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('请输入 App Store API Token'));
+        }
+
+        $client = new AppStoreClient($this->defaultAppStoreApiBase(), $apiToken);
+        $accountResponse = $client->me();
+        if (!$accountResponse['ok']) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('Token 验证失败：' . $this->appStoreResponseMessage($accountResponse)));
+        }
+
+        $account = is_array($accountResponse['data'] ?? null) ? $accountResponse['data'] : [];
+        $accountLabel = (string)($account['email'] ?? $account['name'] ?? 'ShopAGG 账户');
+
+        $this->settingModel->set('app_store_api_token', $apiToken);
+
+        $this->redirect('/admin/appearance/themes?success=' . urlencode('当前站点已绑定 ShopAGG 账户：' . $accountLabel));
+    }
+
+    /**
+     * 从 App Store 下载并安装 B2B 主题
+     */
+    public function themeAppStoreInstall(): void {
+        csrf_check();
+
+        $resourceId = (int)($_POST['resource_id'] ?? 0);
+        if ($resourceId <= 0) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要安装的 App Store 主题'));
+        }
+
+        $client = $this->makeAppStoreClient();
+        $domain = $this->appStoreLicenseDomain();
+        $workspace = $this->createTempDirectory('app-store-theme-');
+        $zipPath = $workspace . '/theme.zip';
+        $redirectUrl = '/admin/appearance/themes';
+
+        try {
+            $download = $client->downloadResource($resourceId, $domain);
+            if (!$download['ok']) {
+                throw new \RuntimeException($this->appStoreResponseMessage($download));
+            }
+
+            $payload = is_array($download['data'] ?? null) ? $download['data'] : [];
+            $downloadUrl = (string)($payload['download_url'] ?? '');
+            if ($downloadUrl === '') {
+                throw new \RuntimeException('App Store 未返回可下载地址');
+            }
+
+            $resource = is_array($payload['resource'] ?? null) ? $payload['resource'] : [];
+            $resourceSlug = sanitize_slug_input((string)($resource['slug'] ?? ''));
+            if ($resourceSlug === '') {
+                $resourceSlug = 'app-store-theme-' . $resourceId;
+            }
+
+            $client->downloadFile($downloadUrl, $zipPath);
+
+            $installed = $this->installThemeFromArchivePath(
+                $zipPath,
+                (string)($resource['slug'] ?? ('app-store-theme-' . $resourceId)) . '.zip',
+                true,
+                $resourceSlug
+            );
+
+            $this->appStoreThemeInstallModel->saveInstall([
+                'resource_id' => $resourceId,
+                'resource_slug' => $resourceSlug,
+                'theme_slug' => $installed['slug'],
+                'name' => (string)($resource['name'] ?? $installed['name']),
+                'version' => (string)($resource['version'] ?? $installed['version'] ?? ''),
+                'bound_domain' => (string)($payload['resource']['bound_domain'] ?? $domain),
+            ]);
+
+            $message = '主题已安装：' . ($resource['name'] ?? $installed['name']);
+            $redirectUrl = '/admin/appearance/themes?success=' . urlencode($message);
+        } catch (\RuntimeException $e) {
+            $redirectUrl = '/admin/appearance/themes?error=' . urlencode($e->getMessage());
+        } finally {
+            $this->deleteDirectory($workspace);
+        }
+
+        $this->redirect($redirectUrl);
+    }
+
+    /**
+     * 为付费 App Store 主题创建订单并进入支付
+     */
+    public function themeAppStorePurchase(): void {
+        csrf_check();
+
+        $resourceId = (int)($_POST['resource_id'] ?? 0);
+        $paymentMethod = (string)($_POST['payment_method'] ?? 'alipay');
+        if (!in_array($paymentMethod, ['alipay', 'wechat'], true)) {
+            $paymentMethod = 'alipay';
+        }
+
+        if ($resourceId <= 0) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要购买的 App Store 主题'));
+        }
+
+        $client = $this->makeAppStoreClient();
+
+        try {
+            $orderResponse = $client->createOrder($resourceId);
+            if (!$orderResponse['ok']) {
+                throw new \RuntimeException($this->appStoreResponseMessage($orderResponse));
+            }
+
+            $orderPayload = is_array($orderResponse['data'] ?? null) ? $orderResponse['data'] : [];
+            if (!empty($orderPayload['owned'])) {
+                $this->redirect('/admin/appearance/themes?success=' . urlencode('该主题已拥有授权，可以直接下载安装'));
+            }
+
+            $order = is_array($orderPayload['order'] ?? null) ? $orderPayload['order'] : [];
+            $orderId = (string)($order['id'] ?? '');
+            if ($orderId === '') {
+                throw new \RuntimeException('App Store 订单创建成功但未返回订单号');
+            }
+
+            $payResponse = $client->payOrder($orderId, $paymentMethod);
+            if (!$payResponse['ok']) {
+                throw new \RuntimeException($this->appStoreResponseMessage($payResponse));
+            }
+
+            $payPayload = is_array($payResponse['data'] ?? null) ? $payResponse['data'] : [];
+            if ($paymentMethod === 'alipay') {
+                $formHtml = (string)($payPayload['form_html'] ?? '');
+                if ($formHtml === '') {
+                    throw new \RuntimeException('支付宝支付表单生成失败');
+                }
+
+                $this->renderAppStoreAlipayForm($formHtml);
+            }
+
+            $codeUrl = (string)($payPayload['code_url'] ?? '');
+            if ($codeUrl === '') {
+                throw new \RuntimeException('微信支付二维码生成失败');
+            }
+
+            $_SESSION['app_store_wechat_pay'] = [
+                'order_id' => $orderId,
+                'resource_name' => (string)($orderPayload['resource_name'] ?? 'B2B 网站主题'),
+                'code_url' => $codeUrl,
+                'created_at' => time(),
+            ];
+
+            $this->redirect('/admin/appearance/themes?success=' . urlencode('微信支付订单已创建，请在页面顶部查看支付链接'));
+        } catch (\RuntimeException $e) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    private function buildAppStoreThemeState(array $installedThemes): array {
+        $client = $this->makeAppStoreClient();
+        $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
+        $installedBySlug = [];
+        foreach ($installedThemes as $theme) {
+            $installedBySlug[(string)$theme['slug']] = $theme;
+        }
+
+        $state = [
+            'has_token' => $client->hasToken(),
+            'masked_token' => $client->maskedToken(),
+            'site_domain' => $this->appStoreLicenseDomain(),
+            'account' => null,
+            'account_error' => '',
+            'themes' => [],
+            'error' => '',
+            'wechat_pay' => $_SESSION['app_store_wechat_pay'] ?? null,
+        ];
+
+        if (isset($_SESSION['app_store_wechat_pay']['created_at']) && (time() - (int)$_SESSION['app_store_wechat_pay']['created_at']) > 1800) {
+            unset($_SESSION['app_store_wechat_pay']);
+            $state['wechat_pay'] = null;
+        }
+
+        if ($client->hasToken()) {
+            $accountResponse = $client->me();
+            if ($accountResponse['ok'] && is_array($accountResponse['data'] ?? null)) {
+                $state['account'] = $accountResponse['data'];
+            } else {
+                $state['account_error'] = $this->appStoreResponseMessage($accountResponse);
+            }
+        }
+
+        $response = $client->listB2BThemes();
+        if (!$response['ok']) {
+            $state['error'] = $response['message'] ?: '无法获取 App Store B2B 网站主题';
+            return $state;
+        }
+
+        foreach ($response['themes'] as $resource) {
+            if (!is_array($resource)) {
+                continue;
+            }
+
+            $resourceId = (int)($resource['id'] ?? 0);
+            $resourceSlug = sanitize_slug_input((string)($resource['slug'] ?? ''));
+            $record = $installRecords[$resourceId] ?? null;
+            $knownSlug = (string)($record['theme_slug'] ?? $resourceSlug);
+            $localTheme = $installedBySlug[$knownSlug] ?? ($installedBySlug[$resourceSlug] ?? null);
+            $installedVersion = (string)($record['version'] ?? ($localTheme['version'] ?? ''));
+            $remoteVersion = (string)($resource['version'] ?? '');
+            $needsUpdate = $localTheme !== null
+                && $installedVersion !== ''
+                && $remoteVersion !== ''
+                && version_compare($remoteVersion, $installedVersion, '>');
+
+            $resource['_install_record'] = $record;
+            $resource['_local_theme'] = $localTheme;
+            $resource['_installed'] = $localTheme !== null;
+            $resource['_installed_slug'] = (string)($localTheme['slug'] ?? $knownSlug);
+            $resource['_installed_version'] = $installedVersion;
+            $resource['_needs_update'] = $needsUpdate;
+
+            $state['themes'][] = $resource;
+        }
+
+        return $state;
+    }
+
+    private function makeAppStoreClient(): AppStoreClient {
+        return new AppStoreClient(
+            $this->defaultAppStoreApiBase(),
+            $this->settingModel->get('app_store_api_token', '')
+        );
+    }
+
+    private function appStoreLicenseDomain(): string {
+        return base_url();
+    }
+
+    private function defaultAppStoreApiBase(): string {
+        return 'http://v3.shopagg.test/api/shopagg-app-store';
+    }
+
+    private function appStoreResponseMessage(array $response): string {
+        $data = $response['data'] ?? null;
+        if (is_array($data) && isset($data['message'])) {
+            return (string)$data['message'];
+        }
+
+        if (($response['message'] ?? '') !== '') {
+            return (string)$response['message'];
+        }
+
+        $status = (int)($response['status'] ?? 0);
+        return $status > 0 ? 'App Store 请求失败，HTTP ' . $status : 'App Store 请求失败';
+    }
+
+    private function renderAppStoreAlipayForm(string $formHtml): void {
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">';
+        echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+        echo '<title>正在跳转支付宝</title>';
+        echo '<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f8fafc;color:#0f172a;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh}.box{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:32px;box-shadow:0 18px 50px rgba(15,23,42,.08);max-width:520px;text-align:center}.box p{color:#64748b;line-height:1.7}</style>';
+        echo '</head><body><div class="box"><h1>正在跳转支付宝</h1><p>支付完成后返回网站模版页面，刷新后即可下载安装已授权主题。</p>';
+        echo $formHtml;
+        echo '</div></body></html>';
+        exit;
     }
 
     /**
@@ -1983,8 +2264,16 @@ class AdminController extends Controller {
     private function installThemeFromUpload(array $file): array {
         $this->assertValidThemeUpload($file);
 
-        $archive = $this->openThemeArchive((string)$file['tmp_name']);
+        return $this->installThemeFromArchivePath((string)$file['tmp_name'], (string)$file['name']);
+    }
+
+    /**
+     * 从 zip 文件安装主题。App Store 安装允许覆盖同资源 slug 的已安装主题。
+     */
+    private function installThemeFromArchivePath(string $archivePath, string $originalName, bool $allowReplace = false, ?string $preferredSlug = null): array {
+        $archive = $this->openThemeArchive($archivePath);
         $workspace = $this->createTempDirectory('theme-upload-');
+        $replaceWorkspace = null;
 
         try {
             $this->extractThemeArchive($archive, $workspace);
@@ -1995,28 +2284,43 @@ class AdminController extends Controller {
             }
 
             $metadata = $package['validation']['metadata'];
-            $slug = $this->resolveInstalledThemeSlug(
-                $package['path'],
-                $workspace,
-                (string)$file['name'],
-                $metadata
-            );
+            $slug = $preferredSlug !== null && trim($preferredSlug) !== ''
+                ? $this->sanitizeThemeDirectoryName($preferredSlug)
+                : $this->resolveInstalledThemeSlug($package['path'], $workspace, $originalName, $metadata);
 
             $targetPath = $this->getThemesDirectory() . '/' . $slug;
             if (file_exists($targetPath)) {
-                throw new \RuntimeException('此文件不符合网站主题的要求：主题目录已存在，请先删除同名主题');
+                if (!$allowReplace || !is_dir($targetPath)) {
+                    throw new \RuntimeException('此文件不符合网站主题的要求：主题目录已存在，请先删除同名主题');
+                }
+
+                $replaceWorkspace = $this->createTempDirectory('theme-replace-');
+                $backupPath = $replaceWorkspace . '/' . $slug;
+                $this->moveDirectory($targetPath, $backupPath);
             }
 
             $this->ensureDirectory($this->getThemesDirectory());
-            $this->moveDirectory($package['path'], $targetPath);
+
+            try {
+                $this->moveDirectory($package['path'], $targetPath);
+            } catch (\RuntimeException $e) {
+                if (isset($backupPath) && is_dir($backupPath) && !file_exists($targetPath)) {
+                    $this->moveDirectory($backupPath, $targetPath);
+                }
+                throw $e;
+            }
 
             return [
                 'slug' => $slug,
                 'name' => $metadata['name'] !== '' ? $metadata['name'] : $slug,
+                'version' => $metadata['version'] ?? '',
             ];
         } finally {
             $archive->close();
             $this->deleteDirectory($workspace);
+            if ($replaceWorkspace !== null) {
+                $this->deleteDirectory($replaceWorkspace);
+            }
         }
     }
 
