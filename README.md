@@ -17,16 +17,8 @@ PHP + SQLite · 零依赖 · 开箱即用
 ## 🖥 界面预览
 
 ### 前台展示
+<img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
 
-<!-- 替换为实际截图 -->
-
-| 首页 | 产品列表 | 产品详情 |
-|:---:|:---:|:---:|
-| ![首页](https://devtool.tech/api/placeholder/400/250?text=Homepage) | ![产品列表](https://devtool.tech/api/placeholder/400/250?text=Products) | ![产品详情](https://devtool.tech/api/placeholder/400/250?text=Product+Detail) |
-
-| 案例展示 | 博客文章 | 联系我们 |
-|:---:|:---:|:---:|
-| ![案例](https://devtool.tech/api/placeholder/400/250?text=Cases) | ![博客](https://devtool.tech/api/placeholder/400/250?text=Blog) | ![联系](https://devtool.tech/api/placeholder/400/250?text=Contact) |
 
 ### 后台管理
 
