@@ -16,6 +16,8 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 ## 🖥 界面预览
 
+前台演示：https://demo.shopagg.org/
+
 ### 前台展示
 <img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
 
