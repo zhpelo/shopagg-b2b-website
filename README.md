@@ -28,7 +28,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 | 媒体库 | 系统设置 |
 |:---:|:---:|
-| ![媒体库](https://devtool.tech/api/placeholder/600/350?text=Media+Library) | ![设置](https://devtool.tech/api/placeholder/600/350?text=Settings) |
+|<img width="3840" height="2968" alt="image" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8c6b-8fee5833cc6e" />| <img width="3840" height="3319" alt="image" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd" />|
 
 ---
 
