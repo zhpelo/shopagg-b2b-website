@@ -1792,6 +1792,43 @@ class AdminController extends Controller {
     }
 
     /**
+     * App Store B2B 网站主题详情
+     */
+    public function themeAppStoreDetail(string $id): void {
+        $resourceId = (int)$id;
+        if ($resourceId <= 0) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要查看的 App Store 主题'));
+        }
+
+        $client = $this->makeAppStoreClient();
+        $response = $client->getB2BTheme($resourceId);
+        if (!$response['ok'] || !is_array($response['resource'] ?? null)) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode($response['message'] ?? '无法获取 App Store 主题详情'));
+        }
+
+        $themes = $this->getInstalledThemes();
+        $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
+        $resource = $this->enrichAppStoreThemeResource(
+            $response['resource'],
+            $installRecords,
+            $this->indexInstalledThemesBySlug($themes)
+        );
+
+        $appStore = [
+            'has_token' => $client->hasToken(),
+            'masked_token' => $client->maskedToken(),
+            'site_domain' => $this->appStoreLicenseDomain(),
+            'wechat_pay' => $this->appStoreWechatPayState(),
+        ];
+
+        $title = '主题详情 - ' . (string)($resource['name'] ?? 'App Store B2B 网站主题');
+        $this->renderAdmin($title, $this->renderView('admin/themes/detail', [
+            'theme' => $resource,
+            'appStore' => $appStore,
+        ]));
+    }
+
+    /**
      * 上传网站主题 zip 压缩包
      */
     public function themeUpload(): void {
@@ -1817,13 +1854,14 @@ class AdminController extends Controller {
         csrf_check();
 
         $theme = trim((string)($_POST['theme'] ?? ''));
+        $returnTo = $this->safeThemeReturnPath();
         $validThemes = array_map(
             static fn(array $item): string => $item['slug'],
             $this->getInstalledThemes(true)
         );
 
         if ($theme === '' || !in_array($theme, $validThemes, true)) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('无法启用该主题，主题不存在或不符合要求'));
+            $this->redirect($this->themePathWithMessage($returnTo, 'error', '无法启用该主题，主题不存在或不符合要求'));
         }
 
         $this->settingModel->set('theme', $theme);
@@ -1836,7 +1874,7 @@ class AdminController extends Controller {
             }
         }
 
-        $this->redirect('/admin/appearance/themes?success=' . urlencode('已启用主题：' . $themeName));
+        $this->redirect($this->themePathWithMessage($returnTo, 'success', '已启用主题：' . $themeName));
     }
 
     /**
@@ -1879,15 +1917,16 @@ class AdminController extends Controller {
         csrf_check();
 
         $resourceId = (int)($_POST['resource_id'] ?? 0);
+        $returnTo = $this->safeThemeReturnPath();
         if ($resourceId <= 0) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要安装的 App Store 主题'));
+            $this->redirect($this->themePathWithMessage($returnTo, 'error', '请选择要安装的 App Store 主题'));
         }
 
         $client = $this->makeAppStoreClient();
         $domain = $this->appStoreLicenseDomain();
         $workspace = $this->createTempDirectory('app-store-theme-');
         $zipPath = $workspace . '/theme.zip';
-        $redirectUrl = '/admin/appearance/themes';
+        $redirectUrl = $returnTo;
 
         try {
             $download = $client->downloadResource($resourceId, $domain);
@@ -1926,9 +1965,9 @@ class AdminController extends Controller {
             ]);
 
             $message = '主题已安装：' . ($resource['name'] ?? $installed['name']);
-            $redirectUrl = '/admin/appearance/themes?success=' . urlencode($message);
+            $redirectUrl = $this->themePathWithMessage($returnTo, 'success', $message);
         } catch (\RuntimeException $e) {
-            $redirectUrl = '/admin/appearance/themes?error=' . urlencode($e->getMessage());
+            $redirectUrl = $this->themePathWithMessage($returnTo, 'error', $e->getMessage());
         } finally {
             $this->deleteDirectory($workspace);
         }
@@ -1943,13 +1982,14 @@ class AdminController extends Controller {
         csrf_check();
 
         $resourceId = (int)($_POST['resource_id'] ?? 0);
+        $returnTo = $this->safeThemeReturnPath();
         $paymentMethod = (string)($_POST['payment_method'] ?? 'alipay');
         if (!in_array($paymentMethod, ['alipay', 'wechat'], true)) {
             $paymentMethod = 'alipay';
         }
 
         if ($resourceId <= 0) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要购买的 App Store 主题'));
+            $this->redirect($this->themePathWithMessage($returnTo, 'error', '请选择要购买的 App Store 主题'));
         }
 
         $client = $this->makeAppStoreClient();
@@ -1962,7 +2002,7 @@ class AdminController extends Controller {
 
             $orderPayload = is_array($orderResponse['data'] ?? null) ? $orderResponse['data'] : [];
             if (!empty($orderPayload['owned'])) {
-                $this->redirect('/admin/appearance/themes?success=' . urlencode('该主题已拥有授权，可以直接下载安装'));
+                $this->redirect($this->themePathWithMessage($returnTo, 'success', '该主题已拥有授权，可以直接下载安装'));
             }
 
             $order = is_array($orderPayload['order'] ?? null) ? $orderPayload['order'] : [];
@@ -1998,19 +2038,16 @@ class AdminController extends Controller {
                 'created_at' => time(),
             ];
 
-            $this->redirect('/admin/appearance/themes?success=' . urlencode('微信支付订单已创建，请在页面顶部查看支付链接'));
+            $this->redirect($this->themePathWithMessage($returnTo, 'success', '微信支付订单已创建，请在页面顶部查看支付链接'));
         } catch (\RuntimeException $e) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+            $this->redirect($this->themePathWithMessage($returnTo, 'error', $e->getMessage()));
         }
     }
 
     private function buildAppStoreThemeState(array $installedThemes): array {
         $client = $this->makeAppStoreClient();
         $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
-        $installedBySlug = [];
-        foreach ($installedThemes as $theme) {
-            $installedBySlug[(string)$theme['slug']] = $theme;
-        }
+        $installedBySlug = $this->indexInstalledThemesBySlug($installedThemes);
 
         $state = [
             'has_token' => $client->hasToken(),
@@ -2020,13 +2057,8 @@ class AdminController extends Controller {
             'account_error' => '',
             'themes' => [],
             'error' => '',
-            'wechat_pay' => $_SESSION['app_store_wechat_pay'] ?? null,
+            'wechat_pay' => $this->appStoreWechatPayState(),
         ];
-
-        if (isset($_SESSION['app_store_wechat_pay']['created_at']) && (time() - (int)$_SESSION['app_store_wechat_pay']['created_at']) > 1800) {
-            unset($_SESSION['app_store_wechat_pay']);
-            $state['wechat_pay'] = null;
-        }
 
         if ($client->hasToken()) {
             $accountResponse = $client->me();
@@ -2048,29 +2080,80 @@ class AdminController extends Controller {
                 continue;
             }
 
-            $resourceId = (int)($resource['id'] ?? 0);
-            $resourceSlug = sanitize_slug_input((string)($resource['slug'] ?? ''));
-            $record = $installRecords[$resourceId] ?? null;
-            $knownSlug = (string)($record['theme_slug'] ?? $resourceSlug);
-            $localTheme = $installedBySlug[$knownSlug] ?? ($installedBySlug[$resourceSlug] ?? null);
-            $installedVersion = (string)($record['version'] ?? ($localTheme['version'] ?? ''));
-            $remoteVersion = (string)($resource['version'] ?? '');
-            $needsUpdate = $localTheme !== null
-                && $installedVersion !== ''
-                && $remoteVersion !== ''
-                && version_compare($remoteVersion, $installedVersion, '>');
-
-            $resource['_install_record'] = $record;
-            $resource['_local_theme'] = $localTheme;
-            $resource['_installed'] = $localTheme !== null;
-            $resource['_installed_slug'] = (string)($localTheme['slug'] ?? $knownSlug);
-            $resource['_installed_version'] = $installedVersion;
-            $resource['_needs_update'] = $needsUpdate;
-
-            $state['themes'][] = $resource;
+            $state['themes'][] = $this->enrichAppStoreThemeResource($resource, $installRecords, $installedBySlug);
         }
 
         return $state;
+    }
+
+    private function enrichAppStoreThemeResource(array $resource, array $installRecords, array $installedBySlug): array {
+        $resourceId = (int)($resource['id'] ?? 0);
+        $resourceSlug = sanitize_slug_input((string)($resource['slug'] ?? ''));
+        $record = $resourceId > 0 ? ($installRecords[$resourceId] ?? null) : null;
+        $knownSlug = (string)($record['theme_slug'] ?? $resourceSlug);
+        $localTheme = $installedBySlug[$knownSlug] ?? ($installedBySlug[$resourceSlug] ?? null);
+        $installedVersion = (string)($record['version'] ?? ($localTheme['version'] ?? ''));
+        $remoteVersion = (string)($resource['version'] ?? '');
+        $needsUpdate = $localTheme !== null
+            && $installedVersion !== ''
+            && $remoteVersion !== ''
+            && version_compare($remoteVersion, $installedVersion, '>');
+
+        $resource['_install_record'] = $record;
+        $resource['_local_theme'] = $localTheme;
+        $resource['_installed'] = $localTheme !== null;
+        $resource['_installed_slug'] = (string)($localTheme['slug'] ?? $knownSlug);
+        $resource['_installed_version'] = $installedVersion;
+        $resource['_needs_update'] = $needsUpdate;
+
+        return $resource;
+    }
+
+    private function indexInstalledThemesBySlug(array $installedThemes): array {
+        $installedBySlug = [];
+        foreach ($installedThemes as $theme) {
+            $installedBySlug[(string)$theme['slug']] = $theme;
+        }
+
+        return $installedBySlug;
+    }
+
+    private function appStoreWechatPayState(): ?array {
+        if (isset($_SESSION['app_store_wechat_pay']['created_at']) && (time() - (int)$_SESSION['app_store_wechat_pay']['created_at']) > 1800) {
+            unset($_SESSION['app_store_wechat_pay']);
+        }
+
+        return is_array($_SESSION['app_store_wechat_pay'] ?? null) ? $_SESSION['app_store_wechat_pay'] : null;
+    }
+
+    private function safeThemeReturnPath(string $fallback = '/admin/appearance/themes'): string {
+        $returnTo = trim((string)($_POST['return_to'] ?? ''));
+        if ($returnTo === '') {
+            return $fallback;
+        }
+
+        $parts = parse_url($returnTo);
+        if (!is_array($parts)) {
+            return $fallback;
+        }
+
+        $path = (string)($parts['path'] ?? '');
+        $basePath = base_path();
+        if ($basePath !== '' && str_starts_with($path, $basePath)) {
+            $path = substr($path, strlen($basePath)) ?: '/';
+        }
+
+        if (!str_starts_with($path, '/admin/appearance/themes')) {
+            return $fallback;
+        }
+
+        $query = isset($parts['query']) && $parts['query'] !== '' ? '?' . $parts['query'] : '';
+        return $path . $query;
+    }
+
+    private function themePathWithMessage(string $path, string $key, string $message): string {
+        $separator = str_contains($path, '?') ? '&' : '?';
+        return $path . $separator . rawurlencode($key) . '=' . urlencode($message);
     }
 
     private function makeAppStoreClient(): AppStoreClient {

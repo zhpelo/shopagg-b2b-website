@@ -394,11 +394,13 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                 <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                     <div class="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
                         <?php if ($storePreview !== ''): ?>
-                            <img src="<?= h($storePreview) ?>" alt="<?= h($storeName) ?>" class="h-full w-full object-cover">
+                            <a href="<?= url('/admin/appearance/themes/app-store/' . $storeThemeId) ?>" class="block h-full w-full">
+                                <img src="<?= h($storePreview) ?>" alt="<?= h($storeName) ?>" class="h-full w-full object-cover">
+                            </a>
                         <?php else: ?>
-                            <div class="flex h-full items-center justify-center bg-gradient-to-br from-sky-50 to-slate-100 text-sm font-medium text-slate-500">
+                            <a href="<?= url('/admin/appearance/themes/app-store/' . $storeThemeId) ?>" class="flex h-full items-center justify-center bg-gradient-to-br from-sky-50 to-slate-100 text-sm font-medium text-slate-500">
                                 App Store B2B Theme
-                            </div>
+                            </a>
                         <?php endif; ?>
                     </div>
 
@@ -427,51 +429,11 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                         <?php endif; ?>
                     </div>
 
-                    <div class="space-y-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
-                        <?php if (!$appStore['has_token']): ?>
-                            <button type="button" disabled class="inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-200 px-4 py-3 font-semibold text-slate-500">
-                                <i class="fas fa-lock"></i>
-                                配置 Token 后安装
-                            </button>
-                        <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
-                            <form action="<?= url('/admin/appearance/themes/app-store/purchase') ?>" method="post" class="space-y-3">
-                                <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-                                <input type="hidden" name="resource_id" value="<?= $storeThemeId ?>">
-                                <select name="payment_method" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
-                                    <option value="alipay">支付宝</option>
-                                    <option value="wechat">微信支付</option>
-                                </select>
-                                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 font-semibold text-white transition hover:bg-amber-600">
-                                    <i class="fas fa-credit-card"></i>
-                                    购买授权
-                                </button>
-                            </form>
-                        <?php else: ?>
-                            <form action="<?= url('/admin/appearance/themes/app-store/install') ?>" method="post">
-                                <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-                                <input type="hidden" name="resource_id" value="<?= $storeThemeId ?>">
-                                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 font-semibold text-white transition hover:bg-sky-700">
-                                    <i class="fas fa-download"></i>
-                                    <?= $isInstalled ? ($needsUpdate ? '更新安装' : '重新安装') : '下载安装' ?>
-                                </button>
-                            </form>
-
-                            <?php if ($isInstalled && !$isActiveStoreTheme && $localTheme && !empty($localTheme['is_valid'])): ?>
-                                <form action="<?= url('/admin/appearance/themes/activate') ?>" method="post">
-                                    <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-                                    <input type="hidden" name="theme" value="<?= h($installedSlug) ?>">
-                                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
-                                        <i class="fas fa-bolt"></i>
-                                        启用此主题
-                                    </button>
-                                </form>
-                            <?php elseif ($isActiveStoreTheme): ?>
-                                <div class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600">
-                                    <i class="fas fa-circle-check"></i>
-                                    当前前台正在使用这个主题
-                                </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
+                    <div class="border-t border-slate-200 bg-slate-50 px-5 py-4">
+                        <a href="<?= url('/admin/appearance/themes/app-store/' . $storeThemeId) ?>" class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100">
+                            <i class="fas fa-circle-info"></i>
+                            查看详情
+                        </a>
                     </div>
                 </article>
             <?php endforeach; ?>

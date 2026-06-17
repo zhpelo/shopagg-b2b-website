@@ -57,6 +57,45 @@ final class AppStoreClient {
         ];
     }
 
+    public function getB2BTheme(int $resourceId): array {
+        $response = $this->request('GET', '/resources/' . $resourceId, [], false);
+        if (!$response['ok']) {
+            return [
+                'ok' => false,
+                'resource' => null,
+                'message' => $this->messageFromResponse($response),
+                'status' => $response['status'],
+            ];
+        }
+
+        $payload = is_array($response['data']) ? $response['data'] : [];
+        $resource = $payload['resource'] ?? null;
+        if (!is_array($resource)) {
+            return [
+                'ok' => false,
+                'resource' => null,
+                'message' => 'App Store 未返回主题详情',
+                'status' => $response['status'],
+            ];
+        }
+
+        if (($resource['type'] ?? '') !== self::TYPE_B2B_THEME) {
+            return [
+                'ok' => false,
+                'resource' => null,
+                'message' => '该资源不是 B2B 网站主题',
+                'status' => $response['status'],
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'resource' => $resource,
+            'message' => '',
+            'status' => $response['status'],
+        ];
+    }
+
     public function me(): array {
         return $this->request('GET', '/me', [], true);
     }
