@@ -386,7 +386,10 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                     $installedVersion = (string)($storeTheme['_installed_version'] ?? '');
                     $needsUpdate = !empty($storeTheme['_needs_update']);
                     $isActiveStoreTheme = $localTheme && !empty($localTheme['is_active']);
-                    $priceText = $isFree ? '免费' : '$' . number_format((float)($storeTheme['price'] ?? 0), 2);
+                    $formattedPrice = trim((string)($storeTheme['price_formatted'] ?? ''));
+                    $priceText = $isFree
+                        ? '免费'
+                        : ($formattedPrice !== '' ? $formattedPrice : '¥' . number_format((float)($storeTheme['price'] ?? 0), 2));
                 ?>
                 <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                     <div class="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
@@ -416,25 +419,6 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                         <p class="mt-4 min-h-[48px] text-sm leading-6 text-slate-600">
                             <?= $storeDescription !== '' ? h($storeDescription) : '暂无主题描述' ?>
                         </p>
-
-                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                            <div class="rounded-xl bg-slate-50 px-3 py-2">
-                                <p class="text-xs text-slate-400">商店版本</p>
-                                <p class="mt-1 font-medium text-slate-700"><?= h($storeVersion !== '' ? $storeVersion : '未填写') ?></p>
-                            </div>
-                            <div class="rounded-xl bg-slate-50 px-3 py-2">
-                                <p class="text-xs text-slate-400">本地状态</p>
-                                <p class="mt-1 font-medium text-slate-700"><?= $isInstalled ? h($installedSlug) : '未安装' ?></p>
-                            </div>
-                            <div class="rounded-xl bg-slate-50 px-3 py-2">
-                                <p class="text-xs text-slate-400">授权</p>
-                                <p class="mt-1 font-medium <?= (!$licenseRequired || $hasLicense) ? 'text-emerald-700' : 'text-amber-700' ?>"><?= !$licenseRequired ? '免费授权' : ($hasLicense ? '已授权' : '需购买') ?></p>
-                            </div>
-                            <div class="rounded-xl bg-slate-50 px-3 py-2">
-                                <p class="text-xs text-slate-400">绑定域名</p>
-                                <p class="mt-1 truncate font-medium text-slate-700" title="<?= h((string)($storeTheme['bound_domain'] ?? $appStore['site_domain'] ?? '')) ?>"><?= h((string)($storeTheme['bound_domain'] ?? $appStore['site_domain'] ?? '-')) ?></p>
-                            </div>
-                        </div>
 
                         <?php if ($isInstalled && $installedVersion !== ''): ?>
                             <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
