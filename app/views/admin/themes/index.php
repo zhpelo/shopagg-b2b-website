@@ -337,8 +337,8 @@ $invalidThemeCount = count($themes) - $validThemeCount;
             <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 text-sky-500">
                 <i class="fas fa-store text-2xl"></i>
             </div>
-            <h2 class="text-lg font-bold text-slate-900">App Store 暂无 B2B 网站主题</h2>
-            <p class="mt-2 text-sm text-slate-500">请先在 Laravel 后台 App Store 资源管理中发布类型为“B2B 网站主题”的资源。</p>
+            <h2 class="text-lg font-bold text-slate-900">暂无网站模版</h2>
+            <p class="mt-2 text-sm text-slate-500">请耐心等待 App Store 主题上线。</p>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
