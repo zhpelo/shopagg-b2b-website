@@ -24,7 +24,8 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 | 仪表盘 | 产品管理 |
 |:---:|:---:|
-| ![仪表盘](https://devtool.tech/api/placeholder/600/350?text=Dashboard) | ![产品管理](https://devtool.tech/api/placeholder/600/350?text=Product+Management) |
+| <img width="3840" height="3460" alt="image" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790" />
+ | ![产品管理](https://devtool.tech/api/placeholder/600/350?text=Product+Management) |
 
 | 媒体库 | 系统设置 |
 |:---:|:---:|
