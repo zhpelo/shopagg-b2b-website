@@ -10,7 +10,7 @@ $title = $isEdit ? '编辑轮播图' : '新建轮播图';
 ?>
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <!-- Header -->
-    <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-violet-600">
+    <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
         <div class="flex items-center gap-3">
             <a href="<?= url('/admin/appearance/sliders') ?>" 
                class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
@@ -55,12 +55,13 @@ $title = $isEdit ? '编辑轮播图' : '新建轮播图';
                         </label>
                         <input type="text" id="slug" name="slug" required
                                value="<?= h($slider['slug'] ?? '') ?>"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-mono text-sm"
+                               class="w-full px-4 py-2.5 rounded-xl border <?= $isEdit ? 'border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed' : 'border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200' ?> outline-none transition-all font-mono text-sm"
                                placeholder="如：home-hero"
-                               data-slug-input spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
+                               <?= $isEdit ? 'readonly aria-readonly="true"' : 'data-slug-input' ?>
+                               spellcheck="false" autocapitalize="off" pattern="[a-z0-9-]+" title="仅支持小写字母、数字和连字符 -">
                         <p class="text-xs text-slate-500 mt-1.5">
                             <i class="fas fa-info-circle mr-1"></i>
-                            仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符
+                            <?= $isEdit ? '标识符创建后不可修改，用于前台模板调用和代码引用' : '仅支持小写字母、数字和连字符 `-`，保存时会自动转为小写并过滤非法字符' ?>
                         </p>
                     </div>
 

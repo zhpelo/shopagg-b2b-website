@@ -52,7 +52,7 @@ $treeItems = buildItemTree($grouped);
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <!-- Header -->
-    <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-violet-600">
+    <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="<?= url('/admin/appearance/menus') ?>" 

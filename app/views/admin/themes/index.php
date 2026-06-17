@@ -2,7 +2,6 @@
 /**
  * 后台 - 网站模版管理
  * @var array $themes
- * @var array $requiredFiles
  * @var string $currentTheme
  * @var string $currentThemeName
  * @var array $appStore
@@ -32,10 +31,10 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                     <p class="mt-1 text-indigo-100">管理本地网站模版，也可以从 ShopAGG App Store 下载 B2B 网站主题。</p>
                 </div>
                 <div>
-                     <a href="/admin/appearance/themes/upload" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-600 font-semibold rounded-xl shadow-lg hover:bg-indigo-50 transition-colors">
-                            <i class="fas fa-plus"></i>
-                            上传主题 ZIP
-                        </a>
+                    <a href="<?= url('/admin/appearance/themes/upload') ?>" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-600 font-semibold rounded-xl shadow-lg hover:bg-indigo-50 transition-colors">
+                        <i class="fas fa-plus"></i>
+                        上传主题 ZIP
+                    </a>
                 </div>
             </div>
         </div>
@@ -76,41 +75,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
             <?php endif; ?>
 
             <div class="grid gap-6 xl:grid-cols-12">
-                <div class="xl:col-span-4">
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                        <div class="mb-5 flex items-center gap-3">
-                            <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
-                                <i class="fas fa-upload"></i>
-                            </span>
-                            <div>
-                                <h2 class="text-lg font-bold text-slate-900">主题上传</h2>
-                                <p class="text-sm text-slate-500">上传后自动校验文件内容并解压到 `/themes`目录。</p>
-                            </div>
-                        </div>
-
-                        <form action="<?= url('/admin/appearance/themes/upload') ?>" method="post" enctype="multipart/form-data" class="space-y-4">
-                            <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-                            <label class="block">
-                                <span class="mb-2 block text-sm font-medium text-slate-700">选择主题 zip 文件</span>
-                                <input type="file" name="theme_zip" accept=".zip,application/zip" class="block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:font-medium file:text-indigo-600 hover:file:bg-indigo-100">
-                            </label>
-
-                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700">
-                                <i class="fas fa-cloud-arrow-up"></i>
-                                上传主题 ZIP
-                            </button>
-                        </form>
-
-                        <div class="mt-5 space-y-3 text-sm text-slate-600">
-                            <p class="font-semibold text-slate-900">上传校验规则</p>
-                            <p>1. 压缩包中只能包含一套网站主题。</p>
-                            <p>2. 主题根目录必须包含 `style.css`，并在头部注释里提供 `Theme Name`。</p>
-                            <p>3. 系统会检查主题运行所需的模板文件是否齐全，不符合要求的 zip 会直接提示“此文件不符合”。</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="xl:col-span-4">
+                <div class="xl:col-span-6">
                     <div class="rounded-2xl border border-slate-200 bg-white p-5">
                         <div class="mb-5 flex items-center gap-3">
                             <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-100 text-sky-600">
@@ -179,7 +144,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                     </div>
                 </div>
 
-                <div class="xl:col-span-4">
+                <div class="xl:col-span-6">
                     <div class="rounded-2xl border border-slate-200 bg-white p-5">
                         <div class="grid gap-4 md:grid-cols-3">
                             <div class="rounded-2xl bg-slate-50 p-4">
@@ -352,7 +317,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <h2 class="text-xl font-bold text-slate-900">App Store B2B 网站主题</h2>
-            <p class="mt-1 text-sm text-slate-500">来自 SHOPAGG App Store 的 B2B 网站主题，下载时会按 Token 和域名执行授权校验。</p>
+            <p class="mt-1 text-sm text-slate-500">来自 SHOPAGG App Store 的 B2B 网站主题。</p>
         </div>
         <span class="text-sm font-medium text-slate-500"><?= count($appStoreThemes) ?> 个商店主题</span>
     </div>

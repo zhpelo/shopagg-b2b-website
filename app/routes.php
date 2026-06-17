@@ -141,6 +141,7 @@ function register_routes(Router $router): void {
     // 后台：外观区块 - 网站模版
     $router->add('GET', '/admin/appearance', [AdminController::class, 'themeList']);
     $router->add('GET', '/admin/appearance/themes', [AdminController::class, 'themeList']);
+    $router->add('GET', '/admin/appearance/themes/upload', [AdminController::class, 'themeUploadForm']);
     $router->add('GET', '/admin/appearance/themes/app-store/:id', [AdminController::class, 'themeAppStoreDetail']);
     $router->add('POST', '/admin/appearance/themes/upload', [AdminController::class, 'themeUpload']);
     $router->add('POST', '/admin/appearance/themes/activate', [AdminController::class, 'themeActivate']);

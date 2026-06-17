@@ -1784,10 +1784,18 @@ class AdminController extends Controller {
 
         $this->renderAdmin('网站模版', $this->renderView('admin/themes/index', [
             'themes' => $themes,
-            'requiredFiles' => self::THEME_REQUIRED_FILES,
             'currentTheme' => $currentTheme,
             'currentThemeName' => $currentThemeName,
             'appStore' => $appStore,
+        ]));
+    }
+
+    /**
+     * 网站主题上传页面
+     */
+    public function themeUploadForm(): void {
+        $this->renderAdmin('上传主题', $this->renderView('admin/themes/upload', [
+            'requiredFiles' => self::THEME_REQUIRED_FILES,
         ]));
     }
 
@@ -1843,7 +1851,7 @@ class AdminController extends Controller {
             $result = $this->installThemeFromUpload($file);
             $this->redirect('/admin/appearance/themes?success=' . urlencode('主题已上传：' . $result['name']));
         } catch (\RuntimeException $e) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/appearance/themes/upload?error=' . urlencode($e->getMessage()));
         }
     }
 
@@ -2892,7 +2900,10 @@ class AdminController extends Controller {
         }
         
         $name = trim((string)($_POST['name'] ?? ''));
-        $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
+        $slug = (string)($slider['slug'] ?? '');
+        if ($slug === '') {
+            $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $name);
+        }
         
         $sliderData = [
             'name' => $name,
