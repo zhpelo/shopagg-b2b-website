@@ -2243,7 +2243,7 @@ class AdminController extends Controller {
     }
 
     private function defaultAppStoreApiBase(): string {
-        return 'http://v3.shopagg.test/api/shopagg-app-store';
+        return 'https://www.shopagg.com/api/shopagg-app-store';
     }
 
     private function appStoreResponseMessage(array $response): string {
