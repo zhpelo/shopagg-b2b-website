@@ -40,4 +40,10 @@ class AppStoreThemeInstall extends BaseModel {
         $stmt->bindValue(':updated_at', $now, SQLITE3_TEXT);
         $stmt->execute();
     }
+
+    public function deleteByThemeSlug(string $themeSlug): void {
+        $stmt = $this->db->prepare('DELETE FROM app_store_theme_installs WHERE theme_slug = :theme_slug');
+        $stmt->bindValue(':theme_slug', $themeSlug, SQLITE3_TEXT);
+        $stmt->execute();
+    }
 }

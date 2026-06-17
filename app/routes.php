@@ -144,6 +144,7 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/appearance/themes/app-store/:id', [AdminController::class, 'themeAppStoreDetail']);
     $router->add('POST', '/admin/appearance/themes/upload', [AdminController::class, 'themeUpload']);
     $router->add('POST', '/admin/appearance/themes/activate', [AdminController::class, 'themeActivate']);
+    $router->add('POST', '/admin/appearance/themes/delete', [AdminController::class, 'themeDelete']);
     $router->add('POST', '/admin/appearance/themes/app-store/settings', [AdminController::class, 'themeAppStoreSettings']);
     $router->add('POST', '/admin/appearance/themes/app-store/install', [AdminController::class, 'themeAppStoreInstall']);
     $router->add('POST', '/admin/appearance/themes/app-store/purchase', [AdminController::class, 'themeAppStorePurchase']);

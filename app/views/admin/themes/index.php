@@ -29,16 +29,13 @@ $invalidThemeCount = count($themes) - $validThemeCount;
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-white">网站模版</h1>
-                    <p class="mt-1 text-indigo-100">管理本地 `/themes` 目录主题，也可以从 ShopAGG App Store 下载 B2B 网站主题。</p>
+                    <p class="mt-1 text-indigo-100">管理本地网站模版，也可以从 ShopAGG App Store 下载 B2B 网站主题。</p>
                 </div>
-                <div class="inline-flex items-center gap-3 rounded-2xl bg-white/15 px-4 py-3 text-sm text-white">
-                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
-                        <i class="fas fa-check-circle"></i>
-                    </span>
-                    <div>
-                        <p class="font-semibold">当前主题</p>
-                        <p class="text-indigo-100"><?= h($currentThemeName) ?> <span class="text-xs opacity-80">(<?= h($currentTheme) ?>)</span></p>
-                    </div>
+                <div>
+                     <a href="/admin/appearance/themes/upload" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-600 font-semibold rounded-xl shadow-lg hover:bg-indigo-50 transition-colors">
+                            <i class="fas fa-plus"></i>
+                            上传主题 ZIP
+                        </a>
                 </div>
             </div>
         </div>
@@ -232,8 +229,9 @@ $invalidThemeCount = count($themes) - $validThemeCount;
             <p class="mt-2 text-slate-500">请先上传一个符合要求的 zip 网站主题包。</p>
         </div>
     <?php else: ?>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
             <?php foreach ($themes as $theme): ?>
+                <?php $canDeleteTheme = !$theme['is_active'] && $theme['slug'] !== 'default'; ?>
                 <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                     <div class="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
                         <?php if (!empty($theme['preview_url'])): ?>
@@ -313,7 +311,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                         <?php endif; ?>
                     </div>
 
-                    <div class="border-t border-slate-200 bg-slate-50 px-5 py-4">
+                    <div class="space-y-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
                         <?php if ($theme['is_active']): ?>
                             <div class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600">
                                 <i class="fas fa-circle-check"></i>
@@ -333,6 +331,17 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                                 <i class="fas fa-ban"></i>
                                 当前不可启用
                             </button>
+                        <?php endif; ?>
+
+                        <?php if ($canDeleteTheme): ?>
+                            <form action="<?= url('/admin/appearance/themes/delete') ?>" method="post">
+                                <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+                                <input type="hidden" name="theme" value="<?= h($theme['slug']) ?>">
+                                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 font-semibold text-rose-700 transition hover:bg-rose-100" data-confirm-message="确定要删除主题「<?= h($theme['name']) ?>」吗？此操作会删除该主题目录，且不可恢复。">
+                                    <i class="fas fa-trash"></i>
+                                    删除主题
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </div>
                 </article>
@@ -367,7 +376,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
             <p class="mt-2 text-sm text-slate-500">请先在 Laravel 后台 App Store 资源管理中发布类型为“B2B 网站主题”的资源。</p>
         </div>
     <?php else: ?>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
             <?php foreach ($appStoreThemes as $storeTheme): ?>
                 <?php
                     $storeThemeId = (int)($storeTheme['id'] ?? 0);

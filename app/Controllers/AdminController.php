@@ -1878,6 +1878,41 @@ class AdminController extends Controller {
     }
 
     /**
+     * 删除未启用的本地网站主题
+     */
+    public function themeDelete(): void {
+        csrf_check();
+
+        $submittedTheme = trim((string)($_POST['theme'] ?? ''));
+        $theme = sanitize_slug_input($submittedTheme);
+
+        try {
+            if ($theme === '' || $theme !== $submittedTheme) {
+                throw new \RuntimeException('请选择要删除的主题');
+            }
+
+            $themePath = $this->resolveDeletableThemePath($theme);
+            $themeName = $theme;
+            foreach ($this->getInstalledThemes() as $item) {
+                if ($item['slug'] === $theme) {
+                    $themeName = (string)$item['name'];
+                    break;
+                }
+            }
+
+            $this->deleteDirectory($themePath);
+            if (is_dir($themePath)) {
+                throw new \RuntimeException('主题目录删除失败，请检查文件权限');
+            }
+
+            $this->appStoreThemeInstallModel->deleteByThemeSlug($theme);
+            $this->redirect('/admin/appearance/themes?success=' . urlencode('主题已删除：' . $themeName));
+        } catch (\RuntimeException $e) {
+            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    /**
      * 保存 App Store 连接配置
      */
     public function themeAppStoreSettings(): void {
@@ -2154,6 +2189,38 @@ class AdminController extends Controller {
     private function themePathWithMessage(string $path, string $key, string $message): string {
         $separator = str_contains($path, '?') ? '&' : '?';
         return $path . $separator . rawurlencode($key) . '=' . urlencode($message);
+    }
+
+    private function resolveDeletableThemePath(string $theme): string {
+        if ($theme === 'default') {
+            throw new \RuntimeException('默认主题不能删除');
+        }
+
+        if ($theme === $this->settingModel->get('theme', 'default')) {
+            throw new \RuntimeException('当前启用主题不能删除');
+        }
+
+        $themesDirectory = $this->getThemesDirectory();
+        $basePath = realpath($themesDirectory);
+        if ($basePath === false || !is_dir($basePath)) {
+            throw new \RuntimeException('themes 目录不存在');
+        }
+
+        $themePath = $themesDirectory . '/' . $theme;
+        if (!is_dir($themePath)) {
+            throw new \RuntimeException('主题目录不存在');
+        }
+
+        if (is_link($themePath)) {
+            throw new \RuntimeException('不能删除符号链接主题目录');
+        }
+
+        $realThemePath = realpath($themePath);
+        if ($realThemePath === false || $realThemePath === $basePath || !str_starts_with($realThemePath, $basePath . DIRECTORY_SEPARATOR)) {
+            throw new \RuntimeException('主题目录路径不合法');
+        }
+
+        return $realThemePath;
     }
 
     private function makeAppStoreClient(): AppStoreClient {
