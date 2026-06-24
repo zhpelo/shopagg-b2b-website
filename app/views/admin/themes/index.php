@@ -133,7 +133,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                                     <input type="password" name="api_token" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" placeholder="粘贴 ShopAGG App Store Token" autocomplete="off">
                                 </label>
                                 <div class="rounded-xl bg-slate-50 px-3 py-2 text-xs leading-6 text-slate-500">
-                                    当前站点会自动使用 <span class="font-semibold text-slate-700"><?= h($appStore['site_domain'] ?? base_url()) ?></span> 进行主题授权绑定。
+                                    点击这里去SHOPAGG获取Token：  <a href="https://www.shopagg.com/dashboard/api-tokens" target="_blank" class="font-semibold text-slate-700">https://www.shopagg.com/dashboard/api-tokens</a>
                                 </div>
                                 <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-3 font-semibold text-white transition hover:bg-sky-700">
                                     <i class="fas fa-link"></i>
