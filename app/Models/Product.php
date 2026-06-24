@@ -76,6 +76,52 @@ class Product extends BaseModel {
         return $item;
     }
 
+    public function getByIds(array $ids, bool $activeOnly = true): array {
+        $ids = $this->normalizeIds($ids);
+        if (empty($ids)) {
+            return [];
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach ($ids as $index => $id) {
+            $key = ':id' . $index;
+            $placeholders[] = $key;
+            $params[$key] = $id;
+        }
+
+        $where = [
+            'products.deleted_at IS NULL',
+            'products.id IN (' . implode(',', $placeholders) . ')',
+        ];
+        if ($activeOnly) {
+            $where[] = "products.status = 'active'";
+        }
+
+        $items = $this->fetchAll(
+            "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
+            FROM products
+            LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE " . implode(' AND ', $where),
+            $params
+        );
+
+        $items = $this->withCovers($items);
+        $byId = [];
+        foreach ($items as $item) {
+            $byId[(int)$item['id']] = $item;
+        }
+
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($byId[$id])) {
+                $ordered[] = $byId[$id];
+            }
+        }
+
+        return $ordered;
+    }
+
     public function getBySlug(string $slug): ?array {
         $item = $this->fetchOne("SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products LEFT JOIN product_categories ON product_categories.id = products.category_id
@@ -248,6 +294,71 @@ class Product extends BaseModel {
             LIMIT :limit";
         $items = $this->fetchAll($query, [':limit' => $limit]);
         return $this->withCovers($items);
+    }
+
+    public function searchForSelector(array $filters = []): array {
+        $page = max(1, (int)($filters['page'] ?? 1));
+        $perPage = max(1, min(60, (int)($filters['per_page'] ?? 12)));
+        $offset = ($page - 1) * $perPage;
+
+        $where = ['products.deleted_at IS NULL'];
+        $params = [];
+
+        $search = trim((string)($filters['q'] ?? ''));
+        if ($search !== '') {
+            $where[] = "(products.title LIKE :q OR products.slug LIKE :q OR products.summary LIKE :q OR products.product_type LIKE :q OR products.vendor LIKE :q OR products.tags LIKE :q)";
+            $params[':q'] = '%' . $search . '%';
+        }
+
+        $status = (string)($filters['status'] ?? 'active');
+        if ($status === 'inactive') {
+            $where[] = "products.status IN ('inactive', 'archived')";
+        } elseif (in_array($status, ['active', 'draft', 'archived'], true)) {
+            $where[] = 'products.status = :status';
+            $params[':status'] = $status;
+        }
+
+        $categoryId = (int)($filters['category_id'] ?? 0);
+        if ($categoryId > 0) {
+            $where[] = 'products.category_id = :category_id';
+            $params[':category_id'] = $categoryId;
+        }
+
+        $whereSql = implode(' AND ', $where);
+        $countRow = $this->fetchOne(
+            "SELECT COUNT(*) AS total
+            FROM products
+            LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE $whereSql",
+            $params
+        );
+        $total = (int)($countRow['total'] ?? 0);
+        $totalPages = max(1, (int)ceil($total / $perPage));
+        if ($page > $totalPages) {
+            $page = $totalPages;
+            $offset = ($page - 1) * $perPage;
+        }
+
+        $items = $this->fetchAll(
+            "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
+            FROM products
+            LEFT JOIN product_categories ON product_categories.id = products.category_id
+            WHERE $whereSql
+            ORDER BY products.id DESC
+            LIMIT :limit OFFSET :offset",
+            $params + [
+                ':limit' => $perPage,
+                ':offset' => $offset,
+            ]
+        );
+
+        return [
+            'items' => $this->withCovers($items),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => $totalPages,
+        ];
     }
 
     private function buildAdminWhere(array $filters): array {

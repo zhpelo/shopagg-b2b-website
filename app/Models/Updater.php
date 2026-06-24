@@ -18,8 +18,8 @@ class Updater {
     /** GitHub 仓库页面 */
     private const GITHUB_REPO_URL = 'https://github.com/zhpelo/shopagg-b2b-website';
     
-    /** 当前版本号（从配置文件或代码中获取） */
-    private const CURRENT_VERSION = '1.0.0';
+    /** 当前版本号兜底值（正常由 APP_VERSION 常量提供） */
+    private const CURRENT_VERSION = '1.1.7';
     
     /** 更新包下载目录 */
     private string $downloadDir;
@@ -69,14 +69,10 @@ class Updater {
      * 获取当前版本号
      */
     public function getCurrentVersion(): string {
-        // 尝试从 version.php 文件读取版本号
-        $versionFile = APP_ROOT . '/version.php';
-        if (is_file($versionFile)) {
-            $version = require $versionFile;
-            if (is_string($version)) {
-                return $version;
-            }
+        if (defined('APP_VERSION')) {
+            return (string) APP_VERSION;
         }
+
         return self::CURRENT_VERSION;
     }
     
@@ -329,7 +325,6 @@ class Updater {
             'uploads',
             'storage',
             '.env',
-            'version.php',
         ];
         
         $copyResult = $this->copyDirectory($extractedCodeDir, APP_ROOT, $excludeFiles);
@@ -344,8 +339,8 @@ class Updater {
             ];
         }
         
-        // 更新版本号
-        $this->updateVersionFile($version);
+        // 清理旧版本文件；版本号由入口常量 APP_VERSION 提供。
+        $this->removeLegacyVersionFile();
         
         // 执行数据库迁移（新版本可能包含新的迁移文件）
         $migrationResult = $this->migrator->runAllPending();
@@ -675,12 +670,13 @@ class Updater {
     }
     
     /**
-     * 更新版本文件
+     * 清理旧版本文件
      */
-    private function updateVersionFile(string $version): void {
+    private function removeLegacyVersionFile(): void {
         $versionFile = APP_ROOT . '/version.php';
-        $content = "<?php\n// 当前系统版本\nreturn '" . $version . "';\n";
-        file_put_contents($versionFile, $content);
+        if (is_file($versionFile)) {
+            unlink($versionFile);
+        }
     }
     
     /**

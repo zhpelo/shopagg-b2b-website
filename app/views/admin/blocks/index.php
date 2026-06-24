@@ -207,6 +207,45 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                                                     </div>
                                                 </div>
 
+                                            <?php elseif ($fieldType === 'product_picker'): ?>
+                                                <?php
+                                                    $pickerMultiple = ($field['multiple'] ?? true) !== false;
+                                                    $pickerLimit = (int)($field['limit'] ?? 0);
+                                                    $pickerStatus = (string)($field['status'] ?? 'active');
+                                                ?>
+                                                <div class="space-y-3" data-product-picker-field>
+                                                    <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+                                                        <input id="<?= h($fieldInputId) ?>" name="<?= h($fieldName) ?>"
+                                                               value="<?= h($currentVal) ?>"
+                                                               data-product-picker-input
+                                                               class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                                               placeholder="商品 ID，多个 ID 使用英文逗号分隔">
+                                                        <button type="button"
+                                                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors text-sm"
+                                                                data-product-picker-open
+                                                                data-product-picker-multiple="<?= $pickerMultiple ? 'true' : 'false' ?>"
+                                                                data-product-picker-max="<?= h((string)$pickerLimit) ?>"
+                                                                data-product-picker-status="<?= h($pickerStatus) ?>">
+                                                            <i class="fas fa-box"></i>
+                                                            选择商品
+                                                        </button>
+                                                        <button type="button"
+                                                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors text-sm"
+                                                                data-product-picker-clear>
+                                                            <i class="fas fa-times"></i>
+                                                            清空
+                                                        </button>
+                                                    </div>
+                                                    <?php if ($pickerLimit > 0): ?>
+                                                        <p class="text-xs text-slate-400">最多选择 <?= $pickerLimit ?> 个商品，保存值为商品 ID 列表。</p>
+                                                    <?php else: ?>
+                                                        <p class="text-xs text-slate-400">保存值为商品 ID 列表。</p>
+                                                    <?php endif; ?>
+                                                    <div data-product-picker-preview class="rounded-xl border border-slate-200 bg-white p-3">
+                                                        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-400">正在加载已选商品...</div>
+                                                    </div>
+                                                </div>
+
                                             <?php elseif ($fieldType === 'icon'): ?>
                                                 <div class="flex items-center gap-3">
                                                     <span class="w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">

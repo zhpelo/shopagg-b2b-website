@@ -442,6 +442,34 @@ function get_products(array $args = []): array {
     return $items;
 }
 
+function get_products_by_ids(array|string $ids, bool $activeOnly = true): array {
+    if (is_string($ids)) {
+        $ids = preg_split('/[,\s]+/', $ids) ?: [];
+    }
+
+    $normalized = [];
+    foreach ($ids as $id) {
+        $id = (int)$id;
+        if ($id > 0 && !in_array($id, $normalized, true)) {
+            $normalized[] = $id;
+        }
+    }
+
+    if (empty($normalized)) {
+        return [];
+    }
+
+    $productModel = new \App\Models\Product();
+    $items = $productModel->getByIds($normalized, $activeOnly);
+
+    foreach ($items as &$item) {
+        $item['url'] = url('/product/' . ($item['slug'] ?? $item['id']));
+    }
+    unset($item);
+
+    return $items;
+}
+
 /**
  * 获取文章列表
  *

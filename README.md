@@ -6,7 +6,7 @@
 
 PHP + SQLite · 零依赖 · 开箱即用
 
-[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)](version.php)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.1.7-blue.svg)
 
 [功能特性](#-功能特性) · [快速开始](#-快速开始) · [部署指南](#-部署指南) · [技术架构](#-技术架构) · [开发文档](#-开发文档)
 

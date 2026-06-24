@@ -49,6 +49,22 @@ window.tailwind.config = {
         historyIndex: -1
     };
 
+    const productSelectorState = {
+        callback: null,
+        multiple: true,
+        max: 0,
+        selectedItems: new Map(),
+        page: 1,
+        perPage: 12,
+        totalPages: 1,
+        total: 0,
+        q: '',
+        categoryId: '',
+        status: 'active',
+        fetchTimer: null,
+        products: []
+    };
+
     let currentExplorerFile = null;
 
     function escapeHtmlAttr(value) {
@@ -67,6 +83,488 @@ window.tailwind.config = {
             return url;
         }
         return `${window.APP_BASE_PATH || ''}${url}`;
+    }
+
+    function parseProductSelectorIds(value) {
+        const ids = [];
+        String(value || '').split(/[,\s]+/).forEach((item) => {
+            const id = Number.parseInt(item, 10);
+            if (id > 0 && !ids.includes(id)) {
+                ids.push(id);
+            }
+        });
+        return ids;
+    }
+
+    function productSelectorSearchUrl() {
+        const params = new URLSearchParams();
+        if (productSelectorState.q) params.set('q', productSelectorState.q);
+        if (productSelectorState.categoryId) params.set('category_id', productSelectorState.categoryId);
+        params.set('status', productSelectorState.status);
+        params.set('page', String(productSelectorState.page));
+        params.set('per_page', String(productSelectorState.perPage));
+        return `${window.APP_BASE_PATH || ''}/admin/products/selector?${params.toString()}`;
+    }
+
+    function productSelectorIdsUrl(ids) {
+        const params = new URLSearchParams();
+        params.set('ids', parseProductSelectorIds(ids).join(','));
+        return `${window.APP_BASE_PATH || ''}/admin/products/selector?${params.toString()}`;
+    }
+
+    function productStatusLabel(status) {
+        if (status === 'active') return '已上架';
+        if (status === 'draft') return '草稿';
+        if (status === 'inactive' || status === 'archived') return '未上架';
+        return status || '未知';
+    }
+
+    function productSelectorCover(product) {
+        return normalizeMediaSelectionUrl(product?.cover || '');
+    }
+
+    function productSelectorThumb(product, sizeClass = 'h-14 w-16') {
+        const cover = productSelectorCover(product);
+        if (cover) {
+            return `<img src="${escapeHtmlAttr(cover)}" alt="" class="${sizeClass} shrink-0 rounded-lg border border-slate-200 object-cover">`;
+        }
+        return `<span class="${sizeClass} inline-flex shrink-0 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-slate-300"><i class="fas fa-box"></i></span>`;
+    }
+
+    function setProductSelectorMessage(message = '', type = 'info') {
+        const box = document.getElementById('product-selector-message');
+        if (!box) {
+            return;
+        }
+        if (!message) {
+            box.className = 'hidden rounded-xl border px-4 py-3 text-sm';
+            box.textContent = '';
+            return;
+        }
+        const classes = type === 'error'
+            ? 'border-rose-200 bg-rose-50 text-rose-700'
+            : type === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : 'border-sky-200 bg-sky-50 text-sky-700';
+        box.className = `rounded-xl border px-4 py-3 text-sm ${classes}`;
+        box.textContent = message;
+    }
+
+    function renderProductSelectorCategories(categories = []) {
+        const select = document.getElementById('product-selector-category');
+        if (!select) {
+            return;
+        }
+        const current = select.value || productSelectorState.categoryId;
+        select.innerHTML = '<option value="">全部分类</option>' + categories.map((category) => (
+            `<option value="${escapeHtmlAttr(category.id)}">${escapeHtmlAttr(category.name)}</option>`
+        )).join('');
+        select.value = current;
+    }
+
+    function findProductSelectorItem(id) {
+        return productSelectorState.products.find((item) => Number(item.id) === Number(id))
+            || productSelectorState.selectedItems.get(Number(id))
+            || null;
+    }
+
+    function renderProductSelectorPagination() {
+        const count = document.getElementById('product-selector-count');
+        const page = document.getElementById('product-selector-page');
+        const prev = document.getElementById('product-selector-prev');
+        const next = document.getElementById('product-selector-next');
+        const currentPage = productSelectorState.page;
+        const totalPages = Math.max(1, productSelectorState.totalPages);
+
+        if (count) {
+            count.textContent = `商品列表（共 ${productSelectorState.total} 个）`;
+        }
+        if (page) {
+            page.textContent = `${currentPage} / ${totalPages}`;
+        }
+        if (prev) {
+            prev.disabled = currentPage <= 1;
+        }
+        if (next) {
+            next.disabled = currentPage >= totalPages;
+        }
+    }
+
+    function renderProductSelectorList() {
+        const list = document.getElementById('product-selector-list');
+        if (!list) {
+            return;
+        }
+        const products = productSelectorState.products;
+        if (!products.length) {
+            list.innerHTML = `
+<div class="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-center text-slate-400">
+<i class="fas fa-search mb-3 text-2xl"></i>
+<p class="text-sm font-semibold text-slate-500">没有找到商品</p>
+<p class="mt-1 text-xs">请调整关键词、分类或状态筛选。</p>
+</div>`;
+            return;
+        }
+
+        list.innerHTML = products.map((product) => {
+            const id = Number(product.id);
+            const selected = productSelectorState.selectedItems.has(id);
+            const selectedClasses = selected
+                ? 'border-indigo-300 bg-indigo-50 ring-2 ring-indigo-100'
+                : 'border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50';
+            return `
+<button type="button" class="mb-3 flex w-full items-start gap-3 rounded-2xl border p-3 text-left transition ${selectedClasses}" data-product-selector-id="${id}" aria-pressed="${selected ? 'true' : 'false'}">
+${productSelectorThumb(product)}
+<span class="min-w-0 flex-1">
+<span class="block truncate text-sm font-semibold text-slate-900">${escapeHtmlAttr(product.title || `#${id}`)}</span>
+<span class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+<span>#${id}</span>
+${product.category_name ? `<span>${escapeHtmlAttr(product.category_name)}</span>` : ''}
+<span>${escapeHtmlAttr(productStatusLabel(product.status))}</span>
+</span>
+${product.summary ? `<span class="mt-2 block line-clamp-2 text-xs leading-5 text-slate-500">${escapeHtmlAttr(product.summary)}</span>` : ''}
+</span>
+<span class="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${selected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}">
+<i class="fas ${selected ? 'fa-check' : 'fa-plus'} text-xs"></i>
+</span>
+</button>`;
+        }).join('');
+    }
+
+    function renderProductSelectorSelected() {
+        const selected = document.getElementById('product-selector-selected');
+        const count = document.getElementById('product-selector-selected-count');
+        const items = Array.from(productSelectorState.selectedItems.values());
+
+        if (count) {
+            const limitText = productSelectorState.max > 0 ? `，最多 ${productSelectorState.max} 个` : '';
+            count.textContent = `${items.length} 个商品${limitText}`;
+        }
+        if (!selected) {
+            return;
+        }
+        if (!items.length) {
+            selected.innerHTML = `
+<div class="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white text-center text-slate-400">
+<i class="fas fa-check-square mb-3 text-2xl"></i>
+<p class="text-sm font-semibold text-slate-500">暂未选择商品</p>
+</div>`;
+            return;
+        }
+
+        selected.innerHTML = items.map((product) => {
+            const id = Number(product.id);
+            return `
+<div class="mb-3 flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+${productSelectorThumb(product, 'h-12 w-14')}
+<div class="min-w-0 flex-1">
+<p class="truncate text-sm font-semibold text-slate-900">${escapeHtmlAttr(product.title || `#${id}`)}</p>
+<p class="mt-1 text-xs text-slate-500">#${id}${product.category_name ? ` · ${escapeHtmlAttr(product.category_name)}` : ''}</p>
+</div>
+<button type="button" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-500 transition hover:bg-rose-100" data-product-selector-remove="${id}" aria-label="移除商品">
+<i class="fas fa-times text-xs"></i>
+</button>
+</div>`;
+        }).join('');
+    }
+
+    function renderProductSelector() {
+        renderProductSelectorList();
+        renderProductSelectorSelected();
+        renderProductSelectorPagination();
+    }
+
+    function toggleProductSelectorItem(product) {
+        if (!product) {
+            return;
+        }
+        const id = Number(product.id);
+        if (productSelectorState.selectedItems.has(id)) {
+            productSelectorState.selectedItems.delete(id);
+            setProductSelectorMessage('');
+            renderProductSelector();
+            return;
+        }
+
+        if (!productSelectorState.multiple) {
+            productSelectorState.selectedItems.clear();
+        } else if (productSelectorState.max > 0 && productSelectorState.selectedItems.size >= productSelectorState.max) {
+            setProductSelectorMessage(`最多只能选择 ${productSelectorState.max} 个商品。`, 'error');
+            return;
+        }
+
+        productSelectorState.selectedItems.set(id, product);
+        setProductSelectorMessage('');
+        renderProductSelector();
+    }
+
+    async function fetchProductSelectorProducts() {
+        const list = document.getElementById('product-selector-list');
+        if (list) {
+            list.innerHTML = '<div class="flex h-48 items-center justify-center text-sm text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i>正在加载商品...</div>';
+        }
+
+        try {
+            const response = await fetch(productSelectorSearchUrl(), {
+                headers: { 'Accept': 'application/json' }
+            });
+            const payload = await response.json();
+            if (!response.ok || !payload.success) {
+                throw new Error(payload.message || '商品加载失败');
+            }
+
+            productSelectorState.products = Array.isArray(payload.products) ? payload.products : [];
+            productSelectorState.total = Number(payload.pagination?.total || 0);
+            productSelectorState.totalPages = Number(payload.pagination?.total_pages || 1);
+            productSelectorState.page = Number(payload.pagination?.page || productSelectorState.page);
+            renderProductSelectorCategories(payload.categories || []);
+            renderProductSelector();
+            setProductSelectorMessage('');
+        } catch (error) {
+            productSelectorState.products = [];
+            renderProductSelector();
+            setProductSelectorMessage(error.message || '商品加载失败', 'error');
+        }
+    }
+
+    async function fetchProductsByIds(ids) {
+        const normalized = parseProductSelectorIds(ids);
+        if (!normalized.length) {
+            return [];
+        }
+
+        const response = await fetch(productSelectorIdsUrl(normalized), {
+            headers: { 'Accept': 'application/json' }
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+            throw new Error(payload.message || '商品加载失败');
+        }
+        return Array.isArray(payload.products) ? payload.products : [];
+    }
+
+    function openProductSelector(callback, options = {}) {
+        const modal = document.getElementById('product-selector-modal');
+        if (!modal) {
+            return;
+        }
+
+        productSelectorState.callback = callback;
+        productSelectorState.multiple = options.multiple !== false;
+        productSelectorState.max = Math.max(0, Number.parseInt(options.max || '0', 10) || 0);
+        productSelectorState.selectedItems = new Map();
+        productSelectorState.page = 1;
+        productSelectorState.perPage = Math.max(1, Math.min(60, Number.parseInt(options.perPage || '12', 10) || 12));
+        productSelectorState.totalPages = 1;
+        productSelectorState.total = 0;
+        productSelectorState.q = '';
+        productSelectorState.categoryId = '';
+        productSelectorState.status = options.status || 'active';
+        productSelectorState.products = [];
+
+        const search = document.getElementById('product-selector-search');
+        const category = document.getElementById('product-selector-category');
+        const status = document.getElementById('product-selector-status');
+        if (search) search.value = '';
+        if (category) category.value = '';
+        if (status) status.value = productSelectorState.status;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+        setProductSelectorMessage('');
+        renderProductSelector();
+        fetchProductSelectorProducts();
+
+        const selectedIds = parseProductSelectorIds(options.selectedIds || '');
+        if (selectedIds.length) {
+            fetchProductsByIds(selectedIds)
+                .then((products) => {
+                    products.forEach((product) => {
+                        const id = Number(product.id);
+                        if (id > 0) {
+                            productSelectorState.selectedItems.set(id, product);
+                        }
+                    });
+                    renderProductSelector();
+                })
+                .catch((error) => setProductSelectorMessage(error.message || '已选商品加载失败', 'error'));
+        }
+    }
+
+    function closeProductSelectorModal() {
+        const modal = document.getElementById('product-selector-modal');
+        if (modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function renderProductPickerPreview(field, products) {
+        const preview = field.querySelector('[data-product-picker-preview]');
+        if (!preview) {
+            return;
+        }
+        if (!products.length) {
+            preview.innerHTML = '<div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-400">未选择商品</div>';
+            return;
+        }
+
+        preview.innerHTML = products.map((product) => {
+            const id = Number(product.id);
+            return `
+<div class="mb-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3">
+${productSelectorThumb(product, 'h-11 w-12')}
+<div class="min-w-0 flex-1">
+<p class="truncate text-sm font-semibold text-slate-900">${escapeHtmlAttr(product.title || `#${id}`)}</p>
+<p class="mt-1 text-xs text-slate-500">#${id}${product.category_name ? ` · ${escapeHtmlAttr(product.category_name)}` : ''}</p>
+</div>
+</div>`;
+        }).join('');
+    }
+
+    function hydrateProductPickerField(field) {
+        const input = field.querySelector('[data-product-picker-input]');
+        const preview = field.querySelector('[data-product-picker-preview]');
+        if (!input || !preview) {
+            return;
+        }
+
+        const ids = parseProductSelectorIds(input.value);
+        if (!ids.length) {
+            renderProductPickerPreview(field, []);
+            return;
+        }
+
+        preview.innerHTML = '<div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i>正在加载已选商品...</div>';
+        fetchProductsByIds(ids)
+            .then((products) => renderProductPickerPreview(field, products))
+            .catch(() => {
+                preview.innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-600">已选商品加载失败，请检查商品 ID。</div>';
+            });
+    }
+
+    function initProductPickerFields() {
+        document.querySelectorAll('[data-product-picker-field]').forEach((field) => {
+            const input = field.querySelector('[data-product-picker-input]');
+            const openButton = field.querySelector('[data-product-picker-open]');
+            const clearButton = field.querySelector('[data-product-picker-clear]');
+            if (!input || !openButton) {
+                return;
+            }
+
+            openButton.addEventListener('click', () => {
+                openProductSelector((selection) => {
+                    const products = Array.isArray(selection) ? selection : [selection].filter(Boolean);
+                    input.value = products.map((product) => product.id).join(',');
+                    renderProductPickerPreview(field, products);
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }, {
+                    multiple: openButton.dataset.productPickerMultiple !== 'false',
+                    max: openButton.dataset.productPickerMax || '0',
+                    selectedIds: input.value,
+                    status: openButton.dataset.productPickerStatus || 'active'
+                });
+            });
+
+            if (clearButton) {
+                clearButton.addEventListener('click', () => {
+                    input.value = '';
+                    renderProductPickerPreview(field, []);
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            }
+
+            input.addEventListener('change', () => hydrateProductPickerField(field));
+            hydrateProductPickerField(field);
+        });
+    }
+
+    function initProductSelectorModal() {
+        const modal = document.getElementById('product-selector-modal');
+        if (!modal) {
+            return;
+        }
+
+        modal.querySelectorAll('[data-product-selector-close]').forEach((button) => {
+            button.addEventListener('click', closeProductSelectorModal);
+        });
+
+        const search = document.getElementById('product-selector-search');
+        if (search) {
+            search.addEventListener('input', () => {
+                window.clearTimeout(productSelectorState.fetchTimer);
+                productSelectorState.fetchTimer = window.setTimeout(() => {
+                    productSelectorState.q = search.value.trim();
+                    productSelectorState.page = 1;
+                    fetchProductSelectorProducts();
+                }, 250);
+            });
+        }
+
+        const category = document.getElementById('product-selector-category');
+        if (category) {
+            category.addEventListener('change', () => {
+                productSelectorState.categoryId = category.value;
+                productSelectorState.page = 1;
+                fetchProductSelectorProducts();
+            });
+        }
+
+        const status = document.getElementById('product-selector-status');
+        if (status) {
+            status.addEventListener('change', () => {
+                productSelectorState.status = status.value;
+                productSelectorState.page = 1;
+                fetchProductSelectorProducts();
+            });
+        }
+
+        document.getElementById('product-selector-refresh')?.addEventListener('click', fetchProductSelectorProducts);
+        document.getElementById('product-selector-prev')?.addEventListener('click', () => {
+            if (productSelectorState.page > 1) {
+                productSelectorState.page -= 1;
+                fetchProductSelectorProducts();
+            }
+        });
+        document.getElementById('product-selector-next')?.addEventListener('click', () => {
+            if (productSelectorState.page < productSelectorState.totalPages) {
+                productSelectorState.page += 1;
+                fetchProductSelectorProducts();
+            }
+        });
+
+        document.getElementById('product-selector-list')?.addEventListener('click', (event) => {
+            const row = event.target.closest('[data-product-selector-id]');
+            if (!row) {
+                return;
+            }
+            toggleProductSelectorItem(findProductSelectorItem(row.dataset.productSelectorId));
+        });
+
+        document.getElementById('product-selector-selected')?.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-product-selector-remove]');
+            if (!button) {
+                return;
+            }
+            productSelectorState.selectedItems.delete(Number(button.dataset.productSelectorRemove));
+            renderProductSelector();
+        });
+
+        document.getElementById('product-selector-confirm')?.addEventListener('click', () => {
+            const selection = Array.from(productSelectorState.selectedItems.values());
+            if (typeof productSelectorState.callback === 'function') {
+                productSelectorState.callback(productSelectorState.multiple ? selection : (selection[0] || null));
+            }
+            closeProductSelectorModal();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeProductSelectorModal();
+            }
+        });
     }
 
     function rememberExpandedDirectory(directory) {
@@ -1829,11 +2327,14 @@ ${iconHtml}
         initBulkSelectionControls();
         initSettingsGeneralPickers();
         initSettingsMediaHelpers();
+        initProductSelectorModal();
+        initProductPickerFields();
         initSlugFieldHelpers();
         initMediaExplorerPage();
     });
 
     window.openMediaLibrary = openMediaLibrary;
+    window.openProductSelector = openProductSelector;
     window.copyMediaPath = copyMediaPath;
     window.submitSingleMediaDelete = submitSingleMediaDelete;
     window.submitPageBulkDelete = submitPageBulkDelete;

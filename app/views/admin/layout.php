@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($title) ?></title>
-    <script src="<?= url('/assets/admin/base.js') ?>"></script>
+    <script src="<?= url('/assets/admin/base.js').'?v='.APP_VERSION ?>"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.css">
-    <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css') ?>">
-    <link rel="stylesheet" href="<?= url('/assets/admin/style.css') ?>">
+    <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css').'?v='.APP_VERSION ?>">
+    <link rel="stylesheet" href="<?= url('/assets/admin/style.css').'?v='.APP_VERSION ?>">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 
@@ -380,6 +380,77 @@
             <footer class="media-library-footer flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-2">
                 <button type="button" class="hidden items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" id="confirm-media-selection">确认选择</button>
                 <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" data-media-modal-close>取消</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 统一商品选择器模态框 -->
+    <div class="fixed inset-0 z-[200000] hidden items-center justify-center p-4" id="product-selector-modal">
+        <div class="absolute inset-0 bg-slate-950/60" data-product-selector-close></div>
+        <div class="relative z-10 flex max-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-4">
+                <div>
+                    <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
+                        <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-box"></i></span>
+                        选择商品
+                    </p>
+                    <p class="mt-1 text-sm text-slate-500">搜索并勾选商品后，可回填商品 ID 到当前表单。</p>
+                </div>
+                <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700" aria-label="关闭商品选择器" data-product-selector-close>
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </header>
+
+            <section class="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-5">
+                <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px_150px_96px]">
+                    <input class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" type="text" id="product-selector-search" placeholder="搜索商品名称、Slug、摘要、标签">
+                    <select id="product-selector-category" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                        <option value="">全部分类</option>
+                    </select>
+                    <select id="product-selector-status" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                        <option value="active">已上架</option>
+                        <option value="">全部状态</option>
+                        <option value="draft">草稿</option>
+                        <option value="inactive">未上架</option>
+                    </select>
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" id="product-selector-refresh">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新
+                    </button>
+                </div>
+
+                <div id="product-selector-message" class="hidden rounded-xl border px-4 py-3 text-sm"></div>
+
+                <div class="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+                    <div class="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200">
+                        <div class="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
+                            <p class="text-sm font-semibold text-slate-700" id="product-selector-count">商品列表</p>
+                            <div class="flex items-center gap-2">
+                                <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="product-selector-prev">
+                                    <i class="fas fa-chevron-left text-xs"></i>
+                                </button>
+                                <span class="min-w-[5.5rem] text-center text-xs font-semibold text-slate-500" id="product-selector-page">1 / 1</span>
+                                <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" id="product-selector-next">
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="min-h-0 flex-1 overflow-y-auto p-3" id="product-selector-list"></div>
+                    </div>
+
+                    <aside class="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                        <div class="border-b border-slate-200 px-4 py-3">
+                            <p class="text-sm font-semibold text-slate-800">已选择</p>
+                            <p class="mt-1 text-xs text-slate-500" id="product-selector-selected-count">0 个商品</p>
+                        </div>
+                        <div class="min-h-0 flex-1 overflow-y-auto p-3" id="product-selector-selected"></div>
+                    </aside>
+                </div>
+            </section>
+
+            <footer class="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4">
+                <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" data-product-selector-close>取消</button>
+                <button type="button" class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" id="product-selector-confirm">确认选择</button>
             </footer>
         </div>
     </div>

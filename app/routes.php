@@ -49,6 +49,7 @@ function register_routes(Router $router): void {
 
     // 后台：产品
     $router->add('GET', '/admin/products', [AdminController::class, 'productList']);
+    $router->add('GET', '/admin/products/selector', [AdminController::class, 'productSelector']);
     $router->add('GET', '/admin/products/create', [AdminController::class, 'productCreate']);
     $router->add('POST', '/admin/products/create', [AdminController::class, 'productStore']);
     $router->add('GET', '/admin/products/edit', [AdminController::class, 'productEdit']);

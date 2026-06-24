@@ -436,6 +436,86 @@ class AdminController extends Controller {
         ]));
     }
 
+    public function productSelector(): void {
+        $ids = $this->parseIdList((string)($_GET['ids'] ?? ''));
+        $categories = array_map(static function (array $category): array {
+            return [
+                'id' => (int)($category['id'] ?? 0),
+                'name' => (string)($category['display_name'] ?? $category['name'] ?? ''),
+            ];
+        }, $this->categoryModel->getFlatTree('product'));
+
+        if (!empty($ids)) {
+            $items = $this->productModel->getByIds($ids, false);
+            $this->json([
+                'success' => true,
+                'products' => $this->formatProductSelectorItems($items),
+                'categories' => $categories,
+                'pagination' => [
+                    'page' => 1,
+                    'per_page' => count($items),
+                    'total' => count($items),
+                    'total_pages' => 1,
+                ],
+            ]);
+        }
+
+        $result = $this->productModel->searchForSelector([
+            'q' => trim((string)($_GET['q'] ?? '')),
+            'status' => trim((string)($_GET['status'] ?? 'active')),
+            'category_id' => (int)($_GET['category_id'] ?? 0),
+            'page' => (int)($_GET['page'] ?? 1),
+            'per_page' => (int)($_GET['per_page'] ?? 12),
+        ]);
+
+        $this->json([
+            'success' => true,
+            'products' => $this->formatProductSelectorItems($result['items'] ?? []),
+            'categories' => $categories,
+            'pagination' => [
+                'page' => (int)($result['page'] ?? 1),
+                'per_page' => (int)($result['per_page'] ?? 12),
+                'total' => (int)($result['total'] ?? 0),
+                'total_pages' => (int)($result['total_pages'] ?? 1),
+            ],
+        ]);
+    }
+
+    private function parseIdList(string $value): array {
+        if ($value === '') {
+            return [];
+        }
+
+        $ids = [];
+        foreach (preg_split('/[,\s]+/', $value) ?: [] as $item) {
+            $id = (int)$item;
+            if ($id > 0) {
+                $ids[] = $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    private function formatProductSelectorItems(array $items): array {
+        return array_map(static function (array $item): array {
+            $id = (int)($item['id'] ?? 0);
+            $slug = (string)($item['slug'] ?? '');
+
+            return [
+                'id' => $id,
+                'title' => (string)($item['title'] ?? ''),
+                'slug' => $slug,
+                'summary' => (string)($item['summary'] ?? ''),
+                'status' => (string)($item['status'] ?? ''),
+                'category_name' => (string)($item['category_name'] ?? ''),
+                'cover' => (string)($item['cover'] ?? ''),
+                'url' => url('/product/' . ($slug !== '' ? $slug : (string)$id)),
+                'edit_url' => url('/admin/products/edit?id=' . $id),
+            ];
+        }, $items);
+    }
+
     public function productCreate(): void {
         $categories = $this->categoryModel->getFlatTree('product');
         $this->renderAdmin('新建产品', $this->renderView('admin/products/form', [
