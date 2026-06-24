@@ -540,27 +540,342 @@ function get_post_categories(): array {
 }
 
 /**
- * 谷歌翻译系统功能：返回可用语言配置
+ * 谷歌翻译系统功能：返回 Google Translate 支持的完整目标语种目录。
  */
-function get_google_translate_languages(array $site = []): array {
-    $allLanguages = [
-        'en' => ['label' => 'English', 'flag' => 'us'],
-        'zh-CN' => ['label' => '简体中文', 'flag' => 'cn'],
-        'zh-TW' => ['label' => '繁體中文', 'flag' => 'tw'],
-        'ja' => ['label' => '日本語', 'flag' => 'jp'],
-        'ko' => ['label' => '한국어', 'flag' => 'kr'],
-        'es' => ['label' => 'Español', 'flag' => 'es'],
-        'fr' => ['label' => 'Français', 'flag' => 'fr'],
-        'de' => ['label' => 'Deutsch', 'flag' => 'de'],
-        'it' => ['label' => 'Italiano', 'flag' => 'it'],
-        'pt' => ['label' => 'Português', 'flag' => 'pt'],
-        'ru' => ['label' => 'Русский', 'flag' => 'ru'],
-        'ar' => ['label' => 'العربية', 'flag' => 'sa'],
+function get_google_translate_supported_languages(): array {
+    static $languages = null;
+
+    if ($languages !== null) {
+        return $languages;
+    }
+
+    $languages = [
+        'ab' => ['label' => 'Abkhaz', 'admin_label' => '阿布哈兹语'],
+        'ace' => ['label' => 'Acehnese', 'admin_label' => '亚齐语'],
+        'ach' => ['label' => 'Acholi', 'admin_label' => '阿乔利语'],
+        'aa' => ['label' => 'Afar', 'admin_label' => '阿法尔语'],
+        'af' => ['label' => 'Afrikaans', 'admin_label' => '南非荷兰语'],
+        'sq' => ['label' => 'Albanian', 'admin_label' => '阿尔巴尼亚语'],
+        'alz' => ['label' => 'Alur', 'admin_label' => '阿卢尔语'],
+        'am' => ['label' => 'Amharic', 'admin_label' => '阿姆哈拉语'],
+        'ar' => ['label' => 'Arabic', 'admin_label' => '阿拉伯语'],
+        'hy' => ['label' => 'Armenian', 'admin_label' => '亚美尼亚语'],
+        'as' => ['label' => 'Assamese', 'admin_label' => '阿萨姆语'],
+        'av' => ['label' => 'Avar', 'admin_label' => '阿瓦尔语'],
+        'awa' => ['label' => 'Awadhi', 'admin_label' => '阿瓦德语'],
+        'ay' => ['label' => 'Aymara', 'admin_label' => '艾马拉语'],
+        'az' => ['label' => 'Azerbaijani', 'admin_label' => '阿塞拜疆语'],
+        'ban' => ['label' => 'Balinese', 'admin_label' => '巴厘语'],
+        'bal' => ['label' => 'Baluchi', 'admin_label' => '俾路支语'],
+        'bm' => ['label' => 'Bambara', 'admin_label' => '班巴拉语'],
+        'bci' => ['label' => 'Baoulé', 'admin_label' => '巴乌雷语'],
+        'ba' => ['label' => 'Bashkir', 'admin_label' => '巴什基尔语'],
+        'eu' => ['label' => 'Basque', 'admin_label' => '巴斯克语'],
+        'btx' => ['label' => 'Batak Karo', 'admin_label' => '巴塔克卡罗语'],
+        'bts' => ['label' => 'Batak Simalungun', 'admin_label' => '巴塔克西马隆贡语'],
+        'bbc' => ['label' => 'Batak Toba', 'admin_label' => '巴塔克托巴语'],
+        'be' => ['label' => 'Belarusian', 'admin_label' => '白俄罗斯语'],
+        'bem' => ['label' => 'Bemba', 'admin_label' => '奔巴语'],
+        'bn' => ['label' => 'Bengali', 'admin_label' => '孟加拉语'],
+        'bew' => ['label' => 'Betawi', 'admin_label' => '巴达维语'],
+        'bho' => ['label' => 'Bhojpuri', 'admin_label' => '博杰普尔语'],
+        'bik' => ['label' => 'Bikol', 'admin_label' => '比科尔语'],
+        'bs' => ['label' => 'Bosnian', 'admin_label' => '波斯尼亚语'],
+        'br' => ['label' => 'Breton', 'admin_label' => '布列塔尼语'],
+        'bg' => ['label' => 'Bulgarian', 'admin_label' => '保加利亚语'],
+        'bua' => ['label' => 'Buryat', 'admin_label' => '布里亚特语'],
+        'yue' => ['label' => 'Cantonese', 'admin_label' => '粤语'],
+        'ca' => ['label' => 'Catalan', 'admin_label' => '加泰罗尼亚语'],
+        'ceb' => ['label' => 'Cebuano', 'admin_label' => '宿务语'],
+        'ch' => ['label' => 'Chamorro', 'admin_label' => '查莫罗语'],
+        'ce' => ['label' => 'Chechen', 'admin_label' => '车臣语'],
+        'ny' => ['label' => 'Chichewa', 'admin_label' => '齐切瓦语'],
+        'zh-CN' => ['label' => 'Chinese (Simplified)', 'admin_label' => '中文（简体）'],
+        'zh-TW' => ['label' => 'Chinese (Traditional)', 'admin_label' => '中文（繁体）'],
+        'chk' => ['label' => 'Chuukese', 'admin_label' => '楚克语'],
+        'cv' => ['label' => 'Chuvash', 'admin_label' => '楚瓦什语'],
+        'co' => ['label' => 'Corsican', 'admin_label' => '科西嘉语'],
+        'crh' => ['label' => 'Crimean Tatar (Cyrillic)', 'admin_label' => '克里米亚鞑靼语（西里尔文）'],
+        'crh-Latn' => ['label' => 'Crimean Tatar (Latin)', 'admin_label' => '克里米亚鞑靼语（拉丁文）'],
+        'hr' => ['label' => 'Croatian', 'admin_label' => '克罗地亚语'],
+        'cs' => ['label' => 'Czech', 'admin_label' => '捷克语'],
+        'da' => ['label' => 'Danish', 'admin_label' => '丹麦语'],
+        'fa-AF' => ['label' => 'Dari', 'admin_label' => '达里语'],
+        'dv' => ['label' => 'Dhivehi', 'admin_label' => '迪维希语'],
+        'din' => ['label' => 'Dinka', 'admin_label' => '丁卡语'],
+        'doi' => ['label' => 'Dogri', 'admin_label' => '多格拉语'],
+        'dov' => ['label' => 'Dombe', 'admin_label' => '恩敦贝语'],
+        'nl' => ['label' => 'Dutch', 'admin_label' => '荷兰语'],
+        'dyu' => ['label' => 'Dyula', 'admin_label' => '迪尤拉语'],
+        'dz' => ['label' => 'Dzongkha', 'admin_label' => '宗卡语'],
+        'en' => ['label' => 'English', 'admin_label' => '英语'],
+        'eo' => ['label' => 'Esperanto', 'admin_label' => '世界语'],
+        'et' => ['label' => 'Estonian', 'admin_label' => '爱沙尼亚语'],
+        'ee' => ['label' => 'Ewe', 'admin_label' => '埃维语'],
+        'fo' => ['label' => 'Faroese', 'admin_label' => '法罗语'],
+        'fj' => ['label' => 'Fijian', 'admin_label' => '斐济语'],
+        'tl' => ['label' => 'Filipino', 'admin_label' => '菲律宾语'],
+        'fi' => ['label' => 'Finnish', 'admin_label' => '芬兰语'],
+        'fon' => ['label' => 'Fon', 'admin_label' => '丰语'],
+        'fr' => ['label' => 'French', 'admin_label' => '法语'],
+        'fr-CA' => ['label' => 'French (Canada)', 'admin_label' => '法语（加拿大）'],
+        'fy' => ['label' => 'Frisian', 'admin_label' => '弗里西语'],
+        'fur' => ['label' => 'Friulian', 'admin_label' => '弗留利语'],
+        'ff' => ['label' => 'Fulani', 'admin_label' => '富拉尼语'],
+        'gaa' => ['label' => 'Ga', 'admin_label' => '加语'],
+        'gl' => ['label' => 'Galician', 'admin_label' => '加利西亚语'],
+        'ka' => ['label' => 'Georgian', 'admin_label' => '格鲁吉亚语'],
+        'de' => ['label' => 'German', 'admin_label' => '德语'],
+        'el' => ['label' => 'Greek', 'admin_label' => '希腊语'],
+        'gn' => ['label' => 'Guarani', 'admin_label' => '瓜拉尼语'],
+        'gu' => ['label' => 'Gujarati', 'admin_label' => '古吉拉特语'],
+        'ht' => ['label' => 'Haitian Creole', 'admin_label' => '海地克里奥尔语'],
+        'cnh' => ['label' => 'Hakha Chin', 'admin_label' => '哈卡钦语'],
+        'ha' => ['label' => 'Hausa', 'admin_label' => '豪萨语'],
+        'haw' => ['label' => 'Hawaiian', 'admin_label' => '夏威夷语'],
+        'iw' => ['label' => 'Hebrew', 'admin_label' => '希伯来语'],
+        'hil' => ['label' => 'Hiligaynon', 'admin_label' => '希利盖农语'],
+        'hi' => ['label' => 'Hindi', 'admin_label' => '印地语'],
+        'hmn' => ['label' => 'Hmong', 'admin_label' => '苗语'],
+        'hu' => ['label' => 'Hungarian', 'admin_label' => '匈牙利语'],
+        'hrx' => ['label' => 'Hunsrik', 'admin_label' => '洪斯吕克语'],
+        'iba' => ['label' => 'Iban', 'admin_label' => '伊班语'],
+        'is' => ['label' => 'Icelandic', 'admin_label' => '冰岛语'],
+        'ig' => ['label' => 'Igbo', 'admin_label' => '伊博语'],
+        'ilo' => ['label' => 'Ilocano', 'admin_label' => '伊洛卡诺语'],
+        'id' => ['label' => 'Indonesian', 'admin_label' => '印尼语'],
+        'iu-Latn' => ['label' => 'Inuktut (Latin)', 'admin_label' => '因纽特语（拉丁文）'],
+        'iu' => ['label' => 'Inuktut (Syllabics)', 'admin_label' => '因纽特语（音节）'],
+        'ga' => ['label' => 'Irish', 'admin_label' => '爱尔兰语'],
+        'it' => ['label' => 'Italian', 'admin_label' => '意大利语'],
+        'jam' => ['label' => 'Jamaican Patois', 'admin_label' => '牙买加土语'],
+        'ja' => ['label' => 'Japanese', 'admin_label' => '日语'],
+        'jw' => ['label' => 'Javanese', 'admin_label' => '爪哇语'],
+        'kac' => ['label' => 'Jingpo', 'admin_label' => '景颇语'],
+        'kl' => ['label' => 'Kalaallisut', 'admin_label' => '格陵兰语'],
+        'kn' => ['label' => 'Kannada', 'admin_label' => '卡纳达语'],
+        'kr' => ['label' => 'Kanuri', 'admin_label' => '卡努里语'],
+        'pam' => ['label' => 'Kapampangan', 'admin_label' => '邦板牙语'],
+        'kk' => ['label' => 'Kazakh', 'admin_label' => '哈萨克语'],
+        'kha' => ['label' => 'Khasi', 'admin_label' => '卡西语'],
+        'km' => ['label' => 'Khmer', 'admin_label' => '高棉语'],
+        'cgg' => ['label' => 'Kiga', 'admin_label' => '奇加语'],
+        'kg' => ['label' => 'Kikongo', 'admin_label' => '刚果语'],
+        'rw' => ['label' => 'Kinyarwanda', 'admin_label' => '卢旺达语'],
+        'ktu' => ['label' => 'Kituba', 'admin_label' => '吉土巴语'],
+        'trp' => ['label' => 'Kokborok', 'admin_label' => '廓克博若克语'],
+        'kv' => ['label' => 'Komi', 'admin_label' => '科米语'],
+        'gom' => ['label' => 'Konkani', 'admin_label' => '贡根语'],
+        'ko' => ['label' => 'Korean', 'admin_label' => '韩语'],
+        'kri' => ['label' => 'Krio', 'admin_label' => '塞拉利昂克里奥尔语'],
+        'ku' => ['label' => 'Kurdish (Kurmanji)', 'admin_label' => '库尔德语（库尔曼吉语）'],
+        'ckb' => ['label' => 'Kurdish (Sorani)', 'admin_label' => '库尔德语（索拉尼）'],
+        'ky' => ['label' => 'Kyrgyz', 'admin_label' => '吉尔吉斯语'],
+        'lo' => ['label' => 'Lao', 'admin_label' => '老挝语'],
+        'ltg' => ['label' => 'Latgalian', 'admin_label' => '拉特加莱语'],
+        'la' => ['label' => 'Latin', 'admin_label' => '拉丁语'],
+        'lv' => ['label' => 'Latvian', 'admin_label' => '拉脱维亚语'],
+        'lij' => ['label' => 'Ligurian', 'admin_label' => '利古里亚语'],
+        'li' => ['label' => 'Limburgish', 'admin_label' => '林堡语'],
+        'ln' => ['label' => 'Lingala', 'admin_label' => '林加拉语'],
+        'lt' => ['label' => 'Lithuanian', 'admin_label' => '立陶宛语'],
+        'lmo' => ['label' => 'Lombard', 'admin_label' => '伦巴第语'],
+        'lg' => ['label' => 'Luganda', 'admin_label' => '卢干达语'],
+        'luo' => ['label' => 'Luo', 'admin_label' => '卢奥语'],
+        'lb' => ['label' => 'Luxembourgish', 'admin_label' => '卢森堡语'],
+        'mk' => ['label' => 'Macedonian', 'admin_label' => '马其顿语'],
+        'mad' => ['label' => 'Madurese', 'admin_label' => '马都拉语'],
+        'mai' => ['label' => 'Maithili', 'admin_label' => '迈蒂利语'],
+        'mak' => ['label' => 'Makassar', 'admin_label' => '望加锡语'],
+        'mg' => ['label' => 'Malagasy', 'admin_label' => '马尔加什语'],
+        'ms' => ['label' => 'Malay', 'admin_label' => '马来语'],
+        'ms-Arab' => ['label' => 'Malay (Jawi)', 'admin_label' => '马来语（爪夷文）'],
+        'ml' => ['label' => 'Malayalam', 'admin_label' => '马拉雅拉姆语'],
+        'mt' => ['label' => 'Maltese', 'admin_label' => '马耳他语'],
+        'mam' => ['label' => 'Mam', 'admin_label' => '玛姆语'],
+        'gv' => ['label' => 'Manx', 'admin_label' => '马恩岛语'],
+        'mi' => ['label' => 'Maori', 'admin_label' => '毛利语'],
+        'mr' => ['label' => 'Marathi', 'admin_label' => '马拉地语'],
+        'mh' => ['label' => 'Marshallese', 'admin_label' => '马绍尔语'],
+        'mwr' => ['label' => 'Marwadi', 'admin_label' => '马尔瓦迪语'],
+        'mfe' => ['label' => 'Mauritian Creole', 'admin_label' => '毛里裘斯克里奥耳语'],
+        'chm' => ['label' => 'Meadow Mari', 'admin_label' => '草原马里语'],
+        'mni-Mtei' => ['label' => 'Meiteilon (Manipuri)', 'admin_label' => '梅泰语（曼尼普尔语）'],
+        'min' => ['label' => 'Minang', 'admin_label' => '米南语'],
+        'lus' => ['label' => 'Mizo', 'admin_label' => '米佐语'],
+        'mn' => ['label' => 'Mongolian', 'admin_label' => '蒙古语'],
+        'my' => ['label' => 'Myanmar (Burmese)', 'admin_label' => '缅甸语'],
+        'nhe' => ['label' => 'Nahuatl (Eastern Huasteca)', 'admin_label' => '纳瓦特尔语（东部瓦斯特卡）'],
+        'ndc-ZW' => ['label' => 'Ndau', 'admin_label' => '恩道语'],
+        'nr' => ['label' => 'Ndebele (South)', 'admin_label' => '恩德贝莱语（南部）'],
+        'new' => ['label' => 'Nepalbhasa (Newari)', 'admin_label' => '尼泊尔语言（尼瓦尔语）'],
+        'ne' => ['label' => 'Nepali', 'admin_label' => '尼泊尔语'],
+        'bm-Nkoo' => ['label' => 'NKo', 'admin_label' => '恩科字母（西非书面文字）'],
+        'no' => ['label' => 'Norwegian', 'admin_label' => '挪威语'],
+        'nus' => ['label' => 'Nuer', 'admin_label' => '努尔语'],
+        'oc' => ['label' => 'Occitan', 'admin_label' => '奥克语'],
+        'or' => ['label' => 'Odia (Oriya)', 'admin_label' => '奥利亚语'],
+        'om' => ['label' => 'Oromo', 'admin_label' => '奥罗莫语'],
+        'os' => ['label' => 'Ossetian', 'admin_label' => '奥塞梯语'],
+        'pag' => ['label' => 'Pangasinan', 'admin_label' => '邦阿西楠语'],
+        'pap' => ['label' => 'Papiamento', 'admin_label' => '帕皮阿门托语'],
+        'ps' => ['label' => 'Pashto', 'admin_label' => '普什图语'],
+        'fa' => ['label' => 'Persian', 'admin_label' => '波斯语'],
+        'pl' => ['label' => 'Polish', 'admin_label' => '波兰语'],
+        'pt' => ['label' => 'Portuguese (Brazil)', 'admin_label' => '葡萄牙语（巴西）'],
+        'pt-PT' => ['label' => 'Portuguese (Portugal)', 'admin_label' => '葡萄牙语（葡萄牙）'],
+        'pa' => ['label' => 'Punjabi (Gurmukhi)', 'admin_label' => '旁遮普语（果鲁穆奇文）'],
+        'pa-Arab' => ['label' => 'Punjabi (Shahmukhi)', 'admin_label' => '旁遮普语（沙木基文）'],
+        'qu' => ['label' => 'Quechua', 'admin_label' => '克丘亚语'],
+        'kek' => ['label' => 'Qʼeqchiʼ', 'admin_label' => '凯克其语'],
+        'rom' => ['label' => 'Romani', 'admin_label' => '罗姆语'],
+        'ro' => ['label' => 'Romanian', 'admin_label' => '罗马尼亚语'],
+        'rn' => ['label' => 'Rundi', 'admin_label' => '隆迪语'],
+        'ru' => ['label' => 'Russian', 'admin_label' => '俄语'],
+        'se' => ['label' => 'Sami (North)', 'admin_label' => '萨米语（北部）'],
+        'sm' => ['label' => 'Samoan', 'admin_label' => '萨摩亚语'],
+        'sg' => ['label' => 'Sango', 'admin_label' => '桑戈语'],
+        'sa' => ['label' => 'Sanskrit', 'admin_label' => '梵语'],
+        'sat-Latn' => ['label' => 'Santali (Latin)', 'admin_label' => '桑塔利语（拉丁文）'],
+        'sat' => ['label' => 'Santali (Ol Chiki)', 'admin_label' => '桑塔利语（欧甘文）'],
+        'gd' => ['label' => 'Scots Gaelic', 'admin_label' => '苏格兰盖尔语'],
+        'nso' => ['label' => 'Sepedi', 'admin_label' => '北索托语'],
+        'sr' => ['label' => 'Serbian', 'admin_label' => '塞尔维亚语'],
+        'st' => ['label' => 'Sesotho', 'admin_label' => '南索托语'],
+        'crs' => ['label' => 'Seychellois Creole', 'admin_label' => '塞舌尔克里奥尔语'],
+        'shn' => ['label' => 'Shan', 'admin_label' => '掸语'],
+        'sn' => ['label' => 'Shona', 'admin_label' => '修纳语'],
+        'scn' => ['label' => 'Sicilian', 'admin_label' => '西西里语'],
+        'szl' => ['label' => 'Silesian', 'admin_label' => '西里西亚语'],
+        'sd' => ['label' => 'Sindhi', 'admin_label' => '信德语'],
+        'si' => ['label' => 'Sinhala', 'admin_label' => '僧伽罗语'],
+        'sk' => ['label' => 'Slovak', 'admin_label' => '斯洛伐克语'],
+        'sl' => ['label' => 'Slovenian', 'admin_label' => '斯洛文尼亚语'],
+        'so' => ['label' => 'Somali', 'admin_label' => '索马里语'],
+        'es' => ['label' => 'Spanish', 'admin_label' => '西班牙语'],
+        'su' => ['label' => 'Sundanese', 'admin_label' => '巽他语'],
+        'sus' => ['label' => 'Susu', 'admin_label' => '苏苏语'],
+        'sw' => ['label' => 'Swahili', 'admin_label' => '斯瓦希里语'],
+        'ss' => ['label' => 'Swati', 'admin_label' => '斯瓦特语'],
+        'sv' => ['label' => 'Swedish', 'admin_label' => '瑞典语'],
+        'ty' => ['label' => 'Tahitian', 'admin_label' => '塔希提语'],
+        'tg' => ['label' => 'Tajik', 'admin_label' => '塔吉克语'],
+        'ber-Latn' => ['label' => 'Tamazight', 'admin_label' => '塔马塞特语'],
+        'ber' => ['label' => 'Tamazight (Tifinagh)', 'admin_label' => '塔马齐格特语（提非纳文）'],
+        'ta' => ['label' => 'Tamil', 'admin_label' => '泰米尔语'],
+        'tt' => ['label' => 'Tatar', 'admin_label' => '鞑靼语'],
+        'te' => ['label' => 'Telugu', 'admin_label' => '泰卢固语'],
+        'tet' => ['label' => 'Tetum', 'admin_label' => '德顿语'],
+        'th' => ['label' => 'Thai', 'admin_label' => '泰语'],
+        'bo' => ['label' => 'Tibetan', 'admin_label' => '藏语'],
+        'ti' => ['label' => 'Tigrinya', 'admin_label' => '提格里尼亚语'],
+        'tiv' => ['label' => 'Tiv', 'admin_label' => '蒂夫语'],
+        'tpi' => ['label' => 'Tok Pisin', 'admin_label' => '巴布亚皮钦语'],
+        'to' => ['label' => 'Tongan', 'admin_label' => '汤加语'],
+        'lua' => ['label' => 'Tshiluba', 'admin_label' => '奇卢伯语'],
+        'ts' => ['label' => 'Tsonga', 'admin_label' => '聪加语'],
+        'tn' => ['label' => 'Tswana', 'admin_label' => '茨瓦纳语'],
+        'tcy' => ['label' => 'Tulu', 'admin_label' => '图鲁语'],
+        'tum' => ['label' => 'Tumbuka', 'admin_label' => '图姆布卡语'],
+        'tr' => ['label' => 'Turkish', 'admin_label' => '土耳其语'],
+        'tk' => ['label' => 'Turkmen', 'admin_label' => '土库曼语'],
+        'tyv' => ['label' => 'Tuvan', 'admin_label' => '图瓦语'],
+        'ak' => ['label' => 'Twi', 'admin_label' => '契维语'],
+        'udm' => ['label' => 'Udmurt', 'admin_label' => '乌德穆尔特语'],
+        'uk' => ['label' => 'Ukrainian', 'admin_label' => '乌克兰语'],
+        'ur' => ['label' => 'Urdu', 'admin_label' => '乌尔都语'],
+        'ug' => ['label' => 'Uyghur', 'admin_label' => '维吾尔语'],
+        'uz' => ['label' => 'Uzbek', 'admin_label' => '乌兹别克语'],
+        've' => ['label' => 'Venda', 'admin_label' => '文达语'],
+        'vec' => ['label' => 'Venetian', 'admin_label' => '威尼斯语'],
+        'vi' => ['label' => 'Vietnamese', 'admin_label' => '越南语'],
+        'war' => ['label' => 'Waray', 'admin_label' => '瓦瑞语'],
+        'cy' => ['label' => 'Welsh', 'admin_label' => '威尔士语'],
+        'wo' => ['label' => 'Wolof', 'admin_label' => '沃洛夫语'],
+        'xh' => ['label' => 'Xhosa', 'admin_label' => '科萨语'],
+        'sah' => ['label' => 'Yakut', 'admin_label' => '雅库特语'],
+        'yi' => ['label' => 'Yiddish', 'admin_label' => '意第绪语'],
+        'yo' => ['label' => 'Yoruba', 'admin_label' => '约鲁巴语'],
+        'yua' => ['label' => 'Yucatec Maya', 'admin_label' => '尤卡坦玛雅语'],
+        'zap' => ['label' => 'Zapotec', 'admin_label' => '萨巴特克语'],
+        'zu' => ['label' => 'Zulu', 'admin_label' => '祖鲁语'],
     ];
 
+    $flags = [
+        'en' => 'us',
+        'zh-CN' => 'cn',
+        'zh-TW' => 'tw',
+        'ja' => 'jp',
+        'ko' => 'kr',
+        'es' => 'es',
+        'fr' => 'fr',
+        'de' => 'de',
+        'it' => 'it',
+        'pt' => 'br',
+        'pt-PT' => 'pt',
+        'ru' => 'ru',
+        'ar' => 'sa',
+        'hi' => 'in',
+        'bn' => 'bd',
+        'id' => 'id',
+        'tr' => 'tr',
+        'vi' => 'vn',
+        'th' => 'th',
+        'nl' => 'nl',
+        'pl' => 'pl',
+        'sv' => 'se',
+        'uk' => 'ua',
+        'ur' => 'pk',
+        'fa' => 'ir',
+        'iw' => 'il',
+        'tl' => 'ph',
+        'ms' => 'my',
+        'ro' => 'ro',
+        'el' => 'gr',
+        'cs' => 'cz',
+        'da' => 'dk',
+        'fi' => 'fi',
+        'no' => 'no',
+        'hu' => 'hu',
+        'sk' => 'sk',
+        'sl' => 'si',
+        'hr' => 'hr',
+        'sr' => 'rs',
+        'bg' => 'bg',
+        'lt' => 'lt',
+        'lv' => 'lv',
+        'et' => 'ee',
+    ];
+
+    foreach ($languages as $code => $meta) {
+        $languages[$code]['flag'] = $flags[$code] ?? '';
+    }
+
+    return $languages;
+}
+
+function get_google_translate_default_language_codes(): array {
+    return ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ar'];
+}
+
+function get_google_translate_admin_language_options(): array {
+    $options = [];
+    foreach (get_google_translate_supported_languages() as $code => $meta) {
+        $options[$code] = ($meta['admin_label'] ?? $meta['label']) . ' / ' . $meta['label'] . ' (' . $code . ')';
+    }
+
+    return $options;
+}
+
+/**
+ * 谷歌翻译系统功能：返回前台已启用语言配置
+ */
+function get_google_translate_languages(array $site = []): array {
+    $allLanguages = get_google_translate_supported_languages();
     $configured = json_decode($site['translate_languages'] ?? '[]', true);
+
     if (!is_array($configured) || empty($configured)) {
-        $configured = array_keys($allLanguages);
+        $configured = get_google_translate_default_language_codes();
     }
     if (!in_array('en', $configured, true)) {
         array_unshift($configured, 'en');
@@ -624,8 +939,12 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
     $safeButtonClass = h($buttonClass);
     $options = '';
     foreach ($languageMap as $langCode => $langMeta) {
+        $flagCode = trim((string)($langMeta['flag'] ?? ''));
+        $icon = $flagCode !== ''
+            ? '<span class="fi fi-' . h($flagCode) . '"></span>'
+            : '<i class="fa-solid fa-globe lang-globe-icon"></i>';
         $options .= '<a href="javascript:void(0)" onclick="triggerGoogleTranslate(\'' . h($langCode) . '\')" class="lang-option dropdown-item">'
-            . '<span class="fi fi-' . h($langMeta['flag']) . '"></span>'
+            . $icon
             . '<span>' . h($langMeta['label']) . '</span>'
             . '</a>';
     }
@@ -664,6 +983,8 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
         display: none;
         z-index: 1000;
         min-width: 150px;
+        max-height: 70vh;
+        overflow-y: auto;
     }
     .lang-dropdown.is-active { display: block; }
     .lang-option {
@@ -683,6 +1004,11 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
     .fi {
         width: 1.33em !important;
         line-height: 1em !important; }
+    .lang-globe-icon {
+        width: 1.33em;
+        text-align: center;
+        color: #64748b;
+    }
     .translate-alert {
         display: none;
         position: fixed;
@@ -738,7 +1064,7 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
         var textEl = document.getElementById('current-language-text');
         var flagEl = document.getElementById('current-language-flag');
         if (textEl) textEl.textContent = langMeta.label;
-        if (flagEl) flagEl.className = 'fi fi-' + langMeta.flag;
+        if (flagEl) flagEl.className = langMeta.flag ? 'fi fi-' + langMeta.flag : 'fa-solid fa-globe lang-globe-icon';
     }
 
     function clearGoogleTranslateCookie() {

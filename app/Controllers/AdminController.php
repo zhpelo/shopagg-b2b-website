@@ -303,25 +303,14 @@ class AdminController extends Controller {
         $theme = $settings['theme'] ?? 'default';
         if (!in_array($theme, $availableThemes)) $theme = $availableThemes[0];
 
-        $translateLanguageOptions = [
-            'en' => 'English',
-            'zh-CN' => '简体中文',
-            'zh-TW' => '繁體中文',
-            'ja' => '日本語',
-            'ko' => '한국어',
-            'es' => 'Español',
-            'fr' => 'Français',
-            'de' => 'Deutsch',
-            'it' => 'Italiano',
-            'pt' => 'Português',
-            'ru' => 'Русский',
-            'ar' => 'العربية',
-        ];
+        $translateLanguageOptions = get_google_translate_admin_language_options();
+        $supportedTranslateCodes = array_keys(get_google_translate_supported_languages());
 
         $selectedTranslateLanguages = json_decode($settings['translate_languages'] ?? '[]', true);
         if (!is_array($selectedTranslateLanguages) || empty($selectedTranslateLanguages)) {
-            $selectedTranslateLanguages = ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ar'];
+            $selectedTranslateLanguages = get_google_translate_default_language_codes();
         }
+        $selectedTranslateLanguages = array_values(array_intersect($selectedTranslateLanguages, $supportedTranslateCodes));
         if (!in_array('en', $selectedTranslateLanguages, true)) {
             array_unshift($selectedTranslateLanguages, 'en');
         }
@@ -334,6 +323,7 @@ class AdminController extends Controller {
             'settings_section_view' => $tab,
             'translateLanguageOptions' => $translateLanguageOptions,
             'selectedTranslateLanguages' => $selectedTranslateLanguages,
+            'supportedTranslateLanguageCount' => count($translateLanguageOptions),
         ];
 
         $this->renderAdmin('系统设置 - ' . $this->settingsTitle($tab), $this->renderView('admin/settings/page', $data));
@@ -391,6 +381,8 @@ class AdminController extends Controller {
                 $languages = [];
             }
             $languages = array_values(array_unique(array_filter(array_map('trim', $languages))));
+            $supportedTranslateCodes = array_flip(array_keys(get_google_translate_supported_languages()));
+            $languages = array_values(array_filter($languages, static fn(string $code): bool => isset($supportedTranslateCodes[$code])));
             if (!in_array('en', $languages, true)) {
                 array_unshift($languages, 'en');
             }
