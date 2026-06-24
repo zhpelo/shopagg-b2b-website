@@ -29,7 +29,8 @@ window.tailwind.config = {
         multi: false,
         options: {
             type: 'image',
-            returnObjects: false
+            returnObjects: false,
+            lockType: false
         },
         directory: '',
         search: '',
@@ -1153,7 +1154,8 @@ ${iconHtml}
         mediaLibraryState.multi = multi;
         mediaLibraryState.options = {
             type: options.type || 'image',
-            returnObjects: !!options.returnObjects
+            returnObjects: !!options.returnObjects,
+            lockType: !!options.lockType
         };
         mediaLibraryState.directory = options.directory || '';
         mediaLibraryState.search = '';
@@ -1177,6 +1179,7 @@ ${iconHtml}
         const typeFilter = document.getElementById('media-library-type-filter');
         const sortFilter = document.getElementById('media-library-sort-filter');
         const confirmBtn = document.getElementById('confirm-media-selection');
+        const uploadInput = document.getElementById('media-upload-input');
 
         if (!modal) {
             return;
@@ -1187,9 +1190,19 @@ ${iconHtml}
         }
         if (typeFilter) {
             typeFilter.value = mediaLibraryState.type;
+            typeFilter.disabled = !!mediaLibraryState.options.lockType;
+            typeFilter.classList.toggle('cursor-not-allowed', !!mediaLibraryState.options.lockType);
+            typeFilter.classList.toggle('opacity-60', !!mediaLibraryState.options.lockType);
         }
         if (sortFilter) {
             sortFilter.value = mediaLibraryState.sort;
+        }
+        if (uploadInput) {
+            uploadInput.accept = mediaLibraryState.type === 'image'
+                ? 'image/*'
+                : mediaLibraryState.type === 'video'
+                    ? 'video/mp4,video/webm,video/ogg,video/quicktime'
+                    : 'image/*,video/mp4,video/webm,video/ogg,video/quicktime';
         }
         if (confirmBtn) {
             confirmBtn.classList.remove('hidden');

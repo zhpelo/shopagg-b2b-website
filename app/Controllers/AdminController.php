@@ -3078,6 +3078,8 @@ class AdminController extends Controller {
         $existingValues = get_user_block_values($theme);
         $submitted = $_POST['blocks'] ?? [];
         $resetBlocks = $_POST['reset_blocks'] ?? [];
+        $activeGroup = trim((string)($_POST['active_group'] ?? ''));
+        $activeBlock = trim((string)($_POST['active_block'] ?? ''));
 
         $newValues = [];
 
@@ -3104,7 +3106,35 @@ class AdminController extends Controller {
 
         save_user_block_values($theme, $newValues);
 
-        $this->redirect('/admin/appearance/blocks?success=' . urlencode('区块配置已保存'));
+        $redirectParams = [
+            'success' => '区块配置已保存',
+        ];
+
+        if ($activeBlock !== '' && isset($definitions[$activeBlock])) {
+            $redirectParams['block'] = $activeBlock;
+            $validGroup = false;
+            if ($activeGroup !== '' && preg_match('/^[a-zA-Z0-9_-]+$/', $activeGroup)) {
+                $block = $definitions[$activeBlock] ?? [];
+                $definedGroup = trim((string)($block['group'] ?? ''));
+                if ($definedGroup !== '') {
+                    $validGroup = $definedGroup === $activeGroup;
+                } else {
+                    $validGroup = match (true) {
+                        str_starts_with($activeBlock, 'home_') => $activeGroup === 'home',
+                        $activeBlock === 'page_about' => $activeGroup === 'about',
+                        $activeBlock === 'page_contact' => $activeGroup === 'contact',
+                        in_array($activeBlock, ['header', 'footer', 'float_contact'], true) => $activeGroup === 'global',
+                        $activeBlock === 'brand_colors' => $activeGroup === 'brand',
+                        default => $activeGroup === 'other',
+                    };
+                }
+            }
+            if ($validGroup) {
+                $redirectParams['group'] = $activeGroup;
+            }
+        }
+
+        $this->redirect('/admin/appearance/blocks?' . http_build_query($redirectParams));
     }
 
     /**

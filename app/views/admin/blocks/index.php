@@ -41,6 +41,24 @@ foreach ($definitions as $blockKey => $block) {
 
 $firstGroupKey = array_key_first($groupedDefinitions) ?? '';
 $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$firstGroupKey]['blocks']) ?? '') : '';
+$requestedGroupKey = trim((string)($_GET['group'] ?? ''));
+$requestedBlockKey = trim((string)($_GET['block'] ?? ''));
+$activeGroupKey = isset($groupedDefinitions[$requestedGroupKey]) ? $requestedGroupKey : $firstGroupKey;
+$activeBlockKey = $firstBlockKey;
+
+if ($requestedBlockKey !== '') {
+    foreach ($groupedDefinitions as $groupKey => $group) {
+        if (isset($group['blocks'][$requestedBlockKey])) {
+            $activeGroupKey = $groupKey;
+            $activeBlockKey = $requestedBlockKey;
+            break;
+        }
+    }
+}
+
+if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($groupedDefinitions[$activeGroupKey])) {
+    $activeBlockKey = array_key_first($groupedDefinitions[$activeGroupKey]['blocks']) ?? $firstBlockKey;
+}
 ?>
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -64,6 +82,8 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
     <form action="<?= url('/admin/appearance/blocks/save') ?>" method="post" class="p-6" enctype="multipart/form-data">
         <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
         <input type="hidden" name="theme" value="<?= h($theme) ?>">
+        <input type="hidden" name="active_group" value="<?= h($activeGroupKey) ?>" data-active-block-group>
+        <input type="hidden" name="active_block" value="<?= h($activeBlockKey) ?>" data-active-block-key>
 
         <?php if (empty($groupedDefinitions)): ?>
             <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center text-slate-500">
@@ -84,7 +104,7 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                     <?php foreach ($groupedDefinitions as $groupKey => $group): ?>
                         <button type="button"
                                 data-block-group-tab="<?= h($groupKey) ?>"
-                                class="block-group-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $groupKey === $firstGroupKey ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
+                                class="block-group-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $groupKey === $activeGroupKey ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
                                 onclick="switchBlockGroup('<?= h($groupKey) ?>')">
                             <?= h($group['label']) ?>
                             <span class="ml-2 text-xs opacity-75">(<?= count($group['blocks']) ?>)</span>
@@ -93,7 +113,7 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                 </div>
 
                 <?php foreach ($groupedDefinitions as $groupKey => $group): ?>
-                    <div class="mt-5 <?= $groupKey === $firstGroupKey ? '' : 'hidden' ?>" data-block-group-nav="<?= h($groupKey) ?>">
+                    <div class="mt-5 <?= $groupKey === $activeGroupKey ? '' : 'hidden' ?>" data-block-group-nav="<?= h($groupKey) ?>">
                         <div class="mb-3 flex items-center gap-2 text-sm text-slate-500">
                             <i class="fas fa-folder-open text-slate-400"></i>
                             <span>当前分组：<?= h($group['label']) ?></span>
@@ -103,7 +123,7 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                                 <button type="button"
                                         data-block-tab="<?= h($blockKey) ?>"
                                         data-block-group="<?= h($groupKey) ?>"
-                                        class="block-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $blockKey === $firstBlockKey ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
+                                        class="block-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $blockKey === $activeBlockKey ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
                                         onclick="switchBlockTab('<?= h($blockKey) ?>')">
                                     <?= h($block['label']) ?>
                                 </button>
@@ -115,7 +135,7 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
 
             <?php foreach ($groupedDefinitions as $groupKey => $group): ?>
                 <?php foreach ($group['blocks'] as $blockKey => $block): ?>
-                    <div class="block-panel <?= $blockKey === $firstBlockKey ? '' : 'hidden' ?>" data-block-panel="<?= h($blockKey) ?>" data-block-group="<?= h($groupKey) ?>">
+                    <div class="block-panel <?= $blockKey === $activeBlockKey ? '' : 'hidden' ?>" data-block-panel="<?= h($blockKey) ?>" data-block-group="<?= h($groupKey) ?>">
                         <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
                             <div class="mb-6">
                                 <div class="mb-3 flex flex-wrap items-center gap-2">
@@ -147,8 +167,36 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                                     $userVal = $userValues[$blockKey][$fieldKey] ?? '';
                                     $currentVal = $userVal !== '' ? $userVal : $defaultVal;
                                     $fieldType = $field['type'] ?? 'text';
+                                    if ($fieldType === 'media') {
+                                        $mediaTypeKey = (string)($field['media_type_key'] ?? '');
+                                        $mediaTypeDefault = $mediaTypeKey !== '' && isset($block['fields'][$mediaTypeKey])
+                                            ? (string)($block['fields'][$mediaTypeKey]['default'] ?? 'image')
+                                            : (string)($field['default_media_type'] ?? 'image');
+                                        $mediaTypeCurrent = $mediaTypeKey !== ''
+                                            ? (string)($userValues[$blockKey][$mediaTypeKey] ?? $mediaTypeDefault)
+                                            : $mediaTypeDefault;
+                                        $mediaTypeCurrent = $mediaTypeCurrent === 'video' ? 'video' : 'image';
+                                        $legacyImageKey = (string)($field['legacy_image_key'] ?? '');
+                                        $legacyVideoKey = (string)($field['legacy_video_key'] ?? '');
+                                        $hasMediaUserVal = isset($userValues[$blockKey][$fieldKey]) && (string)$userValues[$blockKey][$fieldKey] !== '';
+                                        if (!$hasMediaUserVal) {
+                                            $legacyImageVal = $legacyImageKey !== '' ? (string)($userValues[$blockKey][$legacyImageKey] ?? '') : '';
+                                            $legacyVideoVal = $legacyVideoKey !== '' ? (string)($userValues[$blockKey][$legacyVideoKey] ?? '') : '';
+                                            if ($mediaTypeCurrent === 'video' && $legacyVideoVal !== '') {
+                                                $currentVal = $legacyVideoVal;
+                                            } elseif ($mediaTypeCurrent === 'image' && $legacyImageVal !== '') {
+                                                $currentVal = $legacyImageVal;
+                                            } elseif ($legacyImageVal !== '') {
+                                                $currentVal = $legacyImageVal;
+                                            }
+                                        }
+                                    }
                                     $previewUrl = $currentVal !== '' ? (str_starts_with($currentVal, 'http') ? $currentVal : asset_url($currentVal)) : '';
                                 ?>
+                                    <?php if ($fieldType === 'hidden'): ?>
+                                        <input id="<?= h($fieldInputId) ?>" type="hidden" name="<?= h($fieldName) ?>" value="<?= h($currentVal) ?>">
+                                        <?php continue; ?>
+                                    <?php endif; ?>
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                                         <div class="md:col-span-3">
                                             <label class="block text-sm font-semibold text-slate-700" for="<?= h($fieldInputId) ?>">
@@ -205,6 +253,56 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
                                                             </div>
                                                         <?php endif; ?>
                                                     </div>
+                                                </div>
+
+                                            <?php elseif ($fieldType === 'media'): ?>
+                                                <?php
+                                                    $mediaTypeKey = (string)($field['media_type_key'] ?? '');
+                                                    $mediaTypeInputId = $mediaTypeKey !== '' ? 'block-field-' . $blockKey . '-' . $mediaTypeKey : '';
+                                                    $mediaAllowedType = (string)($field['allowed'] ?? 'all');
+                                                    $mediaAllowedType = in_array($mediaAllowedType, ['image', 'video', 'all'], true) ? $mediaAllowedType : 'all';
+                                                    $mediaTypeForPreview = $mediaTypeCurrent ?? (string)($field['default_media_type'] ?? 'image');
+                                                    $mediaPreviewValue = strtolower((string)$currentVal);
+                                                    $isKnownImagePreview = str_contains($mediaPreviewValue, 'images.unsplash.com') || preg_match('/\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)(\?.*)?$/i', (string)$currentVal);
+                                                    $isVideoPreview = !$isKnownImagePreview && ($mediaTypeForPreview === 'video' || preg_match('/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', (string)$currentVal));
+                                                ?>
+                                                <div class="space-y-3" data-block-media-field>
+                                                    <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+                                                        <input id="<?= h($fieldInputId) ?>" name="<?= h($fieldName) ?>"
+                                                               value="<?= h($currentVal) ?>"
+                                                               data-block-media-input
+                                                               data-preview-id="<?= h($fieldPreviewId) ?>"
+                                                               data-type-input-id="<?= h($mediaTypeInputId) ?>"
+                                                               class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                                                               placeholder="图片或视频路径 / URL">
+                                                        <button type="button"
+                                                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors text-sm"
+                                                                data-block-media-picker
+                                                                data-input-id="<?= h($fieldInputId) ?>"
+                                                                data-preview-id="<?= h($fieldPreviewId) ?>"
+                                                                data-type-input-id="<?= h($mediaTypeInputId) ?>"
+                                                                data-allowed-type="<?= h($mediaAllowedType) ?>">
+                                                            <i class="fas fa-photo-video"></i>
+                                                            选择媒体
+                                                        </button>
+                                                    </div>
+                                                    <div id="<?= h($fieldPreviewId) ?>" class="rounded-xl border border-slate-200 bg-white p-3">
+                                                        <?php if ($previewUrl !== ''): ?>
+                                                            <?php if ($isVideoPreview): ?>
+                                                                <video class="h-28 max-w-full rounded-lg border border-slate-200 bg-slate-900 object-cover" controls playsinline preload="metadata">
+                                                                    <source src="<?= h($previewUrl) ?>">
+                                                                </video>
+                                                            <?php else: ?>
+                                                                <img src="<?= h($previewUrl) ?>"
+                                                                     alt="预览" class="h-24 rounded-lg border border-slate-200 object-cover">
+                                                            <?php endif; ?>
+                                                        <?php else: ?>
+                                                            <div class="flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-400">
+                                                                未选择媒体
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <p class="text-xs text-slate-400">选择图片或视频后，媒体类型会自动保存。</p>
                                                 </div>
 
                                             <?php elseif ($fieldType === 'product_picker'): ?>
@@ -311,6 +409,35 @@ $firstBlockKey = $firstGroupKey !== '' ? (array_key_first($groupedDefinitions[$f
 </div>
 
 <script>
+function persistActiveBlockState(groupKey, blockKey, updateUrl = true) {
+    const groupInput = document.querySelector('[data-active-block-group]');
+    const blockInput = document.querySelector('[data-active-block-key]');
+    if (groupInput) {
+        groupInput.value = groupKey || '';
+    }
+    if (blockInput) {
+        blockInput.value = blockKey || '';
+    }
+
+    if (!updateUrl || typeof window.history === 'undefined') {
+        return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('success');
+    if (groupKey) {
+        url.searchParams.set('group', groupKey);
+    } else {
+        url.searchParams.delete('group');
+    }
+    if (blockKey) {
+        url.searchParams.set('block', blockKey);
+    } else {
+        url.searchParams.delete('block');
+    }
+    window.history.replaceState({}, '', url.toString());
+}
+
 function setActiveBlockGroup(groupKey) {
     document.querySelectorAll('[data-block-group-nav]').forEach((nav) => {
         nav.classList.toggle('hidden', nav.dataset.blockGroupNav !== groupKey);
@@ -344,11 +471,14 @@ function switchBlockGroup(groupKey) {
     if (!firstTab) {
         setActiveBlockGroup(groupKey);
         document.querySelectorAll('.block-panel').forEach((panel) => panel.classList.add('hidden'));
+        persistActiveBlockState(groupKey, '');
         return;
     }
 
     setActiveBlockGroup(groupKey);
-    setActiveBlockTab(firstTab.dataset.blockTab || '');
+    const blockKey = firstTab.dataset.blockTab || '';
+    setActiveBlockTab(blockKey);
+    persistActiveBlockState(groupKey, blockKey);
 }
 
 function switchBlockTab(blockKey) {
@@ -358,6 +488,7 @@ function switchBlockTab(blockKey) {
         setActiveBlockGroup(groupKey);
     }
     setActiveBlockTab(blockKey);
+    persistActiveBlockState(groupKey, blockKey);
 }
 
 function escapeBlockHtml(value) {
@@ -383,6 +514,21 @@ function normalizeBlockImageUrl(value) {
     return (basePath ? basePath + '/' : '/') + rawValue.replace(/^\/+/, '');
 }
 
+function inferBlockMediaType(value, fallback = 'image') {
+    const fullValue = String(value || '').toLowerCase();
+    if (fullValue.includes('images.unsplash.com')) {
+        return 'image';
+    }
+    const rawValue = fullValue.split('?')[0];
+    if (/\.(mp4|webm|ogv|ogg|mov)$/.test(rawValue)) {
+        return 'video';
+    }
+    if (/\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)$/.test(rawValue)) {
+        return 'image';
+    }
+    return fallback === 'video' ? 'video' : 'image';
+}
+
 function renderBlockImagePreview(previewId, value) {
     const preview = document.getElementById(previewId);
     if (!preview) {
@@ -392,6 +538,27 @@ function renderBlockImagePreview(previewId, value) {
     const normalizedUrl = normalizeBlockImageUrl(value);
     if (!normalizedUrl) {
         preview.innerHTML = '<div class="flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-400">未选择图片</div>';
+        return;
+    }
+
+    preview.innerHTML = '<img src="' + escapeBlockHtml(normalizedUrl) + '" alt="预览" class="h-24 rounded-lg border border-slate-200 object-cover">';
+}
+
+function renderBlockMediaPreview(previewId, value, mediaType = 'image') {
+    const preview = document.getElementById(previewId);
+    if (!preview) {
+        return;
+    }
+
+    const normalizedUrl = normalizeBlockImageUrl(value);
+    if (!normalizedUrl) {
+        preview.innerHTML = '<div class="flex h-24 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-400">未选择媒体</div>';
+        return;
+    }
+
+    const resolvedType = inferBlockMediaType(value, mediaType);
+    if (resolvedType === 'video') {
+        preview.innerHTML = '<video class="h-28 max-w-full rounded-lg border border-slate-200 bg-slate-900 object-cover" controls playsinline preload="metadata"><source src="' + escapeBlockHtml(normalizedUrl) + '"></video>';
         return;
     }
 
@@ -421,7 +588,7 @@ document.querySelectorAll('[data-block-image-picker]').forEach((button) => {
 
             input.value = url;
             renderBlockImagePreview(previewId, url);
-        }, false, { type: 'image' });
+        }, false, { type: 'image', lockType: true });
     });
 });
 
@@ -431,8 +598,52 @@ document.querySelectorAll('[data-block-image-input]').forEach((input) => {
     });
 });
 
+document.querySelectorAll('[data-block-media-picker]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const inputId = button.dataset.inputId || '';
+        const previewId = button.dataset.previewId || '';
+        const typeInputId = button.dataset.typeInputId || '';
+        const allowedType = button.dataset.allowedType || 'all';
+        const input = document.getElementById(inputId);
+        const typeInput = typeInputId ? document.getElementById(typeInputId) : null;
+        if (!input || typeof openMediaLibrary !== 'function') {
+            return;
+        }
+
+        openMediaLibrary((item) => {
+            if (!item) {
+                return;
+            }
+
+            const url = item.public_path || item.url || '';
+            if (!url) {
+                return;
+            }
+
+            const mediaType = item.type === 'video' ? 'video' : 'image';
+            input.value = url;
+            if (typeInput) {
+                typeInput.value = mediaType;
+            }
+            renderBlockMediaPreview(previewId, url, mediaType);
+        }, false, { type: allowedType, returnObjects: true, lockType: allowedType !== 'all' });
+    });
+});
+
+document.querySelectorAll('[data-block-media-input]').forEach((input) => {
+    input.addEventListener('input', () => {
+        const typeInput = input.dataset.typeInputId ? document.getElementById(input.dataset.typeInputId) : null;
+        const inferredType = inferBlockMediaType(input.value, typeInput ? typeInput.value : 'image');
+        if (typeInput && input.value.trim() !== '') {
+            typeInput.value = inferredType;
+        }
+        renderBlockMediaPreview(input.dataset.previewId || '', input.value, inferredType);
+    });
+});
+
 <?php if ($firstGroupKey !== '' && $firstBlockKey !== ''): ?>
-setActiveBlockGroup('<?= h($firstGroupKey) ?>');
-setActiveBlockTab('<?= h($firstBlockKey) ?>');
+setActiveBlockGroup('<?= h($activeGroupKey) ?>');
+setActiveBlockTab('<?= h($activeBlockKey) ?>');
+persistActiveBlockState('<?= h($activeGroupKey) ?>', '<?= h($activeBlockKey) ?>', false);
 <?php endif; ?>
 </script>
