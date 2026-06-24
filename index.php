@@ -26,7 +26,7 @@ mb_internal_encoding('UTF-8');
 
 // 根目录与二级目录（子目录部署）
 define('APP_ROOT', rtrim(str_replace('\\', '/', realpath(__DIR__)), '/'));
-define('APP_VERSION', '1.1.7');
+define('APP_VERSION', '1.1.8');
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
 $basePath = rtrim(dirname($scriptName), '/');
 define('APP_BASE_PATH', ($basePath === '' || $basePath === '/') ? '' : '/' . ltrim($basePath, '/'));

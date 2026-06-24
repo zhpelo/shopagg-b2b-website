@@ -458,7 +458,7 @@
     <footer class="footer bg-white py-6 border-t border-gray-200">
         <div class="container text-center">
             <p class="text-md text-slate-500">
-                &copy; <?= date('Y') ?> SHOPAGG B2B 企业官网系统. Powered by <a href="https://www.shopagg.com" target="_blank" class="text-indigo-500 hover:text-indigo-600">SHOPAGG</a>.
+                Powered by <a href="https://www.shopagg.com" target="_blank" class="text-indigo-500 hover:text-indigo-600 italic font-bold">SHOPAGG</a> v<?= APP_VERSION ?>
             </p>
         </div>
     </footer>
