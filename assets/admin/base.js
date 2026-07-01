@@ -215,6 +215,9 @@ window.tailwind.config = {
                 : 'border-slate-200 bg-white hover:border-indigo-200 hover:bg-slate-50';
             return `
 <button type="button" class="mb-3 flex w-full items-start gap-3 rounded-2xl border p-3 text-left transition ${selectedClasses}" data-product-selector-id="${id}" aria-pressed="${selected ? 'true' : 'false'}">
+<span class="mt-6 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border ${selected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 bg-white text-transparent'}">
+<i class="fas fa-check text-[10px]"></i>
+</span>
 ${productSelectorThumb(product)}
 <span class="min-w-0 flex-1">
 <span class="block truncate text-sm font-semibold text-slate-900">${escapeHtmlAttr(product.title || `#${id}`)}</span>
@@ -224,9 +227,6 @@ ${product.category_name ? `<span>${escapeHtmlAttr(product.category_name)}</span>
 <span>${escapeHtmlAttr(productStatusLabel(product.status))}</span>
 </span>
 ${product.summary ? `<span class="mt-2 block line-clamp-2 text-xs leading-5 text-slate-500">${escapeHtmlAttr(product.summary)}</span>` : ''}
-</span>
-<span class="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${selected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}">
-<i class="fas ${selected ? 'fa-check' : 'fa-plus'} text-xs"></i>
 </span>
 </button>`;
         }).join('');

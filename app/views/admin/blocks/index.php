@@ -316,8 +316,10 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                                         <input id="<?= h($fieldInputId) ?>" name="<?= h($fieldName) ?>"
                                                                value="<?= h($currentVal) ?>"
                                                                data-product-picker-input
-                                                               class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                                                               placeholder="商品 ID，多个 ID 使用英文逗号分隔">
+                                                               type="hidden">
+                                                        <div class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-500">
+                                                            通过商品选择弹窗勾选商品，已选商品会显示在下方。
+                                                        </div>
                                                         <button type="button"
                                                                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors text-sm"
                                                                 data-product-picker-open
@@ -325,7 +327,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                                                 data-product-picker-max="<?= h((string)$pickerLimit) ?>"
                                                                 data-product-picker-status="<?= h($pickerStatus) ?>">
                                                             <i class="fas fa-box"></i>
-                                                            选择商品
+                                                            勾选商品
                                                         </button>
                                                         <button type="button"
                                                                 class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors text-sm"
