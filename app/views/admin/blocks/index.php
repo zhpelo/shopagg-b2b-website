@@ -163,10 +163,14 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                     $fieldName = "blocks[{$blockKey}][{$fieldKey}]";
                                     $fieldInputId = 'block-field-' . $blockKey . '-' . $fieldKey;
                                     $fieldPreviewId = $fieldInputId . '-preview';
-                                    $defaultVal = $field['default'] ?? '';
-                                    $userVal = $userValues[$blockKey][$fieldKey] ?? '';
-                                    $currentVal = $userVal !== '' ? $userVal : $defaultVal;
-                                    $fieldType = $field['type'] ?? 'text';
+                                    $defaultVal = (string)($field['default'] ?? '');
+                                    $hasUserVal = isset($userValues[$blockKey])
+                                        && is_array($userValues[$blockKey])
+                                        && array_key_exists($fieldKey, $userValues[$blockKey])
+                                        && (string)$userValues[$blockKey][$fieldKey] !== '';
+                                    $userVal = $hasUserVal ? (string)$userValues[$blockKey][$fieldKey] : '';
+                                    $currentVal = $hasUserVal ? $userVal : $defaultVal;
+                                    $fieldType = (string)($field['type'] ?? 'text');
                                     if ($fieldType === 'media') {
                                         $mediaTypeKey = (string)($field['media_type_key'] ?? '');
                                         $mediaTypeDefault = $mediaTypeKey !== '' && isset($block['fields'][$mediaTypeKey])
@@ -360,13 +364,27 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                                 </div>
 
                                             <?php elseif ($fieldType === 'select'): ?>
+                                                <?php
+                                                    $selectOptions = is_array($field['options'] ?? null) ? $field['options'] : [];
+                                                    $currentSelectVal = (string)$currentVal;
+                                                    $hasSelectedOption = false;
+                                                ?>
                                                 <select id="<?= h($fieldInputId) ?>" name="<?= h($fieldName) ?>"
                                                         class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none bg-white">
-                                                    <?php foreach (($field['options'] ?? []) as $optVal => $optLabel): ?>
-                                                        <option value="<?= h($optVal) ?>" <?= $currentVal === (string)$optVal ? 'selected' : '' ?>>
+                                                    <?php foreach ($selectOptions as $optVal => $optLabel): ?>
+                                                        <?php
+                                                            $isSelected = $currentSelectVal === (string)$optVal;
+                                                            $hasSelectedOption = $hasSelectedOption || $isSelected;
+                                                        ?>
+                                                        <option value="<?= h((string)$optVal) ?>" <?= $isSelected ? 'selected' : '' ?>>
                                                             <?= h($optLabel) ?>
                                                         </option>
                                                     <?php endforeach; ?>
+                                                    <?php if ($currentSelectVal !== '' && !$hasSelectedOption): ?>
+                                                        <option value="<?= h($currentSelectVal) ?>" selected>
+                                                            <?= h('已保存：' . $currentSelectVal) ?>
+                                                        </option>
+                                                    <?php endif; ?>
                                                 </select>
 
                                             <?php else: ?>

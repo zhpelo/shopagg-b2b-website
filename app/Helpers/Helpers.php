@@ -1294,14 +1294,7 @@ function _load_merged_blocks(): array {
     }
 
     // 2. 用户自定义区块配置
-    $userFile = APP_ROOT . '/storage/blocks/' . $theme . '.php';
-    $userValues = [];
-    if (is_file($userFile)) {
-        $userValues = include $userFile;
-        if (!is_array($userValues)) {
-            $userValues = [];
-        }
-    }
+    $userValues = get_user_block_values($theme);
 
     // 3. 合并：用户值覆盖默认值
     $merged = $defaults;
@@ -1355,6 +1348,10 @@ function get_block_definitions(string $theme = 'default'): array {
 function get_user_block_values(string $theme = 'default'): array {
     $file = APP_ROOT . '/storage/blocks/' . $theme . '.php';
     if (!is_file($file)) return [];
+    clearstatcache(true, $file);
+    if (function_exists('opcache_invalidate')) {
+        @opcache_invalidate($file, true);
+    }
     $data = include $file;
     return is_array($data) ? $data : [];
 }
@@ -1380,5 +1377,12 @@ function save_user_block_values(string $theme, array $values): bool {
     $file = $dir . '/' . $theme . '.php';
     $export = var_export($values, true);
     $content = "<?php\n// 用户自定义区块配置 - 主题: {$theme}\n// 自动生成，请勿手动编辑\n// 最后更新: " . date('Y-m-d H:i:s') . "\nreturn {$export};\n";
-    return file_put_contents($file, $content, LOCK_EX) !== false;
+    $saved = file_put_contents($file, $content, LOCK_EX) !== false;
+    if ($saved) {
+        clearstatcache(true, $file);
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($file, true);
+        }
+    }
+    return $saved;
 }

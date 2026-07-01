@@ -3084,7 +3084,24 @@ class AdminController extends Controller {
             $fields = $block['fields'] ?? [];
             foreach ($fields as $fieldKey => $field) {
                 $val = trim((string)($submitted[$blockKey][$fieldKey] ?? ''));
-                $default = $field['default'] ?? '';
+                $default = (string)($field['default'] ?? '');
+                $fieldType = (string)($field['type'] ?? 'text');
+
+                if ($fieldType === 'select') {
+                    $options = is_array($field['options'] ?? null) ? $field['options'] : [];
+                    $optionValues = array_map('strval', array_keys($options));
+                    $existingVal = (string)($existingValues[$blockKey][$fieldKey] ?? '');
+                    $isKnownOption = $val !== '' && in_array($val, $optionValues, true);
+                    $isExistingValue = $val !== '' && $existingVal !== '' && $val === $existingVal;
+
+                    if ($isKnownOption || $isExistingValue || ($val !== '' && empty($options))) {
+                        $newValues[$blockKey][$fieldKey] = $val;
+                    } elseif ($val === '' && $default !== '') {
+                        $newValues[$blockKey][$fieldKey] = $default;
+                    }
+                    continue;
+                }
+
                 // 只保存与默认值不同的值
                 if ($val !== '' && $val !== $default) {
                     $newValues[$blockKey][$fieldKey] = $val;
