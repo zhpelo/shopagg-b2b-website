@@ -19,18 +19,18 @@ PHP + SQLite · 零依赖 · 开箱即用
 前台演示：https://demo.shopagg.org/
 
 ### 前台展示
-<img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
+<img  alt="image" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
 
 
 ### 后台管理
 
 | 仪表盘 | 产品管理 |
 |:---:|:---:|
-| <img width="3840" height="3460" alt="image" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790" />| <img width="3840" height="2159" alt="image" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460" />|
+| <img alt="image" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790" />| <img alt="image" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460" />|
 
 | 媒体库 | 系统设置 |
 |:---:|:---:|
-|<img width="3840" height="2968" alt="image" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8c6b-8fee5833cc6e" />| <img width="3840" height="3319" alt="image" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd" />|
+|<img alt="image" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8c6b-8fee5833cc6e" />| <img alt="image" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd" />|
 
 ---
 
@@ -53,8 +53,9 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 **🎨 主题系统**
 - 前后台完全分离的主题机制
-- 区块编辑器：后台可视化修改页面文案
-- 可定制品牌色、导航菜单、轮播图
+- 区块编辑器：后台可视化修改页面文案、产品选择和轮播区块
+- 可定制品牌色、导航菜单、首页轮播图
+- default 主题已按移动端优先优化，适配手机产品列表、详情和询盘场景
 - 支持自定义 head/footer 代码注入
 
 </td>
@@ -63,7 +64,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 <td width="50%">
 
 **🌍 外贸场景优化**
-- 产品阶梯价格与多币种支持
+- 产品阶梯价格 / 多规格 SKU 价格，支持全局货币配置
 - 产品询盘系统（含状态跟踪、CSV 导出）
 - 公司资质、贸易能力等专业展示模块
 - Google 翻译集成，12 种语言一键切换
@@ -85,7 +86,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 | 模块 | 说明 |
 |------|------|
-| **产品中心** | 产品列表、分类筛选、详情页、图片画廊、阶梯价格、相关产品推荐 |
+| **产品中心** | 产品列表、分类筛选、详情页、图片画廊、阶梯价格、多规格 SKU 价格、相关产品推荐 |
 | **内容发布** | 博客文章、成功案例、自定义页面，统一内容引擎 |
 | **企业展示** | 关于我们（公司简介、资质认证、生产能力）、联系我们 |
 | **询盘系统** | 产品快捷询盘、通用联系表单，双通道获客 |
@@ -99,7 +100,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 | 模块 | 说明 |
 |------|------|
 | **仪表盘** | 核心数据概览（产品 / 文章 / 询盘 / 留言），一目了然 |
-| **产品管理** | 增删改查、图片集、横幅图、标签、供应商、阶梯价格编辑 |
+| **产品管理** | 增删改查、图片集、横幅图、标签、供应商、阶梯价格 / 多规格 SKU 价格编辑与批量设置 |
 | **内容管理** | 案例 / 博客 / 页面统一管理，富文本编辑器 |
 | **分类管理** | 产品分类和文章分类，树形结构 |
 | **询盘管理** | 状态流转（待处理→已回复→已关闭）、详情查看、CSV 导出 |
@@ -109,7 +110,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 | **轮播图管理** | 图片上传、文案编辑、链接和排序 |
 | **区块编辑** | 可视化修改页面中的标题、描述、按钮文案等 |
 | **员工管理** | 创建 Staff 账号，按模块分配细粒度权限 |
-| **系统设置** | 基础信息 / 公司资料 / 贸易能力 / 联系方式 / 翻译 / 自定义代码 |
+| **系统设置** | 基础信息 / 全局货币 / 公司资料 / 贸易能力 / 联系方式 / 翻译 / 自定义代码 |
 
 ---
 
@@ -284,14 +285,14 @@ server {
 ├── app/                        # 应用核心
 │   ├── Core/                   # 框架核心（Router / Database / Auth / Media / Migrator）
 │   ├── Controllers/            # 控制器（Site / Admin / Base）
-│   ├── Models/                 # 数据模型（11 个）
+│   ├── Models/                 # 数据模型（12 个）
 │   ├── Helpers/                # 全局辅助函数 + 安全工具
-│   ├── Migrations/             # 版本化数据库迁移（12 个）
+│   ├── Migrations/             # 版本化数据库迁移（16 个）
 │   ├── views/admin/            # 后台视图模板
 │   └── routes.php              # 路由注册
 │
 ├── themes/                     # 前台主题
-│   └── default/                # 默认主题（18 个模板 + blocks 定义）
+│   └── default/                # 默认主题（响应式模板 + blocks 定义）
 │
 ├── storage/                    # 运行时数据（禁止 Web 访问）
 │   ├── site.db                 # SQLite 数据库
@@ -306,14 +307,15 @@ server {
 
 ### 数据模型
 
-系统使用 12 张数据表：
+系统当前包含 17 张数据表：
 
 | 表 | 说明 | 关键字段 |
 |---|------|---------|
 | `users` | 后台用户 | `role`(admin/staff)、`permissions` |
-| `settings` | 站点配置 | key-value 存储，38 条默认配置 |
-| `products` | 产品 | `slug`、`images_json`、`category_id` |
-| `product_prices` | 阶梯价格 | `min_qty`、`max_qty`、`price`、`currency` |
+| `settings` | 站点配置 | key-value 存储，包含 `site_currency` 全局货币 |
+| `products` | 产品 | `slug`、`images_json`、`category_id`、`price_mode` |
+| `product_prices` | 阶梯价格 | `min_qty`、`max_qty`、`price`（`currency` 为历史字段） |
+| `product_skus` | 多规格 SKU 价格 | `sku_name`、`min_qty`、`price`、`sort_order` |
 | `product_categories` | 统一分类 | `type`(product/post)、`parent_id` 树形 |
 | `posts` | 文章/案例/页面 | `post_type`(post/case/page) |
 | `inquiries` | 产品询盘 | `status`(pending/replied/closed) |
@@ -323,8 +325,11 @@ server {
 | `menus` | 菜单区块 | `slug` 标识（main-nav / footer） |
 | `menu_items` | 菜单项 | `parent_id` 无限级、`sort_order` |
 | `media_files` | 媒体文件索引 | 路径、MIME、尺寸等元数据 |
+| `update_logs` | 系统更新日志 | 版本、状态、执行时间 |
+| `app_store_theme_installs` | App Store 主题安装记录 | 主题资源、授权和安装状态 |
+| `migrations` | 迁移记录 | 已执行迁移文件 |
 
-> 💡 博客、案例、自定义页面共用 `posts` 表，通过 `post_type` 区分。新增内容类型时优先复用此表。
+> 💡 博客、案例、自定义页面共用 `posts` 表，通过 `post_type` 区分。产品价格统一读取 `settings.site_currency`，不再读取产品价格行里的历史 `currency` 字段。
 
 ---
 
@@ -336,6 +341,15 @@ server {
 |------|------|
 | `系统架构文档.md` | 分层架构、核心模块详解、数据库设计、安全架构 |
 | `网站模板开发指南.md` | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
+
+### 主题开发约定
+
+- 可让客户修改的页面内容放在 `themes/{theme}/blocks.php`，前台模板通过 `block()` / `block_all()` 读取。
+- 产品展示区块使用 `product_picker`，不要让后台用户手填产品 ID。
+- 首页首屏、Banner 等轮播内容使用 `/admin/appearance/sliders`，模板区块用 `slider_slug` 下拉选择轮播图区块。
+- 媒体字段使用 `image` / `media` 类型，模板输出时使用 `asset_url()` 并配合 `h()` 转义。
+- 新主题和 default 主题调整应优先用 Tailwind CSS 类名，`style.css` 只保留主题元数据和少量补充样式。
+- 提交主题变更前至少检查 PHP 语法、`blocks.php` 的 `product_picker` / `slider_slug` 命中，以及手机端无横向溢出。
 
 ### 快速扩展
 
