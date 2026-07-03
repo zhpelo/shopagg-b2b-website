@@ -4,6 +4,73 @@
     <p class="mt-2 text-sm text-white-500">今天是 <?= date('Y年m月d日 l') ?>，让我们看看网站的运营情况</p>
 </div>
 
+<!-- 快捷操作 -->
+<div class="mb-5">
+    <div class="section-title">
+        <span class="inline-flex h-5 w-5 items-center justify-center text-amber-700">
+            <i class="fas fa-bolt"></i>
+        </span>
+        快捷操作
+    </div>
+    <div class="grid gap-6 md:grid-cols-3 xl:grid-cols-5">
+        <div class="">
+            <a href="<?= url('/admin/products/create') ?>" class="quick-action">
+                <div class="action-icon bg-indigo-50 text-indigo-600">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <div class="action-text">添加产品</div>
+                    <div class="action-desc">发布新的产品信息</div>
+                </div>
+            </a>
+        </div>
+        <div class="">
+            <a href="<?= url('/admin/posts/create') ?>" class="quick-action">
+                <div class="action-icon bg-emerald-50 text-emerald-600">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div>
+                    <div class="action-text">写博客</div>
+                    <div class="action-desc">发布新的文章内容</div>
+                </div>
+            </a>
+        </div>
+        <div class="">
+            <a href="<?= url('/admin/cases/create') ?>" class="quick-action">
+                <div class="action-icon bg-sky-50 text-sky-600">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <div class="action-text">添加案例</div>
+                    <div class="action-desc">展示成功客户案例</div>
+                </div>
+            </a>
+        </div>
+        <div class="">
+            <a href="<?= url('/admin/pages/create') ?>" class="quick-action">
+                <div class="action-icon bg-violet-50 text-violet-600">
+                    <i class="fas fa-file-circle-plus"></i>
+                </div>
+                <div>
+                    <div class="action-text">新建页面</div>
+                    <div class="action-desc">维护关于我们和服务页面</div>
+                </div>
+            </a>
+        </div>
+        <div class="">
+            <a href="<?= url('/admin/inquiries') ?>" class="quick-action">
+                <div class="action-icon bg-rose-50 text-rose-600">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <div>
+                    <div class="action-text">处理询单</div>
+                    <div class="action-desc"><?= $counts['pending_inquiries'] ?> 条待处理</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- 核心数据统计 -->
 <div class="mb-6">
     <div class="section-title">
@@ -295,69 +362,4 @@
     </div>
 </div>
 
-<!-- 快捷操作 -->
-<div class="mb-5">
-    <div class="section-title">
-        <span class="inline-flex h-5 w-5 items-center justify-center text-amber-700">
-            <i class="fas fa-bolt"></i>
-        </span>
-        快捷操作
-    </div>
-    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <div class="">
-            <a href="<?= url('/admin/products/create') ?>" class="quick-action">
-                <div class="action-icon bg-indigo-50 text-indigo-600">
-                    <i class="fas fa-plus"></i>
-                </div>
-                <div>
-                    <div class="action-text">添加产品</div>
-                    <div class="action-desc">发布新的产品信息</div>
-                </div>
-            </a>
-        </div>
-        <div class="">
-            <a href="<?= url('/admin/posts/create') ?>" class="quick-action">
-                <div class="action-icon bg-emerald-50 text-emerald-600">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div>
-                    <div class="action-text">写博客</div>
-                    <div class="action-desc">发布新的文章内容</div>
-                </div>
-            </a>
-        </div>
-        <div class="">
-            <a href="<?= url('/admin/cases/create') ?>" class="quick-action">
-                <div class="action-icon bg-sky-50 text-sky-600">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div>
-                    <div class="action-text">添加案例</div>
-                    <div class="action-desc">展示成功客户案例</div>
-                </div>
-            </a>
-        </div>
-        <div class="">
-            <a href="<?= url('/admin/pages/create') ?>" class="quick-action">
-                <div class="action-icon bg-violet-50 text-violet-600">
-                    <i class="fas fa-file-circle-plus"></i>
-                </div>
-                <div>
-                    <div class="action-text">新建页面</div>
-                    <div class="action-desc">维护关于我们和服务页面</div>
-                </div>
-            </a>
-        </div>
-        <div class="">
-            <a href="<?= url('/admin/inquiries') ?>" class="quick-action">
-                <div class="action-icon bg-rose-50 text-rose-600">
-                    <i class="fas fa-envelope-open-text"></i>
-                </div>
-                <div>
-                    <div class="action-text">处理询单</div>
-                    <div class="action-desc"><?= $counts['pending_inquiries'] ?> 条待处理</div>
-                </div>
-            </a>
-        </div>
-    </div>
-</div>
+
