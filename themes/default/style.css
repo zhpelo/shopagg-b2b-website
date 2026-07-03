@@ -32,6 +32,10 @@ video {
   max-width: 100%;
 }
 
+summary::-webkit-details-marker {
+  display: none;
+}
+
 /* ===== Typography ===== */
 .line-clamp-1 {
   display: -webkit-box;
@@ -526,8 +530,8 @@ select:focus-visible {
 
 @media (max-width: 767px) {
   .hero-banner {
-    min-height: 500px;
-    height: min(640px, calc(100svh - 4rem));
+    min-height: 430px;
+    height: min(560px, calc(100svh - 4rem));
   }
 
   .hero-swiper .swiper-button-prev,
@@ -549,7 +553,7 @@ select:focus-visible {
 
   .site-float-contact__panel {
     width: calc(100vw - 1.5rem);
-    max-height: min(76vh, 34rem);
+    max-height: min(72vh, 32rem);
   }
 }
 

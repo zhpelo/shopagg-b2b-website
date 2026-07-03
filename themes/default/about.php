@@ -42,7 +42,7 @@
             </div>
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Company Overview') ?>" 
+                    <img src="<?= h(get_image_url($site['og_image'] ?? null, 800, 400, 'Company Overview')) ?>" 
                          alt="Company Overview" 
                          class="w-full h-auto"
                          loading="eager"
@@ -64,7 +64,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                         <div class="lg:col-span-2">
                             <figure class="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
-                                <img src="<?= get_image_url($site['og_image'] ?? null, 400, 300, 'Company Profile') ?>" 
+                                <img src="<?= h(get_image_url($site['og_image'] ?? null, 400, 300, 'Company Profile')) ?>" 
                                      alt="Company Profile" 
                                      class="w-full h-full object-cover"
                                      loading="lazy"
@@ -75,7 +75,8 @@
                             </a>
                         </div>
                         <div class="lg:col-span-3">
-                            <table class="w-full text-sm">
+                            <div class="overflow-x-auto">
+                            <table class="min-w-[520px] w-full text-sm">
                                 <tbody class="divide-y divide-gray-100">
                                     <tr>
                                         <td class="py-3 text-gray-500 w-2/5"><i class="fas fa-check text-green-500 mr-2"></i>Business Type:</td>
@@ -106,6 +107,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                             <hr class="border-gray-100 my-4">
                             <div class="flex flex-col gap-3 sm:flex-row sm:gap-8">
                                 <div>
@@ -130,7 +132,8 @@
                         <h3 class="text-xl font-bold text-gray-900">General Information</h3>
                         <span class="text-sm text-gray-500">6 items verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
-                    <table class="w-full">
+                    <div class="overflow-x-auto">
+                    <table class="min-w-[520px] w-full">
                         <tbody class="divide-y divide-gray-100">
                             <tr>
                                 <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>Business Type:</td>
@@ -162,6 +165,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 <!-- Trade Capacity -->
@@ -170,7 +174,8 @@
                         <h3 class="text-xl font-bold text-gray-900">Trade Capacity</h3>
                         <span class="text-sm text-gray-500">7 items verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
-                    <table class="w-full">
+                    <div class="overflow-x-auto">
+                    <table class="min-w-[520px] w-full">
                         <tbody class="divide-y divide-gray-100">
                             <tr>
                                 <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>Main Markets:</td>
@@ -206,6 +211,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 <!-- R&D Capacity -->
@@ -214,7 +220,8 @@
                         <h3 class="text-xl font-bold text-gray-900">R&D Capacity</h3>
                         <span class="text-sm text-gray-500">All information verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
-                    <table class="w-full">
+                    <div class="overflow-x-auto">
+                    <table class="min-w-[520px] w-full">
                         <tbody>
                             <tr>
                                 <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>R&D Engineers:</td>
@@ -222,6 +229,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 <!-- Company Show -->
@@ -238,7 +246,7 @@
                         ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-3">
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2">
-                                    <img src="<?= asset_url(h($item['img'])) ?>" 
+                                    <img src="<?= h(asset_url((string)$item['img'])) ?>" 
                                          alt="<?= h($item['title'] ?? '') ?>" 
                                          class="w-full h-full object-cover"
                                          loading="lazy"
@@ -265,7 +273,7 @@
                         ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-3">
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2 bg-gray-50 border border-dashed border-gray-200">
-                                    <img src="<?= asset_url(h($item['img'])) ?>" 
+                                    <img src="<?= h(asset_url((string)$item['img'])) ?>" 
                                          alt="<?= h($item['title'] ?? '') ?>" 
                                          class="w-full h-full object-contain p-2"
                                          loading="lazy"
@@ -310,11 +318,11 @@
                             </div>
                             <div>
                                 <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Products</span>
-                                <span class="font-semibold text-gray-900"><?= h($site['company_main_products'] ?? '-') ?></span>
+                                <span class="font-semibold text-gray-900 break-words"><?= h($site['company_main_products'] ?? '-') ?></span>
                             </div>
                             <div>
                                 <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Markets</span>
-                                <span class="font-semibold text-gray-900"><?= h($site['company_main_markets'] ?? '-') ?></span>
+                                <span class="font-semibold text-gray-900 break-words"><?= h($site['company_main_markets'] ?? '-') ?></span>
                             </div>
                         </div>
                     </div>

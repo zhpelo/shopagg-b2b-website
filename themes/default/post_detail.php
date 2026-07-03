@@ -45,7 +45,7 @@ $category = $category ?? null;
             <!-- Featured Image -->
             <?php if (!empty($item['cover'])): ?>
                 <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
-                    <img src="<?= asset_url(h($item['cover'])) ?>" 
+                    <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
                          alt="<?= h($item['title']) ?>" 
                          class="w-full h-auto"
                          loading="eager"

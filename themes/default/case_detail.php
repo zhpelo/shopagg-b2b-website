@@ -29,7 +29,7 @@
             <div class="lg:w-8/12">
                 <?php if (!empty($item['cover'])): ?>
                     <figure class="rounded-2xl overflow-hidden shadow-lg mb-8">
-                        <img src="<?= asset_url(h($item['cover'])) ?>" 
+                        <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
                              alt="<?= h($item['title']) ?>" 
                              class="w-full h-auto"
                              loading="eager"

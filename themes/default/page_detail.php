@@ -11,7 +11,7 @@
             <ol class="flex min-w-max items-center gap-2 text-gray-500">
                 <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
-                <li><a href="<?= url('/page/' . h($item['slug'])) ?>" class="hover:text-brand-600">Page</a></li>
+                <li><a href="<?= h(url('/page/' . (string)$item['slug'])) ?>" class="hover:text-brand-600">Page</a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
                 <li class="font-medium text-gray-900"><?= h($item['title']) ?></li>
             </ol>
@@ -49,7 +49,7 @@
 
             <?php if (!empty($item['cover'])): ?>
                 <figure class="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-                    <img src="<?= asset_url(h($item['cover'])) ?>"
+                    <img src="<?= h(asset_url((string)$item['cover'])) ?>"
                          alt="<?= h($item['title']) ?>"
                          class="max-h-[520px] w-full object-cover"
                          loading="eager"

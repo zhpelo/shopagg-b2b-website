@@ -88,7 +88,7 @@ if (!function_exists('renderCategoryList')) {
                                     <?php if (!empty($item['cover'])): ?>
                                         <div class="md:w-1/3 flex-shrink-0">
                                             <a href="<?= h($item['url']) ?>" class="block h-48 md:h-full">
-                                                <img src="<?= asset_url($item['cover']) ?>" 
+                                                <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
                                                      alt="<?= h($item['title']) ?>" 
                                                      class="w-full h-full object-cover"
                                                      loading="lazy"

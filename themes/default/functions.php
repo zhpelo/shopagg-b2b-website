@@ -281,16 +281,19 @@ if (!function_exists('default_theme_schema_graph')) {
 // 获取轮播产品（性能优化版）
 // 优先获取有首图的产品，不足时补充最新产品
 if (!function_exists('get_carousel_products')) {
-    function get_carousel_products(int $limit = 3): array {
+    function get_carousel_products(int $limit = 3, string $sliderSlug = 'home-hero'): array {
         static $cache = null; // 简单静态缓存，避免重复查询
+        static $cacheKey = '';
+        $requestedKey = $sliderSlug . ':' . $limit;
 
-        if ($cache !== null) {
+        if ($cache !== null && $cacheKey === $requestedKey) {
             return $cache;
         }
 
         // 首先尝试从新的轮播图系统获取
-        $sliderItems = get_slider_items('home-hero');
+        $sliderItems = get_slider_items($sliderSlug);
         if (!empty($sliderItems)) {
+            $cacheKey = $requestedKey;
             $cache = $sliderItems;
             return $sliderItems;
         }
@@ -328,6 +331,7 @@ if (!function_exists('get_carousel_products')) {
             ];
         }
 
+        $cacheKey = $requestedKey;
         $cache = $carouselProducts;
         return $carouselProducts;
     }
@@ -455,7 +459,7 @@ if (!function_exists('render_menu_item')) {
             // 桌面端下拉菜单
             ?>
             <div class="relative group">
-                <button type="button" class="<?= $baseClass ?> inline-flex items-center gap-1">
+                <button type="button" class="<?= h($baseClass) ?> inline-flex items-center gap-1">
                     <?= h($item['title']) ?>
                     <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
                 </button>
@@ -470,7 +474,7 @@ if (!function_exists('render_menu_item')) {
                             $childTarget = $child['target'] ?? '_self';
                             $childTargetAttr = $childTarget === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
                             ?>
-                            <a href="<?= $childUrl ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600">
+                            <a href="<?= h($childUrl) ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-600">
                                 <?= h($child['title']) ?>
                             </a>
                         <?php endforeach; ?>
@@ -493,7 +497,7 @@ if (!function_exists('render_menu_item')) {
                         $childTarget = $child['target'] ?? '_self';
                         $childTargetAttr = $childTarget === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
                         ?>
-                        <a href="<?= $childUrl ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">
+                        <a href="<?= h($childUrl) ?>"<?= $childTargetAttr ?> class="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg">
                             <?= h($child['title']) ?>
                         </a>
                     <?php endforeach; ?>
@@ -503,7 +507,7 @@ if (!function_exists('render_menu_item')) {
         } else {
             // 普通菜单项
             ?>
-            <a href="<?= $url ?>"<?= $targetAttr ?> class="<?= $baseClass ?>">
+            <a href="<?= h($url) ?>"<?= $targetAttr ?> class="<?= h($baseClass) ?>">
                 <?= h($item['title']) ?>
             </a>
             <?php

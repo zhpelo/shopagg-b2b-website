@@ -134,7 +134,7 @@ $hasFloatingContact = !empty($floatingContacts) || !empty($floatingSocialLinks);
             </div>
         <?php endif; ?>
 
-        <a href="<?= url(block('float_contact', 'cta_url', '/contact')) ?>" class="site-float-contact__cta"><?= h(block('float_contact', 'cta_text')) ?></a>
+        <a href="<?= h(url(block('float_contact', 'cta_url', '/contact'))) ?>" class="site-float-contact__cta"><?= h(block('float_contact', 'cta_text')) ?></a>
     </div>
 </aside>
 
@@ -227,21 +227,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'contact_title')) ?></h4>
                         <div class="space-y-3">
                             <?php if (!empty($site['company_email'])): ?>
-                                <a href="mailto:<?= h($site['company_email']) ?>" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
-                                    <i class="fas fa-envelope w-5 mr-2"></i>
-                                    <span><?= h($site['company_email']) ?></span>
+                                <a href="mailto:<?= h($site['company_email']) ?>" class="flex items-start text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-envelope mt-1 w-5 flex-shrink-0 mr-2"></i>
+                                    <span class="min-w-0 break-all"><?= h($site['company_email']) ?></span>
                                 </a>
                             <?php endif; ?>
                             <?php if (!empty($site['company_phone'])): ?>
-                                <a href="tel:<?= h($site['company_phone']) ?>" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
-                                    <i class="fas fa-phone w-5 mr-2"></i>
-                                    <span><?= h($site['company_phone']) ?></span>
+                                <a href="tel:<?= h($site['company_phone']) ?>" class="flex items-start text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-phone mt-1 w-5 flex-shrink-0 mr-2"></i>
+                                    <span class="min-w-0 break-words"><?= h($site['company_phone']) ?></span>
                                 </a>
                             <?php endif; ?>
                             <?php if (!empty($site['company_address'])): ?>
-                                <a href="https://www.google.com/maps/search/?api=1&query=<?= rawurlencode((string)$site['company_address']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-brand-600 transition-colors">
-                                    <i class="fas fa-map-marker-alt w-5 mr-2"></i>
-                                    <span><?= h($site['company_address']) ?></span>
+                                <a href="https://www.google.com/maps/search/?api=1&query=<?= rawurlencode((string)$site['company_address']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-start text-gray-600 hover:text-brand-600 transition-colors">
+                                    <i class="fas fa-map-marker-alt mt-1 w-5 flex-shrink-0 mr-2"></i>
+                                    <span class="min-w-0 break-words"><?= h($site['company_address']) ?></span>
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'quick_links_title')) ?></h4>
                         <div class="space-y-2">
                             <?php foreach ($footerMenuItems as $fItem): ?>
-                                <a href="<?= url(h($fItem['url'])) ?>" class="block text-gray-600 hover:text-brand-600 transition-colors"
+                                <a href="<?= h(url((string)$fItem['url'])) ?>" class="block text-gray-600 hover:text-brand-600 transition-colors"
                                    <?= ($fItem['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : '' ?>><?= h($fItem['title']) ?></a>
                             <?php endforeach; ?>
                         </div>

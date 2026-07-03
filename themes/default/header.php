@@ -81,8 +81,8 @@ $schemaGraph = default_theme_schema_graph($site, [
     <meta name="twitter:title" content="<?= h($seoTitle) ?>">
     <meta name="twitter:description" content="<?= h($seoDescription) ?>">
     <?php if (!empty($site['favicon'])): ?>
-        <link rel="icon" type="image/x-icon" href="<?= h($site['favicon']) ?>">
-        <link rel="shortcut icon" href="<?= h($site['favicon']) ?>">
+        <link rel="icon" type="image/x-icon" href="<?= h(asset_url((string)$site['favicon'])) ?>">
+        <link rel="shortcut icon" href="<?= h(asset_url((string)$site['favicon'])) ?>">
     <?php endif; ?>
     <script type="application/ld+json"><?= json_encode($schemaGraph, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?></script>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
@@ -124,16 +124,16 @@ $schemaGraph = default_theme_schema_graph($site, [
 
 <body class="bg-gray-50 font-sans antialiased">
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50" aria-label="Main navigation">
+    <nav class="sticky top-0 z-50 border-b border-gray-100 bg-white/95 shadow-sm backdrop-blur" aria-label="Main navigation">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center h-16 lg:h-20">
                 <!-- Logo -->
                 <a href="<?= url('/') ?>" class="flex min-w-0 items-center">
                     <?php if (!empty($site['logo'])): ?>
-                        <img src="<?= asset_url(h($site['logo'])) ?>" alt="<?= h($site['name']) ?>" class="h-10 max-w-[180px] object-contain lg:h-14 lg:max-w-[240px]">
+                        <img src="<?= h(asset_url((string)$site['logo'])) ?>" alt="<?= h($site['name']) ?>" class="h-9 max-w-[150px] object-contain sm:max-w-[190px] lg:h-14 lg:max-w-[240px]">
                     <?php else: ?>
                         <div class="min-w-0">
-                            <div class="truncate text-lg font-bold text-gray-900 lg:text-xl"><?= h($site['name']) ?></div>
+                            <div class="max-w-[210px] truncate text-lg font-bold text-gray-900 sm:max-w-none lg:text-xl"><?= h($site['name']) ?></div>
                             <div class="hidden truncate text-sm text-gray-500 sm:block"><?= h($site['tagline']) ?></div>
                         </div>
                     <?php endif; ?>
@@ -159,6 +159,9 @@ $schemaGraph = default_theme_schema_graph($site, [
                 <div class="py-4 space-y-2">
                     <?php render_menu('main-nav', true); ?>
                     <div class="px-4 pt-2">
+                        <?= get_google_translate_widget($site, 'block w-full rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50') ?>
+                    </div>
+                    <div class="px-4 pt-2">
                         <a href="<?= url(block('header', 'cta_url', '/contact')) ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
                             <?= h(block('header', 'cta_text')) ?>
                         </a>
@@ -179,6 +182,14 @@ $schemaGraph = default_theme_schema_graph($site, [
                 menu.classList.toggle('hidden', isOpen);
                 button.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
                 document.body.classList.toggle('overflow-hidden', !isOpen);
+            });
+
+            menu.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    menu.classList.add('hidden');
+                    button.setAttribute('aria-expanded', 'false');
+                    document.body.classList.remove('overflow-hidden');
+                });
             });
 
             window.addEventListener('resize', function () {

@@ -15,7 +15,7 @@
                 <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
                     <?php if (!empty($show_image) && !empty($item['cover'])): ?>
                         <a href="<?= h($item['url']) ?>" class="block aspect-square overflow-hidden">
-                            <img src="<?= asset_url(h($item['cover'])) ?>" 
+                            <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
                                  alt="<?= h($item['title']) ?>" 
                                  class="w-full h-full object-cover hover:scale-105 transition-transform">
                         </a>

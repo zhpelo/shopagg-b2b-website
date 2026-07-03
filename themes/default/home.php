@@ -6,13 +6,41 @@
  * 依赖：get_carousel_products() 获取轮播数据。
  */
 $products = $products ?? [];
-$carouselProducts = get_carousel_products(3);
+$selectedProductIds = trim((string)block('home_featured', 'product_ids'));
+$selectedProducts = $selectedProductIds !== '' ? get_products_by_ids($selectedProductIds, true) : [];
+foreach ($selectedProducts as &$selectedProduct) {
+    $selectedProduct['url'] = url('/product/' . ($selectedProduct['slug'] ?? $selectedProduct['id']));
+}
+unset($selectedProduct);
+$featuredProducts = !empty($selectedProducts) ? $selectedProducts : $products;
+$heroSliderSlug = trim((string)block('home_hero', 'slider_slug'));
+$carouselProducts = get_carousel_products(3, $heroSliderSlug !== '' ? $heroSliderSlug : 'home-hero');
+$heroAutoplay = block('home_hero', 'autoplay', 'yes') === 'yes';
+$heroShowOverlay = block('home_hero', 'show_overlay', 'yes') !== 'no';
+$legacyValueProps = block_all('home_value_props');
+$valueProps = [
+    [
+        'icon' => trim((string)($legacyValueProps['item1_icon'] ?? '')) !== '' ? (string)$legacyValueProps['item1_icon'] : block('home_value_props', 'prop_one_icon'),
+        'heading' => trim((string)($legacyValueProps['item1_title'] ?? '')) !== '' ? (string)$legacyValueProps['item1_title'] : block('home_value_props', 'prop_one_heading'),
+        'desc' => trim((string)($legacyValueProps['item1_desc'] ?? '')) !== '' ? (string)$legacyValueProps['item1_desc'] : block('home_value_props', 'prop_one_desc'),
+    ],
+    [
+        'icon' => trim((string)($legacyValueProps['item2_icon'] ?? '')) !== '' ? (string)$legacyValueProps['item2_icon'] : block('home_value_props', 'prop_two_icon'),
+        'heading' => trim((string)($legacyValueProps['item2_title'] ?? '')) !== '' ? (string)$legacyValueProps['item2_title'] : block('home_value_props', 'prop_two_heading'),
+        'desc' => trim((string)($legacyValueProps['item2_desc'] ?? '')) !== '' ? (string)$legacyValueProps['item2_desc'] : block('home_value_props', 'prop_two_desc'),
+    ],
+    [
+        'icon' => trim((string)($legacyValueProps['item3_icon'] ?? '')) !== '' ? (string)$legacyValueProps['item3_icon'] : block('home_value_props', 'prop_three_icon'),
+        'heading' => trim((string)($legacyValueProps['item3_title'] ?? '')) !== '' ? (string)$legacyValueProps['item3_title'] : block('home_value_props', 'prop_three_heading'),
+        'desc' => trim((string)($legacyValueProps['item3_desc'] ?? '')) !== '' ? (string)$legacyValueProps['item3_desc'] : block('home_value_props', 'prop_three_desc'),
+    ],
+];
 ?>
 
 <?php if($carouselProducts): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <!-- Hero 轮播 -->
-<section class="hero-banner relative overflow-hidden">
+<section class="hero-banner relative overflow-hidden bg-slate-900">
     <div class="swiper hero-swiper w-full h-full">
         <div class="swiper-wrapper">
             <?php foreach ($carouselProducts as $p): ?>
@@ -20,7 +48,7 @@ $carouselProducts = get_carousel_products(3);
                     <!-- Background Image -->
                     <div class="absolute inset-0">
                         <img
-                            src="<?= get_image_url($p['image'] ?? null, 1980, 900) ?>"
+                            src="<?= h(get_image_url($p['image'] ?? null, 1980, 900)) ?>"
                             alt="<?= h($p['title']) ?>"
                             class="w-full h-full object-cover"
                             loading="eager"
@@ -29,24 +57,29 @@ $carouselProducts = get_carousel_products(3);
                         >
                     </div>
                     <!-- Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/50 to-gray-900/40"></div>
+                    <?php if ($heroShowOverlay): ?>
+                        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-900/55 to-gray-950/45 sm:bg-gradient-to-r sm:from-gray-950/82 sm:via-gray-900/55 sm:to-gray-900/25"></div>
+                    <?php endif; ?>
                     <!-- Content -->
-                    <div class="relative z-10 container mx-auto px-4 lg:px-8 h-full flex items-center py-12 md:py-16 lg:py-20">
-                        <div class="max-w-2xl">
-                            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight line-clamp-2">
+                    <div class="relative z-10 mx-auto flex h-full max-w-7xl items-center px-4 py-10 sm:px-6 md:py-16 lg:px-8 lg:py-20">
+                        <div class="max-w-2xl pt-4 sm:pt-0">
+                            <p class="mb-3 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur">
+                                <?= h(block('home_hero', 'fallback_label', 'Featured Products')) ?>
+                            </p>
+                            <h1 class="mb-4 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                                 <?= h($p['title']) ?>
                             </h1>
                             <?php if (!empty($p['subtitle'])): ?>
-                                <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
+                                <p class="mb-7 max-w-xl text-base leading-7 text-gray-100 sm:text-lg md:text-xl">
                                     <?= h($p['subtitle']) ?>
                                 </p>
                             <?php elseif (!empty($p['summary'])): ?>
-                                <p class="text-lg md:text-xl text-gray-200 mb-8 line-clamp-3">
+                                <p class="mb-7 max-w-xl text-base leading-7 text-gray-100 sm:text-lg md:text-xl">
                                     <?= h(mb_substr(strip_tags($p['summary']), 0, 120)) ?>
                                 </p>
                             <?php endif; ?>
                             <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                                <a href="<?= $p['url'] ?>" class="w-full px-6 py-3 text-center bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg sm:w-auto sm:px-8">
+                                <a href="<?= h($p['url']) ?>" class="w-full px-6 py-3 text-center bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg sm:w-auto sm:px-8">
                                     <?= h($p['link_text'] ?? 'View Details') ?>
                                 </a>
                                 <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 text-center border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors sm:w-auto sm:px-8">
@@ -59,8 +92,8 @@ $carouselProducts = get_carousel_products(3);
             <?php endforeach; ?>
         </div>
         <?php if (count($carouselProducts) > 1): ?>
-            <div class="swiper-button-prev !w-12 !h-12 !bg-white/20 !rounded-full !text-white hover:!bg-white/35 transition-colors after:!text-sm after:!font-bold"></div>
-            <div class="swiper-button-next !w-12 !h-12 !bg-white/20 !rounded-full !text-white hover:!bg-white/35 transition-colors after:!text-sm after:!font-bold"></div>
+            <div class="swiper-button-prev !hidden !rounded-full !bg-white/20 !text-white transition-colors hover:!bg-white/35 after:!text-sm after:!font-bold sm:!left-6 sm:!flex sm:!h-12 sm:!w-12"></div>
+            <div class="swiper-button-next !hidden !rounded-full !bg-white/20 !text-white transition-colors hover:!bg-white/35 after:!text-sm after:!font-bold sm:!right-6 sm:!flex sm:!h-12 sm:!w-12"></div>
             <div class="swiper-pagination"></div>
         <?php endif; ?>
     </div>
@@ -75,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fadeEffect: { crossFade: true },
         loop: el.querySelectorAll('.swiper-slide').length > 1,
         speed: 600,
-        autoplay: { delay: 5000, disableOnInteraction: false },
+        autoplay: <?= $heroAutoplay ? '{ delay: 5000, disableOnInteraction: false }' : 'false' ?>,
         pagination: { el: '.swiper-pagination', clickable: true },
         navigation: {
             nextEl: '.swiper-button-next',
@@ -88,31 +121,19 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php endif; ?>
 
 <!-- Value Proposition -->
-<section class="relative z-10 -mt-10 px-4 md:-mt-20 lg:-mt-32">
+<section class="relative z-10 px-4 pt-6 sm:-mt-12 sm:pt-0 md:-mt-16 lg:-mt-24">
     <div class="container mx-auto max-w-6xl">
-        <div class="bg-white rounded-2xl shadow-xl p-4 lg:p-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-                <div class="p-5 text-center lg:p-6">
-                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="<?= h(block('home_value_props', 'item1_icon')) ?> text-2xl"></i>
+        <div class="rounded-2xl border border-gray-100 bg-white p-3 shadow-xl sm:p-4 lg:p-6">
+            <div class="grid grid-cols-1 divide-y divide-gray-100 md:grid-cols-3 md:divide-x md:divide-y-0">
+                <?php foreach ($valueProps as $valueProp): ?>
+                    <div class="p-5 text-center lg:p-6">
+                        <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                            <i class="<?= h($valueProp['icon']) ?> text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h($valueProp['heading']) ?></h3>
+                        <p class="text-gray-500 text-sm"><?= h($valueProp['desc']) ?></p>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item1_title')) ?></h3>
-                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item1_desc')) ?></p>
-                </div>
-                <div class="p-5 text-center lg:p-6">
-                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="<?= h(block('home_value_props', 'item2_icon')) ?> text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item2_title')) ?></h3>
-                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item2_desc')) ?></p>
-                </div>
-                <div class="p-5 text-center lg:p-6">
-                    <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                        <i class="<?= h(block('home_value_props', 'item3_icon')) ?> text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2"><?= h(block('home_value_props', 'item3_title')) ?></h3>
-                    <p class="text-gray-500 text-sm"><?= h(block('home_value_props', 'item3_desc')) ?></p>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -122,22 +143,30 @@ document.addEventListener('DOMContentLoaded', function() {
 <section class="py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Section Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-gray-200">
+        <div class="mb-8 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between lg:mb-10">
             <div>
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2"><?= h(block('home_featured', 'heading')) ?></h2>
                 <p class="text-gray-500"><?= h(block('home_featured', 'subheading')) ?></p>
+                <?php if (trim((string)block('home_featured', 'text')) !== ''): ?>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500"><?= nl2br(h(block('home_featured', 'text'))) ?></p>
+                <?php endif; ?>
             </div>
-            <a href="<?= url('/products') ?>" class="mt-4 sm:mt-0 px-6 py-2.5 bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors">
+            <a href="<?= url('/products') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
                 <?= h(block('home_featured', 'link_text')) ?>
             </a>
         </div>
 
         <!-- Products Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach ($products as $p): ?>
+        <?php if (empty($featuredProducts)): ?>
+            <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center text-sm text-gray-500">
+                <?= h(block('home_featured', 'empty_text')) ?>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <?php foreach ($featuredProducts as $p): ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                     <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
-                        <img src="<?= get_image_url($p['cover'] ?? null, 400, 400, h($p['title'])) ?>" 
+                        <img src="<?= h(get_image_url($p['cover'] ?? null, 400, 400, (string)($p['title'] ?? 'Product'))) ?>" 
                              alt="<?= h($p['title']) ?>" 
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                              loading="lazy"
@@ -148,17 +177,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             <a href="<?= h($p['url']) ?>" class="hover:text-brand-600 transition-colors"><?= h($p['title']) ?></a>
                         </h3>
                         <p class="text-gray-500 text-sm line-clamp-3 flex-grow"><?= h($p['summary']) ?></p>
+                        <a href="<?= h($p['url']) ?>" class="mt-4 inline-flex items-center justify-center rounded-lg border border-brand-600 px-4 py-2 text-sm font-semibold text-brand-600 transition-colors hover:bg-brand-600 hover:text-white">
+                            <?= h(block('home_featured', 'detail_text')) ?>
+                        </a>
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
 <!-- Why Choose Us -->
 <section class="py-12 lg:py-20 bg-gradient-to-br from-slate-50 to-gray-100">
     <div class="container mx-auto px-4 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
             <div>
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6"><?= h(block('home_why_us', 'heading')) ?></h2>
                 <div class="rich-content mb-6">
@@ -184,15 +217,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?= h(block('home_why_us', 'badge3')) ?>
                     </li>
                 </ul>
-                <a href="<?= url('/about') ?>" class="inline-flex items-center px-6 py-2.5 border-2 border-brand-600 text-brand-600 font-medium rounded-lg hover:bg-brand-600 hover:text-white transition-colors">
+                <a href="<?= url('/about') ?>" class="inline-flex w-full items-center justify-center rounded-lg border-2 border-brand-600 px-6 py-2.5 font-medium text-brand-600 transition-colors hover:bg-brand-600 hover:text-white sm:w-auto">
                     <?= h(block('home_why_us', 'link_text')) ?>
                 </a>
             </div>
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= get_image_url($site['og_image'] ?? null, 800, 400, 'Factory') ?>" 
+                    <img src="<?= h(get_image_url(block('home_why_us', 'image') ?: ($site['og_image'] ?? null), 800, 400, 'Factory')) ?>" 
                          alt="Factory" 
-                         class="w-full h-auto object-cover"
+                         class="aspect-[4/3] w-full object-cover sm:aspect-[16/10]"
                          loading="lazy"
                          decoding="async">
                 </div>
@@ -209,12 +242,17 @@ document.addEventListener('DOMContentLoaded', function() {
             <p class="text-gray-500"><?= h(block('home_cases', 'subheading')) ?></p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <?php if (empty($cases)): ?>
+            <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center text-sm text-gray-500">
+                No cases available.
+            </div>
+        <?php else: ?>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($cases as $c): ?>
                 <a href="<?= h($c['url']) ?>" class="group">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
                         <div class="aspect-[3/2] overflow-hidden">
-                            <img src="<?= get_image_url($c['cover'] ?? null, 600, 400, h($c['title'])) ?>" 
+                            <img src="<?= h(get_image_url($c['cover'] ?? null, 600, 400, (string)($c['title'] ?? 'Case'))) ?>" 
                                  alt="<?= h($c['title']) ?>" 
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                  loading="lazy"
@@ -227,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </a>
             <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </div>
 </section>
 

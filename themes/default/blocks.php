@@ -10,7 +10,66 @@
  * 用户修改保存在 storage/blocks/{theme}.php，不修改本文件。
  */
 
+$sliderOptions = [];
+try {
+    if (class_exists(\App\Models\Slider::class)) {
+        $sliderModel = new \App\Models\Slider();
+        foreach ($sliderModel->getAll() as $slider) {
+            if (($slider['status'] ?? 'active') !== 'active') {
+                continue;
+            }
+
+            $slug = trim((string)($slider['slug'] ?? ''));
+            if ($slug === '') {
+                continue;
+            }
+
+            $name = trim((string)($slider['name'] ?? ''));
+            $sliderOptions[$slug] = ($name !== '' ? $name : $slug) . ' (' . $slug . ')';
+        }
+    }
+} catch (\Throwable $e) {
+    $sliderOptions = [];
+}
+
+if (empty($sliderOptions)) {
+    $sliderOptions = ['home-hero' => '首页轮播图 (home-hero)'];
+}
+
+$defaultHeroSlider = (string)array_key_first($sliderOptions);
+
 return [
+
+    // ============================================================
+    // 首页 - 首屏轮播
+    // ============================================================
+    'home_hero' => [
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页首屏轮播',
+        'description' => '图片、标题、描述、按钮来自 外观区块 -> 轮播图；这里选择使用哪个轮播图区块。',
+        'fields' => [
+            'slider_slug' => [
+                'type' => 'select',
+                'label' => '选择轮播图区块',
+                'default' => $defaultHeroSlider,
+                'options' => $sliderOptions,
+            ],
+            'autoplay' => [
+                'type' => 'select',
+                'label' => '自动轮播',
+                'default' => 'yes',
+                'options' => ['yes' => '启用', 'no' => '关闭'],
+            ],
+            'show_overlay' => [
+                'type' => 'select',
+                'label' => '显示文字层',
+                'default' => 'yes',
+                'options' => ['yes' => '显示', 'no' => '隐藏'],
+            ],
+            'fallback_label' => ['type' => 'text', 'label' => '首屏标记文字', 'default' => 'Featured Products'],
+        ],
+    ],
 
     // ============================================================
     // 首页 - 优势卖点区块（3列）
@@ -21,15 +80,15 @@ return [
         'label' => '首页优势卖点',
         'description' => '首页轮播下方的 3 列优势卖点',
         'fields' => [
-            'item1_icon'  => ['type' => 'icon',  'label' => 'Item 1 Icon',  'default' => 'fas fa-check-circle'],
-            'item1_title' => ['type' => 'text',  'label' => 'Item 1 Title', 'default' => 'Quality Assurance'],
-            'item1_desc'  => ['type' => 'text',  'label' => 'Item 1 Description', 'default' => 'ISO-aligned production with strict QC before shipment.'],
-            'item2_icon'  => ['type' => 'icon',  'label' => 'Item 2 Icon',  'default' => 'fas fa-globe-americas'],
-            'item2_title' => ['type' => 'text',  'label' => 'Item 2 Title', 'default' => 'Global Logistics'],
-            'item2_desc'  => ['type' => 'text',  'label' => 'Item 2 Description', 'default' => 'On-time delivery with consolidated freight options.'],
-            'item3_icon'  => ['type' => 'icon',  'label' => 'Item 3 Icon',  'default' => 'fas fa-user-shield'],
-            'item3_title' => ['type' => 'text',  'label' => 'Item 3 Title', 'default' => 'Dedicated Support'],
-            'item3_desc'  => ['type' => 'text',  'label' => 'Item 3 Description', 'default' => 'One-to-one account service for long-term buyers.'],
+            'prop_one_icon'  => ['type' => 'icon',  'label' => 'Item 1 Icon',  'default' => 'fas fa-check-circle'],
+            'prop_one_heading' => ['type' => 'text',  'label' => 'Item 1 Title', 'default' => 'Quality Assurance'],
+            'prop_one_desc'  => ['type' => 'text',  'label' => 'Item 1 Description', 'default' => 'ISO-aligned production with strict QC before shipment.'],
+            'prop_two_icon'  => ['type' => 'icon',  'label' => 'Item 2 Icon',  'default' => 'fas fa-globe-americas'],
+            'prop_two_heading' => ['type' => 'text',  'label' => 'Item 2 Title', 'default' => 'Global Logistics'],
+            'prop_two_desc'  => ['type' => 'text',  'label' => 'Item 2 Description', 'default' => 'On-time delivery with consolidated freight options.'],
+            'prop_three_icon'  => ['type' => 'icon',  'label' => 'Item 3 Icon',  'default' => 'fas fa-user-shield'],
+            'prop_three_heading' => ['type' => 'text',  'label' => 'Item 3 Title', 'default' => 'Dedicated Support'],
+            'prop_three_desc'  => ['type' => 'text',  'label' => 'Item 3 Description', 'default' => 'One-to-one account service for long-term buyers.'],
         ],
     ],
 
@@ -44,7 +103,17 @@ return [
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Featured Products'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Company Highlights'],
+            'text'       => ['type' => 'textarea', 'label' => 'Description', 'default' => 'Selected products for global B2B buyers.'],
+            'product_ids' => [
+                'type' => 'product_picker',
+                'label' => '勾选商品',
+                'default' => '',
+                'limit' => 8,
+                'status' => 'active',
+            ],
             'link_text'  => ['type' => 'text', 'label' => 'View All Text', 'default' => 'View All →'],
+            'detail_text' => ['type' => 'text', 'label' => '详情按钮文字', 'default' => 'View Details'],
+            'empty_text' => ['type' => 'text', 'label' => '无产品提示', 'default' => 'No products available.'],
         ],
     ],
 
@@ -180,6 +249,52 @@ return [
             'sidebar_title'   => ['type' => 'text', 'label' => 'Sidebar Title',  'default' => 'Contact Provider'],
             'sidebar_btn'     => ['type' => 'text', 'label' => 'Sidebar Button', 'default' => 'Send My Inquiry'],
             'sidebar_chat'    => ['type' => 'text', 'label' => 'Sidebar Chat Button', 'default' => 'Chat Now'],
+        ],
+    ],
+
+    // ============================================================
+    // 产品列表页
+    // ============================================================
+    'product_list' => [
+        'group' => 'products',
+        'group_label' => '产品页面',
+        'label' => '产品列表页',
+        'description' => '产品列表 Banner、分类、询盘卡片与空状态文案。',
+        'fields' => [
+            'text' => ['type' => 'textarea', 'label' => '默认描述', 'default' => 'Browse our full range of products.'],
+            'categories_title' => ['type' => 'text', 'label' => '分类标题', 'default' => 'Categories'],
+            'all_text' => ['type' => 'text', 'label' => '全部产品文字', 'default' => 'All Products'],
+            'quote_title' => ['type' => 'text', 'label' => '询盘卡片标题', 'default' => 'Quick Quote'],
+            'quote_text' => ['type' => 'textarea', 'label' => '询盘卡片描述', 'default' => 'Found what you need? Send an inquiry to get a quote now.'],
+            'quote_btn' => ['type' => 'text', 'label' => '询盘按钮文字', 'default' => 'Contact'],
+            'empty_text' => ['type' => 'text', 'label' => '无产品提示', 'default' => 'No products found'],
+            'detail_text' => ['type' => 'text', 'label' => '产品详情按钮', 'default' => 'View Details'],
+        ],
+    ],
+
+    // ============================================================
+    // 产品详情页
+    // ============================================================
+    'product_detail' => [
+        'group' => 'products',
+        'group_label' => '产品页面',
+        'label' => '产品详情页',
+        'description' => '产品详情页辅助文案。',
+        'fields' => [
+            'description_title' => ['type' => 'text', 'label' => '描述标题', 'default' => 'Product Description'],
+            'inquiry_text' => ['type' => 'text', 'label' => '询盘按钮', 'default' => 'Send Inquiry'],
+            'chat_text' => ['type' => 'text', 'label' => 'WhatsApp按钮', 'default' => 'Chat Now'],
+            'sample_text' => ['type' => 'text', 'label' => '样品提示', 'default' => 'Still deciding? Get samples of'],
+            'sample_link_text' => ['type' => 'text', 'label' => '样品链接文字', 'default' => 'Request Sample'],
+            'more_category_text' => ['type' => 'text', 'label' => '更多分类产品', 'default' => 'More in this category'],
+            'related_heading' => ['type' => 'text', 'label' => '相关产品标题', 'default' => 'Related Products'],
+            'related_product_ids' => [
+                'type' => 'product_picker',
+                'label' => '人工选择相关产品',
+                'default' => '',
+                'limit' => 4,
+                'status' => 'active',
+            ],
         ],
     ],
 

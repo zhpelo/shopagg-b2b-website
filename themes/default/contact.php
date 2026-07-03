@@ -18,14 +18,15 @@
                     
                     <div class="space-y-4 mb-8">
                         <?php if (!empty($site['company_address'])): ?>
-                            <a href="https://goo.gl/maps/<?= h($site['company_address']) ?>" target="_blank" 
+                            <?php $mapQuery = rawurlencode((string)$site['company_address']); ?>
+                            <a href="https://www.google.com/maps/search/?api=1&query=<?= h($mapQuery) ?>" target="_blank" rel="noopener noreferrer"
                                class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
-                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                <span class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
                                     <i class="fas fa-map-marker-alt"></i>
                                 </span>
-                                <div>
+                                <div class="min-w-0">
                                     <span class="block text-sm text-gray-500">Address</span>
-                                    <span class="font-medium"><?= h($site['company_address']) ?></span>
+                                    <span class="font-medium break-words"><?= h($site['company_address']) ?></span>
                                 </div>
                             </a>
                         <?php endif; ?>
@@ -33,12 +34,12 @@
                         <?php if (!empty($site['company_email'])): ?>
                             <a href="mailto:<?= h($site['company_email']) ?>" 
                                class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
-                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                <span class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
                                     <i class="fas fa-envelope"></i>
                                 </span>
-                                <div>
+                                <div class="min-w-0">
                                     <span class="block text-sm text-gray-500">Email</span>
-                                    <span class="font-medium"><?= h($site['company_email']) ?></span>
+                                    <span class="font-medium break-all"><?= h($site['company_email']) ?></span>
                                 </div>
                             </a>
                         <?php endif; ?>
@@ -46,12 +47,12 @@
                         <?php if (!empty($site['company_phone'])): ?>
                             <a href="tel:<?= h($site['company_phone']) ?>" 
                                class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
-                                <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                <span class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
                                     <i class="fas fa-phone"></i>
                                 </span>
-                                <div>
+                                <div class="min-w-0">
                                     <span class="block text-sm text-gray-500">Phone</span>
-                                    <span class="font-medium"><?= h($site['company_phone']) ?></span>
+                                    <span class="font-medium break-words"><?= h($site['company_phone']) ?></span>
                                 </div>
                             </a>
                         <?php endif; ?>
@@ -124,7 +125,7 @@
                         </div>
                         
                         <button type="submit" 
-                                class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
+                                class="w-full px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md sm:w-auto">
                             <?= h(block('page_contact', 'form_btn')) ?>
                         </button>
                     </form>

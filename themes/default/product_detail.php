@@ -13,12 +13,21 @@ $priceTiers = is_array($price_tiers ?? null) ? $price_tiers : [];
 $sampleCurrency = normalize_currency_code((string)($currency ?? $site['currency'] ?? 'USD'), 'USD');
 $activePrices = $priceMode === 'sku' ? $productSkus : $priceTiers;
 $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['price'] ?? 0) * 2, 2, '.', '') : '50.00';
+$related_products = is_array($related_products ?? null) ? $related_products : [];
+$manualRelatedIds = trim((string)block('product_detail', 'related_product_ids'));
+if ($manualRelatedIds !== '') {
+    $manualRelatedProducts = get_products_by_ids($manualRelatedIds, true);
+    $currentProductId = (int)($item['id'] ?? 0);
+    $related_products = array_values(array_filter($manualRelatedProducts, static function (array $product) use ($currentProductId): bool {
+        return (int)($product['id'] ?? 0) !== $currentProductId;
+    }));
+}
 ?>
 <?php if (!empty($images)): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <?php endif; ?>
 
-<section class="py-8">
+<section class="py-6 sm:py-8">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Breadcrumb -->
         <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
@@ -35,17 +44,17 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
             </ol>
         </nav>
 
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
             <!-- Left: Images & Description -->
             <div class="lg:w-7/12">
                 <?php if (!empty($images)): ?>
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div class="mb-6 rounded-xl border border-gray-100 bg-white p-3 shadow-sm sm:p-4">
                         <!-- Main Swiper -->
                         <div class="swiper main-swiper rounded-lg overflow-hidden mb-3">
                             <div class="swiper-wrapper">
                                 <?php foreach ($images as $index => $img): ?>
                                     <div class="swiper-slide aspect-square">
-                                        <img src="<?= asset_url(h($img)) ?>" 
+                                        <img src="<?= h(asset_url((string)$img)) ?>" 
                                              alt="<?= h($item['title']) ?>" 
                                              class="w-full h-full object-cover cursor-zoom-in"
                                              loading="<?= $index === 0 ? 'eager' : 'lazy' ?>"
@@ -62,7 +71,7 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                             <div class="swiper-wrapper">
                                 <?php foreach ($images as $img): ?>
                                     <div class="swiper-slide cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-500 transition-colors">
-                                        <img src="<?= asset_url(h($img)) ?>" 
+                                        <img src="<?= h(asset_url((string)$img)) ?>" 
                                              alt="<?= h($item['title']) ?>" 
                                              class="w-full h-full object-cover"
                                              loading="lazy"
@@ -75,8 +84,8 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                 <?php endif; ?>
 
                 <!-- Description -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">Product Description</h2>
+                <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+                    <h2 class="mb-4 text-xl font-bold text-gray-900"><?= h(block('product_detail', 'description_title')) ?></h2>
                     <div class="rich-content">
                         <?= process_rich_text($item['content']) ?>
                     </div>
@@ -85,8 +94,8 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
 
             <!-- Right: Product Info -->
             <div class="lg:w-5/12">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:sticky lg:top-24 lg:p-6">
-                    <h1 class="text-2xl font-bold text-gray-900 mb-3 leading-tight"><?= h($item['title']) ?></h1>
+                <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:p-6">
+                    <h1 class="mb-3 text-2xl font-bold leading-tight text-gray-900 lg:text-3xl"><?= h($item['title']) ?></h1>
                     
                     <div class="flex flex-wrap items-center gap-3 mb-4 text-sm text-gray-500">
                         <span class="flex items-center">
@@ -111,8 +120,8 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                     <?php endif; ?>
 
                     <?php if ($priceMode === 'sku' && !empty($productSkus)): ?>
-                        <div class="mb-6 overflow-hidden rounded-lg border border-gray-100">
-                            <table class="w-full text-left text-sm">
+                        <div class="mb-6 overflow-x-auto rounded-lg border border-gray-100">
+                            <table class="min-w-[520px] w-full text-left text-sm">
                                 <thead class="bg-gray-50 text-xs uppercase tracking-[0.12em] text-gray-500">
                                     <tr>
                                         <th class="px-4 py-3 font-semibold">SKU</th>
@@ -132,7 +141,7 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                             </table>
                         </div>
                     <?php elseif (!empty($priceTiers)): ?>
-                        <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-3">
+                        <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <?php foreach ($priceTiers as $tier): ?>
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
                                     <div class="text-lg font-bold text-gray-900 lg:text-xl">
@@ -149,28 +158,28 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                     <hr class="border-gray-100 my-6">
 
                     <!-- Action Buttons -->
-                    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2">
+                    <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <button id="open-inquiry-modal" 
                                 class="px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg hover:bg-rose-600 transition-colors shadow-md">
-                            Send Inquiry
+                            <?= h(block('product_detail', 'inquiry_text')) ?>
                         </button>
                         <?php
                         $wa = $whatsapp ?? '';
                         $waDigits = preg_replace('/\D+/', '', $wa);
                         ?>
-                        <a href="<?= !empty($waDigits) ? 'https://wa.me/' . h($waDigits) : '#inquiry' ?>" 
+                        <a href="<?= h(!empty($waDigits) ? 'https://wa.me/' . $waDigits : '#inquiry') ?>" 
                            target="<?= !empty($waDigits) ? '_blank' : '' ?>"
                            <?= !empty($waDigits) ? 'rel="noopener noreferrer"' : '' ?>
                            class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors shadow-md inline-flex items-center justify-center gap-2">
                             <i class="fab fa-whatsapp"></i>
-                            Chat Now
+                            <?= h(block('product_detail', 'chat_text')) ?>
                         </a>
                     </div>
 
                     <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-4">
-                        Still deciding? Get samples of <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
+                        <?= h(block('product_detail', 'sample_text')) ?> <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
                         <a href="#inquiry" class="font-semibold underline text-gray-900 hover:text-brand-600" 
-                           onclick="document.getElementById('open-inquiry-modal').click(); return false;">Request Sample</a>
+                           onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(block('product_detail', 'sample_link_text')) ?></a>
                     </div>
 
                     <!-- More in category -->
@@ -179,7 +188,7 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                             <a href="<?= h(product_category_url($category)) ?>"
                                class="inline-flex items-center px-4 py-2 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors">
                                 <i class="fas fa-folder mr-2"></i>
-                                More in this category
+                                <?= h(block('product_detail', 'more_category_text')) ?>
                             </a>
                         </div>
                     <?php endif; ?>
@@ -191,24 +200,24 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
 
 <!-- Related Products -->
 <?php if (!empty($related_products)): ?>
-<section class="py-12 bg-gray-50">
+<section class="bg-gray-50 py-10 sm:py-12">
     <div class="container mx-auto px-4 lg:px-8">
         <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">
-            <i class="fas fa-th-large mr-2 text-brand-600"></i>Related Products
+            <i class="fas fa-th-large mr-2 text-brand-600"></i><?= h(block('product_detail', 'related_heading')) ?>
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <?php foreach ($related_products as $product): ?>
                 <a href="<?= h($product['url']) ?>" class="group">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
                         <div class="aspect-square overflow-hidden bg-gray-100">
                             <?php if (!empty($product['cover'])): ?>
-                                <img src="<?= asset_url(h($product['cover'])) ?>" 
+                                <img src="<?= h(asset_url((string)$product['cover'])) ?>" 
                                      alt="<?= h($product['title']) ?>" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                      loading="lazy"
                                      decoding="async">
                             <?php else: ?>
-                                <img src="<?= get_image_url(null, 400, 400, 'No Image') ?>"
+                                <img src="<?= h(get_image_url(null, 400, 400, 'No Image')) ?>"
                                      alt="<?= h($product['title']) ?>" 
                                      class="w-full h-full object-cover"
                                      loading="lazy"
@@ -236,7 +245,7 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
 <div id="inquiry-modal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm close-inquiry-modal"></div>
     <div class="absolute inset-3 flex items-center justify-center md:inset-10 lg:inset-20">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-full overflow-y-auto">
+        <div class="max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
             <div class="p-5 lg:p-8 relative">
                 <button class="close-inquiry-modal absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
                     <i class="fas fa-times text-gray-500"></i>
@@ -245,7 +254,7 @@ $samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['p
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Left Info -->
                     <div class="lg:col-span-4 hidden lg:block">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-3">Request Quote</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-3"><?= h(block('product_detail', 'inquiry_text')) ?></h2>
                         <p class="text-gray-500 mb-6">Thank you for your interest. Our team will review your requirements.</p>
                         <div class="space-y-3">
                             <div class="flex items-center text-gray-700">
