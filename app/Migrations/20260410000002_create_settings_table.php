@@ -20,6 +20,7 @@ return new class {
             'site_tagline'             => '专为中国工厂打造的B2B外贸官网系统',
             'theme'                    => 'default',
             'default_lang'             => 'en',
+            'site_currency'            => 'USD',
 
             // ── SEO ───────────────────────────────────────────────────
             'seo_title'                => 'SHOPAGG B2B外贸官网',

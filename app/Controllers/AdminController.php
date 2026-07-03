@@ -343,6 +343,10 @@ class AdminController extends Controller {
                 $_POST['theme'] = $this->settingModel->get('theme', 'default');
             }
         }
+
+        if ($tab === 'general') {
+            $_POST['site_currency'] = normalize_currency_code((string)($_POST['site_currency'] ?? ''), 'USD');
+        }
         
         // Special handling for media tab JSON conversion
         if ($tab === 'media') {
@@ -396,7 +400,7 @@ class AdminController extends Controller {
         }
 
         $groups = [
-            'general' => ['site_name', 'site_tagline', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
+            'general' => ['site_name', 'site_tagline', 'site_currency', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],
             'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
             'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube'],
@@ -512,7 +516,8 @@ class AdminController extends Controller {
         $categories = $this->categoryModel->getFlatTree('product');
         $this->renderAdmin('新建产品', $this->renderView('admin/products/form', [
             'action' => '/admin/products/create',
-            'categories' => $categories
+            'categories' => $categories,
+            'siteCurrency' => $this->getSiteCurrency(),
         ]));
     }
 
@@ -520,7 +525,7 @@ class AdminController extends Controller {
         csrf_check();
         $data = $this->getProductFormData();
         $productId = $this->productModel->create($data);
-        $this->handleProductPrices($productId);
+        $this->handleProductPricing($productId, (string)$data['price_mode']);
         $this->redirect('/admin/products');
     }
 
@@ -531,12 +536,15 @@ class AdminController extends Controller {
         
         $categories = $this->categoryModel->getFlatTree('product');
         $prices = $this->productModel->getPrices($id);
+        $skus = $this->productModel->getSkus($id);
         
         $this->renderAdmin('编辑产品', $this->renderView('admin/products/form', [
             'action' => '/admin/products/edit?id=' . $id,
             'product' => $product,
             'categories' => $categories,
-            'prices' => $prices
+            'prices' => $prices,
+            'skus' => $skus,
+            'siteCurrency' => $this->getSiteCurrency(),
         ]));
     }
 
@@ -545,7 +553,7 @@ class AdminController extends Controller {
         $id = (int)($_GET['id'] ?? 0);
         $data = $this->getProductFormData();
         $this->productModel->update($id, $data);
-        $this->handleProductPrices($id);
+        $this->handleProductPricing($id, (string)$data['price_mode']);
         $this->redirect('/admin/products');
     }
 
@@ -672,6 +680,7 @@ class AdminController extends Controller {
             'content' => normalize_rich_text(trim((string)($_POST['content'] ?? ''))),
             'category_id' => (int)($_POST['category_id'] ?? 0),
             'status' => trim((string)($_POST['status'] ?? 'active')),
+            'price_mode' => in_array((string)($_POST['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)$_POST['price_mode'] : 'tier',
             'product_type' => trim((string)($_POST['product_type'] ?? '')),
             'vendor' => trim((string)($_POST['vendor'] ?? '')),
             'tags' => trim((string)($_POST['tags'] ?? '')),
@@ -941,10 +950,17 @@ class AdminController extends Controller {
         }
     }
 
-    private function handleProductPrices(int $productId): void {
-        if (!isset($_POST['price_tiers_enabled'])) return;
-        $tiers = normalize_price_tiers($_POST);
-        $this->productModel->savePrices($productId, $tiers);
+    private function getSiteCurrency(): string {
+        return normalize_currency_code($this->settingModel->get('site_currency', 'USD'), 'USD');
+    }
+
+    private function handleProductPricing(int $productId, string $priceMode): void {
+        if ($priceMode === 'sku') {
+            $this->productModel->saveSkus($productId, normalize_product_skus($_POST));
+            return;
+        }
+
+        $this->productModel->savePrices($productId, normalize_price_tiers($_POST));
     }
 
     // --- Product Categories (产品分类) ---

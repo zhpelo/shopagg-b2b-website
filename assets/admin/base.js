@@ -1688,13 +1688,44 @@ ${iconHtml}
     function initPriceTierManager() {
         const addTierBtn = document.getElementById('add-price-tier');
         const tierWrap = document.getElementById('price-tier-wrap');
-        if (!addTierBtn || !tierWrap) {
+        const skuWrap = document.getElementById('sku-price-wrap');
+        const addSkuBtn = document.getElementById('add-sku-price');
+        const applySkuBulkBtn = document.getElementById('apply-sku-bulk');
+        const modeInputs = document.querySelectorAll('input[name="price_mode"]');
+        const modePanels = document.querySelectorAll('[data-price-mode-panel]');
+
+        if (!modeInputs.length || !modePanels.length) {
             return;
         }
 
-        addTierBtn.addEventListener('click', () => {
+        function setPriceMode(mode) {
+            modePanels.forEach((panel) => {
+                const active = panel.dataset.priceModePanel === mode;
+                panel.classList.toggle('hidden', !active);
+                panel.querySelectorAll('input, select, textarea, button').forEach((control) => {
+                    control.disabled = !active;
+                });
+            });
+
+            document.querySelectorAll('[data-price-mode-option]').forEach((option) => {
+                const active = option.dataset.priceModeOption === mode;
+                option.classList.toggle('bg-white', active);
+                option.classList.toggle('text-emerald-700', active);
+                option.classList.toggle('shadow-sm', active);
+                option.classList.toggle('text-slate-500', !active);
+                option.classList.toggle('hover:text-slate-700', !active);
+            });
+        }
+
+        const checkedMode = document.querySelector('input[name="price_mode"]:checked')?.value || 'tier';
+        setPriceMode(checkedMode);
+        modeInputs.forEach((input) => {
+            input.addEventListener('change', () => setPriceMode(input.value));
+        });
+
+        addTierBtn?.addEventListener('click', () => {
             const row = document.createElement('div');
-            row.className = 'price-tier-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_110px_56px] md:items-end';
+            row.className = 'price-tier-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_56px] md:items-end';
             row.innerHTML = `
 <label class="space-y-2">
 <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">最小数量</span>
@@ -1708,10 +1739,6 @@ ${iconHtml}
 <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">单价</span>
 <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_value[]" type="number" min="0" step="0.01" required>
 </label>
-<label class="space-y-2">
-<span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">货币</span>
-<input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_currency[]" value="USD" required>
-</label>
 <div class="flex md:justify-end">
 <button type="button" class="remove-price-tier inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" aria-label="删除阶梯价格">
 <i class="fas fa-trash-alt text-sm"></i>
@@ -1721,11 +1748,76 @@ ${iconHtml}
             tierWrap.appendChild(row);
         });
 
-        tierWrap.addEventListener('click', (event) => {
+        tierWrap?.addEventListener('click', (event) => {
             const removeButton = event.target.closest('.remove-price-tier');
             if (removeButton) {
                 removeButton.closest('.price-tier-row')?.remove();
             }
+        });
+
+        addSkuBtn?.addEventListener('click', () => {
+            const row = document.createElement('div');
+            row.className = 'sku-price-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[44px_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_56px] md:items-end';
+            row.innerHTML = `
+<label class="flex h-11 items-center justify-center md:mb-0">
+<input type="checkbox" class="sku-select h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200">
+</label>
+<label class="space-y-2">
+<span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SKU名称</span>
+<input class="sku-name-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_name[]" placeholder="如：Red / XL" required>
+</label>
+<label class="space-y-2">
+<span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">起订量</span>
+<input class="sku-min-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_min_qty[]" type="number" min="1" required>
+</label>
+<label class="space-y-2">
+<span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">单价</span>
+<input class="sku-price-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_price[]" type="number" min="0" step="0.01" required>
+</label>
+<div class="flex md:justify-end">
+<button type="button" class="remove-sku-price inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" aria-label="删除SKU价格">
+<i class="fas fa-trash-alt text-sm"></i>
+</button>
+</div>
+`;
+            skuWrap?.appendChild(row);
+        });
+
+        skuWrap?.addEventListener('click', (event) => {
+            const removeButton = event.target.closest('.remove-sku-price');
+            if (removeButton) {
+                removeButton.closest('.sku-price-row')?.remove();
+            }
+        });
+
+        applySkuBulkBtn?.addEventListener('click', () => {
+            const panel = document.getElementById('sku-price-panel');
+            const priceValue = panel?.querySelector('[data-sku-bulk-price]')?.value.trim() || '';
+            const minValue = panel?.querySelector('[data-sku-bulk-min]')?.value.trim() || '';
+            if (priceValue === '' && minValue === '') {
+                return;
+            }
+
+            const selectedRows = Array.from(document.querySelectorAll('.sku-price-row')).filter((row) => {
+                const checkbox = row.querySelector('.sku-select');
+                return checkbox && checkbox.checked && !checkbox.disabled;
+            });
+
+            if (!selectedRows.length) {
+                window.alert('请选择要修改的SKU');
+                return;
+            }
+
+            selectedRows.forEach((row) => {
+                if (priceValue !== '') {
+                    const priceInput = row.querySelector('.sku-price-input');
+                    if (priceInput) priceInput.value = priceValue;
+                }
+                if (minValue !== '') {
+                    const minInput = row.querySelector('.sku-min-input');
+                    if (minInput) minInput.value = minValue;
+                }
+            });
         });
     }
 

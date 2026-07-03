@@ -1,3 +1,10 @@
+<?php
+$priceMode = (string)($product['price_mode'] ?? 'tier');
+if (!in_array($priceMode, ['tier', 'sku'], true)) {
+    $priceMode = 'tier';
+}
+$siteCurrency = normalize_currency_code((string)($siteCurrency ?? 'USD'), 'USD');
+?>
 <!-- 页面头部 -->
 <div class="page-header">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -92,46 +99,114 @@
 
             <!-- 价格 -->
             <div class="card mb-5 p-8">
-                <div class="section-title">
-                    <span class="icon-box success"><i class="fas fa-dollar-sign"></i></span>
-                    阶梯价格
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div class="section-title mb-0">
+                        <span class="icon-box success"><i class="fas fa-dollar-sign"></i></span>
+                        价格设置
+                    </div>
+                    <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                        所有价格货币：<strong><?= h($siteCurrency) ?></strong>，可在 <a class="font-semibold underline" href="<?= url('/admin/settings-general') ?>">系统设置</a> 修改。
+                    </div>
                 </div>
 
-                <input type="hidden" name="price_tiers_enabled" value="1">
-                <div id="price-tier-wrap">
-                    <?php
-                    $tierData = !empty($prices) ? $prices : [['min_qty' => '', 'max_qty' => '', 'price' => '', 'currency' => 'USD']];
-                    foreach ($tierData as $tier):
-                    ?>
-                        <div class="price-tier-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_110px_56px] md:items-end">
-                            <label class="space-y-2">
-                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">最小数量</span>
-                                <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required>
-                            </label>
-                            <label class="space-y-2">
-                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">最大数量</span>
-                                <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>">
-                            </label>
-                            <label class="space-y-2">
-                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">单价</span>
-                                <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required>
-                            </label>
-                            <label class="space-y-2">
-                                <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">货币</span>
-                                <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_currency[]" value="<?= h($tier['currency'] ?? 'USD') ?>" required>
-                            </label>
-                            <div class="flex md:justify-end">
-                                <button type="button" class="remove-price-tier inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" aria-label="删除阶梯价格">
-                                    <i class="fas fa-trash-alt text-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                <div class="mt-5 inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                    <label class="price-mode-option inline-flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition <?= $priceMode === 'tier' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700' ?>" data-price-mode-option="tier">
+                        <input class="sr-only" type="radio" name="price_mode" value="tier" <?= $priceMode === 'tier' ? 'checked' : '' ?>>
+                        <i class="fas fa-layer-group text-xs"></i>
+                        <span>阶梯价格</span>
+                    </label>
+                    <label class="price-mode-option inline-flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition <?= $priceMode === 'sku' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700' ?>" data-price-mode-option="sku">
+                        <input class="sr-only" type="radio" name="price_mode" value="sku" <?= $priceMode === 'sku' ? 'checked' : '' ?>>
+                        <i class="fas fa-barcode text-xs"></i>
+                        <span>多规格价格</span>
+                    </label>
                 </div>
-                <button type="button" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100" id="add-price-tier">
-                    <i class="fas fa-plus text-xs"></i>
-                    <span>新增阶梯价格</span>
-                </button>
+
+                <?php $tierDisabled = $priceMode === 'tier' ? '' : ' disabled'; ?>
+                <div id="price-tier-panel" data-price-mode-panel="tier" class="mt-5 <?= $priceMode === 'tier' ? '' : 'hidden' ?>">
+                    <div id="price-tier-wrap">
+                        <?php
+                        $tierData = !empty($prices) ? $prices : [['min_qty' => '', 'max_qty' => '', 'price' => '']];
+                        foreach ($tierData as $tier):
+                        ?>
+                            <div class="price-tier-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_56px] md:items-end">
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">最小数量</span>
+                                    <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_min[]" type="number" min="1" value="<?= h((string)$tier['min_qty']) ?>" required<?= $tierDisabled ?>>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">最大数量</span>
+                                    <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_max[]" type="number" min="1" placeholder="可空" value="<?= h((string)($tier['max_qty'] ?? '')) ?>"<?= $tierDisabled ?>>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">单价</span>
+                                    <input class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100" name="price_value[]" type="number" min="0" step="0.01" value="<?= h((string)($tier['price'] ?? '')) ?>" required<?= $tierDisabled ?>>
+                                </label>
+                                <div class="flex md:justify-end">
+                                    <button type="button" class="remove-price-tier inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" aria-label="删除阶梯价格"<?= $tierDisabled ?>>
+                                        <i class="fas fa-trash-alt text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100" id="add-price-tier">
+                        <i class="fas fa-plus text-xs"></i>
+                        <span>新增阶梯价格</span>
+                    </button>
+                </div>
+
+                <?php $skuDisabled = $priceMode === 'sku' ? '' : ' disabled'; ?>
+                <div id="sku-price-panel" data-price-mode-panel="sku" class="mt-5 <?= $priceMode === 'sku' ? '' : 'hidden' ?>">
+                    <div class="mb-4 grid gap-3 rounded-2xl border border-sky-100 bg-sky-50 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+                        <label class="space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-500">批量单价</span>
+                            <input class="w-full rounded-xl border border-sky-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" type="number" min="0" step="0.01" data-sku-bulk-price placeholder="留空不修改"<?= $skuDisabled ?>>
+                        </label>
+                        <label class="space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-500">批量起订量</span>
+                            <input class="w-full rounded-xl border border-sky-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" type="number" min="1" data-sku-bulk-min placeholder="留空不修改"<?= $skuDisabled ?>>
+                        </label>
+                        <button type="button" id="apply-sku-bulk" class="inline-flex items-center justify-center gap-2 rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm font-semibold text-sky-700 transition hover:bg-sky-100"<?= $skuDisabled ?>>
+                            <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                            <span>应用到选中SKU</span>
+                        </button>
+                    </div>
+
+                    <div id="sku-price-wrap">
+                        <?php
+                        $skuData = !empty($skus) ? $skus : [['sku_name' => '', 'min_qty' => '', 'price' => '']];
+                        foreach ($skuData as $sku):
+                        ?>
+                            <div class="sku-price-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[44px_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_56px] md:items-end">
+                                <label class="flex h-11 items-center justify-center md:mb-0">
+                                    <input type="checkbox" class="sku-select h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"<?= $skuDisabled ?>>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">SKU名称</span>
+                                    <input class="sku-name-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_name[]" value="<?= h((string)($sku['sku_name'] ?? '')) ?>" placeholder="如：Red / XL" required<?= $skuDisabled ?>>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">起订量</span>
+                                    <input class="sku-min-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_min_qty[]" type="number" min="1" value="<?= h((string)($sku['min_qty'] ?? '')) ?>" required<?= $skuDisabled ?>>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">单价</span>
+                                    <input class="sku-price-input w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-100" name="sku_price[]" type="number" min="0" step="0.01" value="<?= h((string)($sku['price'] ?? '')) ?>" required<?= $skuDisabled ?>>
+                                </label>
+                                <div class="flex md:justify-end">
+                                    <button type="button" class="remove-sku-price inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100" aria-label="删除SKU价格"<?= $skuDisabled ?>>
+                                        <i class="fas fa-trash-alt text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-medium text-sky-700 transition hover:bg-sky-100" id="add-sku-price"<?= $skuDisabled ?>>
+                        <i class="fas fa-plus text-xs"></i>
+                        <span>新增SKU价格</span>
+                    </button>
+                </div>
             </div>
         </div>
 

@@ -131,12 +131,17 @@ class SiteController extends BaseController {
             }
         }
         foreach ($relatedProducts as &$p) $p['url'] = url('/product/' . $p['slug']);
+
+        $priceMode = in_array((string)($item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)$item['price_mode'] : 'tier';
         
         $this->renderSite('product_detail', [
             'item' => $item,
             'category' => $category,
             'images' => $item['images'] ?? [],
+            'price_mode' => $priceMode,
             'price_tiers' => $productModel->getPrices((int)$item['id']),
+            'product_skus' => $productModel->getSkus((int)$item['id']),
+            'currency' => $this->siteData['site']['currency'] ?? 'USD',
             'related_products' => $relatedProducts,
             'whatsapp' => $this->siteData['site']['whatsapp'],
             'inquiry_form' => true,

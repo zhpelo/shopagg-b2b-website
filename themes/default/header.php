@@ -22,7 +22,9 @@ if ($basePath !== '' && str_starts_with($currentPath, $basePath)) {
 $seoContext = [
     'item' => $item ?? null,
     'images' => $images ?? [],
+    'price_mode' => $price_mode ?? ($item['price_mode'] ?? 'tier'),
     'price_tiers' => $price_tiers ?? [],
+    'product_skus' => $product_skus ?? [],
     'cover' => is_array($item ?? null) ? (string)($item['cover'] ?? '') : '',
 ];
 if (str_starts_with($currentPath, '/product/') && !empty($seoContext['item'])) {

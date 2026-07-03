@@ -226,13 +226,12 @@ if (!function_exists('default_theme_schema_graph')) {
             }
             $product['description'] = $productDescription;
 
-            $prices = array_values(array_filter((array)($context['price_tiers'] ?? []), static fn($tier): bool => isset($tier['price']) && (float)$tier['price'] > 0));
+            $priceMode = in_array((string)($context['price_mode'] ?? $item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)($context['price_mode'] ?? $item['price_mode'] ?? 'tier') : 'tier';
+            $priceSource = $priceMode === 'sku' ? ($context['product_skus'] ?? []) : ($context['price_tiers'] ?? []);
+            $prices = array_values(array_filter((array)$priceSource, static fn($price): bool => isset($price['price']) && (float)$price['price'] > 0));
             if ($prices !== []) {
                 $priceValues = array_map(static fn($tier): float => (float)$tier['price'], $prices);
-                $currency = preg_replace('/[^A-Z]/', '', strtoupper((string)($prices[0]['currency'] ?? 'USD'))) ?: 'USD';
-                if (strlen($currency) !== 3) {
-                    $currency = 'USD';
-                }
+                $currency = normalize_currency_code((string)($site['currency'] ?? 'USD'), 'USD');
                 $product['offers'] = [
                     '@type' => count($prices) > 1 ? 'AggregateOffer' : 'Offer',
                     'priceCurrency' => $currency,

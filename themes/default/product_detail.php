@@ -7,11 +7,12 @@
  */
 $category = $category ?? null;
 $images = $images ?? [];
-$sampleCurrency = !empty($price_tiers) ? preg_replace('/[^A-Z]/', '', strtoupper((string)($price_tiers[0]['currency'] ?? 'USD'))) : 'USD';
-if ($sampleCurrency === '' || strlen($sampleCurrency) !== 3) {
-    $sampleCurrency = 'USD';
-}
-$samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['price'] * 2, 2, '.', '') : '50.00';
+$priceMode = in_array((string)($price_mode ?? $item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)($price_mode ?? $item['price_mode'] ?? 'tier') : 'tier';
+$productSkus = is_array($product_skus ?? null) ? $product_skus : [];
+$priceTiers = is_array($price_tiers ?? null) ? $price_tiers : [];
+$sampleCurrency = normalize_currency_code((string)($currency ?? $site['currency'] ?? 'USD'), 'USD');
+$activePrices = $priceMode === 'sku' ? $productSkus : $priceTiers;
+$samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['price'] ?? 0) * 2, 2, '.', '') : '50.00';
 ?>
 <?php if (!empty($images)): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -109,12 +110,33 @@ $samplePrice = !empty($price_tiers) ? number_format((float)$price_tiers[0]['pric
                         <p class="text-gray-600 mb-6"><?= h($item['summary']) ?></p>
                     <?php endif; ?>
 
-                    <?php if (!empty($price_tiers)): ?>
+                    <?php if ($priceMode === 'sku' && !empty($productSkus)): ?>
+                        <div class="mb-6 overflow-hidden rounded-lg border border-gray-100">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-gray-50 text-xs uppercase tracking-[0.12em] text-gray-500">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold">SKU</th>
+                                        <th class="px-4 py-3 font-semibold">MOQ</th>
+                                        <th class="px-4 py-3 text-right font-semibold">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <?php foreach ($productSkus as $sku): ?>
+                                        <tr>
+                                            <td class="px-4 py-3 font-semibold text-gray-900"><?= h((string)($sku['sku_name'] ?? '')) ?></td>
+                                            <td class="px-4 py-3 text-gray-500"><?= h(number_format((float)($sku['min_qty'] ?? 0))) ?>+ Pieces</td>
+                                            <td class="px-4 py-3 text-right font-bold text-gray-900"><?= h($sampleCurrency) ?> <?= h((string)($sku['price'] ?? '')) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php elseif (!empty($priceTiers)): ?>
                         <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-3">
-                            <?php foreach ($price_tiers as $tier): ?>
+                            <?php foreach ($priceTiers as $tier): ?>
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
                                     <div class="text-lg font-bold text-gray-900 lg:text-xl">
-                                        <?= h($tier['currency']) ?>$<?= h((string)$tier['price']) ?>
+                                        <?= h($sampleCurrency) ?> <?= h((string)$tier['price']) ?>
                                     </div>
                                     <div class="text-sm text-gray-500">
                                         <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> Pieces

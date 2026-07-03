@@ -134,14 +134,15 @@ class Product extends BaseModel {
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at)
-            VALUES (:t, :s, :sum, :c, :cid, :st, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, price_mode, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at)
+            VALUES (:t, :s, :sum, :c, :cid, :st, :pm, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
         $stmt->bindValue(':cid', (int)$data['category_id']);
         $stmt->bindValue(':st', $data['status'] ?? 'active');
+        $stmt->bindValue(':pm', $data['price_mode'] ?? 'tier');
         $stmt->bindValue(':pt', $data['product_type'] ?? '');
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
@@ -156,13 +157,14 @@ class Product extends BaseModel {
     }
 
     public function update(int $id, array $data): void {
-        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, price_mode=:pm, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
         $stmt->bindValue(':c', $data['content']);
         $stmt->bindValue(':cid', (int)$data['category_id']);
         $stmt->bindValue(':st', $data['status'] ?? 'active');
+        $stmt->bindValue(':pm', $data['price_mode'] ?? 'tier');
         $stmt->bindValue(':pt', $data['product_type'] ?? '');
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
@@ -204,6 +206,10 @@ class Product extends BaseModel {
         $priceStmt = $this->db->prepare("DELETE FROM product_prices WHERE product_id = :id");
         $priceStmt->bindValue(':id', $id);
         $priceStmt->execute();
+
+        $skuStmt = $this->db->prepare("DELETE FROM product_skus WHERE product_id = :id");
+        $skuStmt->bindValue(':id', $id);
+        $skuStmt->execute();
 
         $stmt = $this->db->prepare("DELETE FROM products WHERE id = :id");
         $stmt->bindValue(':id', $id);
@@ -251,7 +257,10 @@ class Product extends BaseModel {
     }
 
     public function savePrices(int $productId, array $tiers): void {
-        $this->db->exec("DELETE FROM product_prices WHERE product_id = $productId");
+        $delete = $this->db->prepare("DELETE FROM product_prices WHERE product_id = :pid");
+        $delete->bindValue(':pid', $productId);
+        $delete->execute();
+
         foreach ($tiers as $tier) {
             $stmt = $this->db->prepare("INSERT INTO product_prices (product_id, min_qty, max_qty, price, currency, created_at)
                 VALUES (:pid, :min, :max, :p, :c, :t)");
@@ -259,8 +268,32 @@ class Product extends BaseModel {
             $stmt->bindValue(':min', (int)$tier['min_qty']);
             $stmt->bindValue(':max', $tier['max_qty'] ? (int)$tier['max_qty'] : null);
             $stmt->bindValue(':p', (float)$tier['price']);
-            $stmt->bindValue(':c', $tier['currency']);
+            $stmt->bindValue(':c', 'USD');
             $stmt->bindValue(':t', gmdate('c'));
+            $stmt->execute();
+        }
+    }
+
+    public function getSkus(int $productId): array {
+        return $this->fetchAll("SELECT * FROM product_skus WHERE product_id = :pid ORDER BY sort_order ASC, id ASC", [':pid' => $productId]);
+    }
+
+    public function saveSkus(int $productId, array $skus): void {
+        $delete = $this->db->prepare("DELETE FROM product_skus WHERE product_id = :pid");
+        $delete->bindValue(':pid', $productId);
+        $delete->execute();
+
+        foreach ($skus as $index => $sku) {
+            $stmt = $this->db->prepare("INSERT INTO product_skus (product_id, sku_name, min_qty, price, sort_order, created_at, updated_at)
+                VALUES (:pid, :name, :min, :price, :sort, :created, :updated)");
+            $now = gmdate('c');
+            $stmt->bindValue(':pid', $productId);
+            $stmt->bindValue(':name', (string)$sku['sku_name']);
+            $stmt->bindValue(':min', (int)$sku['min_qty']);
+            $stmt->bindValue(':price', (float)$sku['price']);
+            $stmt->bindValue(':sort', (int)($sku['sort_order'] ?? $index));
+            $stmt->bindValue(':created', $now);
+            $stmt->bindValue(':updated', $now);
             $stmt->execute();
         }
     }

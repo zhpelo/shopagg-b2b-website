@@ -299,24 +299,34 @@ function format_date(?string $datetime, string $format = 'Y-m-d H:i:s'): string 
 }
 
 /**
+ * 规范化货币代码
+ */
+function normalize_currency_code(string $currency, string $fallback = 'USD'): string {
+    $normalized = preg_replace('/[^A-Za-z]/', '', strtoupper(trim($currency))) ?: '';
+    if (strlen($normalized) !== 3) {
+        $fallback = preg_replace('/[^A-Za-z]/', '', strtoupper(trim($fallback))) ?: 'USD';
+        return strlen($fallback) === 3 ? $fallback : 'USD';
+    }
+    return $normalized;
+}
+
+/**
  * 规范化阶梯价格数据
  * 
  * 将表单提交的多行阶梯价格数据转换为结构化数组
  * 
- * @param array $post $_POST 数据（包含 price_min[]、price_max[]、price_value[]、price_currency[]）
- * @return array 阶梯价格数组，每个元素包含 min_qty、max_qty、price、currency
+ * @param array $post $_POST 数据（包含 price_min[]、price_max[]、price_value[]）
+ * @return array 阶梯价格数组，每个元素包含 min_qty、max_qty、price
  */
 function normalize_price_tiers(array $post): array {
     $mins = $post['price_min'] ?? [];
     $maxs = $post['price_max'] ?? [];
     $prices = $post['price_value'] ?? [];
-    $currencies = $post['price_currency'] ?? [];
     
     // 确保都是数组
     if (!is_array($mins)) $mins = [$mins];
     if (!is_array($maxs)) $maxs = [$maxs];
     if (!is_array($prices)) $prices = [$prices];
-    if (!is_array($currencies)) $currencies = [$currencies];
     
     $tiers = [];
     foreach ($mins as $idx => $minVal) {
@@ -331,11 +341,46 @@ function normalize_price_tiers(array $post): array {
             'min_qty' => $min,
             'max_qty' => $maxRaw === '' ? null : (int)$maxRaw,
             'price' => (float)$priceRaw,
-            'currency' => trim((string)($currencies[$idx] ?? 'USD')) ?: 'USD',
         ];
     }
     
     return $tiers;
+}
+
+/**
+ * 规范化多规格 SKU 价格数据
+ *
+ * @param array $post $_POST 数据（包含 sku_name[]、sku_min_qty[]、sku_price[]）
+ * @return array SKU 价格数组，每个元素包含 sku_name、min_qty、price、sort_order
+ */
+function normalize_product_skus(array $post): array {
+    $names = $post['sku_name'] ?? [];
+    $mins = $post['sku_min_qty'] ?? [];
+    $prices = $post['sku_price'] ?? [];
+
+    if (!is_array($names)) $names = [$names];
+    if (!is_array($mins)) $mins = [$mins];
+    if (!is_array($prices)) $prices = [$prices];
+
+    $skus = [];
+    foreach ($names as $idx => $nameVal) {
+        $name = trim((string)$nameVal);
+        $min = (int)trim((string)($mins[$idx] ?? ''));
+        $priceRaw = trim((string)($prices[$idx] ?? ''));
+
+        if ($name === '' || $min <= 0 || $priceRaw === '') {
+            continue;
+        }
+
+        $skus[] = [
+            'sku_name' => $name,
+            'min_qty' => $min,
+            'price' => (float)$priceRaw,
+            'sort_order' => count($skus),
+        ];
+    }
+
+    return $skus;
 }
 
 // ============================================================================

@@ -22,6 +22,14 @@
                     </span>
                 </label>
                 <label class="space-y-2">
+                    <span class="text-sm font-medium text-slate-700">产品价格货币</span>
+                    <span class="relative block">
+                        <i class="fas fa-coins pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 uppercase focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="site_currency" value="<?= h($settings['site_currency'] ?? 'USD') ?>" placeholder="USD" maxlength="3" pattern="[A-Za-z]{3}" title="请输入 3 位货币代码，如 USD、EUR、CNY">
+                    </span>
+                    <p class="text-xs text-slate-500">所有产品价格统一使用该货币代码。</p>
+                </label>
+                <label class="space-y-2">
                     <span class="text-sm font-medium text-slate-700">启用主题</span>
                     <select class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="theme">
                         <?php foreach ($available_themes as $t): ?>
