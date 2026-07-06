@@ -8,5 +8,3 @@ storage/blocks/
 .env
 storage/
 uploads/logs/*.log
-themes/Food-Industry-B2B-For-Shopagg-Theme
-themes/codex-valid-theme/
