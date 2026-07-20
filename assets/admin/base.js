@@ -86,6 +86,37 @@ window.tailwind.config = {
         return `${window.APP_BASE_PATH || ''}${url}`;
     }
 
+    function submitPostAction(target) {
+        const action = target.dataset.postAction || '';
+        if (!action) {
+            return;
+        }
+
+        let payload = {};
+        try {
+            payload = JSON.parse(target.dataset.postPayload || '{}');
+        } catch (error) {
+            console.error('Invalid POST action payload', error);
+            return;
+        }
+
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = action;
+        form.hidden = true;
+
+        Object.entries({ ...payload, csrf: window.ADMIN_CSRF_TOKEN || '' }).forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = String(value ?? '');
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
     function parseProductSelectorIds(value) {
         const ids = [];
         String(value || '').split(/[,\s]+/).forEach((item) => {
@@ -1281,6 +1312,13 @@ ${iconHtml}
             const deletePathButton = event.target.closest('[data-delete-path]');
             if (deletePathButton) {
                 submitSingleMediaDelete(deletePathButton.dataset.deletePath || '');
+                return;
+            }
+
+            const postActionButton = event.target.closest('[data-post-action]');
+            if (postActionButton) {
+                event.preventDefault();
+                submitPostAction(postActionButton);
             }
         });
 

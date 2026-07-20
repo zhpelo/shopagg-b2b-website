@@ -125,10 +125,10 @@
                         class="px-5 py-2.5 text-slate-700 font-medium bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">
                     取消
                 </button>
-                <a id="delete-confirm-btn" href="#"
+                <button type="button" id="delete-confirm-btn" data-post-action="<?= url('/admin/appearance/menus/delete') ?>" data-post-payload="{}"
                    class="px-5 py-2.5 text-white font-medium bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors">
                     确认删除
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -137,7 +137,7 @@
 <script>
 function confirmDelete(id, name) {
     document.getElementById('delete-menu-name').textContent = name;
-    document.getElementById('delete-confirm-btn').href = '<?= url('/admin/appearance/menus/delete') ?>?id=' + id;
+    document.getElementById('delete-confirm-btn').dataset.postPayload = JSON.stringify({ id: Number(id) });
     document.getElementById('delete-modal').classList.remove('hidden');
     document.getElementById('delete-modal').classList.add('flex');
 }

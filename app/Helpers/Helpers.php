@@ -396,6 +396,7 @@ function normalize_product_skus(array $post): array {
  * @return string 处理后的 HTML，所有图片 src 添加了 base path
  */
 function process_rich_text(string $html): string {
+    $html = sanitize_rich_text_html($html);
     return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', function($matches) {
         $src = $matches[1];
         $newSrc = asset_url($src);
@@ -412,6 +413,7 @@ function process_rich_text(string $html): string {
  * @return string 规范化后的 HTML，移除了 base path 前缀
  */
 function normalize_rich_text(string $html): string {
+    $html = sanitize_rich_text_html($html);
     $basePath = defined('APP_BASE_PATH') ? (string) APP_BASE_PATH : '';
     if ($basePath === '') return $html;
     return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', function($matches) use ($basePath) {
@@ -422,6 +424,149 @@ function normalize_rich_text(string $html): string {
         }
         return $matches[0];
     }, $html);
+}
+
+/**
+ * 使用服务端白名单净化富文本，阻止 script、事件属性和危险 URL 协议。
+ * DOM 扩展不可用时按纯文本处理，确保失败时默认安全。
+ */
+function sanitize_rich_text_html(string $html): string {
+    $html = trim($html);
+    if ($html === '') {
+        return '';
+    }
+
+    if (!class_exists(\DOMDocument::class)) {
+        return nl2br(h($html));
+    }
+
+    $allowedAttributes = [
+        'a' => ['href', 'title', 'target', 'rel'],
+        'img' => ['src', 'alt', 'title', 'width', 'height', 'loading'],
+        'td' => ['colspan', 'rowspan'],
+        'th' => ['colspan', 'rowspan', 'scope'],
+        '*' => ['class'],
+    ];
+    $allowedTags = array_fill_keys([
+        'p', 'br', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'blockquote', 'pre', 'code', 'ul', 'ol', 'li', 'strong', 'b', 'em',
+        'i', 'u', 's', 'strike', 'sub', 'sup', 'a', 'img', 'figure',
+        'figcaption', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'hr',
+    ], true);
+    $dropWithContent = array_fill_keys([
+        'script', 'style', 'iframe', 'object', 'embed', 'svg', 'math', 'template',
+        'form', 'input', 'button', 'textarea', 'select', 'option', 'meta', 'link',
+        'base', 'audio', 'video', 'source', 'track', 'canvas',
+    ], true);
+
+    $previous = libxml_use_internal_errors(true);
+    $document = new \DOMDocument('1.0', 'UTF-8');
+    $loaded = $document->loadHTML(
+        '<?xml encoding="UTF-8"><div id="rich-text-sanitizer-root">' . $html . '</div>',
+        LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NONET
+    );
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous);
+
+    if (!$loaded) {
+        return nl2br(h($html));
+    }
+
+    $root = $document->getElementById('rich-text-sanitizer-root');
+    if (!$root instanceof \DOMElement) {
+        return nl2br(h($html));
+    }
+
+    $sanitizeNode = function (\DOMNode $node) use (&$sanitizeNode, $allowedTags, $allowedAttributes, $dropWithContent): void {
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if ($child instanceof \DOMComment || $child instanceof \DOMProcessingInstruction) {
+                $node->removeChild($child);
+                continue;
+            }
+
+            if (!$child instanceof \DOMElement) {
+                continue;
+            }
+
+            $tag = strtolower($child->tagName);
+            if (isset($dropWithContent[$tag])) {
+                $node->removeChild($child);
+                continue;
+            }
+
+            if (!isset($allowedTags[$tag])) {
+                $sanitizeNode($child);
+                while ($child->firstChild !== null) {
+                    $node->insertBefore($child->firstChild, $child);
+                }
+                $node->removeChild($child);
+                continue;
+            }
+
+            $tagAttributes = array_merge($allowedAttributes['*'], $allowedAttributes[$tag] ?? []);
+            foreach (iterator_to_array($child->attributes) as $attribute) {
+                $name = strtolower($attribute->name);
+                if (str_starts_with($name, 'on') || !in_array($name, $tagAttributes, true)) {
+                    $child->removeAttributeNode($attribute);
+                }
+            }
+
+            if ($child->hasAttribute('class')) {
+                $class = preg_replace('/[^A-Za-z0-9_:\-\s]/', '', $child->getAttribute('class')) ?: '';
+                $class = trim(preg_replace('/\s+/', ' ', $class) ?: '');
+                $class === '' ? $child->removeAttribute('class') : $child->setAttribute('class', $class);
+            }
+
+            foreach (['width', 'height', 'colspan', 'rowspan'] as $numericAttribute) {
+                if ($child->hasAttribute($numericAttribute)) {
+                    $value = (int)$child->getAttribute($numericAttribute);
+                    if ($value < 1 || $value > 4096) {
+                        $child->removeAttribute($numericAttribute);
+                    } else {
+                        $child->setAttribute($numericAttribute, (string)$value);
+                    }
+                }
+            }
+
+            foreach (['href', 'src'] as $urlAttribute) {
+                if (!$child->hasAttribute($urlAttribute)) {
+                    continue;
+                }
+                $value = html_entity_decode(trim($child->getAttribute($urlAttribute)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $value = preg_replace('/[\x00-\x20\x7F]+/u', '', $value) ?: '';
+                $scheme = strtolower((string)parse_url($value, PHP_URL_SCHEME));
+                $relative = $value !== '' && $scheme === '';
+                $allowedSchemes = $urlAttribute === 'href' ? ['http', 'https', 'mailto', 'tel'] : ['http', 'https'];
+                if (!$relative && !in_array($scheme, $allowedSchemes, true)) {
+                    $child->removeAttribute($urlAttribute);
+                } else {
+                    $child->setAttribute($urlAttribute, $value);
+                }
+            }
+
+            if ($tag === 'a') {
+                $target = $child->getAttribute('target');
+                if (!in_array($target, ['', '_self', '_blank'], true)) {
+                    $child->removeAttribute('target');
+                } elseif ($target === '_blank') {
+                    $child->setAttribute('rel', 'noopener noreferrer');
+                }
+            }
+            if ($tag === 'img') {
+                $child->setAttribute('loading', 'lazy');
+            }
+
+            $sanitizeNode($child);
+        }
+    };
+
+    $sanitizeNode($root);
+
+    $result = '';
+    foreach ($root->childNodes as $child) {
+        $result .= $document->saveHTML($child);
+    }
+    return $result;
 }
 
 // ============================================================================
@@ -995,7 +1140,7 @@ function get_google_translate_widget(array $site = [], string $buttonClass = 'bu
     }
 
     return <<<HTML
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css" integrity="sha384-TeDUCuZ+Uyp1Vv0n275nnm//ANAlP5GFHCnSF4iiAdrYmBZMM6syYgykpq4kGTqL" crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
     body > .skiptranslate { display: none; }
     .goog-logo-link { display: none !important; }

@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($title) ?></title>
     <script src="<?= url('/assets/admin/base.js').'?v='.APP_VERSION ?>"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.css">
+    <script src="https://cdn.tailwindcss.com/3.4.17" integrity="sha384-igm5BeiBt36UU4gqwWS7imYmelpTsZlQ45FZf+XBn9MuJbn4nQr7yx1yFydocC/K" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@4.13.5/es2021/jodit.fat.min.css" integrity="sha384-z1CAdjZT0Ot4X7eoNzGTz5RCl/Gp9y6nEqBwAJVdhr+B/kFJy+M9TIbEmgy9V2L9" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css').'?v='.APP_VERSION ?>">
     <link rel="stylesheet" href="<?= url('/assets/admin/style.css').'?v='.APP_VERSION ?>">
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js" integrity="sha384-DgmC6Xe2bSN2WjTDXzWYbUbxyhNP+NNkGDR/g78pCXV7E7rcVTGxVg0uIVCUUcBc" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body class="<?= ($showNav ?? true) ? 'min-h-screen bg-slate-100 text-slate-800' : 'login-page' ?>">
@@ -108,9 +108,9 @@
                                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
                                 </a>
                                 <div class="my-2 h-px bg-slate-200"></div>
-                                <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" href="<?= url('/admin/logout') ?>">
+                                <button type="button" class="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50" data-post-action="<?= url('/admin/logout') ?>" data-post-payload="{}">
                                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
-                                </a>
+                                </button>
                             </div>
                             </div>
                         </div>
@@ -193,9 +193,11 @@
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-translate' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-translate') ?>">
                             <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-language text-xs"></i></span>翻译设置
                         </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-custom' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-custom') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-code text-xs"></i></span>自定义代码
-                        </a>
+                        <?php if ($user_role === 'admin'): ?>
+                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-custom' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-custom') ?>">
+                                <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-code text-xs"></i></span>自定义代码
+                            </a>
+                        <?php endif; ?>
                         <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-updater' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-updater') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
                         </a>
@@ -463,7 +465,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/jodit@latest/es2021/jodit.fat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jodit@4.13.5/es2021/jodit.fat.min.js" integrity="sha384-IccFe3rXbed180gRH7yBTP+/cUVVxY0TImIHZ2IPflDaaEY1YoCOVTSZ8a63Sr9J" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 
 </html>

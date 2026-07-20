@@ -89,9 +89,9 @@
                                     <a href="<?= url('/admin/messages/detail?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 transition hover:bg-cyan-100" title="查看详情">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-eye"></i></span>
                                     </a>
-                                    <a href="<?= url('/admin/messages/delete?id=' . (int)$row['id']) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" title="删除" data-confirm-message="确定要删除此留言吗？">
+                                    <button type="button" data-post-action="<?= url('/admin/messages/delete') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id']])) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" title="删除" data-confirm-message="确定要删除此留言吗？">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash"></i></span>
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

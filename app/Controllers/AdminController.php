@@ -164,6 +164,7 @@ class AdminController extends Controller {
      * @return void
      */
     public function logout(): void {
+        csrf_check();
         AuthManager::destroySession();
         $this->redirect('/admin/login');
     }
@@ -290,6 +291,9 @@ class AdminController extends Controller {
 
     public function settings(): void {
         $tab = $this->resolveSettingsTab();
+        if ($tab === 'custom' && AuthManager::getUserRole() !== 'admin') {
+            $this->redirect('/admin');
+        }
         $settings = $this->settingModel->getAll();
 
         $availableThemes = array_map(
@@ -332,6 +336,9 @@ class AdminController extends Controller {
     public function saveSettings(): void {
         csrf_check();
         $tab = $this->resolveSettingsTab();
+        if ($tab === 'custom' && AuthManager::getUserRole() !== 'admin') {
+            $this->redirect('/admin');
+        }
 
         if ($tab === 'general' && isset($_POST['theme'])) {
             $validThemes = array_map(
@@ -558,7 +565,8 @@ class AdminController extends Controller {
     }
 
     public function productDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->productModel->softDelete($id);
         }
@@ -566,7 +574,8 @@ class AdminController extends Controller {
     }
 
     public function productRestore(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->productModel->restore($id);
         }
@@ -574,7 +583,8 @@ class AdminController extends Controller {
     }
 
     public function productPermanentDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->productModel->permanentDelete($id);
         }
@@ -1020,7 +1030,8 @@ class AdminController extends Controller {
     }
 
     public function productCategoryDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         $this->categoryModel->delete($id);
         $this->redirect('/admin/product-categories');
     }
@@ -1082,7 +1093,8 @@ class AdminController extends Controller {
     }
 
     public function postCategoryDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         $this->categoryModel->delete($id);
         $this->redirect('/admin/post-categories');
     }
@@ -1317,8 +1329,9 @@ class AdminController extends Controller {
 
     public function caseDelete(): void
     {
+        csrf_check();
         $config = $this->contentConfig('case');
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $this->postModel->delete($id, 'case');
         $this->redirect($config['index_url']);
     }
@@ -1363,8 +1376,9 @@ class AdminController extends Controller {
 
     public function postDelete(): void
     {
+        csrf_check();
         $config = $this->contentConfig('post');
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $this->postModel->delete($id, 'post');
         $this->redirect($config['index_url']);
     }
@@ -1409,8 +1423,9 @@ class AdminController extends Controller {
 
     public function pageDelete(): void
     {
+        csrf_check();
         $config = $this->contentConfig('page');
-        $id = (int)($_GET['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? 0);
         $this->postModel->delete($id, 'page');
         $this->redirect($config['index_url']);
     }
@@ -1432,7 +1447,8 @@ class AdminController extends Controller {
     }
 
     public function messageDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id) {
             $this->messageModel->delete($id);
         }
@@ -1459,9 +1475,10 @@ class AdminController extends Controller {
     }
 
     public function inquiryUpdateStatus(): void {
-        $id = (int)($_GET['id'] ?? 0);
-        $status = $_GET['status'] ?? '';
-        $redirect = $_GET['redirect'] ?? '/admin/inquiries';
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
+        $status = $_POST['status'] ?? '';
+        $redirect = $_POST['redirect'] ?? '/admin/inquiries';
         if ($id && in_array($status, ['pending', 'contacted', 'quoted', 'closed'])) {
             $this->inquiryModel->updateStatus($id, $status);
         }
@@ -1469,7 +1486,8 @@ class AdminController extends Controller {
     }
 
     public function inquiryDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id) {
             $this->inquiryModel->delete($id);
         }
@@ -1676,7 +1694,8 @@ class AdminController extends Controller {
 
     public function staffDelete(): void {
         if ($_SESSION['admin_role'] !== 'admin') $this->redirect('/admin');
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id !== (int)$_SESSION['admin_user_id']) {
             $this->userModel->delete($id);
         }
@@ -1791,20 +1810,11 @@ class AdminController extends Controller {
         csrf_check();
         
         $version = trim((string)($_POST['version'] ?? ''));
-        $filepath = trim((string)($_POST['filepath'] ?? ''));
-        
-        if ($version === '' || $filepath === '') {
-            $this->json(['success' => false, 'message' => '参数不完整']);
+        if ($version === '') {
+            $this->json(['success' => false, 'message' => '版本号不能为空']);
         }
         
-        // 安全检查：确保文件路径在允许的目录内
-        $realpath = realpath($filepath);
-        $allowedDir = realpath(APP_ROOT . '/storage/updates');
-        if ($realpath === false || !str_starts_with($realpath, $allowedDir)) {
-            $this->json(['success' => false, 'message' => '无效的文件路径']);
-        }
-        
-        $result = $this->updater->installUpdate($version, $filepath);
+        $result = $this->updater->installUpdate($version);
         $this->json($result);
     }
     
@@ -3014,7 +3024,8 @@ class AdminController extends Controller {
      * 删除轮播图
      */
     public function sliderDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id) {
             $this->sliderModel->delete($id);
         }
@@ -3317,7 +3328,8 @@ class AdminController extends Controller {
      * 删除菜单
      */
     public function menuDelete(): void {
-        $id = (int)($_GET['id'] ?? 0);
+        csrf_check();
+        $id = (int)($_POST['id'] ?? 0);
         if ($id) {
             $this->menuModel->delete($id);
         }

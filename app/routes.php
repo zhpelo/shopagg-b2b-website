@@ -30,7 +30,7 @@ function register_routes(Router $router): void {
     // 后台：登录
     $router->add('GET', '/admin/login', [AdminController::class, 'login']);
     $router->add('POST', '/admin/login', [AdminController::class, 'doLogin']);
-    $router->add('GET', '/admin/logout', [AdminController::class, 'logout']);
+    $router->add('POST', '/admin/logout', [AdminController::class, 'logout']);
     $router->add('GET', '/admin', [AdminController::class, 'dashboard']);
     $router->add('GET', '/admin/settings-general', [AdminController::class, 'settings']);
     $router->add('POST', '/admin/settings-general', [AdminController::class, 'saveSettings']);
@@ -54,9 +54,9 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/products/create', [AdminController::class, 'productStore']);
     $router->add('GET', '/admin/products/edit', [AdminController::class, 'productEdit']);
     $router->add('POST', '/admin/products/edit', [AdminController::class, 'productUpdate']);
-    $router->add('GET', '/admin/products/delete', [AdminController::class, 'productDelete']);
-    $router->add('GET', '/admin/products/restore', [AdminController::class, 'productRestore']);
-    $router->add('GET', '/admin/products/permanent-delete', [AdminController::class, 'productPermanentDelete']);
+    $router->add('POST', '/admin/products/delete', [AdminController::class, 'productDelete']);
+    $router->add('POST', '/admin/products/restore', [AdminController::class, 'productRestore']);
+    $router->add('POST', '/admin/products/permanent-delete', [AdminController::class, 'productPermanentDelete']);
     $router->add('POST', '/admin/products/bulk', [AdminController::class, 'productBulkAction']);
 
     // 后台：产品分类
@@ -65,7 +65,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/product-categories/create', [AdminController::class, 'productCategoryStore']);
     $router->add('GET', '/admin/product-categories/edit', [AdminController::class, 'productCategoryEdit']);
     $router->add('POST', '/admin/product-categories/edit', [AdminController::class, 'productCategoryUpdate']);
-    $router->add('GET', '/admin/product-categories/delete', [AdminController::class, 'productCategoryDelete']);
+    $router->add('POST', '/admin/product-categories/delete', [AdminController::class, 'productCategoryDelete']);
 
     // 后台：文章分类
     $router->add('GET', '/admin/post-categories', [AdminController::class, 'postCategoryList']);
@@ -73,7 +73,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/post-categories/create', [AdminController::class, 'postCategoryStore']);
     $router->add('GET', '/admin/post-categories/edit', [AdminController::class, 'postCategoryEdit']);
     $router->add('POST', '/admin/post-categories/edit', [AdminController::class, 'postCategoryUpdate']);
-    $router->add('GET', '/admin/post-categories/delete', [AdminController::class, 'postCategoryDelete']);
+    $router->add('POST', '/admin/post-categories/delete', [AdminController::class, 'postCategoryDelete']);
 
     // 后台：案例
     $router->add('GET', '/admin/cases', [AdminController::class, 'caseList']);
@@ -81,7 +81,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/cases/create', [AdminController::class, 'caseStore']);
     $router->add('GET', '/admin/cases/edit', [AdminController::class, 'caseEdit']);
     $router->add('POST', '/admin/cases/edit', [AdminController::class, 'caseUpdate']);
-    $router->add('GET', '/admin/cases/delete', [AdminController::class, 'caseDelete']);
+    $router->add('POST', '/admin/cases/delete', [AdminController::class, 'caseDelete']);
 
     // 后台：文章
     $router->add('GET', '/admin/posts', [AdminController::class, 'postList']);
@@ -89,7 +89,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/posts/create', [AdminController::class, 'postStore']);
     $router->add('GET', '/admin/posts/edit', [AdminController::class, 'postEdit']);
     $router->add('POST', '/admin/posts/edit', [AdminController::class, 'postUpdate']);
-    $router->add('GET', '/admin/posts/delete', [AdminController::class, 'postDelete']);
+    $router->add('POST', '/admin/posts/delete', [AdminController::class, 'postDelete']);
 
     // 后台：页面
     $router->add('GET', '/admin/pages', [AdminController::class, 'pageList']);
@@ -97,16 +97,16 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/pages/create', [AdminController::class, 'pageStore']);
     $router->add('GET', '/admin/pages/edit', [AdminController::class, 'pageEdit']);
     $router->add('POST', '/admin/pages/edit', [AdminController::class, 'pageUpdate']);
-    $router->add('GET', '/admin/pages/delete', [AdminController::class, 'pageDelete']);
+    $router->add('POST', '/admin/pages/delete', [AdminController::class, 'pageDelete']);
 
     // 后台：留言与询单
     $router->add('GET', '/admin/messages', [AdminController::class, 'messageList']);
     $router->add('GET', '/admin/messages/detail', [AdminController::class, 'messageDetail']);
-    $router->add('GET', '/admin/messages/delete', [AdminController::class, 'messageDelete']);
+    $router->add('POST', '/admin/messages/delete', [AdminController::class, 'messageDelete']);
     $router->add('GET', '/admin/inquiries', [AdminController::class, 'inquiryList']);
     $router->add('GET', '/admin/inquiries/detail', [AdminController::class, 'inquiryDetail']);
-    $router->add('GET', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
-    $router->add('GET', '/admin/inquiries/delete', [AdminController::class, 'inquiryDelete']);
+    $router->add('POST', '/admin/inquiries/status', [AdminController::class, 'inquiryUpdateStatus']);
+    $router->add('POST', '/admin/inquiries/delete', [AdminController::class, 'inquiryDelete']);
     $router->add('GET', '/admin/inquiries/export', [AdminController::class, 'inquiryExport']);
 
     // 后台：员工
@@ -115,7 +115,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/staff/create', [AdminController::class, 'staffStore']);
     $router->add('GET', '/admin/staff/edit', [AdminController::class, 'staffEdit']);
     $router->add('POST', '/admin/staff/edit', [AdminController::class, 'staffUpdate']);
-    $router->add('GET', '/admin/staff/delete', [AdminController::class, 'staffDelete']);
+    $router->add('POST', '/admin/staff/delete', [AdminController::class, 'staffDelete']);
 
     // 后台：个人资料、媒体、AJAX
     $router->add('GET', '/admin/profile', [AdminController::class, 'profile']);
@@ -157,7 +157,7 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/appearance/sliders/create', [AdminController::class, 'sliderStore']);
     $router->add('GET', '/admin/appearance/sliders/edit', [AdminController::class, 'sliderEdit']);
     $router->add('POST', '/admin/appearance/sliders/edit', [AdminController::class, 'sliderUpdate']);
-    $router->add('GET', '/admin/appearance/sliders/delete', [AdminController::class, 'sliderDelete']);
+    $router->add('POST', '/admin/appearance/sliders/delete', [AdminController::class, 'sliderDelete']);
 
     // 后台：外观区块 - 模板区块配置
     $router->add('GET', '/admin/appearance/blocks', [AdminController::class, 'blockList']);
@@ -169,5 +169,5 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/appearance/menus/create', [AdminController::class, 'menuStore']);
     $router->add('GET', '/admin/appearance/menus/edit', [AdminController::class, 'menuEdit']);
     $router->add('POST', '/admin/appearance/menus/edit', [AdminController::class, 'menuUpdate']);
-    $router->add('GET', '/admin/appearance/menus/delete', [AdminController::class, 'menuDelete']);
+    $router->add('POST', '/admin/appearance/menus/delete', [AdminController::class, 'menuDelete']);
 }

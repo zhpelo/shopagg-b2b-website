@@ -149,23 +149,23 @@
                                                 查看详情
                                             </a>
                                             <div class="my-1 h-px bg-slate-200"></div>
-                                            <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=contacted') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                                            <button type="button" data-post-action="<?= url('/admin/inquiries/status') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'status' => 'contacted'])) ?>" class="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
                                                 <span class="inline-flex h-4 w-4 items-center justify-center text-sky-600 mr-2"><i class="fas fa-phone"></i></span>
                                                 标记为已联系
-                                            </a>
-                                            <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=quoted') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                                            </button>
+                                            <button type="button" data-post-action="<?= url('/admin/inquiries/status') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'status' => 'quoted'])) ?>" class="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
                                                 <span class="inline-flex h-4 w-4 items-center justify-center text-emerald-600 mr-2"><i class="fas fa-file-invoice-dollar"></i></span>
                                                 标记为已报价
-                                            </a>
-                                            <a href="<?= url('/admin/inquiries/status?id=' . (int)$row['id'] . '&status=closed') ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                                            </button>
+                                            <button type="button" data-post-action="<?= url('/admin/inquiries/status') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'status' => 'closed'])) ?>" class="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
                                                 <span class="inline-flex h-4 w-4 items-center justify-center text-slate-500 mr-2"><i class="fas fa-check-circle"></i></span>
                                                 标记为已关闭
-                                            </a>
+                                            </button>
                                             <div class="my-1 h-px bg-slate-200"></div>
-                                            <a href="<?= url('/admin/inquiries/delete?id=' . (int)$row['id']) ?>" class="flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50" data-confirm-message="确定要删除此询单吗？">
+                                            <button type="button" data-post-action="<?= url('/admin/inquiries/delete') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id']])) ?>" class="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50" data-confirm-message="确定要删除此询单吗？">
                                                 <span class="inline-flex h-4 w-4 items-center justify-center mr-2"><i class="fas fa-trash"></i></span>
                                                 删除询单
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

@@ -89,7 +89,7 @@ $schemaGraph = default_theme_schema_graph($site, [
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17?plugins=typography" integrity="sha384-98Wwx1937T3GidSAwih9DtTYWtmUM+etXWic+XaYleGUnH7QDMDAMYH0XA6byBLe" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <?php
         $brandPrimary     = block('brand_colors', 'primary');
         $brandPrimaryDark = block('brand_colors', 'primary_dark');
@@ -117,7 +117,7 @@ $schemaGraph = default_theme_schema_graph($site, [
             }
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
     <?= get_head_code() ?>
 </head>

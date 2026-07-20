@@ -57,9 +57,9 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-edit"></i></span>
                         <span>编辑</span>
                     </a>
-                    <a href="<?= $baseUrl ?>/delete?id=<?= (int)$row['id'] ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要删除该分类吗？子分类将提升到父级。">
+                    <button type="button" data-post-action="<?= h($baseUrl) ?>/delete" data-post-payload="<?= h(json_encode(['id' => (int)$row['id']])) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要删除该分类吗？子分类将提升到父级。">
                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
-                    </a>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -147,4 +147,3 @@ $totalCount = countTotalCategories($categories);
         </div>
     </div>
 <?php endif; ?>
-

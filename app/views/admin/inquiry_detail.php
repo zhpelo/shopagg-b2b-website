@@ -207,12 +207,13 @@ $statusButtonClasses = [
                 <p class="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">更改状态</p>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <?php foreach ($statusButtonClasses as $statusKey => $statusInfo): ?>
-                        <a
-                            href="<?= url('/admin/inquiries/status?id=' . (int)$inquiry['id'] . '&status=' . urlencode($statusKey) . '&redirect=' . urlencode(url('/admin/inquiries/detail?id=' . $inquiry['id']))) ?>"
+                        <button type="button"
+                            data-post-action="<?= url('/admin/inquiries/status') ?>"
+                            data-post-payload="<?= h(json_encode(['id' => (int)$inquiry['id'], 'status' => $statusKey, 'redirect' => url('/admin/inquiries/detail?id=' . (int)$inquiry['id'])])) ?>"
                             class="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition <?= $inquiry['status'] === $statusKey ? $statusInfo['active'] : $statusInfo['inactive'] ?>">
                             <i class="fas fa-<?= $statusInfo['icon'] ?> text-xs"></i>
                             <span><?= $statusInfo['label'] ?></span>
-                        </a>
+                        </button>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -252,13 +253,14 @@ $statusButtonClasses = [
                 危险操作
             </div>
 
-            <a
-                href="<?= url('/admin/inquiries/delete?id=' . (int)$inquiry['id']) ?>"
+            <button type="button"
+                data-post-action="<?= url('/admin/inquiries/delete') ?>"
+                data-post-payload="<?= h(json_encode(['id' => (int)$inquiry['id']])) ?>"
                 class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100"
                 data-confirm-message="确定要删除此询单吗？此操作不可恢复。">
                 <i class="fas fa-trash text-xs"></i>
                 <span>删除此询单</span>
-            </a>
+            </button>
         </div>
     </div>
 </div>

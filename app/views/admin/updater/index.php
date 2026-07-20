@@ -521,7 +521,7 @@ async function installUpdate(version) {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: 'csrf=<?= h(csrf_token()) ?>&version=' + encodeURIComponent(version) + '&filepath=' + encodeURIComponent(downloadData.filepath)
+            body: 'csrf=<?= h(csrf_token()) ?>&version=' + encodeURIComponent(version)
         });
         
         const installData = await installRes.json();

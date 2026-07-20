@@ -258,13 +258,13 @@ $statusMap = [
                             <td>
                                 <div class="flex flex-wrap gap-2">
                                     <?php if ($isTrash): ?>
-                                        <a href="<?= url('/admin/products/restore?id=' . (int)$row['id'] . '&return_to=' . rawurlencode($returnPath)) ?>" class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+                                        <button type="button" data-post-action="<?= url('/admin/products/restore') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'return_to' => $returnPath])) ?>" class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-undo"></i></span>
                                             <span>恢复</span>
-                                        </a>
-                                        <a href="<?= url('/admin/products/permanent-delete?id=' . (int)$row['id'] . '&return_to=' . rawurlencode($returnPath)) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要永久删除该产品吗？此操作不可恢复。">
+                                        </button>
+                                        <button type="button" data-post-action="<?= url('/admin/products/permanent-delete') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'return_to' => $returnPath])) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要永久删除该产品吗？此操作不可恢复。">
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
-                                        </a>
+                                        </button>
                                     <?php else: ?>
                                         <a href="<?= url('/product/' . h($row['slug'])) ?>" target="_blank" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900" title="预览">
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-eye"></i></span>
@@ -273,9 +273,9 @@ $statusMap = [
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-edit"></i></span>
                                             <span>编辑</span>
                                         </a>
-                                        <a href="<?= url('/admin/products/delete?id=' . (int)$row['id'] . '&return_to=' . rawurlencode($returnPath)) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要将该产品移入回收站吗？">
+                                        <button type="button" data-post-action="<?= url('/admin/products/delete') ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id'], 'return_to' => $returnPath])) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要将该产品移入回收站吗？">
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
-                                        </a>
+                                        </button>
                                     <?php endif; ?>
                                 </div>
                             </td>
