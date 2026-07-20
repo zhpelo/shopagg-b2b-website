@@ -89,7 +89,7 @@ $schemaGraph = default_theme_schema_graph($site, [
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com/3.4.17?plugins=typography" integrity="sha384-98Wwx1937T3GidSAwih9DtTYWtmUM+etXWic+XaYleGUnH7QDMDAMYH0XA6byBLe" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17?plugins=typography" referrerpolicy="no-referrer"></script>
     <?php
         $brandPrimary     = block('brand_colors', 'primary');
         $brandPrimaryDark = block('brand_colors', 'primary_dark');
