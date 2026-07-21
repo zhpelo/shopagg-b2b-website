@@ -39,19 +39,29 @@
     ?>
         <!-- 第一级主导航 -->
         <nav class="admin-navbar border-b border-slate-200 bg-white/95 backdrop-blur" role="navigation" aria-label="main navigation">
-            <div class="container flex items-center justify-between gap-6 py-4">
-                <div class="flex items-center gap-3">
+            <div class="container admin-navbar-inner flex items-center justify-between gap-6 py-4">
+                <div class="admin-navbar-brand flex items-center gap-3">
                     <a class="logo-link inline-flex items-center rounded-xl p-2 transition" href="<?= url('/admin') ?>">
                         <img src="<?= url('/assets/admin/images/shopagg-logo.png') ?>" alt="logo" class="h-9 max-h-9">
                     </a>
-                    <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 lg:hidden" aria-label="menu" aria-expanded="false" data-nav-toggle data-target="adminNavbar">
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </button>
                 </div>
 
-                <div id="adminNavbar" class="hidden w-full flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" data-nav-menu>
+                <button type="button" class="admin-nav-toggle inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 lg:hidden" aria-label="打开导航菜单" aria-controls="adminNavbar" aria-expanded="false" data-nav-toggle data-target="adminNavbar">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+
+                <div id="adminNavbar" class="admin-nav-menu hidden w-full flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" data-nav-menu>
+                    <div class="admin-nav-mobile-header lg:hidden">
+                        <div>
+                            <strong>后台管理</strong>
+                            <span>选择要管理的功能</span>
+                        </div>
+                        <button type="button" class="admin-nav-close inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600" aria-label="关闭导航菜单" data-nav-dismiss>
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                     <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-2">
                         <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-home"></i></span>仪表盘
@@ -92,14 +102,14 @@
                         <?php endif; ?>
                     </div>
 
-                    <div class="flex items-center justify-end">
-                        <div class="group relative">
-                            <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+                    <div class="admin-profile-area flex items-center justify-end">
+                        <div class="group relative w-full lg:w-auto" data-profile-menu>
+                            <button type="button" class="admin-profile-toggle inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 lg:w-auto" aria-expanded="false" data-profile-menu-toggle>
                                 <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-circle"></i></span>
-                                <?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?>
+                                <span class="min-w-0 flex-1 truncate text-left"><?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?></span>
                                 <span class="text-xs text-slate-400"><i class="fas fa-chevron-down"></i></span>
                             </button>
-                            <div class="invisible absolute right-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition duration-150 group-hover:visible group-hover:opacity-100">
+                            <div class="admin-profile-dropdown invisible absolute right-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition duration-150 group-hover:visible group-hover:opacity-100">
                             <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
                                 <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/admin/profile') ?>">
                                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-id-card"></i></span>个人资料
@@ -117,6 +127,7 @@
                     </div>
                 </div>
             </div>
+            <button type="button" class="admin-nav-backdrop hidden" aria-label="关闭导航菜单" data-nav-dismiss></button>
         </nav>
 
         <!-- 第二级二级导航 -->
@@ -209,7 +220,7 @@
     <?php endif; ?>
 
     <div class="admin-main">
-        <section class="px-4 py-6 sm:px-6 lg:px-8">
+        <section class="admin-content-section px-4 py-6 sm:px-6 lg:px-8">
             <div class="container">
                 <?= $content ?>
             </div>
