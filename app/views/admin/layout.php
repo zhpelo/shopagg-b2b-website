@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($title) ?></title>
     <script src="<?= url('/assets/admin/base.js').'?v='.APP_VERSION ?>"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.17" referrerpolicy="no-referrer"></script>
+    <script src="//cdn.tailwindcss.com/3.4.17" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@4.13.5/es2021/jodit.fat.min.css" integrity="sha384-z1CAdjZT0Ot4X7eoNzGTz5RCl/Gp9y6nEqBwAJVdhr+B/kFJy+M9TIbEmgy9V2L9" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css').'?v='.APP_VERSION ?>">
