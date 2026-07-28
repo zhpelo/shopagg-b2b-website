@@ -34,6 +34,7 @@ class PostModel extends BaseModel {
     }
 
     public function create(array $data): int {
+        $data['slug'] = ensure_unique_slug($this->db, 'posts', (string)($data['slug'] ?? ''));
         $stmt = $this->db->prepare("
             INSERT INTO posts (
                 title, slug, post_type, summary, content, cover, category_id, status,
@@ -56,11 +57,19 @@ class PostModel extends BaseModel {
         $stmt->bindValue(':seo_description', $data['seo_description'] ?? '');
         $stmt->bindValue(':created_at', gmdate('c'));
         $stmt->bindValue(':updated_at', gmdate('c'));
-        $stmt->execute();
-        return $this->db->lastInsertRowID();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('创建内容失败：' . $this->db->lastErrorMsg());
+        }
+
+        $contentId = (int)$this->db->lastInsertRowID();
+        if ($contentId <= 0) {
+            throw new \RuntimeException('创建内容失败：未获取到新内容 ID');
+        }
+        return $contentId;
     }
 
     public function update(int $id, array $data, ?string $type = 'post'): void {
+        $data['slug'] = ensure_unique_slug($this->db, 'posts', (string)($data['slug'] ?? ''), $id);
         $query = "UPDATE posts SET
             title = :title,
             slug = :slug,
@@ -94,7 +103,9 @@ class PostModel extends BaseModel {
         if ($type !== null) {
             $stmt->bindValue(':post_type', $this->normalizeType($type));
         }
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('更新内容失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     public function getBySlug(string $slug, string $type = 'post'): ?array {

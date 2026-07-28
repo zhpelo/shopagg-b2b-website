@@ -133,7 +133,16 @@ class Product extends BaseModel {
         return $item;
     }
 
+    /**
+     * 生成不会与任何已有产品（包括回收站产品）冲突的 slug。
+     * 编辑产品时可排除当前产品 ID，保留它原有的 slug。
+     */
+    public function makeUniqueSlug(string $slug, ?int $excludeId = null): string {
+        return ensure_unique_slug($this->db, 'products', $slug, $excludeId);
+    }
+
     public function create(array $data): int {
+        $data['slug'] = $this->makeUniqueSlug((string)($data['slug'] ?? ''));
         $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, price_mode, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at)
             VALUES (:t, :s, :sum, :c, :cid, :st, :pm, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
@@ -152,11 +161,20 @@ class Product extends BaseModel {
         $stmt->bindValue(':seod', $data['seo_description'] ?? '');
         $stmt->bindValue(':ca', gmdate('c'));
         $stmt->bindValue(':ua', gmdate('c'));
-        $stmt->execute();
-        return $this->db->lastInsertRowID();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('创建产品失败：' . $this->db->lastErrorMsg());
+        }
+
+        $productId = (int)$this->db->lastInsertRowID();
+        if ($productId <= 0) {
+            throw new \RuntimeException('创建产品失败：未获取到新产品 ID');
+        }
+
+        return $productId;
     }
 
     public function update(int $id, array $data): void {
+        $data['slug'] = $this->makeUniqueSlug((string)($data['slug'] ?? ''), $id);
         $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, price_mode=:pm, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
@@ -174,7 +192,9 @@ class Product extends BaseModel {
         $stmt->bindValue(':seod', $data['seo_description'] ?? '');
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->bindValue(':id', $id);
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('更新产品失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     public function delete(int $id): void {

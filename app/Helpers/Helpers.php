@@ -72,6 +72,60 @@ function slugify(string $text): string {
 }
 
 /**
+ * 为支持 slug 的内容表生成唯一别名。
+ *
+ * 如果提交的 slug 已存在，会通过 slugify('') 改用 item + 时间戳的系统格式。
+ * 编辑时可传入当前记录 ID，避免与自身误判为冲突。
+ */
+function ensure_unique_slug(SQLite3 $db, string $table, string $slug, ?int $excludeId = null): string {
+    $allowedTables = ['products', 'posts', 'product_categories', 'menus', 'sliders'];
+    if (!in_array($table, $allowedTables, true)) {
+        throw new InvalidArgumentException('不支持的 slug 数据表');
+    }
+
+    $baseSlug = sanitize_slug_input($slug);
+    if ($baseSlug === '') {
+        $baseSlug = slugify('');
+    }
+
+    $exists = static function (string $candidate) use ($db, $table, $excludeId): bool {
+        $query = "SELECT id FROM {$table} WHERE slug = :slug";
+        if ($excludeId !== null && $excludeId > 0) {
+            $query .= ' AND id != :exclude_id';
+        }
+        $query .= ' LIMIT 1';
+
+        $stmt = $db->prepare($query);
+        if ($stmt === false) {
+            throw new RuntimeException('检查 slug 失败：' . $db->lastErrorMsg());
+        }
+        $stmt->bindValue(':slug', $candidate, SQLITE3_TEXT);
+        if ($excludeId !== null && $excludeId > 0) {
+            $stmt->bindValue(':exclude_id', $excludeId, SQLITE3_INTEGER);
+        }
+        $result = $stmt->execute();
+        if ($result === false) {
+            throw new RuntimeException('检查 slug 失败：' . $db->lastErrorMsg());
+        }
+
+        return $result->fetchArray(SQLITE3_ASSOC) !== false;
+    };
+
+    if (!$exists($baseSlug)) {
+        return $baseSlug;
+    }
+
+    $candidate = slugify('');
+    $timestamp = max(time(), (int)substr($candidate, 4));
+    while ($exists($candidate)) {
+        $timestamp++;
+        $candidate = 'item' . $timestamp;
+    }
+
+    return $candidate;
+}
+
+/**
  * 获取或生成 CSRF 令牌
  * 
  * 跨站请求伪造（CSRF）防护令牌，在表单中必须包含此令牌

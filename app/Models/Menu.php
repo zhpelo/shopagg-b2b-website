@@ -127,20 +127,29 @@ class Menu {
      * 创建菜单
      */
     public function create(array $data): int {
+        $data['slug'] = ensure_unique_slug($this->db, 'menus', (string)($data['slug'] ?? ''));
         $stmt = $this->db->prepare("INSERT INTO menus (name, slug, description, status, sort_order) VALUES (:name, :slug, :description, :status, :sort_order)");
         $stmt->bindValue(':name', $data['name'], SQLITE3_TEXT);
         $stmt->bindValue(':slug', $data['slug'], SQLITE3_TEXT);
         $stmt->bindValue(':description', $data['description'] ?? '', SQLITE3_TEXT);
         $stmt->bindValue(':status', $data['status'] ?? 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', $data['sort_order'] ?? 0, SQLITE3_INTEGER);
-        $stmt->execute();
-        return $this->db->lastInsertRowID();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('创建菜单失败：' . $this->db->lastErrorMsg());
+        }
+
+        $menuId = (int)$this->db->lastInsertRowID();
+        if ($menuId <= 0) {
+            throw new \RuntimeException('创建菜单失败：未获取到新菜单 ID');
+        }
+        return $menuId;
     }
 
     /**
      * 更新菜单
      */
     public function update(int $id, array $data): void {
+        $data['slug'] = ensure_unique_slug($this->db, 'menus', (string)($data['slug'] ?? ''), $id);
         $stmt = $this->db->prepare("UPDATE menus SET name = :name, slug = :slug, description = :description, status = :status, sort_order = :sort_order, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
         $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         $stmt->bindValue(':name', $data['name'], SQLITE3_TEXT);
@@ -148,7 +157,9 @@ class Menu {
         $stmt->bindValue(':description', $data['description'] ?? '', SQLITE3_TEXT);
         $stmt->bindValue(':status', $data['status'] ?? 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', $data['sort_order'] ?? 0, SQLITE3_INTEGER);
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('更新菜单失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     /**

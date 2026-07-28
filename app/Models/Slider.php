@@ -94,20 +94,29 @@ class Slider {
      * 创建轮播图区块
      */
     public function create(array $data): int {
+        $data['slug'] = ensure_unique_slug($this->db, 'sliders', (string)($data['slug'] ?? ''));
         $stmt = $this->db->prepare("INSERT INTO sliders (name, slug, description, status, sort_order) VALUES (:name, :slug, :description, :status, :sort_order)");
         $stmt->bindValue(':name', $data['name'], SQLITE3_TEXT);
         $stmt->bindValue(':slug', $data['slug'], SQLITE3_TEXT);
         $stmt->bindValue(':description', $data['description'] ?? '', SQLITE3_TEXT);
         $stmt->bindValue(':status', $data['status'] ?? 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', $data['sort_order'] ?? 0, SQLITE3_INTEGER);
-        $stmt->execute();
-        return $this->db->lastInsertRowID();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('创建轮播图失败：' . $this->db->lastErrorMsg());
+        }
+
+        $sliderId = (int)$this->db->lastInsertRowID();
+        if ($sliderId <= 0) {
+            throw new \RuntimeException('创建轮播图失败：未获取到新轮播图 ID');
+        }
+        return $sliderId;
     }
 
     /**
      * 更新轮播图区块
      */
     public function update(int $id, array $data): void {
+        $data['slug'] = ensure_unique_slug($this->db, 'sliders', (string)($data['slug'] ?? ''), $id);
         $stmt = $this->db->prepare("UPDATE sliders SET name = :name, slug = :slug, description = :description, status = :status, sort_order = :sort_order, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
         $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         $stmt->bindValue(':name', $data['name'], SQLITE3_TEXT);
@@ -115,7 +124,9 @@ class Slider {
         $stmt->bindValue(':description', $data['description'] ?? '', SQLITE3_TEXT);
         $stmt->bindValue(':status', $data['status'] ?? 'active', SQLITE3_TEXT);
         $stmt->bindValue(':sort_order', $data['sort_order'] ?? 0, SQLITE3_INTEGER);
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('更新轮播图失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     /**

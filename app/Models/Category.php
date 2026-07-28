@@ -106,6 +106,7 @@ class Category extends BaseModel {
      * 创建分类
      */
     public function create(string $name, string $slug, string $type = 'product', int $parentId = 0, string $description = ''): int {
+        $slug = ensure_unique_slug($this->db, 'product_categories', $slug);
         $stmt = $this->db->prepare("INSERT INTO product_categories (name, slug, type, parent_id, description, sort_order, created_at, updated_at) VALUES (:n, :s, :t, :p, :d, :so, :ca, :ua)");
         $stmt->bindValue(':n', $name);
         $stmt->bindValue(':s', $slug);
@@ -115,14 +116,22 @@ class Category extends BaseModel {
         $stmt->bindValue(':so', 0);
         $stmt->bindValue(':ca', gmdate('c'));
         $stmt->bindValue(':ua', gmdate('c'));
-        $stmt->execute();
-        return $this->db->lastInsertRowID();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('创建分类失败：' . $this->db->lastErrorMsg());
+        }
+
+        $categoryId = (int)$this->db->lastInsertRowID();
+        if ($categoryId <= 0) {
+            throw new \RuntimeException('创建分类失败：未获取到新分类 ID');
+        }
+        return $categoryId;
     }
 
     /**
      * 更新分类
      */
     public function update(int $id, string $name, string $slug, int $parentId = 0, string $description = ''): void {
+        $slug = ensure_unique_slug($this->db, 'product_categories', $slug, $id);
         // 防止将分类设为自己的子分类
         if ($parentId === $id) {
             $parentId = 0;
@@ -140,7 +149,9 @@ class Category extends BaseModel {
         $stmt->bindValue(':d', $description);
         $stmt->bindValue(':ua', gmdate('c'));
         $stmt->bindValue(':id', $id);
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('更新分类失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     /**
