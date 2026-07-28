@@ -258,7 +258,7 @@ class AdminController extends Controller {
 
     private function settingsTitle(string $tab): string {
         return match ($this->normalizeSettingsTab($tab)) {
-            'company' => '公司简介',
+            'company' => '公司资料',
             'trade' => '贸易能力',
             'media' => '公司展示',
             'contact' => '联系方式',
@@ -291,6 +291,9 @@ class AdminController extends Controller {
 
     public function settings(): void {
         $tab = $this->resolveSettingsTab();
+        if (in_array($tab, ['trade', 'media'], true)) {
+            $this->redirect($this->settingsPath('company'));
+        }
         if ($tab === 'custom' && AuthManager::getUserRole() !== 'admin') {
             $this->redirect('/admin');
         }
@@ -322,9 +325,10 @@ class AdminController extends Controller {
         $data = [
             'settings' => $settings,
             'tab' => $tab,
+            'settings_page_title' => $this->settingsTitle($tab),
             'available_themes' => $availableThemes,
             'settings_form_action' => $this->settingsPath($tab),
-            'settings_section_view' => $tab,
+            'settings_section_view' => $tab === 'company' ? 'company-profile' : $tab,
             'translateLanguageOptions' => $translateLanguageOptions,
             'selectedTranslateLanguages' => $selectedTranslateLanguages,
             'supportedTranslateLanguageCount' => count($translateLanguageOptions),
@@ -355,32 +359,13 @@ class AdminController extends Controller {
             $_POST['site_currency'] = normalize_currency_code((string)($_POST['site_currency'] ?? ''), 'USD');
         }
         
-        // Special handling for media tab JSON conversion
-        if ($tab === 'media') {
-            // Handle Company Show
-            $showImgs = $_POST['show_img'] ?? [];
-            $showTitles = $_POST['show_title'] ?? [];
-            $showData = [];
-            foreach ($showImgs as $idx => $img) {
-                if (!empty($img)) {
-                    $showData[] = ['img' => $img, 'title' => $showTitles[$idx] ?? ''];
-                }
+        // 公司资料合并页与旧公司展示表单的媒体数据。
+        if ($tab === 'media' || ($tab === 'company' && isset($_POST['company_profile_combined']))) {
+            $this->saveCompanyMediaSettings();
+            if ($tab === 'media') {
+                $this->redirect($this->settingsPath('company'));
+                return;
             }
-            $this->settingModel->set('company_show_json', json_encode($showData));
-
-            // Handle Certificates
-            $certImgs = $_POST['cert_img'] ?? [];
-            $certTitles = $_POST['cert_title'] ?? [];
-            $certData = [];
-            foreach ($certImgs as $idx => $img) {
-                if (!empty($img)) {
-                    $certData[] = ['img' => $img, 'title' => $certTitles[$idx] ?? ''];
-                }
-            }
-            $this->settingModel->set('company_certificates_json', json_encode($certData));
-
-            $this->redirect($this->settingsPath('media'));
-            return;
         }
 
         if ($tab === 'translate') {
@@ -408,7 +393,13 @@ class AdminController extends Controller {
 
         $groups = [
             'general' => ['site_name', 'site_tagline', 'site_currency', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
-            'company' => ['company_bio', 'company_business_type', 'company_main_products', 'company_year_established', 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital', 'company_sgs_report', 'company_rating', 'company_response_time'],
+            'company' => [
+                'company_bio', 'company_business_type', 'company_main_products', 'company_year_established',
+                'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital',
+                'company_sgs_report', 'company_rating', 'company_response_time', 'company_main_markets',
+                'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time',
+                'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'
+            ],
             'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
             'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube'],
             'custom' => ['head_code', 'footer_code']
@@ -420,7 +411,31 @@ class AdminController extends Controller {
                 $this->settingModel->set($k, is_array($_POST[$k]) ? json_encode($_POST[$k]) : trim((string)$_POST[$k]));
             }
         }
-        $this->redirect($this->settingsPath($tab));
+        $this->redirect($this->settingsPath(in_array($tab, ['trade', 'media'], true) ? 'company' : $tab));
+    }
+
+    private function saveCompanyMediaSettings(): void {
+        $showImgs = is_array($_POST['show_img'] ?? null) ? $_POST['show_img'] : [];
+        $showTitles = is_array($_POST['show_title'] ?? null) ? $_POST['show_title'] : [];
+        $showData = [];
+        foreach ($showImgs as $idx => $img) {
+            $img = trim((string)$img);
+            if ($img !== '') {
+                $showData[] = ['img' => $img, 'title' => trim((string)($showTitles[$idx] ?? ''))];
+            }
+        }
+        $this->settingModel->set('company_show_json', json_encode($showData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+        $certImgs = is_array($_POST['cert_img'] ?? null) ? $_POST['cert_img'] : [];
+        $certTitles = is_array($_POST['cert_title'] ?? null) ? $_POST['cert_title'] : [];
+        $certData = [];
+        foreach ($certImgs as $idx => $img) {
+            $img = trim((string)$img);
+            if ($img !== '') {
+                $certData[] = ['img' => $img, 'title' => trim((string)($certTitles[$idx] ?? ''))];
+            }
+        }
+        $this->settingModel->set('company_certificates_json', json_encode($certData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 
     // --- Products ---

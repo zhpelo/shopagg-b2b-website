@@ -6,9 +6,13 @@
                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/16 text-white">
                     <i class="fas fa-cog"></i>
                 </span>
-                <span>系统设置</span>
+                <span><?= h($settings_page_title ?? '系统设置') ?></span>
             </h1>
-            <p class="mt-2 text-sm text-white/80">管理网站配置、公司资料、媒体展示和自定义代码。</p>
+            <p class="mt-2 text-sm text-white/80">
+                <?= $tab === 'company'
+                    ? '集中管理公司简介、贸易能力与公司展示资料。'
+                    : '管理网站配置、公司资料、媒体展示和自定义代码。' ?>
+            </p>
         </div>
     </div>
 </div>

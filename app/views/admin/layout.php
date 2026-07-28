@@ -189,14 +189,8 @@
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-general' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-general') ?>">
                             <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-cog text-xs"></i></span>基础设置
                         </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-company' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-company') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-building text-xs"></i></span>公司简介
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-trade' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-trade') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-globe text-xs"></i></span>贸易能力
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-media' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-media') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-images text-xs"></i></span>公司展示
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= in_array($current_path, ['/admin/settings-company', '/admin/settings-trade', '/admin/settings-media'], true) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-company') ?>">
+                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-building text-xs"></i></span>公司资料
                         </a>
                         <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-contact' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-contact') ?>">
                             <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-phone text-xs"></i></span>联系方式
