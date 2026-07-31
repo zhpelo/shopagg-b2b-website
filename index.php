@@ -2,6 +2,9 @@
 
 /**
  * SHOPAGG B2B Website - Entry Point
+ * @author    SHOPAGG 
+ * @link      https://www.shopagg.com
+ * @package   SHOPAGG B2B Website
  * @copyright Copyright (c) 2015–2026 SHOPAGG. All rights reserved.
  * @license   MIT License
  */
