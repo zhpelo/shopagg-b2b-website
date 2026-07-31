@@ -118,7 +118,20 @@ $schemaGraph = default_theme_schema_graph($site, [
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css">
+    <?php
+        $themeStylePath = get_stylesheet_directory() . '/style.css';
+        $themeStyleVersion = is_file($themeStylePath) ? (string)filemtime($themeStylePath) : '1';
+    ?>
+    <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css?v=<?= h($themeStyleVersion) ?>">
+    <style>
+        :root {
+            --brand-ink: <?= h(block('brand_colors', 'ink')) ?>;
+            --brand-muted: <?= h(block('brand_colors', 'muted')) ?>;
+            --brand-surface: <?= h(block('brand_colors', 'surface')) ?>;
+            --brand-border: <?= h(block('brand_colors', 'border')) ?>;
+            --brand-accent: <?= h($brandPrimary) ?>;
+        }
+    </style>
     <?= get_head_code() ?>
 </head>
 

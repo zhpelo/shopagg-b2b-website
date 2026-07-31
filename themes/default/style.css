@@ -24,7 +24,7 @@ License: MIT
 html,
 body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 img,
@@ -108,7 +108,108 @@ summary::-webkit-details-marker {
 
 .thumbs-swiper .swiper-slide-thumb-active {
   opacity: 1;
-  border-color: #0ea5e9 !important;
+  border-color: var(--brand-accent) !important;
+}
+
+/* ===== Product Detail ===== */
+.product-gallery .swiper-button-next,
+.product-gallery .swiper-button-prev {
+  width: 2rem !important;
+  height: 2rem !important;
+  margin-top: -1rem !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-radius: 0.5rem !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #334155 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+
+.product-gallery .swiper-button-next {
+  right: 0.75rem !important;
+}
+
+.product-gallery .swiper-button-prev {
+  left: 0.75rem !important;
+}
+
+.product-gallery .swiper-button-next:hover,
+.product-gallery .swiper-button-prev:hover {
+  border-color: color-mix(in srgb, var(--brand-accent) 35%, transparent) !important;
+  background: #fff !important;
+  color: var(--brand-accent) !important;
+}
+
+.product-gallery .swiper-button-next::after,
+.product-gallery .swiper-button-prev::after {
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.product-gallery .swiper-button-disabled {
+  opacity: 0.35 !important;
+}
+
+.product-gallery__thumb {
+  aspect-ratio: 1 / 1;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  opacity: 0.68;
+  transition: border-color 0.18s ease, opacity 0.18s ease;
+}
+
+.product-gallery__thumb:hover {
+  border-color: color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  opacity: 1;
+}
+
+.product-gallery .thumbs-swiper .swiper-slide-thumb-active {
+  border-color: var(--brand-accent) !important;
+  opacity: 1;
+}
+
+.product-detail-info__card {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+@media (min-width: 1024px) {
+  .product-detail-info {
+    position: sticky;
+    top: 6rem;
+    align-self: flex-start;
+  }
+
+  .product-detail-info__card {
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 639px) {
+  .product-gallery .swiper-button-next,
+  .product-gallery .swiper-button-prev {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    margin-top: -0.875rem !important;
+  }
+
+  .product-gallery .swiper-button-next {
+    right: 0.5rem !important;
+  }
+
+  .product-gallery .swiper-button-prev {
+    left: 0.5rem !important;
+  }
+
+  .product-gallery .swiper-button-next::after,
+  .product-gallery .swiper-button-prev::after {
+    font-size: 0.68rem !important;
+  }
 }
 
 /* ===== Content Safety ===== */
@@ -257,7 +358,7 @@ select:focus-visible {
 }
 
 .site-float-contact__item--whatsapp .site-float-contact__icon {
-  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+  background: #22c55e;
   color: #fff;
 }
 

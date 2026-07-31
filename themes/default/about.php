@@ -302,8 +302,8 @@
                         ?>
                         <?php if (!empty($waDigits)): ?>
                             <a href="https://wa.me/<?= h($waDigits) ?>" target="_blank" rel="noopener noreferrer"
-                               class="block w-full text-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 transition-colors">
-                                <i class="fab fa-whatsapp text-green-500 mr-2"></i>
+                               class="block w-full text-center px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fab fa-whatsapp mr-2"></i>
                                 <?= h(block('page_about', 'sidebar_chat')) ?>
                             </a>
                         <?php endif; ?>
