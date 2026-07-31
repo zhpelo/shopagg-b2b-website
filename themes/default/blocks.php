@@ -46,7 +46,7 @@ return [
     'home_hero' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页首屏轮播',
+        'label' => '首屏轮播',
         'description' => '图片、标题、描述、按钮来自 外观区块 -> 轮播图；这里选择使用哪个轮播图区块。',
         'fields' => [
             'slider_slug' => [
@@ -77,7 +77,7 @@ return [
     'home_value_props' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页优势卖点',
+        'label' => '优势卖点',
         'description' => '首页轮播下方的 3 列优势卖点',
         'fields' => [
             'prop_one_icon'  => ['type' => 'icon',  'label' => 'Item 1 Icon',  'default' => 'fas fa-check-circle'],
@@ -98,7 +98,7 @@ return [
     'home_featured' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页精选产品',
+        'label' => '精选产品',
         'description' => '精选产品板块标题文字',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Featured Products'],
@@ -123,7 +123,7 @@ return [
     'home_why_us' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页为什么选择我们',
+        'label' => '为什么选择我们',
         'description' => '为什么选择我们板块',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Why Choose Us'],
@@ -155,7 +155,7 @@ return [
     'home_company_show' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页公司展示',
+        'label' => '公司展示',
         'description' => '展示后台系统设置中的公司展示图片。',
         'fields' => [
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Company Show'],
@@ -170,7 +170,7 @@ return [
     'home_certificates' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页资质证书',
+        'label' => '资质证书',
         'description' => '展示后台系统设置中的资质证书图片。',
         'fields' => [
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Certificates & Compliance'],
@@ -184,7 +184,7 @@ return [
     'home_cases' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页成功案例',
+        'label' => '成功案例',
         'description' => '成功案例板块标题',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Success Cases'],
@@ -198,7 +198,7 @@ return [
     'home_articles' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页文章资讯',
+        'label' => '文章资讯',
         'description' => '展示最新发布的文章。',
         'fields' => [
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Latest Insights'],
@@ -214,7 +214,7 @@ return [
     'home_cta' => [
         'group' => 'home',
         'group_label' => '首页',
-        'label' => '首页底部行动区',
+        'label' => '底部行动区',
         'description' => '首页底部行动号召区块',
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',     'default' => 'Ready to start your project?'],

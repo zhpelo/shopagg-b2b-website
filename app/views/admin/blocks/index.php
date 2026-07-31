@@ -104,7 +104,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                     <?php foreach ($groupedDefinitions as $groupKey => $group): ?>
                         <button type="button"
                                 data-block-group-tab="<?= h($groupKey) ?>"
-                                class="block-group-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $groupKey === $activeGroupKey ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
+                                class="block-group-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $groupKey === $activeGroupKey ? 'bg-slate-900 text-white' : 'bg-white text-slate-600' ?>"
                                 onclick="switchBlockGroup('<?= h($groupKey) ?>')">
                             <?= h($group['label']) ?>
                             <span class="ml-2 text-xs opacity-75">(<?= count($group['blocks']) ?>)</span>
@@ -123,7 +123,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                 <button type="button"
                                         data-block-tab="<?= h($blockKey) ?>"
                                         data-block-group="<?= h($groupKey) ?>"
-                                        class="block-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $blockKey === $activeBlockKey ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100' ?>"
+                                        class="block-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $blockKey === $activeBlockKey ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600' ?>"
                                         onclick="switchBlockTab('<?= h($blockKey) ?>')">
                                     <?= h($block['label']) ?>
                                 </button>
