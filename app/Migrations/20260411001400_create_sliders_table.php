@@ -66,7 +66,7 @@ return new class {
 
         $defaultItems = [
             [
-                'title'      => '这时轮播图的标题',
+                'title'      => '这是轮播图的标题',
                 'subtitle'   => '默认的示例内容，您可以在后台->外观区块->轮播图中自定义修改。',
                 'link_url'   => '/products',
                 'link_text'  => 'Explore Products',
