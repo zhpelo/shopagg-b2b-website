@@ -101,6 +101,45 @@ foreach ($socialMap as $key => [$label, $icon]) {
 }
 
 $hasFloatingContact = !empty($floatingContacts) || !empty($floatingSocialLinks);
+
+$footerMenuSlug = trim((string)block('footer', 'quick_links_menu_slug'));
+if ($footerMenuSlug === '') {
+    try {
+        $menuModel = new \App\Models\Menu();
+        $menus = $menuModel->getAll();
+        if (!empty($menus)) {
+            $footerMenuSlug = (string)($menus[0]['slug'] ?? '');
+        }
+    } catch (\Throwable $e) {
+        $footerMenuSlug = '';
+    }
+}
+$footerMenuItems = $footerMenuSlug !== '' ? get_menu_items($footerMenuSlug) : [];
+if (empty($footerMenuItems)) {
+    $footerMenuItems = [
+        ['title' => 'Products', 'url' => '/products', 'target' => '_self', 'children' => []],
+        ['title' => 'Cases', 'url' => '/cases', 'target' => '_self', 'children' => []],
+        ['title' => 'Blog', 'url' => '/blog', 'target' => '_self', 'children' => []],
+        ['title' => 'About Us', 'url' => '/about', 'target' => '_self', 'children' => []],
+        ['title' => 'Contact', 'url' => '/contact', 'target' => '_self', 'children' => []],
+    ];
+}
+
+$renderFooterMenuItems = function(array $items, int $level = 0) use (&$renderFooterMenuItems): void {
+    foreach ($items as $fItem):
+        $itemUrl = trim((string)($fItem['url'] ?? '#'));
+        $href = preg_match('#^(https?:)?//#i', $itemUrl) === 1 ? $itemUrl : url($itemUrl);
+        $target = (string)($fItem['target'] ?? '_self');
+        $indentClass = $level > 0 ? 'pl-' . min(8, 3 + ($level * 3)) : '';
+?>
+        <a href="<?= h($href) ?>" class="block <?= h($indentClass) ?> text-gray-600 hover:text-brand-600 transition-colors"
+           <?= $target === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : '' ?>><?= h($fItem['title'] ?? '') ?></a>
+        <?php if (!empty($fItem['children'])): ?>
+            <?php $renderFooterMenuItems($fItem['children'], $level + 1); ?>
+        <?php endif; ?>
+<?php
+    endforeach;
+};
 ?>
 
 <?php if ($hasFloatingContact): ?>
@@ -263,25 +302,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     <!-- Quick Links -->
                     <div>
-                        <?php
-                        $footerMenuItems = get_menu_items('footer');
-                        if (empty($footerMenuItems)) {
-                            // 未配置 footer 菜单时使用默认链接
-                            $footerMenuItems = [
-                                ['title' => 'Products', 'url' => '/products', 'target' => '_self', 'children' => []],
-                                ['title' => 'Cases', 'url' => '/cases', 'target' => '_self', 'children' => []],
-                                ['title' => 'Blog', 'url' => '/blog', 'target' => '_self', 'children' => []],
-                                ['title' => 'About Us', 'url' => '/about', 'target' => '_self', 'children' => []],
-                                ['title' => 'Contact', 'url' => '/contact', 'target' => '_self', 'children' => []],
-                            ];
-                        }
-                        ?>
                         <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'quick_links_title')) ?></h4>
                         <div class="space-y-2">
-                            <?php foreach ($footerMenuItems as $fItem): ?>
-                                <a href="<?= h(url((string)$fItem['url'])) ?>" class="block text-gray-600 hover:text-brand-600 transition-colors"
-                                   <?= ($fItem['target'] ?? '_self') === '_blank' ? 'target="_blank" rel="noopener noreferrer"' : '' ?>><?= h($fItem['title']) ?></a>
-                            <?php endforeach; ?>
+                            <?php $renderFooterMenuItems($footerMenuItems); ?>
                         </div>
                     </div>
                 </div>

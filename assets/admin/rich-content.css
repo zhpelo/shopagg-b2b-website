@@ -199,3 +199,28 @@
     color: #6b7280;
     margin-top: 0.5rem;
 }
+
+@media (max-width: 767px) {
+    .rich-content {
+        font-size: 1rem;
+        line-height: 1.75;
+    }
+
+    .rich-content h1 {
+        font-size: 1.75rem;
+    }
+
+    .rich-content h2 {
+        font-size: 1.375rem;
+    }
+
+    .rich-content h3 {
+        font-size: 1.1875rem;
+    }
+
+    .rich-content table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

@@ -121,8 +121,11 @@ $schemaGraph = default_theme_schema_graph($site, [
     <?php
         $themeStylePath = get_stylesheet_directory() . '/style.css';
         $themeStyleVersion = is_file($themeStylePath) ? (string)filemtime($themeStylePath) : '1';
+        $richContentStylePath = APP_ROOT . '/assets/admin/rich-content.css';
+        $richContentStyleVersion = is_file($richContentStylePath) ? (string)filemtime($richContentStylePath) : '1';
     ?>
     <link rel="stylesheet" href="<?= get_stylesheet_directory_uri() ?>/style.css?v=<?= h($themeStyleVersion) ?>">
+    <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css') ?>?v=<?= h($richContentStyleVersion) ?>">
     <style>
         :root {
             --brand-ink: <?= h(block('brand_colors', 'ink')) ?>;

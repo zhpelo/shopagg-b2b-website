@@ -219,10 +219,21 @@ class SiteController extends BaseController {
         if (!empty($item['category_id'])) {
             $category = $categoryModel->getById((int)$item['category_id']);
         }
+
+        $previousPost = $postModel->getPreviousActive($item, 'post');
+        $nextPost = $postModel->getNextActive($item, 'post');
+        $recommendedPosts = $postModel->getRecommended($item, 3, 'post');
+        foreach ($recommendedPosts as &$post) {
+            $post['url'] = url('/blog/' . $post['slug']);
+        }
+        unset($post);
         
         $this->renderSite('post_detail', [
             'item' => $item,
             'category' => $category,
+            'previous_post' => $previousPost,
+            'next_post' => $nextPost,
+            'recommended_posts' => $recommendedPosts,
             'seo' => [
                 'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
                 'description' => $item['seo_description'] ?: ($item['summary'] ?? ''),

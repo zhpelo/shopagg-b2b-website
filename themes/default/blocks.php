@@ -38,6 +38,27 @@ if (empty($sliderOptions)) {
 
 $defaultHeroSlider = (string)array_key_first($sliderOptions);
 
+$menuOptions = [];
+try {
+    if (class_exists(\App\Models\Menu::class)) {
+        $menuModel = new \App\Models\Menu();
+        foreach ($menuModel->getAll() as $menu) {
+            $slug = trim((string)($menu['slug'] ?? ''));
+            if ($slug === '') {
+                continue;
+            }
+
+            $name = trim((string)($menu['name'] ?? ''));
+            $status = (string)($menu['status'] ?? 'active');
+            $menuOptions[$slug] = ($name !== '' ? $name : $slug) . ' (' . $slug . ')' . ($status === 'active' ? '' : ' - 已禁用');
+        }
+    }
+} catch (\Throwable $e) {
+    $menuOptions = [];
+}
+
+$defaultFooterMenu = (string)(array_key_first($menuOptions) ?? '');
+
 return [
 
     // ============================================================
@@ -257,6 +278,12 @@ return [
         'description' => '网站底部信息',
         'fields' => [
             'quick_links_title' => ['type' => 'text', 'label' => 'Quick Links Title', 'default' => 'Quick Links'],
+            'quick_links_menu_slug' => [
+                'type' => 'select',
+                'label' => 'Quick Links Menu',
+                'default' => $defaultFooterMenu,
+                'options' => $menuOptions,
+            ],
             'contact_title'     => ['type' => 'text', 'label' => 'Contact Title',     'default' => 'Contact'],
             'copyright'         => ['type' => 'text', 'label' => 'Copyright Text',    'default' => ''],
         ],

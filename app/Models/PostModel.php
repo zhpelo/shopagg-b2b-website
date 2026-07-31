@@ -118,6 +118,84 @@ class PostModel extends BaseModel {
         ]);
     }
 
+    public function getPreviousActive(array $item, string $type = 'post'): ?array {
+        return $this->fetchOne("SELECT posts.*, product_categories.name AS category_name
+            FROM posts
+            LEFT JOIN product_categories ON product_categories.id = posts.category_id AND product_categories.type = 'post'
+            WHERE posts.post_type = :post_type
+              AND posts.status = 'active'
+              AND (posts.created_at < :created_at OR (posts.created_at = :created_at AND posts.id < :id))
+            ORDER BY posts.created_at DESC, posts.id DESC
+            LIMIT 1", [
+            ':post_type' => $this->normalizeType($type),
+            ':created_at' => (string)($item['created_at'] ?? ''),
+            ':id' => (int)($item['id'] ?? 0),
+        ]);
+    }
+
+    public function getNextActive(array $item, string $type = 'post'): ?array {
+        return $this->fetchOne("SELECT posts.*, product_categories.name AS category_name
+            FROM posts
+            LEFT JOIN product_categories ON product_categories.id = posts.category_id AND product_categories.type = 'post'
+            WHERE posts.post_type = :post_type
+              AND posts.status = 'active'
+              AND (posts.created_at > :created_at OR (posts.created_at = :created_at AND posts.id > :id))
+            ORDER BY posts.created_at ASC, posts.id ASC
+            LIMIT 1", [
+            ':post_type' => $this->normalizeType($type),
+            ':created_at' => (string)($item['created_at'] ?? ''),
+            ':id' => (int)($item['id'] ?? 0),
+        ]);
+    }
+
+    public function getRecommended(array $item, int $limit = 3, string $type = 'post'): array {
+        $limit = max(1, min($limit, 12));
+        $postType = $this->normalizeType($type);
+        $currentId = (int)($item['id'] ?? 0);
+        $categoryId = (int)($item['category_id'] ?? 0);
+        $recommended = [];
+
+        if ($categoryId > 0) {
+            $recommended = $this->fetchAll("SELECT posts.*, product_categories.name AS category_name
+                FROM posts
+                LEFT JOIN product_categories ON product_categories.id = posts.category_id AND product_categories.type = 'post'
+                WHERE posts.post_type = :post_type
+                  AND posts.status = 'active'
+                  AND posts.id != :id
+                  AND posts.category_id = :category_id
+                ORDER BY posts.created_at DESC, posts.id DESC
+                LIMIT {$limit}", [
+                ':post_type' => $postType,
+                ':id' => $currentId,
+                ':category_id' => $categoryId,
+            ]);
+        }
+
+        if (count($recommended) < $limit) {
+            $excludeIds = array_merge([$currentId], array_map(static fn($post) => (int)$post['id'], $recommended));
+            $placeholders = [];
+            $params = [':post_type' => $postType];
+            foreach ($excludeIds as $index => $id) {
+                $placeholder = ':exclude_' . $index;
+                $placeholders[] = $placeholder;
+                $params[$placeholder] = $id;
+            }
+
+            $remaining = $limit - count($recommended);
+            $fallback = $this->fetchAll("SELECT posts.*, product_categories.name AS category_name
+                FROM posts
+                LEFT JOIN product_categories ON product_categories.id = posts.category_id AND product_categories.type = 'post'
+                WHERE posts.post_type = :post_type
+                  AND posts.status = 'active'
+                  AND posts.id NOT IN (" . implode(', ', $placeholders) . ")
+                ORDER BY posts.created_at DESC, posts.id DESC
+                LIMIT {$remaining}", $params);
+            $recommended = array_merge($recommended, $fallback);
+        }
+
+        return $recommended;
+    }
+
     public function delete(int $id, ?string $type = 'post'): void {
         $query = "DELETE FROM posts WHERE id = :id";
         if ($type !== null) {

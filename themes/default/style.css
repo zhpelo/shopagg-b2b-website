@@ -212,23 +212,6 @@ summary::-webkit-details-marker {
   }
 }
 
-/* ===== Content Safety ===== */
-.rich-content img {
-  height: auto;
-}
-
-.rich-content table {
-  width: 100%;
-}
-
-@media (max-width: 767px) {
-  .rich-content table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-}
-
 /* ===== Smooth Scroll ===== */
 html {
   scroll-behavior: smooth;
@@ -709,13 +692,6 @@ select:focus-visible {
   
   .container {
     max-width: 100%;
-  }
-}
-
-/* ===== Responsive Typography ===== */
-@media (max-width: 640px) {
-  .rich-content {
-    font-size: 0.9375rem;
   }
 }
 
