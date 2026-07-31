@@ -35,7 +35,7 @@
     <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
-                <thead class="bg-gradient-to-b from-white to-slate-50">
+                <thead class="bg-slate-50">
                     <tr>
                         <th class="w-[15%]">客户信息</th>
                         <th class="w-[18%]">联系方式</th>
@@ -50,7 +50,7 @@
                         <tr>
                             <td>
                                 <div class="flex items-center">
-                                    <div class="icon-box mr-3 size-10 rounded-[10px] flex items-center justify-center text-white font-semibold bg-gradient-to-br from-indigo-500 to-purple-600">
+                                    <div class="icon-box mr-3 size-10 rounded-[10px] flex items-center justify-center text-white font-semibold bg-indigo-600">
                                         <?= strtoupper(mb_substr($row['name'], 0, 1)) ?>
                                     </div>
                                     <div>

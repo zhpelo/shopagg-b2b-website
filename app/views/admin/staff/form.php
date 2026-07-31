@@ -111,7 +111,7 @@
 
             <!-- 提交按钮 -->
             <div class="flex flex-wrap gap-3">
-                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                     <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
                     <span><?= isset($user) ? '保存修改' : '创建员工' ?></span>
                 </button>

@@ -24,7 +24,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
 
 <div class="space-y-6">
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
+        <div class="border-b border-slate-200 bg-indigo-600 p-6">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-white">网站模版</h1>
@@ -202,7 +202,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                         <?php if (!empty($theme['preview_url'])): ?>
                             <img src="<?= h($theme['preview_url']) ?>" alt="<?= h($theme['name']) ?>" class="h-full w-full object-cover">
                         <?php else: ?>
-                            <div class="flex h-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-sm font-medium text-slate-500">
+                            <div class="flex h-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
                                 无预览图片
                             </div>
                         <?php endif; ?>
@@ -372,7 +372,7 @@ $invalidThemeCount = count($themes) - $validThemeCount;
                                 <img src="<?= h($storePreview) ?>" alt="<?= h($storeName) ?>" class="h-full w-full object-cover">
                             </a>
                         <?php else: ?>
-                            <a href="<?= url('/admin/appearance/themes/app-store/' . $storeThemeId) ?>" class="flex h-full items-center justify-center bg-gradient-to-br from-sky-50 to-slate-100 text-sm font-medium text-slate-500">
+                            <a href="<?= url('/admin/appearance/themes/app-store/' . $storeThemeId) ?>" class="flex h-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-500">
                                 App Store B2B Theme
                             </a>
                         <?php endif; ?>

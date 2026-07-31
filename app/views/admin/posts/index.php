@@ -10,10 +10,10 @@ $showCategories = (bool)($contentConfig['show_categories'] ?? false);
 $categoryManageUrl = $contentConfig['category_manage_url'] ?? null;
 $categoryManageLabel = $contentConfig['category_manage_label'] ?? '';
 $icon = $contentConfig['icon'] ?? 'file-lines';
-$headerStyle = $contentConfig['header_style'] ?? 'background: linear-gradient(135deg, #00d1b2 0%, #48c774 100%); box-shadow: 0 10px 40px rgba(0, 209, 178, 0.3);';
+$headerStyle = $contentConfig['header_style'] ?? 'background: #059669; box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);';
 $accentTextClass = $contentConfig['accent_text_class'] ?? 'text-emerald-600';
 $accentSoftClass = $contentConfig['accent_soft_class'] ?? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100';
-$primaryButtonClass = $contentConfig['primary_button_class'] ?? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25';
+$primaryButtonClass = $contentConfig['primary_button_class'] ?? 'bg-indigo-600 shadow-lg shadow-emerald-500/25';
 $listEmptyText = $contentConfig['list_empty_text'] ?? '暂无内容';
 $listEmptyAction = $contentConfig['list_empty_action'] ?? ('创建第一个' . $singular);
 $countUnit = $contentConfig['count_unit'] ?? '个';
@@ -60,7 +60,7 @@ $countUnit = $contentConfig['count_unit'] ?? '个';
     <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
-                <thead class="bg-gradient-to-b from-white to-slate-50">
+                <thead class="bg-slate-50">
                     <tr>
                         <th><?= h($singular) ?>信息</th>
                         <?php if ($showCategories): ?>

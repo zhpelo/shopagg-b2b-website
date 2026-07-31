@@ -62,7 +62,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
 ?>
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
+    <div class="border-b border-slate-200 bg-indigo-600 p-6">
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-white">模板区块配置</h1>

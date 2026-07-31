@@ -10,7 +10,7 @@ $title = $isEdit ? '编辑轮播图' : '新建轮播图';
 ?>
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
     <!-- Header -->
-    <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
+    <div class="border-b border-slate-200 bg-indigo-600 p-6">
         <div class="flex items-center gap-3">
             <a href="<?= url('/admin/appearance/sliders') ?>" 
                class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">

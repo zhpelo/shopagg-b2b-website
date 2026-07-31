@@ -59,7 +59,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
 };
 ?>
 
-<div class="page-header bg-gradient-to-br from-blue-600 to-sky-500 shadow-[0_10px_40px_rgba(31,111,235,0.28)]">
+<div class="page-header bg-indigo-600 shadow-[0_10px_40px_rgba(31,111,235,0.28)]">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
@@ -83,7 +83,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     <div>
         <div class="card p-5">
             <div class="stat-mini">
-                <div class="icon-box" style="background: var(--info-gradient);">
+                <div class="icon-box" style="background: var(--info-solid);">
                     <i class="fas fa-file-image"></i>
                 </div>
                 <div class="stat-info">
@@ -96,7 +96,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     <div>
         <div class="card p-5">
             <div class="stat-mini">
-                <div class="icon-box" style="background: var(--warning-gradient)">
+                <div class="icon-box" style="background: var(--warning-solid)">
                     <i class="fas fa-video text-gray-800"></i>
                 </div>
                 <div class="stat-info">
@@ -109,7 +109,7 @@ $renderTree = static function (array $nodes) use (&$renderTree, $buildMediaUrl):
     <div>
         <div class="card p-5">
             <div class="stat-mini">
-                <div class="icon-box" style="background: var(--success-gradient);">
+                <div class="icon-box" style="background: var(--success-solid);">
                     <i class="fas fa-database"></i>
                 </div>
                 <div class="stat-info">

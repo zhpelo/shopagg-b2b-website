@@ -154,7 +154,7 @@ $statusMap = [
             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-box-open"></i></span>
             <p><?= $isTrash ? '回收站暂无产品' : '没有找到符合条件的产品' ?></p>
             <?php if (!$isTrash): ?>
-                <a href="<?= url('/admin/products/create') ?>" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
+                <a href="<?= url('/admin/products/create') ?>" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                     <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
                     <span>添加产品</span>
                 </a>
@@ -198,7 +198,7 @@ $statusMap = [
         <!-- 产品列表 -->
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
-                <thead class="bg-gradient-to-b from-white to-slate-50">
+                <thead class="bg-slate-50">
                     <tr>
                         <th class="w-12">
                             <label class="inline-flex cursor-pointer items-center">

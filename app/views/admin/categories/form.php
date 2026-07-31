@@ -2,7 +2,6 @@
 $type = $type ?? 'product';
 $isPost = $type === 'post';
 $themeColor = $isPost ? '#48c774' : '#ffc107';
-$themeGradient = $isPost ? 'linear-gradient(135deg, #48c774 0%, #00d1b2 100%)' : 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)';
 $icon = $isPost ? 'fa-newspaper' : 'fa-folder';
 $label = $isPost ? '文章分类' : '产品分类';
 $baseUrl = $base_url ?? ($isPost ? '/admin/post-categories' : '/admin/product-categories');
@@ -12,7 +11,7 @@ $currentId = (int)($category['id'] ?? 0);
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= $themeGradient ?>">
+<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= h($themeColor) ?>">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-4">
             <div>
@@ -90,7 +89,7 @@ $currentId = (int)($category['id'] ?? 0);
                 <div class="my-6 h-px bg-slate-200"></div>
 
                 <div class="flex flex-wrap gap-3">
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25 text-slate-900' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
                         <span><?= isset($category) ? '保存修改' : '创建分类' ?></span>
                     </button>

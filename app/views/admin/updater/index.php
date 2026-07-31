@@ -20,7 +20,7 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header bg-gradient-to-br from-emerald-500 to-teal-600 shadow-[0_10px_40px_rgba(16,185,129,0.3)]">
+<div class="page-header bg-indigo-600 shadow-[0_10px_40px_rgba(16,185,129,0.3)]">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">
@@ -118,7 +118,7 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
             </div>
             <?php endif; ?>
             <div class="mt-4 flex flex-wrap gap-3">
-                <button type="button" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:from-amber-600 hover:to-orange-600" onclick="installUpdate('<?= h($latestVersion) ?>')">
+                <button type="button" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:bg-indigo-700" onclick="installUpdate('<?= h($latestVersion) ?>')">
                     <i class="fas fa-download"></i>
                     <span>立即更新</span>
                 </button>

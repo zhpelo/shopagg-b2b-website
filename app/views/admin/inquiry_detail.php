@@ -1,9 +1,9 @@
 <?php
 $status_styles = [
-    'pending' => ['bg' => 'rgba(255, 193, 7, 0.15)', 'color' => '#d39e00', 'icon' => 'clock', 'gradient' => 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)'],
-    'contacted' => ['bg' => 'rgba(23, 162, 184, 0.15)', 'color' => '#17a2b8', 'icon' => 'phone', 'gradient' => 'linear-gradient(135deg, #17a2b8 0%, #20c997 100%)'],
-    'quoted' => ['bg' => 'rgba(40, 167, 69, 0.15)', 'color' => '#28a745', 'icon' => 'file-invoice-dollar', 'gradient' => 'linear-gradient(135deg, #28a745 0%, #20c997 100%)'],
-    'closed' => ['bg' => 'rgba(108, 117, 125, 0.15)', 'color' => '#6c757d', 'icon' => 'check-circle', 'gradient' => 'linear-gradient(135deg, #6c757d 0%, #495057 100%)']
+    'pending' => ['bg' => 'rgba(255, 193, 7, 0.15)', 'color' => '#d39e00', 'icon' => 'clock', 'header_color' => '#d97706'],
+    'contacted' => ['bg' => 'rgba(23, 162, 184, 0.15)', 'color' => '#17a2b8', 'icon' => 'phone', 'header_color' => '#0891b2'],
+    'quoted' => ['bg' => 'rgba(40, 167, 69, 0.15)', 'color' => '#28a745', 'icon' => 'file-invoice-dollar', 'header_color' => '#059669'],
+    'closed' => ['bg' => 'rgba(108, 117, 125, 0.15)', 'color' => '#6c757d', 'icon' => 'check-circle', 'header_color' => '#475569']
 ];
 $status_labels = [
     'pending' => '待处理',
@@ -42,7 +42,7 @@ $statusButtonClasses = [
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header" style="background: <?= $style['gradient'] ?>;">
+<div class="page-header" style="background: <?= h($style['header_color']) ?>;">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">

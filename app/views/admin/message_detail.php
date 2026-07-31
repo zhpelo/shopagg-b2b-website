@@ -1,5 +1,5 @@
 <!-- 页面头部 -->
-<div class="page-header bg-gradient-to-br from-indigo-500 to-purple-600">
+<div class="page-header bg-indigo-600">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="flex items-center gap-3 text-xl font-bold text-white sm:text-2xl">

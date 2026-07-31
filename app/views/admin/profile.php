@@ -17,7 +17,7 @@
     <!-- 左侧：个人信息卡片 -->
     <div class="xl:col-span-4">
         <div class="card p-8 text-center">
-            <div class="size-[100px] bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full inline-flex items-center justify-center text-4xl text-white mb-6 shadow-[0_10px_30px_rgba(102,126,234,0.3)]">
+            <div class="size-[100px] bg-indigo-600 rounded-full inline-flex items-center justify-center text-4xl text-white mb-6 shadow-[0_10px_30px_rgba(102,126,234,0.3)]">
                 <?= strtoupper(substr($user['display_name'] ?? $user['username'], 0, 1)) ?>
             </div>
             <h3 class="mb-1 text-xl font-bold text-slate-900"><?= h($user['display_name'] ?? $user['username']) ?></h3>
@@ -88,7 +88,7 @@
                 <hr class="my-6">
 
                 <div class="flex flex-wrap gap-3">
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-save"></i></span>
                         <span>保存修改</span>
                     </button>

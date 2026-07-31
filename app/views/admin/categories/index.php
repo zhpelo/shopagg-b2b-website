@@ -2,14 +2,13 @@
 $type = $type ?? 'product';
 $isPost = $type === 'post';
 $themeColor = $isPost ? '#48c774' : '#ffc107';
-$themeGradient = $isPost ? 'linear-gradient(135deg, #48c774 0%, #00d1b2 100%)' : 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)';
 $icon = $isPost ? 'fa-newspaper' : 'fa-folder';
 $label = $isPost ? '文章分类' : '产品分类';
 $baseUrl = $base_url ?? ($isPost ? '/admin/post-categories' : '/admin/product-categories');
 $backUrl = $isPost ? '/admin/posts' : '/admin/products';
 
 // 递归渲染树形结构
-function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel, $baseUrl)
+function renderCategoryTree($items, $type, $themeColor, $icon, $categoryModel, $baseUrl)
 {
     if (empty($items)) return;
     foreach ($items as $row):
@@ -25,7 +24,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
                             <i class="fas fa-level-up-alt fa-rotate-90"></i>
                         </span>
                     <?php endif; ?>
-                    <div class="size-10 rounded-[10px] mr-4 flex items-center justify-center shrink-0" style="background: <?= $themeGradient ?>">
+                    <div class="size-10 rounded-[10px] mr-4 flex items-center justify-center shrink-0" style="background: <?= h($themeColor) ?>">
                         <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas <?= $icon ?>"></i></span>
                     </div>
                     <div>
@@ -66,7 +65,7 @@ function renderCategoryTree($items, $type, $themeGradient, $icon, $categoryModel
 <?php
         // 递归渲染子分类
         if ($hasChildren) {
-            renderCategoryTree($row['children'], $type, $themeGradient, $icon, $categoryModel, $baseUrl);
+            renderCategoryTree($row['children'], $type, $themeColor, $icon, $categoryModel, $baseUrl);
         }
     endforeach;
 }
@@ -86,7 +85,7 @@ $totalCount = countTotalCategories($categories);
 ?>
 
 <!-- 页面头部 -->
-<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= $themeGradient ?>">
+<div class="page-header shadow-[0_10px_40px_rgba(0,0,0,0.15)]" style="background: <?= h($themeColor) ?>">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-4">
             <div>
@@ -116,7 +115,7 @@ $totalCount = countTotalCategories($categories);
         <div class="empty-state">
             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-folder-open"></i></span>
             <p>暂无<?= $label ?>记录</p>
-            <a href="<?= $baseUrl ?>/create" class="mt-4 inline-flex items-center gap-2 rounded-xl <?= $isPost ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25' : 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-amber-500/25' ?> px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5">
+            <a href="<?= $baseUrl ?>/create" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
                 <span>创建第一个分类</span>
             </a>
@@ -127,7 +126,7 @@ $totalCount = countTotalCategories($categories);
     <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="category-tree-table min-w-full text-sm text-slate-700">
-                <thead class="bg-gradient-to-b from-white to-slate-50">
+                <thead class="bg-slate-50">
                     <tr>
                         <th class="min-w-[280px]">分类名称</th>
                         <th>别名 (Slug)</th>
@@ -140,7 +139,7 @@ $totalCount = countTotalCategories($categories);
                     <?php
                     global $categoryModel;
                     $categoryModel = new \App\Models\Category();
-                    renderCategoryTree($categories, $type, $themeGradient, $icon, $categoryModel, $baseUrl);
+                    renderCategoryTree($categories, $type, $themeColor, $icon, $categoryModel, $baseUrl);
                     ?>
                 </tbody>
             </table>

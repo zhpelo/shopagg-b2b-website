@@ -5,13 +5,13 @@
 
 /* ==================== CSS 变量 ==================== */
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --info-gradient: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
-    --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    --warning-gradient: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-    --danger-gradient: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
-    --dark-gradient: linear-gradient(135deg, #343a40 0%, #495057 100%);
-    --link-gradient: linear-gradient(135deg, #3273dc 0%, #667eea 100%);
+    --primary-solid: #4f46e5;
+    --info-solid: #0891b2;
+    --success-solid: #059669;
+    --warning-solid: #d97706;
+    --danger-solid: #dc2626;
+    --dark-solid: #334155;
+    --link-solid: #2563eb;
     --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
     --card-hover-shadow: 0 12px 40px rgba(0,0,0,0.12);
     --border-radius: 16px;
@@ -22,7 +22,7 @@
 
 /* ==================== 全局基础样式 ==================== */
 body { 
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    background: #f5f7fb;
     min-height: 100vh; 
     display: flex; 
     flex-direction: column; 
@@ -94,7 +94,7 @@ video {
 
 /* ==================== 页面头部样式 ==================== */
 .page-header {
-    background: var(--primary-gradient);
+    background: var(--primary-solid);
     border-radius: var(--border-radius);
     padding: 1.5rem 2rem;
     margin-bottom: 2rem;
@@ -170,7 +170,7 @@ video {
 }
 
 .modern-tabs a.is-active {
-    background: var(--primary-gradient);
+    background: var(--primary-solid);
     color: white;
 }
 
@@ -500,7 +500,7 @@ video {
 .media-library-window-statusbar {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
-    background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+    background: #f8fafc;
     padding: 0.4rem 1rem;
 }
 
@@ -655,7 +655,7 @@ video {
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    background: #f8fafc;
 }
 
 .media-library-file-header,
@@ -806,7 +806,7 @@ video {
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: linear-gradient(180deg, #fff7d6 0%, #fde68a 100%);
+    background: #fef3c7;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1734,7 +1734,7 @@ video {
 
 /* ==================== 登录页样式 ==================== */
 body.login-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: #eef2ff !important;
     min-height: 100vh;
 }
 
@@ -1764,7 +1764,7 @@ body.login-page {
 .login-logo .icon-wrap {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4f46e5;
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
@@ -1778,10 +1778,7 @@ body.login-page {
 .login-logo h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1e293b;
     margin-bottom: 0.25rem;
 }
 
@@ -1796,7 +1793,7 @@ body.login-page {
     font-size: 1rem;
     font-weight: 600;
     border-radius: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4f46e5;
     border: none;
     color: white;
     cursor: pointer;
@@ -1823,7 +1820,7 @@ body.login-page {
 
 /* ==================== 仪表盘样式 ==================== */
 .dashboard-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4f46e5;
     border-radius: var(--border-radius);
     padding: 2rem;
     margin-bottom: 2rem;
@@ -1868,13 +1865,13 @@ body.login-page {
     border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
-.stat-card.primary::before { background: linear-gradient(90deg, #667eea, #764ba2); }
-.stat-card.info::before { background: linear-gradient(90deg, #17a2b8, #20c997); }
-.stat-card.success::before { background: linear-gradient(90deg, #28a745, #20c997); }
-.stat-card.warning::before { background: linear-gradient(90deg, #ffc107, #fd7e14); }
-.stat-card.danger::before { background: linear-gradient(90deg, #dc3545, #e83e8c); }
-.stat-card.link::before { background: linear-gradient(90deg, #3273dc, #667eea); }
-.stat-card.dark::before { background: linear-gradient(90deg, #343a40, #495057); }
+.stat-card.primary::before { background: #4f46e5; }
+.stat-card.info::before { background: #0891b2; }
+.stat-card.success::before { background: #059669; }
+.stat-card.warning::before { background: #d97706; }
+.stat-card.danger::before { background: #dc2626; }
+.stat-card.link::before { background: #2563eb; }
+.stat-card.dark::before { background: #334155; }
 
 .stat-icon {
     width: 56px;
@@ -1887,23 +1884,20 @@ body.login-page {
     margin-bottom: 1rem;
 }
 
-.stat-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-.stat-icon.info { background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%); color: white; }
-.stat-icon.success { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
-.stat-icon.warning { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: white; }
-.stat-icon.danger { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white; }
-.stat-icon.link { background: linear-gradient(135deg, #3273dc 0%, #667eea 100%); color: white; }
-.stat-icon.dark { background: linear-gradient(135deg, #343a40 0%, #495057 100%); color: white; }
+.stat-icon.primary { background: #4f46e5; color: white; }
+.stat-icon.info { background: #0891b2; color: white; }
+.stat-icon.success { background: #059669; color: white; }
+.stat-icon.warning { background: #d97706; color: white; }
+.stat-icon.danger { background: #dc2626; color: white; }
+.stat-icon.link { background: #2563eb; color: white; }
+.stat-icon.dark { background: #334155; color: white; }
 
 .stat-value {
     font-size: 2.5rem;
     font-weight: 700;
     line-height: 1;
     margin-bottom: 0.25rem;
-    background: linear-gradient(135deg, #2d3748, #4a5568);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1e293b;
 }
 
 .stat-label {
@@ -2042,7 +2036,7 @@ body.login-page {
 
 .mini-chart .bar {
     flex: 1;
-    background: linear-gradient(180deg, #667eea, #764ba2);
+    background: #4f46e5;
     border-radius: 4px 4px 0 0;
     min-height: 4px;
     transition: height 0.3s ease;
@@ -2057,7 +2051,7 @@ body.login-page {
 .avatar-circle {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4f46e5;
     border-radius: var(--border-radius-xs);
     display: flex;
     align-items: center;
@@ -2067,7 +2061,7 @@ body.login-page {
 }
 
 .avatar-circle.info {
-    background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+    background: #0891b2;
 }
 
 .avatar-circle.lg {
@@ -2311,7 +2305,7 @@ body.jodit_fullsize-box_true {
 .explorer-toolbar,
 .explorer-statusbar {
     border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(180deg, #fafcff 0%, #f8fafc 100%);
+    background: #f8fafc;
 }
 
 .explorer-topbar {

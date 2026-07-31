@@ -32,7 +32,7 @@
     <div class="admin-table">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-slate-700">
-                <thead class="bg-gradient-to-b from-white to-slate-50">
+                <thead class="bg-slate-50">
                     <tr>
                         <th>员工信息</th>
                         <th>角色</th>
@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 <div class="flex items-center">
-                                    <div class="size-11 rounded-[10px] flex items-center justify-center text-white font-semibold mr-4 shrink-0" style="background: <?= $user['role'] === 'admin' ? 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>">
+                                    <div class="size-11 rounded-[10px] flex items-center justify-center text-white font-semibold mr-4 shrink-0" style="background: <?= $user['role'] === 'admin' ? '#dc2626' : '#4f46e5' ?>">
                                         <?= strtoupper(substr($user['display_name'] ?? $user['username'], 0, 1)) ?>
                                     </div>
                                     <div>

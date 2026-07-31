@@ -225,7 +225,7 @@
     <div class="fixed inset-0 z-[200000] hidden items-center justify-center p-4" id="media-library-modal">
         <div class="absolute inset-0 bg-slate-950/60" data-media-modal-close></div>
         <div class="media-library-modal-card relative z-10 flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
-            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-2">
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-2">
                 <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
                     <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-photo-video"></i></span>
                     媒体库
@@ -395,7 +395,7 @@
     <div class="fixed inset-0 z-[200000] hidden items-center justify-center p-4" id="product-selector-modal">
         <div class="absolute inset-0 bg-slate-950/60" data-product-selector-close></div>
         <div class="relative z-10 flex max-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col overflow-hidden rounded-[20px] bg-white shadow-2xl">
-            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white px-5 py-4">
+            <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
                 <div>
                     <p class="flex items-center gap-2 text-lg font-bold text-slate-900">
                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-box"></i></span>

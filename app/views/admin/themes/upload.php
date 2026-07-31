@@ -9,7 +9,7 @@ $requiredFiles = is_array($requiredFiles ?? null) ? $requiredFiles : [];
 
 <div class="space-y-6">
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-200 bg-gradient-to-r from-indigo-600 to-sky-600 p-6">
+        <div class="border-b border-slate-200 bg-indigo-600 p-6">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-white">上传主题 ZIP</h1>

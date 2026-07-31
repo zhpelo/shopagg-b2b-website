@@ -117,7 +117,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                 <?php if ($coverImage !== ''): ?>
                     <img src="<?= h($coverImage) ?>" alt="<?= h($name) ?>" class="h-full min-h-[280px] w-full object-cover">
                 <?php else: ?>
-                    <div class="flex h-full min-h-[280px] items-center justify-center bg-gradient-to-br from-sky-50 to-slate-100 text-slate-500">
+                    <div class="flex h-full min-h-[280px] items-center justify-center bg-slate-100 text-slate-500">
                         <div class="text-center">
                             <i class="fas fa-store mb-3 text-4xl text-sky-400"></i>
                             <p class="text-sm font-semibold">App Store B2B Theme</p>

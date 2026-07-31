@@ -353,7 +353,7 @@ $priceRangeMax = $product['price_range_max'] ?? '';
 
             <!-- 提交按钮 -->
             <div class="">
-                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:-translate-y-0.5">
                     <i class="fas fa-save text-xs"></i>
                     <span><?= isset($product) ? '保存修改' : '发布产品' ?></span>
                 </button>
