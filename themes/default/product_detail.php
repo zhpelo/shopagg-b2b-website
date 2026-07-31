@@ -244,7 +244,7 @@ if ($manualRelatedIds !== '') {
         <h2 class="text-2xl font-bold text-slate-950 text-center mb-8">
             <i class="fas fa-th-large mr-2 text-brand-600"></i><?= h(block('product_detail', 'related_heading')) ?>
         </h2>
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-5 lg:grid-cols-4">
             <?php foreach ($related_products as $product): ?>
                 <a href="<?= h($product['url']) ?>" class="group">
                     <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:border-brand-200 hover:shadow-md transition-all">

@@ -6,6 +6,7 @@
  * 依赖：get_carousel_products() 获取轮播数据。
  */
 $products = $products ?? [];
+$homeBlockVisible = static fn(string $blockKey): bool => block($blockKey, 'is_visible', 'yes') !== 'no';
 $selectedProductIds = trim((string)block('home_featured', 'product_ids'));
 $selectedProducts = $selectedProductIds !== '' ? get_products_by_ids($selectedProductIds, true) : [];
 foreach ($selectedProducts as &$selectedProduct) {
@@ -55,7 +56,7 @@ $valueProps = [
 ];
 ?>
 
-<?php if($carouselProducts): ?>
+<?php if ($homeBlockVisible('home_hero') && $carouselProducts): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" integrity="sha384-gAPqlBuTCdtVcYt9ocMOYWrnBZ4XSL6q+4eXqwNycOr4iFczhNKtnYhF3NEXJM51" crossorigin="anonymous" referrerpolicy="no-referrer">
 <!-- Hero 轮播 -->
 <section class="hero-banner relative overflow-hidden bg-slate-900">
@@ -138,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php endif; ?>
 
+<?php if ($homeBlockVisible('home_value_props')): ?>
 <!-- Value Proposition -->
 <section class="relative z-10 px-4 pt-6 sm:-mt-12 sm:pt-0 md:-mt-16 lg:-mt-24">
     <div class="container mx-auto max-w-6xl">
@@ -156,7 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_featured')): ?>
 <!-- Featured Products -->
 <section class="py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
@@ -205,7 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_why_us')): ?>
 <!-- Why Choose Us -->
 <section class="py-12 lg:py-20 bg-gradient-to-br from-slate-50 to-gray-100">
     <div class="container mx-auto px-4 lg:px-8">
@@ -261,7 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_company_show')): ?>
 <!-- Company Show -->
 <section class="bg-white py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
@@ -311,7 +319,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_certificates')): ?>
 <!-- Certificates -->
 <section class="bg-slate-50 py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
@@ -351,7 +361,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_cases')): ?>
 <!-- Success Cases -->
 <section class="py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
@@ -386,7 +398,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_articles')): ?>
 <!-- Latest Articles -->
 <section class="bg-white py-12 lg:py-20">
     <div class="container mx-auto px-4 lg:px-8">
@@ -433,7 +447,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
+<?php if ($homeBlockVisible('home_cta')): ?>
 <!-- Bottom CTA -->
 <section class="py-12 pb-20 lg:py-16">
     <div class="container mx-auto px-4 lg:px-8">
@@ -464,3 +480,4 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
+<?php endif; ?>

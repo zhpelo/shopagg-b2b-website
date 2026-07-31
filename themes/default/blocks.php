@@ -49,6 +49,7 @@ return [
         'label' => '首屏轮播',
         'description' => '图片、标题、描述、按钮来自 外观区块 -> 轮播图；这里选择使用哪个轮播图区块。',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'slider_slug' => [
                 'type' => 'select',
                 'label' => '选择轮播图区块',
@@ -80,6 +81,7 @@ return [
         'label' => '优势卖点',
         'description' => '首页轮播下方的 3 列优势卖点',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'prop_one_icon'  => ['type' => 'icon',  'label' => 'Item 1 Icon',  'default' => 'fas fa-check-circle'],
             'prop_one_heading' => ['type' => 'text',  'label' => 'Item 1 Title', 'default' => 'Quality Assurance'],
             'prop_one_desc'  => ['type' => 'text',  'label' => 'Item 1 Description', 'default' => 'ISO-aligned production with strict QC before shipment.'],
@@ -101,6 +103,7 @@ return [
         'label' => '精选产品',
         'description' => '精选产品板块标题文字',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Featured Products'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Company Highlights'],
             'text'       => ['type' => 'textarea', 'label' => 'Description', 'default' => 'Selected products for global B2B buyers.'],
@@ -126,6 +129,7 @@ return [
         'label' => '为什么选择我们',
         'description' => '为什么选择我们板块',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Why Choose Us'],
             'badge1'     => ['type' => 'text', 'label' => 'Badge 1',   'default' => 'ISO Certified'],
             'badge2'     => ['type' => 'text', 'label' => 'Badge 2',   'default' => 'OEM & ODM'],
@@ -158,6 +162,7 @@ return [
         'label' => '公司展示',
         'description' => '展示后台系统设置中的公司展示图片。',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Company Show'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'A closer look at our production environment, team, and quality control process.'],
             'link_text' => ['type' => 'text', 'label' => 'Button Text', 'default' => 'View Company Profile →'],
@@ -173,6 +178,7 @@ return [
         'label' => '资质证书',
         'description' => '展示后台系统设置中的资质证书图片。',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Certificates & Compliance'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Verified documentation and supplier capabilities for confident B2B purchasing.'],
         ],
@@ -187,6 +193,7 @@ return [
         'label' => '成功案例',
         'description' => '成功案例板块标题',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Success Cases'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Global Presence'],
         ],
@@ -201,6 +208,7 @@ return [
         'label' => '文章资讯',
         'description' => '展示最新发布的文章。',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Latest Insights'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Industry knowledge, sourcing guides, and company updates for global buyers.'],
             'link_text' => ['type' => 'text', 'label' => 'Button Text', 'default' => 'View All Articles →'],
@@ -217,6 +225,7 @@ return [
         'label' => '底部行动区',
         'description' => '首页底部行动号召区块',
         'fields' => [
+            'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading'    => ['type' => 'text', 'label' => 'Heading',     'default' => 'Ready to start your project?'],
             'text'       => ['type' => 'text', 'label' => 'Description', 'default' => 'Contact us today for a professional quote and expert consultation.'],
             'btn1_text'  => ['type' => 'text', 'label' => 'Button 1 Text', 'default' => 'Request Quote'],

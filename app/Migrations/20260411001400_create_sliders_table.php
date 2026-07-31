@@ -56,7 +56,7 @@ return new class {
         $stmt->execute();
 
         $sliderId = $db->lastInsertRowID();
-        $placeholderImage = 'https://devtool.tech/api/placeholder/1920/800?text=%E9%BB%98%E8%AE%A4%E9%A6%96%E9%A1%B5%E8%BD%AE%E6%92%AD%E5%9B%BE%EF%BC%881920x800%EF%BC%89';
+        $placeholderImage = 'https://cn.bing.com/th?id=OHR.GalapagosFlamingos_ZH-CN1152519387_1920x1080.jpg';
 
         // 插入三条默认轮播图片
         $itemStmt = $db->prepare(
@@ -66,8 +66,8 @@ return new class {
 
         $defaultItems = [
             [
-                'title'      => 'Premium Quality, Global Standard',
-                'subtitle'   => 'ISO-certified manufacturing with strict quality control at every stage — delivering products you can count on.',
+                'title'      => '这时轮播图的标题',
+                'subtitle'   => '默认的示例内容，您可以在后台->外观区块->轮播图中自定义修改。',
                 'link_url'   => '/products',
                 'link_text'  => 'Explore Products',
                 'sort_order' => 1,
