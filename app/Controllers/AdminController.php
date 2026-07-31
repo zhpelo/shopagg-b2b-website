@@ -401,7 +401,12 @@ class AdminController extends Controller {
                 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'
             ],
             'trade' => ['company_main_markets', 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time', 'company_overseas_agent', 'company_export_year', 'company_nearest_port', 'company_rd_engineers'],
-            'contact' => ['company_email', 'company_phone', 'company_address', 'whatsapp', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube'],
+            'contact' => [
+                'company_email', 'company_phone', 'company_address', 'whatsapp',
+                'contact_telegram', 'contact_line', 'contact_vk',
+                'facebook', 'instagram', 'twitter', 'linkedin', 'youtube',
+                'tiktok', 'pinterest', 'reddit', 'telegram', 'discord', 'quora'
+            ],
             'custom' => ['head_code', 'footer_code']
         ];
 

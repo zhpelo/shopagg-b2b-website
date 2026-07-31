@@ -999,9 +999,53 @@ function get_google_translate_default_language_codes(): array {
     return ['en', 'zh-CN', 'zh-TW', 'ja', 'ko', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ar'];
 }
 
+function get_google_translate_common_language_codes(): array {
+    return [
+        'en',
+        'zh-CN',
+        'zh-TW',
+        'ja',
+        'ko',
+        'es',
+        'fr',
+        'de',
+        'it',
+        'pt',
+        'pt-PT',
+        'ru',
+        'ar',
+        'nl',
+        'pl',
+        'tr',
+        'vi',
+        'th',
+        'id',
+        'ms',
+        'tl',
+        'hi',
+        'bn',
+        'ur',
+        'fa',
+    ];
+}
+
 function get_google_translate_admin_language_options(): array {
     $options = [];
-    foreach (get_google_translate_supported_languages() as $code => $meta) {
+    $languages = get_google_translate_supported_languages();
+    $orderedLanguages = [];
+
+    foreach (get_google_translate_common_language_codes() as $code) {
+        if (isset($languages[$code])) {
+            $orderedLanguages[$code] = $languages[$code];
+            unset($languages[$code]);
+        }
+    }
+
+    foreach ($languages as $code => $meta) {
+        $orderedLanguages[$code] = $meta;
+    }
+
+    foreach ($orderedLanguages as $code => $meta) {
         $options[$code] = ($meta['admin_label'] ?? $meta['label']) . ' / ' . $meta['label'] . ' (' . $code . ')';
     }
 

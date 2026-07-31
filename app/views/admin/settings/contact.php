@@ -28,6 +28,27 @@
                         <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="whatsapp" value="<?= h($settings['whatsapp'] ?? '') ?>" placeholder="+86 123 4567 8900">
                     </span>
                 </label>
+                <label class="space-y-2">
+                    <span class="text-sm font-medium text-slate-700">Telegram</span>
+                    <span class="relative block">
+                        <i class="fab fa-telegram pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="contact_telegram" value="<?= h($settings['contact_telegram'] ?? '') ?>" placeholder="@username 或 Telegram URL">
+                    </span>
+                </label>
+                <label class="space-y-2">
+                    <span class="text-sm font-medium text-slate-700">LINE</span>
+                    <span class="relative block">
+                        <i class="fab fa-line pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="contact_line" value="<?= h($settings['contact_line'] ?? '') ?>" placeholder="LINE ID 或 URL">
+                    </span>
+                </label>
+                <label class="space-y-2">
+                    <span class="text-sm font-medium text-slate-700">VK</span>
+                    <span class="relative block">
+                        <i class="fab fa-vk pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                        <input class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="contact_vk" value="<?= h($settings['contact_vk'] ?? '') ?>" placeholder="VK ID 或 URL">
+                    </span>
+                </label>
             </div>
 
             <label class="mt-6 block space-y-2">
@@ -49,9 +70,15 @@
                 $social_icons = [
                     'facebook' => ['Facebook', 'fab fa-facebook-f', '#1877f2'],
                     'instagram' => ['Instagram', 'fab fa-instagram', '#e4405f'],
-                    'twitter' => ['Twitter', 'fab fa-twitter', '#1da1f2'],
+                    'twitter' => ['X (Twitter)', 'fab fa-twitter', '#0f172a'],
                     'linkedin' => ['LinkedIn', 'fab fa-linkedin-in', '#0a66c2'],
-                    'youtube' => ['YouTube', 'fab fa-youtube', '#ff0000']
+                    'youtube' => ['YouTube', 'fab fa-youtube', '#ff0000'],
+                    'tiktok' => ['TikTok', 'fab fa-tiktok', '#0f172a'],
+                    'pinterest' => ['Pinterest', 'fab fa-pinterest-p', '#bd081c'],
+                    'reddit' => ['Reddit', 'fab fa-reddit-alien', '#ff4500'],
+                    'telegram' => ['Telegram', 'fab fa-telegram', '#229ed9'],
+                    'discord' => ['Discord', 'fab fa-discord', '#5865f2'],
+                    'quora' => ['Quora', 'fab fa-quora', '#b92b27']
                 ];
                 foreach ($social_icons as $key => $info): ?>
                     <label class="space-y-2">

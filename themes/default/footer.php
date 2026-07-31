@@ -48,6 +48,23 @@ if ($whatsappHref !== '') {
         'theme' => 'whatsapp'
     ];
 }
+foreach ([
+    'contact_telegram' => ['Telegram', 'fab fa-telegram', 'telegram'],
+    'contact_line' => ['LINE', 'fab fa-line', 'line'],
+    'contact_vk' => ['VK', 'fab fa-vk', 'vk'],
+] as $key => [$label, $icon, $theme]) {
+    $value = trim((string)($site[$key] ?? ''));
+    $href = default_theme_contact_channel_href($theme, $value);
+    if ($href !== '') {
+        $floatingContacts[] = [
+            'label' => $label,
+            'value' => $value,
+            'href' => $href,
+            'icon' => $icon,
+            'theme' => $theme
+        ];
+    }
+}
 if (!empty($site['company_address'])) {
     $floatingContacts[] = [
         'label' => 'Address',
@@ -62,9 +79,15 @@ $floatingSocialLinks = [];
 $socialMap = [
     'facebook' => ['Facebook', 'fab fa-facebook-f'],
     'instagram' => ['Instagram', 'fab fa-instagram'],
-    'twitter' => ['Twitter', 'fab fa-twitter'],
+    'twitter' => ['X (Twitter)', 'fab fa-twitter'],
     'linkedin' => ['LinkedIn', 'fab fa-linkedin-in'],
     'youtube' => ['YouTube', 'fab fa-youtube'],
+    'tiktok' => ['TikTok', 'fab fa-tiktok'],
+    'pinterest' => ['Pinterest', 'fab fa-pinterest-p'],
+    'reddit' => ['Reddit', 'fab fa-reddit-alien'],
+    'telegram' => ['Telegram', 'fab fa-telegram'],
+    'discord' => ['Discord', 'fab fa-discord'],
+    'quora' => ['Quora', 'fab fa-quora'],
 ];
 foreach ($socialMap as $key => [$label, $icon]) {
     if (!empty($site[$key])) {
@@ -186,37 +209,15 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="lg:col-span-5">
                 <h3 class="text-xl font-bold text-gray-900 mb-2"><?= h($site['name']) ?></h3>
                 <p class="text-gray-500 mb-6"><?= h($site['tagline']) ?></p>
-                <div class="flex space-x-3">
-                    <?php if (!empty($site['facebook'])): ?>
-                        <a href="<?= h($site['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook"
-                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site['instagram'])): ?>
-                        <a href="<?= h($site['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram"
-                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site['twitter'])): ?>
-                        <a href="<?= h($site['twitter']) ?>" target="_blank" rel="noopener noreferrer" title="Twitter"
-                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site['linkedin'])): ?>
-                        <a href="<?= h($site['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn"
-                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($site['youtube'])): ?>
-                        <a href="<?= h($site['youtube']) ?>" target="_blank" rel="noopener noreferrer" title="YouTube"
-                           class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    <?php endif; ?>
+                <div class="flex flex-wrap gap-3">
+                    <?php foreach ($socialMap as $key => [$label, $icon]): ?>
+                        <?php if (!empty($site[$key])): ?>
+                            <a href="<?= h($site[$key]) ?>" target="_blank" rel="noopener noreferrer" title="<?= h($label) ?>"
+                               class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-600 transition-all">
+                                <i class="<?= h($icon) ?>"></i>
+                            </a>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -238,6 +239,19 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <span class="min-w-0 break-words"><?= h($site['company_phone']) ?></span>
                                 </a>
                             <?php endif; ?>
+                            <?php foreach ([
+                                'contact_telegram' => ['Telegram', 'fab fa-telegram', 'telegram'],
+                                'contact_line' => ['LINE', 'fab fa-line', 'line'],
+                                'contact_vk' => ['VK', 'fab fa-vk', 'vk'],
+                            ] as $key => [$label, $icon, $channel]): ?>
+                                <?php $channelHref = default_theme_contact_channel_href($channel, $site[$key] ?? ''); ?>
+                                <?php if ($channelHref !== ''): ?>
+                                    <a href="<?= h($channelHref) ?>" target="_blank" rel="noopener noreferrer" class="flex items-start text-gray-600 hover:text-brand-600 transition-colors">
+                                        <i class="<?= h($icon) ?> mt-1 w-5 flex-shrink-0 mr-2"></i>
+                                        <span class="min-w-0 break-words"><?= h($label) ?>: <?= h($site[$key]) ?></span>
+                                    </a>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
                             <?php if (!empty($site['company_address'])): ?>
                                 <a href="https://www.google.com/maps/search/?api=1&query=<?= rawurlencode((string)$site['company_address']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-start text-gray-600 hover:text-brand-600 transition-colors">
                                     <i class="fas fa-map-marker-alt mt-1 w-5 flex-shrink-0 mr-2"></i>

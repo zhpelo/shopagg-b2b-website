@@ -90,6 +90,27 @@ if (!function_exists('default_theme_meta_description')) {
     }
 }
 
+if (!function_exists('default_theme_contact_channel_href')) {
+    function default_theme_contact_channel_href(string $channel, ?string $value): string {
+        $value = trim((string)$value);
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('#^https?://#i', $value)) {
+            return $value;
+        }
+
+        $handle = ltrim($value, '@');
+        return match ($channel) {
+            'telegram' => 'https://t.me/' . rawurlencode($handle),
+            'line' => 'https://line.me/ti/p/' . rawurlencode($handle),
+            'vk' => 'https://vk.com/' . rawurlencode($handle),
+            default => $value,
+        };
+    }
+}
+
 if (!function_exists('default_theme_hex_adjust')) {
     function default_theme_hex_adjust(string $hex, float $factor, bool $lighten = true): string {
         $hex = ltrim(trim($hex), '#');
@@ -125,7 +146,7 @@ if (!function_exists('default_theme_schema_graph')) {
         $websiteId = rtrim(base_url(), '/') . '#website';
 
         $sameAs = [];
-        foreach (['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'] as $key) {
+        foreach (['facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'pinterest', 'reddit', 'telegram', 'discord', 'quora'] as $key) {
             if (!empty($site[$key]) && str_starts_with((string)$site[$key], 'http')) {
                 $sameAs[] = (string)$site[$key];
             }

@@ -367,6 +367,21 @@ select:focus-visible {
   color: #fff;
 }
 
+.site-float-contact__item--telegram .site-float-contact__icon {
+  background: #229ed9;
+  color: #fff;
+}
+
+.site-float-contact__item--line .site-float-contact__icon {
+  background: #06c755;
+  color: #fff;
+}
+
+.site-float-contact__item--vk .site-float-contact__icon {
+  background: #0077ff;
+  color: #fff;
+}
+
 .site-float-contact__meta {
   min-width: 0;
   display: flex;
@@ -454,6 +469,30 @@ select:focus-visible {
 
 .site-float-contact__social-link--youtube .site-float-contact__social-icon {
   background: linear-gradient(135deg, #dc2626 0%, #ff0000 100%);
+}
+
+.site-float-contact__social-link--tiktok .site-float-contact__social-icon {
+  background: #0f172a;
+}
+
+.site-float-contact__social-link--pinterest .site-float-contact__social-icon {
+  background: #bd081c;
+}
+
+.site-float-contact__social-link--reddit .site-float-contact__social-icon {
+  background: #ff4500;
+}
+
+.site-float-contact__social-link--telegram .site-float-contact__social-icon {
+  background: #229ed9;
+}
+
+.site-float-contact__social-link--discord .site-float-contact__social-icon {
+  background: #5865f2;
+}
+
+.site-float-contact__social-link--quora .site-float-contact__social-icon {
+  background: #b92b27;
 }
 
 .site-float-contact__cta {

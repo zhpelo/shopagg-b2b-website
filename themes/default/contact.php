@@ -56,6 +56,26 @@
                                 </div>
                             </a>
                         <?php endif; ?>
+
+                        <?php foreach ([
+                            'contact_telegram' => ['Telegram', 'fab fa-telegram', 'telegram'],
+                            'contact_line' => ['LINE', 'fab fa-line', 'line'],
+                            'contact_vk' => ['VK', 'fab fa-vk', 'vk'],
+                        ] as $key => [$label, $icon, $channel]): ?>
+                            <?php $channelHref = default_theme_contact_channel_href($channel, $site[$key] ?? ''); ?>
+                            <?php if ($channelHref !== ''): ?>
+                                <a href="<?= h($channelHref) ?>" target="_blank" rel="noopener noreferrer"
+                                   class="flex items-start text-gray-600 hover:text-brand-600 transition-colors group">
+                                    <span class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 mr-4 group-hover:bg-brand-100">
+                                        <i class="<?= h($icon) ?>"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <span class="block text-sm text-gray-500"><?= h($label) ?></span>
+                                        <span class="font-medium break-words"><?= h($site[$key]) ?></span>
+                                    </div>
+                                </a>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
 
                     <!-- Highlights -->

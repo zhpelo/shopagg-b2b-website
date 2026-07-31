@@ -32,6 +32,9 @@ return new class {
             'company_phone'            => '+86-755-12345678',
             'company_address'          => 'No. 88, Industrial Park, Baoding, Hebei, China',
             'whatsapp'                 => '8675512345678',
+            'contact_telegram'         => '',
+            'contact_line'             => '',
+            'contact_vk'               => '',
 
             // ── 社交媒体 ──────────────────────────────────────────────
             'facebook'                 => '',
@@ -39,6 +42,12 @@ return new class {
             'linkedin'                 => '',
             'youtube'                  => '',
             'twitter'                  => '',
+            'tiktok'                   => '',
+            'pinterest'                => '',
+            'reddit'                   => '',
+            'telegram'                 => '',
+            'discord'                  => '',
+            'quora'                    => '',
 
             // ── 公司简介 ──────────────────────────────────────────────
             'company_bio'              => 'We are a professional manufacturing and exporting company focused on quality, compliance, and fast delivery for global B2B clients. With years of industry experience, we serve buyers across 50+ countries with reliable products and dedicated after-sales support.',
