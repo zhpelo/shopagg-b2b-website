@@ -7,12 +7,19 @@
  */
 $category = $category ?? null;
 $images = $images ?? [];
-$priceMode = in_array((string)($price_mode ?? $item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)($price_mode ?? $item['price_mode'] ?? 'tier') : 'tier';
+$priceMode = normalize_product_price_mode((string)($price_mode ?? $item['price_mode'] ?? 'tier'));
 $productSkus = is_array($product_skus ?? null) ? $product_skus : [];
 $priceTiers = is_array($price_tiers ?? null) ? $price_tiers : [];
 $sampleCurrency = normalize_currency_code((string)($currency ?? $site['currency'] ?? 'USD'), 'USD');
 $activePrices = $priceMode === 'sku' ? $productSkus : $priceTiers;
-$samplePrice = !empty($activePrices) ? number_format((float)($activePrices[0]['price'] ?? 0) * 2, 2, '.', '') : '50.00';
+$priceRangeMin = isset($item['price_range_min']) ? (float)$item['price_range_min'] : 0.0;
+$priceRangeMax = isset($item['price_range_max']) ? (float)$item['price_range_max'] : 0.0;
+if ($priceRangeMin > 0 && $priceRangeMax > 0 && $priceRangeMax < $priceRangeMin) {
+    [$priceRangeMin, $priceRangeMax] = [$priceRangeMax, $priceRangeMin];
+}
+$hasPriceRange = $priceRangeMin > 0 && $priceRangeMax > 0;
+$sampleBasePrice = !empty($activePrices) ? (float)($activePrices[0]['price'] ?? 0) : ($hasPriceRange ? $priceRangeMin : 25.0);
+$samplePrice = number_format($sampleBasePrice * 2, 2, '.', '');
 $related_products = is_array($related_products ?? null) ? $related_products : [];
 $manualRelatedIds = trim((string)block('product_detail', 'related_product_ids'));
 if ($manualRelatedIds !== '') {
@@ -140,7 +147,7 @@ if ($manualRelatedIds !== '') {
                                 </tbody>
                             </table>
                         </div>
-                    <?php elseif (!empty($priceTiers)): ?>
+                    <?php elseif ($priceMode === 'tier' && !empty($priceTiers)): ?>
                         <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <?php foreach ($priceTiers as $tier): ?>
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
@@ -152,6 +159,25 @@ if ($manualRelatedIds !== '') {
                                     </div>
                                 </div>
                             <?php endforeach; ?>
+                        </div>
+                    <?php elseif ($priceMode === 'range' && $hasPriceRange): ?>
+                        <div class="mb-6 rounded-xl border border-violet-100 bg-violet-50 p-5">
+                            <div class="text-sm font-semibold uppercase tracking-[0.12em] text-violet-500">
+                                <?= h(block('product_detail', 'price_range_label')) ?>
+                            </div>
+                            <div class="mt-2 text-2xl font-bold text-gray-900">
+                                <?= h($sampleCurrency) ?> <?= h(number_format($priceRangeMin, 2, '.', '')) ?>
+                                <span class="text-gray-400">-</span>
+                                <?= h($sampleCurrency) ?> <?= h(number_format($priceRangeMax, 2, '.', '')) ?>
+                            </div>
+                            <p class="mt-2 text-sm text-violet-700"><?= h(block('product_detail', 'price_range_note')) ?></p>
+                        </div>
+                    <?php elseif ($priceMode === 'negotiable'): ?>
+                        <div class="mb-6 rounded-xl border border-amber-100 bg-amber-50 p-5">
+                            <div class="text-sm font-semibold uppercase tracking-[0.12em] text-amber-500">
+                                <?= h(block('product_detail', 'negotiable_label')) ?>
+                            </div>
+                            <p class="mt-2 text-sm leading-6 text-amber-700"><?= h(block('product_detail', 'negotiable_text')) ?></p>
                         </div>
                     <?php endif; ?>
 
@@ -176,11 +202,19 @@ if ($manualRelatedIds !== '') {
                         </a>
                     </div>
 
-                    <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-4">
-                        <?= h(block('product_detail', 'sample_text')) ?> <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
-                        <a href="#inquiry" class="font-semibold underline text-gray-900 hover:text-brand-600" 
-                           onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(block('product_detail', 'sample_link_text')) ?></a>
-                    </div>
+                    <?php if ($priceMode === 'negotiable'): ?>
+                        <div class="text-sm leading-6 text-gray-600 bg-gray-50 rounded-lg p-4">
+                            <?= h(block('product_detail', 'negotiable_text')) ?>
+                            <a href="#inquiry" class="font-semibold underline text-gray-900 hover:text-brand-600"
+                               onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(block('product_detail', 'inquiry_text')) ?></a>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-4">
+                            <?= h(block('product_detail', 'sample_text')) ?> <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
+                            <a href="#inquiry" class="font-semibold underline text-gray-900 hover:text-brand-600"
+                               onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(block('product_detail', 'sample_link_text')) ?></a>
+                        </div>
+                    <?php endif; ?>
 
                     <!-- More in category -->
                     <?php if ($category): ?>

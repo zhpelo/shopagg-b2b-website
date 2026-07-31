@@ -286,6 +286,10 @@ return [
             'chat_text' => ['type' => 'text', 'label' => 'WhatsApp按钮', 'default' => 'Chat Now'],
             'sample_text' => ['type' => 'text', 'label' => '样品提示', 'default' => 'Still deciding? Get samples of'],
             'sample_link_text' => ['type' => 'text', 'label' => '样品链接文字', 'default' => 'Request Sample'],
+            'price_range_label' => ['type' => 'text', 'label' => '价格区间标题', 'default' => 'Price Range'],
+            'price_range_note' => ['type' => 'text', 'label' => '价格区间说明', 'default' => 'Final price depends on order quantity and customization.'],
+            'negotiable_label' => ['type' => 'text', 'label' => '面谈价格标题', 'default' => 'Negotiable Price'],
+            'negotiable_text' => ['type' => 'text', 'label' => '面谈价格说明', 'default' => 'Send your quantity and requirements to receive a tailored quotation.'],
             'more_category_text' => ['type' => 'text', 'label' => '更多分类产品', 'default' => 'More in this category'],
             'related_heading' => ['type' => 'text', 'label' => '相关产品标题', 'default' => 'Related Products'],
             'related_product_ids' => [

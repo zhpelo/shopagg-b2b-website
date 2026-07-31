@@ -1,9 +1,8 @@
 <?php
-$priceMode = (string)($product['price_mode'] ?? 'tier');
-if (!in_array($priceMode, ['tier', 'sku'], true)) {
-    $priceMode = 'tier';
-}
+$priceMode = normalize_product_price_mode((string)($product['price_mode'] ?? 'tier'));
 $siteCurrency = normalize_currency_code((string)($siteCurrency ?? 'USD'), 'USD');
+$priceRangeMin = $product['price_range_min'] ?? '';
+$priceRangeMax = $product['price_range_max'] ?? '';
 ?>
 <!-- 页面头部 -->
 <div class="page-header">
@@ -109,7 +108,7 @@ $siteCurrency = normalize_currency_code((string)($siteCurrency ?? 'USD'), 'USD')
                     </div>
                 </div>
 
-                <div class="mt-5 inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                <div class="mt-5 flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
                     <label class="price-mode-option inline-flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition <?= $priceMode === 'tier' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700' ?>" data-price-mode-option="tier">
                         <input class="sr-only" type="radio" name="price_mode" value="tier" <?= $priceMode === 'tier' ? 'checked' : '' ?>>
                         <i class="fas fa-layer-group text-xs"></i>
@@ -119,6 +118,16 @@ $siteCurrency = normalize_currency_code((string)($siteCurrency ?? 'USD'), 'USD')
                         <input class="sr-only" type="radio" name="price_mode" value="sku" <?= $priceMode === 'sku' ? 'checked' : '' ?>>
                         <i class="fas fa-barcode text-xs"></i>
                         <span>多规格价格</span>
+                    </label>
+                    <label class="price-mode-option inline-flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition <?= $priceMode === 'range' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700' ?>" data-price-mode-option="range">
+                        <input class="sr-only" type="radio" name="price_mode" value="range" <?= $priceMode === 'range' ? 'checked' : '' ?>>
+                        <i class="fas fa-arrows-left-right text-xs"></i>
+                        <span>价格区间</span>
+                    </label>
+                    <label class="price-mode-option inline-flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition <?= $priceMode === 'negotiable' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700' ?>" data-price-mode-option="negotiable">
+                        <input class="sr-only" type="radio" name="price_mode" value="negotiable" <?= $priceMode === 'negotiable' ? 'checked' : '' ?>>
+                        <i class="fas fa-handshake text-xs"></i>
+                        <span>面谈价格</span>
                     </label>
                 </div>
 
@@ -206,6 +215,30 @@ $siteCurrency = normalize_currency_code((string)($siteCurrency ?? 'USD'), 'USD')
                         <i class="fas fa-plus text-xs"></i>
                         <span>新增SKU价格</span>
                     </button>
+                </div>
+
+                <?php $rangeDisabled = $priceMode === 'range' ? '' : ' disabled'; ?>
+                <div id="price-range-panel" data-price-mode-panel="range" class="mt-5 <?= $priceMode === 'range' ? '' : 'hidden' ?>">
+                    <div class="grid gap-3 rounded-2xl border border-violet-100 bg-violet-50 p-4 md:grid-cols-2">
+                        <label class="space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-violet-500">最低价</span>
+                            <input class="w-full rounded-xl border border-violet-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" name="price_range_min" type="number" min="0" step="0.01" value="<?= h((string)$priceRangeMin) ?>" required<?= $rangeDisabled ?>>
+                        </label>
+                        <label class="space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-violet-500">最高价</span>
+                            <input class="w-full rounded-xl border border-violet-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100" name="price_range_max" type="number" min="0" step="0.01" value="<?= h((string)$priceRangeMax) ?>" required<?= $rangeDisabled ?>>
+                        </label>
+                    </div>
+                    <p class="mt-3 text-xs text-slate-500">前台将显示为“<?= h($siteCurrency) ?> 最低价 - <?= h($siteCurrency) ?> 最高价”。如果最高价小于最低价，保存时会自动调换。</p>
+                </div>
+
+                <div id="negotiable-price-panel" data-price-mode-panel="negotiable" class="mt-5 <?= $priceMode === 'negotiable' ? '' : 'hidden' ?>">
+                    <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm leading-6 text-amber-700">
+                        <div class="mb-1 font-semibold text-amber-800">
+                            <i class="fas fa-handshake mr-2 text-xs"></i>面谈价格
+                        </div>
+                        <p>该模式不需要填写具体金额。前台产品详情页会展示“面谈价格”，并引导客户提交询盘或通过 WhatsApp 咨询。</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -365,6 +365,26 @@ function normalize_currency_code(string $currency, string $fallback = 'USD'): st
 }
 
 /**
+ * 产品支持的价格模式
+ */
+function product_price_modes(): array {
+    return ['tier', 'sku', 'range', 'negotiable'];
+}
+
+/**
+ * 规范化产品价格模式
+ */
+function normalize_product_price_mode(string $mode, string $fallback = 'tier'): string {
+    $mode = strtolower(trim($mode));
+    if (in_array($mode, product_price_modes(), true)) {
+        return $mode;
+    }
+
+    $fallback = strtolower(trim($fallback));
+    return in_array($fallback, product_price_modes(), true) ? $fallback : 'tier';
+}
+
+/**
  * 规范化阶梯价格数据
  * 
  * 将表单提交的多行阶梯价格数据转换为结构化数组
@@ -399,6 +419,28 @@ function normalize_price_tiers(array $post): array {
     }
     
     return $tiers;
+}
+
+/**
+ * 规范化价格区间数据
+ *
+ * @return array{price_range_min: float|null, price_range_max: float|null}
+ */
+function normalize_price_range(array $post): array {
+    $minRaw = trim((string)($post['price_range_min'] ?? ''));
+    $maxRaw = trim((string)($post['price_range_max'] ?? ''));
+
+    $min = $minRaw === '' ? null : max(0.0, (float)$minRaw);
+    $max = $maxRaw === '' ? null : max(0.0, (float)$maxRaw);
+
+    if ($min !== null && $max !== null && $max < $min) {
+        [$min, $max] = [$max, $min];
+    }
+
+    return [
+        'price_range_min' => $min,
+        'price_range_max' => $max,
+    ];
 }
 
 /**

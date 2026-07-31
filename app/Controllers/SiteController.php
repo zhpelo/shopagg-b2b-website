@@ -132,7 +132,7 @@ class SiteController extends BaseController {
         }
         foreach ($relatedProducts as &$p) $p['url'] = url('/product/' . $p['slug']);
 
-        $priceMode = in_array((string)($item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)$item['price_mode'] : 'tier';
+        $priceMode = normalize_product_price_mode((string)($item['price_mode'] ?? 'tier'));
         
         $this->renderSite('product_detail', [
             'item' => $item,

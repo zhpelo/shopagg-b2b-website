@@ -64,7 +64,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 <td width="50%">
 
 **🌍 外贸场景优化**
-- 产品阶梯价格 / 多规格 SKU 价格，支持全局货币配置
+- 产品阶梯价格 / 多规格 SKU 价格 / 价格区间 / 面谈价格，支持全局货币配置
 - 产品询盘系统（含状态跟踪、CSV 导出）
 - 公司资质、贸易能力等专业展示模块
 - Google 翻译集成，12 种语言一键切换
@@ -86,7 +86,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 | 模块 | 说明 |
 |------|------|
-| **产品中心** | 产品列表、分类筛选、详情页、图片画廊、阶梯价格、多规格 SKU 价格、相关产品推荐 |
+| **产品中心** | 产品列表、分类筛选、详情页、图片画廊、阶梯价格、多规格 SKU 价格、价格区间、面谈价格、相关产品推荐 |
 | **内容发布** | 博客文章、成功案例、自定义页面，统一内容引擎 |
 | **企业展示** | 关于我们（公司简介、资质认证、生产能力）、联系我们 |
 | **询盘系统** | 产品快捷询盘、通用联系表单，双通道获客 |
@@ -100,7 +100,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 | 模块 | 说明 |
 |------|------|
 | **仪表盘** | 核心数据概览（产品 / 文章 / 询盘 / 留言），一目了然 |
-| **产品管理** | 增删改查、图片集、横幅图、标签、供应商、阶梯价格 / 多规格 SKU 价格编辑与批量设置 |
+| **产品管理** | 增删改查、图片集、横幅图、标签、供应商、阶梯价格 / 多规格 SKU / 价格区间 / 面谈价格编辑与批量设置 |
 | **内容管理** | 案例 / 博客 / 页面统一管理，富文本编辑器 |
 | **分类管理** | 产品分类和文章分类，树形结构 |
 | **询盘管理** | 状态流转（待处理→已回复→已关闭）、详情查看、CSV 导出 |
@@ -287,7 +287,7 @@ server {
 │   ├── Controllers/            # 控制器（Site / Admin / Base）
 │   ├── Models/                 # 数据模型（12 个）
 │   ├── Helpers/                # 全局辅助函数 + 安全工具
-│   ├── Migrations/             # 版本化数据库迁移（16 个）
+│   ├── Migrations/             # 版本化数据库迁移（17 个）
 │   ├── views/admin/            # 后台视图模板
 │   └── routes.php              # 路由注册
 │
@@ -313,7 +313,7 @@ server {
 |---|------|---------|
 | `users` | 后台用户 | `role`(admin/staff)、`permissions` |
 | `settings` | 站点配置 | key-value 存储，包含 `site_currency` 全局货币 |
-| `products` | 产品 | `slug`、`images_json`、`category_id`、`price_mode` |
+| `products` | 产品 | `slug`、`images_json`、`category_id`、`price_mode`、`price_range_min`、`price_range_max` |
 | `product_prices` | 阶梯价格 | `min_qty`、`max_qty`、`price`（`currency` 为历史字段） |
 | `product_skus` | 多规格 SKU 价格 | `sku_name`、`min_qty`、`price`、`sort_order` |
 | `product_categories` | 统一分类 | `type`(product/post)、`parent_id` 树形 |

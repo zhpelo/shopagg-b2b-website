@@ -226,24 +226,43 @@ if (!function_exists('default_theme_schema_graph')) {
             }
             $product['description'] = $productDescription;
 
-            $priceMode = in_array((string)($context['price_mode'] ?? $item['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)($context['price_mode'] ?? $item['price_mode'] ?? 'tier') : 'tier';
-            $priceSource = $priceMode === 'sku' ? ($context['product_skus'] ?? []) : ($context['price_tiers'] ?? []);
-            $prices = array_values(array_filter((array)$priceSource, static fn($price): bool => isset($price['price']) && (float)$price['price'] > 0));
-            if ($prices !== []) {
-                $priceValues = array_map(static fn($tier): float => (float)$tier['price'], $prices);
-                $currency = normalize_currency_code((string)($site['currency'] ?? 'USD'), 'USD');
-                $product['offers'] = [
-                    '@type' => count($prices) > 1 ? 'AggregateOffer' : 'Offer',
-                    'priceCurrency' => $currency,
-                    'availability' => 'https://schema.org/InStock',
-                    'url' => $canonical,
-                ];
-                if (count($prices) > 1) {
-                    $product['offers']['lowPrice'] = (string)min($priceValues);
-                    $product['offers']['highPrice'] = (string)max($priceValues);
-                    $product['offers']['offerCount'] = count($prices);
-                } else {
-                    $product['offers']['price'] = (string)$priceValues[0];
+            $priceMode = normalize_product_price_mode((string)($context['price_mode'] ?? $item['price_mode'] ?? 'tier'));
+            $currency = normalize_currency_code((string)($site['currency'] ?? 'USD'), 'USD');
+            if ($priceMode === 'range') {
+                $rangeMin = isset($item['price_range_min']) ? (float)$item['price_range_min'] : 0.0;
+                $rangeMax = isset($item['price_range_max']) ? (float)$item['price_range_max'] : 0.0;
+                if ($rangeMin > 0 && $rangeMax > 0) {
+                    if ($rangeMax < $rangeMin) {
+                        [$rangeMin, $rangeMax] = [$rangeMax, $rangeMin];
+                    }
+                    $product['offers'] = [
+                        '@type' => 'AggregateOffer',
+                        'priceCurrency' => $currency,
+                        'availability' => 'https://schema.org/InStock',
+                        'url' => $canonical,
+                        'lowPrice' => (string)$rangeMin,
+                        'highPrice' => (string)$rangeMax,
+                        'offerCount' => 1,
+                    ];
+                }
+            } elseif ($priceMode !== 'negotiable') {
+                $priceSource = $priceMode === 'sku' ? ($context['product_skus'] ?? []) : ($context['price_tiers'] ?? []);
+                $prices = array_values(array_filter((array)$priceSource, static fn($price): bool => isset($price['price']) && (float)$price['price'] > 0));
+                if ($prices !== []) {
+                    $priceValues = array_map(static fn($tier): float => (float)$tier['price'], $prices);
+                    $product['offers'] = [
+                        '@type' => count($prices) > 1 ? 'AggregateOffer' : 'Offer',
+                        'priceCurrency' => $currency,
+                        'availability' => 'https://schema.org/InStock',
+                        'url' => $canonical,
+                    ];
+                    if (count($prices) > 1) {
+                        $product['offers']['lowPrice'] = (string)min($priceValues);
+                        $product['offers']['highPrice'] = (string)max($priceValues);
+                        $product['offers']['offerCount'] = count($prices);
+                    } else {
+                        $product['offers']['price'] = (string)$priceValues[0];
+                    }
                 }
             }
 

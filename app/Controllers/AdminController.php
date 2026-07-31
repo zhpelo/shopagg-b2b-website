@@ -573,7 +573,12 @@ class AdminController extends Controller {
     public function productUpdate(): void {
         csrf_check();
         $id = (int)($_GET['id'] ?? 0);
-        $data = $this->getProductFormData();
+        $product = $this->productModel->getById($id);
+        if (!$product) {
+            $this->redirect('/admin/products');
+        }
+
+        $data = $this->getProductFormData($product);
         $this->productModel->update($id, $data);
         $this->handleProductPricing($id, (string)$data['price_mode']);
         $this->redirect('/admin/products');
@@ -677,7 +682,7 @@ class AdminController extends Controller {
         return $path . ($query !== '' ? '?' . $query : '');
     }
 
-    private function getProductFormData(): array {
+    private function getProductFormData(?array $existingProduct = null): array {
         $title = trim((string)$_POST['title']);
         $slug = $this->normalizeSubmittedSlug((string)($_POST['slug'] ?? ''), $title);
         
@@ -697,6 +702,13 @@ class AdminController extends Controller {
         }
 
         $images = array_values(array_unique(array_filter(array_map('strval', $images))));
+        $priceMode = normalize_product_price_mode((string)($_POST['price_mode'] ?? 'tier'));
+        $priceRange = $priceMode === 'range'
+            ? normalize_price_range($_POST)
+            : [
+                'price_range_min' => $existingProduct['price_range_min'] ?? null,
+                'price_range_max' => $existingProduct['price_range_max'] ?? null,
+            ];
 
         return [
             'title' => $title,
@@ -705,7 +717,9 @@ class AdminController extends Controller {
             'content' => normalize_rich_text(trim((string)($_POST['content'] ?? ''))),
             'category_id' => (int)($_POST['category_id'] ?? 0),
             'status' => trim((string)($_POST['status'] ?? 'active')),
-            'price_mode' => in_array((string)($_POST['price_mode'] ?? 'tier'), ['tier', 'sku'], true) ? (string)$_POST['price_mode'] : 'tier',
+            'price_mode' => $priceMode,
+            'price_range_min' => $priceRange['price_range_min'],
+            'price_range_max' => $priceRange['price_range_max'],
             'product_type' => trim((string)($_POST['product_type'] ?? '')),
             'vendor' => trim((string)($_POST['vendor'] ?? '')),
             'tags' => trim((string)($_POST['tags'] ?? '')),
@@ -985,7 +999,9 @@ class AdminController extends Controller {
             return;
         }
 
-        $this->productModel->savePrices($productId, normalize_price_tiers($_POST));
+        if ($priceMode === 'tier') {
+            $this->productModel->savePrices($productId, normalize_price_tiers($_POST));
+        }
     }
 
     // --- Product Categories (产品分类) ---

@@ -143,8 +143,8 @@ class Product extends BaseModel {
 
     public function create(array $data): int {
         $data['slug'] = $this->makeUniqueSlug((string)($data['slug'] ?? ''));
-        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, price_mode, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at)
-            VALUES (:t, :s, :sum, :c, :cid, :st, :pm, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
+        $stmt = $this->db->prepare("INSERT INTO products (title, slug, summary, content, category_id, status, price_mode, price_range_min, price_range_max, product_type, vendor, tags, images_json, seo_title, seo_keywords, seo_description, created_at, updated_at)
+            VALUES (:t, :s, :sum, :c, :cid, :st, :pm, :prmin, :prmax, :pt, :v, :tags, :imgs, :seot, :seok, :seod, :ca, :ua)");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -152,6 +152,8 @@ class Product extends BaseModel {
         $stmt->bindValue(':cid', (int)$data['category_id']);
         $stmt->bindValue(':st', $data['status'] ?? 'active');
         $stmt->bindValue(':pm', $data['price_mode'] ?? 'tier');
+        $this->bindNullableFloat($stmt, ':prmin', $data['price_range_min'] ?? null);
+        $this->bindNullableFloat($stmt, ':prmax', $data['price_range_max'] ?? null);
         $stmt->bindValue(':pt', $data['product_type'] ?? '');
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
@@ -175,7 +177,7 @@ class Product extends BaseModel {
 
     public function update(int $id, array $data): void {
         $data['slug'] = $this->makeUniqueSlug((string)($data['slug'] ?? ''), $id);
-        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, price_mode=:pm, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
+        $stmt = $this->db->prepare("UPDATE products SET title=:t, slug=:s, summary=:sum, content=:c, category_id=:cid, status=:st, price_mode=:pm, price_range_min=:prmin, price_range_max=:prmax, product_type=:pt, vendor=:v, tags=:tags, images_json=:imgs, seo_title=:seot, seo_keywords=:seok, seo_description=:seod, updated_at=:ua WHERE id=:id");
         $stmt->bindValue(':t', $data['title']);
         $stmt->bindValue(':s', $data['slug']);
         $stmt->bindValue(':sum', $data['summary']);
@@ -183,6 +185,8 @@ class Product extends BaseModel {
         $stmt->bindValue(':cid', (int)$data['category_id']);
         $stmt->bindValue(':st', $data['status'] ?? 'active');
         $stmt->bindValue(':pm', $data['price_mode'] ?? 'tier');
+        $this->bindNullableFloat($stmt, ':prmin', $data['price_range_min'] ?? null);
+        $this->bindNullableFloat($stmt, ':prmax', $data['price_range_max'] ?? null);
         $stmt->bindValue(':pt', $data['product_type'] ?? '');
         $stmt->bindValue(':v', $data['vendor'] ?? '');
         $stmt->bindValue(':tags', $data['tags'] ?? '');
@@ -316,6 +320,15 @@ class Product extends BaseModel {
             $stmt->bindValue(':updated', $now);
             $stmt->execute();
         }
+    }
+
+    private function bindNullableFloat(\SQLite3Stmt $stmt, string $name, mixed $value): void {
+        if ($value === null || $value === '') {
+            $stmt->bindValue($name, null, SQLITE3_NULL);
+            return;
+        }
+
+        $stmt->bindValue($name, (float)$value, SQLITE3_FLOAT);
     }
 
     public function getByCategory(int $categoryId, int $limit = 0): array {
