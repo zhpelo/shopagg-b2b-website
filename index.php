@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 // 标记入口点，防止直接访问 app 目录文件
 define('APP_ENTRY_POINT', true);
-
+define('APP_VERSION', '1.2.2');
 // 应用安全响应头
 if (!headers_sent()) {
     header('X-Content-Type-Options: nosniff');
@@ -26,7 +26,7 @@ mb_internal_encoding('UTF-8');
 
 // 根目录与二级目录（子目录部署）
 define('APP_ROOT', rtrim(str_replace('\\', '/', realpath(__DIR__)), '/'));
-define('APP_VERSION', '1.2.1');
+
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
 $basePath = rtrim(dirname($scriptName), '/');
 define('APP_BASE_PATH', ($basePath === '' || $basePath === '/') ? '' : '/' . ltrim($basePath, '/'));
