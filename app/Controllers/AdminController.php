@@ -344,17 +344,6 @@ class AdminController extends Controller {
             $this->redirect('/admin');
         }
 
-        if ($tab === 'general' && isset($_POST['theme'])) {
-            $validThemes = array_map(
-                static fn(array $theme): string => $theme['slug'],
-                $this->getInstalledThemes(true)
-            );
-            $submittedTheme = trim((string)$_POST['theme']);
-            if (!in_array($submittedTheme, $validThemes, true)) {
-                $_POST['theme'] = $this->settingModel->get('theme', 'default');
-            }
-        }
-
         if ($tab === 'general') {
             $_POST['site_currency'] = normalize_currency_code((string)($_POST['site_currency'] ?? ''), 'USD');
         }
@@ -392,7 +381,7 @@ class AdminController extends Controller {
         }
 
         $groups = [
-            'general' => ['site_name', 'site_tagline', 'site_currency', 'theme', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
+            'general' => ['site_name', 'site_tagline', 'site_currency', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => [
                 'company_bio', 'company_business_type', 'company_main_products', 'company_year_established',
                 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital',

@@ -29,16 +29,6 @@
                     </span>
                     <p class="text-xs text-slate-500">所有产品价格统一使用该货币代码。</p>
                 </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">启用主题</span>
-                    <select class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="theme">
-                        <?php foreach ($available_themes as $t): ?>
-                            <option value="<?= h($t) ?>" <?= ($settings['theme'] ?? 'default') === $t ? 'selected' : '' ?>>
-                                <?= h($t) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
             </div>
 
             <div class="mt-6 grid gap-6 md:grid-cols-2">
