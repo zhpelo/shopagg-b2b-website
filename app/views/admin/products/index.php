@@ -221,10 +221,8 @@ $statusMap = [
                             <td>
                                 <div class="flex items-center">
                                     <?php $cover = (string)($row['cover'] ?? ''); ?>
-                                    <div class="size-14 rounded-[10px] mr-4 shrink-0 flex items-center justify-center" style="background: <?= $cover !== '' ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' ?>">
-                                        <?php if ($cover === ''): ?>
-                                            <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas fa-box"></i></span>
-                                        <?php endif; ?>
+                                    <div class="size-14 rounded-[10px] mr-4 shrink-0 overflow-hidden bg-slate-100">
+                                        <img src="<?= h(asset_url($cover !== '' ? $cover : 'assets/images/no-image.webp')) ?>" alt="<?= h($row['title']) ?>" class="h-full w-full object-cover">
                                     </div>
                                     <div>
                                         <strong><?= h($row['title']) ?></strong>

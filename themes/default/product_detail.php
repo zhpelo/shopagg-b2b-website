@@ -100,7 +100,7 @@ if ($manualRelatedIds !== '') {
             <aside class="product-detail-info lg:col-span-5 lg:row-span-2">
                 <div class="product-detail-info__card rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
                     <h1 class="mb-3 text-2xl font-bold leading-tight text-slate-950 lg:text-3xl"><?= h($item['title']) ?></h1>
-                    
+
                     <div class="flex flex-wrap items-center gap-3 mb-4 text-sm text-slate-500">
                         <span class="flex items-center">
                             <i class="far fa-calendar-alt mr-1"></i>
@@ -182,7 +182,7 @@ if ($manualRelatedIds !== '') {
 
                     <!-- Action Buttons -->
                     <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <button id="open-inquiry-modal" 
+                        <button id="open-inquiry-modal"
                                 class="px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
                             <?= h(block('product_detail', 'inquiry_text')) ?>
                         </button>
@@ -190,7 +190,7 @@ if ($manualRelatedIds !== '') {
                         $wa = $whatsapp ?? '';
                         $waDigits = preg_replace('/\D+/', '', $wa);
                         ?>
-                        <a href="<?= h(!empty($waDigits) ? 'https://wa.me/' . $waDigits : '#inquiry') ?>" 
+                        <a href="<?= h(!empty($waDigits) ? 'https://wa.me/' . $waDigits : '#inquiry') ?>"
                            target="<?= !empty($waDigits) ? '_blank' : '' ?>"
                            <?= !empty($waDigits) ? 'rel="noopener noreferrer"' : '' ?>
                            class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors inline-flex items-center justify-center gap-2 shadow-sm">
@@ -249,19 +249,11 @@ if ($manualRelatedIds !== '') {
                 <a href="<?= h($product['url']) ?>" class="group">
                     <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:border-brand-200 hover:shadow-md transition-all">
                         <div class="aspect-square overflow-hidden bg-slate-100">
-                            <?php if (!empty($product['cover'])): ?>
-                                <img src="<?= h(asset_url((string)$product['cover'])) ?>" 
-                                     alt="<?= h($product['title']) ?>" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                     loading="lazy"
-                                     decoding="async">
-                            <?php else: ?>
-                                <img src="<?= h(get_image_url(null, 400, 400, 'No Image')) ?>"
-                                     alt="<?= h($product['title']) ?>" 
-                                     class="w-full h-full object-cover"
-                                     loading="lazy"
-                                     decoding="async">
-                            <?php endif; ?>
+                            <img src="<?= h(get_image_url($product['cover'] ?? null, 400, 400, (string)($product['title'] ?? 'Product'))) ?>"
+                                 alt="<?= h($product['title']) ?>"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                 loading="lazy"
+                                 decoding="async">
                         </div>
                         <div class="p-4">
                             <h3 class="font-semibold text-slate-950 line-clamp-1 group-hover:text-brand-600 transition-colors">
@@ -289,7 +281,7 @@ if ($manualRelatedIds !== '') {
                 <button class="close-inquiry-modal absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
                     <i class="fas fa-times text-slate-500"></i>
                 </button>
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <!-- Left Info -->
                     <div class="lg:col-span-4 hidden lg:block">
@@ -310,7 +302,7 @@ if ($manualRelatedIds !== '') {
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Form -->
                     <div class="lg:col-span-8">
                         <h2 class="text-2xl font-bold text-slate-950 mb-6 lg:hidden">Request Quote</h2>

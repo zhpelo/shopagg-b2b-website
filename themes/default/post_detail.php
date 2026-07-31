@@ -33,7 +33,7 @@ $category = $category ?? null;
                         <?= format_date($item['created_at'], 'Y-m-d') ?>
                     </span>
                     <?php if ($category): ?>
-                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"
                            class="inline-flex items-center px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                             <i class="fas fa-folder mr-1"></i>
                             <?= h($category['name']) ?>
@@ -43,16 +43,14 @@ $category = $category ?? null;
             </header>
 
             <!-- Featured Image -->
-            <?php if (!empty($item['cover'])): ?>
-                <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
-                    <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
-                         alt="<?= h($item['title']) ?>" 
-                         class="w-full h-auto"
-                         loading="eager"
-                         decoding="async"
-                         fetchpriority="high">
-                </figure>
-            <?php endif; ?>
+            <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
+                <img src="<?= h(get_image_url($item['cover'] ?? null, 1200, 630, (string)($item['title'] ?? 'Article'))) ?>"
+                     alt="<?= h($item['title']) ?>"
+                     class="w-full h-auto"
+                     loading="eager"
+                     decoding="async"
+                     fetchpriority="high">
+            </figure>
 
             <!-- Article Content -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-10 mb-8">
@@ -65,7 +63,7 @@ $category = $category ?? null;
             <?php if ($category): ?>
                 <div class="mb-8">
                     <span class="text-gray-500 mr-2">Category:</span>
-                    <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                    <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"
                        class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-full font-medium hover:bg-brand-200 transition-colors">
                         <i class="fas fa-folder mr-2"></i>
                         <?= h($category['name']) ?>
@@ -77,19 +75,19 @@ $category = $category ?? null;
             <div class="flex flex-col justify-between py-6 border-t border-gray-200 gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                 <div class="flex flex-wrap gap-3">
                     <?php if ($category): ?>
-                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" 
+                        <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"
                            class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
                             <i class="fas fa-folder mr-2"></i>
                             More in this category
                         </a>
                     <?php endif; ?>
-                    <a href="<?= url('/blog') ?>" 
+                    <a href="<?= url('/blog') ?>"
                        class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-lg font-medium hover:bg-brand-200 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Back to Blog List
                     </a>
                 </div>
-                <a href="<?= url('/contact') ?>" 
+                <a href="<?= url('/contact') ?>"
                    class="inline-flex w-full items-center justify-center px-6 py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md sm:w-auto">
                     <i class="fas fa-envelope mr-2"></i>
                     Contact

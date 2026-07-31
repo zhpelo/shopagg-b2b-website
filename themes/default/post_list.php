@@ -50,7 +50,7 @@ if (!function_exists('renderCategoryList')) {
                 <?php endif; ?>
             </ol>
         </nav>
-        
+
         <h1 class="text-3xl lg:text-4xl font-bold mb-3"><?= h($title) ?></h1>
         <p class="text-white/90 max-w-2xl">
             <?php if ($currentCategory): ?>
@@ -85,17 +85,15 @@ if (!function_exists('renderCategoryList')) {
                         <?php foreach ($items as $item): ?>
                             <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
                                 <div class="flex flex-col md:flex-row">
-                                    <?php if (!empty($item['cover'])): ?>
-                                        <div class="md:w-1/3 flex-shrink-0">
-                                            <a href="<?= h($item['url']) ?>" class="block h-48 md:h-full">
-                                                <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
-                                                     alt="<?= h($item['title']) ?>" 
-                                                     class="w-full h-full object-cover"
-                                                     loading="lazy"
-                                                     decoding="async">
-                                            </a>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="md:w-1/3 flex-shrink-0">
+                                        <a href="<?= h($item['url']) ?>" class="block h-48 md:h-full">
+                                            <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Article'))) ?>"
+                                                 alt="<?= h($item['title']) ?>"
+                                                 class="w-full h-full object-cover"
+                                                 loading="lazy"
+                                                 decoding="async">
+                                        </a>
+                                    </div>
                                     <div class="p-6 flex-grow">
                                         <div class="flex flex-wrap items-center gap-3 mb-3 text-sm text-gray-500">
                                             <span class="flex items-center">
@@ -103,7 +101,7 @@ if (!function_exists('renderCategoryList')) {
                                                 <?= format_date($item['created_at'], 'Y-m-d') ?>
                                             </span>
                                             <?php if (!empty($item['category_name'])): ?>
-                                                <a href="<?= url('/blog') ?>?category=<?= (int)$item['category_id'] ?>" 
+                                                <a href="<?= url('/blog') ?>?category=<?= (int)$item['category_id'] ?>"
                                                    class="inline-flex items-center px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium">
                                                     <?= h($item['category_name']) ?>
                                                 </a>

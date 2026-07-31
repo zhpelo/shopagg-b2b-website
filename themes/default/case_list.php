@@ -16,7 +16,7 @@
                 <li class="text-white font-medium">Cases</li>
             </ol>
         </nav>
-        
+
         <h1 class="text-3xl lg:text-4xl font-bold mb-3"><?= h($title) ?></h1>
         <p class="text-white/90 max-w-2xl">If you are interested in this solution or have similar needs, please contact our expert team.</p>
     </div>
@@ -27,15 +27,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <?php foreach ($items as $item): ?>
                 <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
-                    <?php if (!empty($item['cover'])): ?>
-                        <a href="<?= h($item['url']) ?>" class="block aspect-video overflow-hidden">
-                            <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
-                                 alt="<?= h($item['title']) ?>" 
-                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                 loading="lazy"
-                                 decoding="async">
-                        </a>
-                    <?php endif; ?>
+                    <a href="<?= h($item['url']) ?>" class="block aspect-video overflow-hidden">
+                        <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Case'))) ?>"
+                             alt="<?= h($item['title']) ?>"
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                             loading="lazy"
+                             decoding="async">
+                    </a>
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-3">
                             <a href="<?= h($item['url']) ?>" class="hover:text-brand-600 transition-colors">
@@ -45,7 +43,7 @@
                         <p class="text-gray-600 mb-4 line-clamp-3">
                             <?= h($item['summary']) ?>
                         </p>
-                        <a href="<?= h($item['url']) ?>" 
+                        <a href="<?= h($item['url']) ?>"
                            class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-lg font-medium hover:bg-brand-200 transition-colors">
                             Read More →
                         </a>

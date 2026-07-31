@@ -4,7 +4,7 @@
  * 
  * 定义所有可在后台自定义的模板区块内容。
  * 每个区块包含：label（后台显示名）、fields（字段列表）。
- * 字段类型：text / textarea / image / icon / color / select / repeater
+ * 字段类型：text / textarea / image / media / icon / color / select / repeater
  * 
  * 前台模板通过 block('区块key', '字段key') 读取值。
  * 用户修改保存在 storage/blocks/{theme}.php，不修改本文件。
@@ -131,7 +131,50 @@ return [
             'badge2'     => ['type' => 'text', 'label' => 'Badge 2',   'default' => 'OEM & ODM'],
             'badge3'     => ['type' => 'text', 'label' => 'Badge 3',   'default' => 'R&D Team'],
             'link_text'  => ['type' => 'text', 'label' => 'Button Text', 'default' => 'About Us'],
-            'image'      => ['type' => 'image', 'label' => 'Section Image', 'default' => ''],
+            'media_type' => [
+                'type' => 'select',
+                'label' => '媒体类型',
+                'default' => 'image',
+                'options' => ['image' => '图片', 'video' => '视频'],
+            ],
+            'media' => [
+                'type' => 'media',
+                'label' => '展示媒体',
+                'default' => '',
+                'allowed' => 'all',
+                'media_type_key' => 'media_type',
+                'legacy_image_key' => 'image',
+                'default_media_type' => 'image',
+            ],
+        ],
+    ],
+
+    // ============================================================
+    // 首页 - 公司展示区块
+    // ============================================================
+    'home_company_show' => [
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页公司展示',
+        'description' => '展示后台系统设置中的公司展示图片。',
+        'fields' => [
+            'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Company Show'],
+            'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'A closer look at our production environment, team, and quality control process.'],
+            'link_text' => ['type' => 'text', 'label' => 'Button Text', 'default' => 'View Company Profile →'],
+        ],
+    ],
+
+    // ============================================================
+    // 首页 - 资质证书区块
+    // ============================================================
+    'home_certificates' => [
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页资质证书',
+        'description' => '展示后台系统设置中的资质证书图片。',
+        'fields' => [
+            'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Certificates & Compliance'],
+            'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Verified documentation and supplier capabilities for confident B2B purchasing.'],
         ],
     ],
 
@@ -146,6 +189,22 @@ return [
         'fields' => [
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Success Cases'],
             'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Global Presence'],
+        ],
+    ],
+
+    // ============================================================
+    // 首页 - 文章区块
+    // ============================================================
+    'home_articles' => [
+        'group' => 'home',
+        'group_label' => '首页',
+        'label' => '首页文章资讯',
+        'description' => '展示最新发布的文章。',
+        'fields' => [
+            'heading' => ['type' => 'text', 'label' => 'Heading', 'default' => 'Latest Insights'],
+            'subheading' => ['type' => 'text', 'label' => 'Subheading', 'default' => 'Industry knowledge, sourcing guides, and company updates for global buyers.'],
+            'link_text' => ['type' => 'text', 'label' => 'Button Text', 'default' => 'View All Articles →'],
+            'empty_text' => ['type' => 'text', 'label' => 'Empty Text', 'default' => 'No articles available.'],
         ],
     ],
 

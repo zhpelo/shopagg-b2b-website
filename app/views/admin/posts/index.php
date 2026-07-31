@@ -87,10 +87,8 @@ $countUnit = $contentConfig['count_unit'] ?? '个';
                         <tr>
                             <td>
                                 <div class="flex items-center">
-                                    <div class="size-14 rounded-[10px] mr-4 shrink-0 flex items-center justify-center" style="background: <?= $cover ? 'url(' . asset_url($cover) . ') center/cover' : 'linear-gradient(135deg, #cbd5f5 0%, #94a3b8 100%)' ?>">
-                                        <?php if (!$cover): ?>
-                                            <span class="inline-flex h-5 w-5 items-center justify-center text-white"><i class="fas fa-<?= h($icon) ?>"></i></span>
-                                        <?php endif; ?>
+                                    <div class="size-14 rounded-[10px] mr-4 shrink-0 overflow-hidden bg-slate-100">
+                                        <img src="<?= h(asset_url($cover ? (string)$cover : 'assets/images/no-image.webp')) ?>" alt="<?= h($row['title']) ?>" class="h-full w-full object-cover">
                                     </div>
                                     <div>
                                         <strong><?= h($row['title']) ?></strong>

@@ -16,32 +16,20 @@ declare(strict_types=1);
  * - get_stylesheet_directory_uri()
  */
 
-if (!function_exists('placeholder_url')) {
-    function placeholder_url(int $width = 800, int $height = 300, string $text = ''): string {
-        $label = trim($text) !== '' ? trim($text) : 'No image';
-        $safeLabel = htmlspecialchars(mb_substr($label, 0, 80), ENT_QUOTES, 'UTF-8');
-        $safeWidth = max(1, $width);
-        $safeHeight = max(1, $height);
-        $borderWidth = max(1, $safeWidth - 1);
-        $borderHeight = max(1, $safeHeight - 1);
-        $svg = <<<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="{$safeWidth}" height="{$safeHeight}" viewBox="0 0 {$safeWidth} {$safeHeight}" role="img" aria-label="{$safeLabel}">
-  <rect width="100%" height="100%" fill="#f1f5f9"/>
-  <rect x="0.5" y="0.5" width="{$borderWidth}" height="{$borderHeight}" fill="none" stroke="#cbd5e1"/>
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="20" fill="#64748b">{$safeLabel}</text>
-</svg>
-SVG;
-
-        return 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
+if (!function_exists('default_theme_no_image_url')) {
+    function default_theme_no_image_url(): string {
+        return asset_url('assets/images/no-image.webp');
     }
 }
 
 if (!function_exists('get_image_url')) {
     function get_image_url(?string $image, int $width = 800, int $height = 300, string $text = ''): string {
-        if (!empty($image)) {
+        $image = trim((string)$image);
+        if ($image !== '') {
             return asset_url($image);
         }
-        return placeholder_url($width, $height, $text);
+
+        return default_theme_no_image_url();
     }
 }
 

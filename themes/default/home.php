@@ -13,10 +13,28 @@ foreach ($selectedProducts as &$selectedProduct) {
 }
 unset($selectedProduct);
 $featuredProducts = !empty($selectedProducts) ? $selectedProducts : $products;
+$latestPosts = get_posts(['limit' => 3, 'type' => 'post']);
 $heroSliderSlug = trim((string)block('home_hero', 'slider_slug'));
 $carouselProducts = get_carousel_products(3, $heroSliderSlug !== '' ? $heroSliderSlug : 'home-hero');
 $heroAutoplay = block('home_hero', 'autoplay', 'yes') === 'yes';
 $heroShowOverlay = block('home_hero', 'show_overlay', 'yes') !== 'no';
+$companyShowJson = $site['company_show_json'] ?? '[]';
+$companyShowItems = is_array($companyShowJson) ? $companyShowJson : json_decode((string)$companyShowJson, true);
+$companyShowItems = is_array($companyShowItems) ? array_values(array_filter($companyShowItems, static fn($item) => !empty($item['img'] ?? ''))) : [];
+$certificateJson = $site['company_certificates_json'] ?? '[]';
+$certificateItems = is_array($certificateJson) ? $certificateJson : json_decode((string)$certificateJson, true);
+$certificateItems = is_array($certificateItems) ? array_values(array_filter($certificateItems, static fn($item) => !empty($item['img'] ?? ''))) : [];
+$whyMediaType = block('home_why_us', 'media_type', 'image') === 'video' ? 'video' : 'image';
+$whyMedia = trim((string)block('home_why_us', 'media'));
+$legacyWhyImage = trim((string)block('home_why_us', 'image'));
+if ($whyMedia === '' && $legacyWhyImage !== '') {
+    $whyMedia = $legacyWhyImage;
+    $whyMediaType = 'image';
+}
+if ($whyMedia === '' && !empty($site['og_image'])) {
+    $whyMedia = (string)$site['og_image'];
+    $whyMediaType = 'image';
+}
 $legacyValueProps = block_all('home_value_props');
 $valueProps = [
     [
@@ -162,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <?= h(block('home_featured', 'empty_text')) ?>
             </div>
         <?php else: ?>
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-2 gap-5 sm:grid-cols-4 lg:grid-cols-4">
             <?php foreach ($featuredProducts as $p): ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                     <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
@@ -222,15 +240,115 @@ document.addEventListener('DOMContentLoaded', function() {
                 </a>
             </div>
             <div class="relative">
-                <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= h(get_image_url(block('home_why_us', 'image') ?: ($site['og_image'] ?? null), 800, 400, 'Factory')) ?>" 
-                         alt="Factory" 
-                         class="aspect-[4/3] w-full object-cover sm:aspect-[16/10]"
-                         loading="lazy"
-                         decoding="async">
+                <div class="overflow-hidden rounded-2xl bg-slate-900 shadow-2xl">
+                    <?php if ($whyMediaType === 'video' && $whyMedia !== ''): ?>
+                        <video class="aspect-[4/3] w-full object-cover sm:aspect-[16/10]"
+                               controls
+                               muted
+                               playsinline
+                               preload="metadata">
+                            <source src="<?= h(asset_url($whyMedia)) ?>">
+                        </video>
+                    <?php else: ?>
+                        <img src="<?= h(get_image_url($whyMedia !== '' ? $whyMedia : null, 800, 400, 'Factory')) ?>"
+                             alt="Factory"
+                             class="aspect-[4/3] w-full object-cover sm:aspect-[16/10]"
+                             loading="lazy"
+                             decoding="async">
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Company Show -->
+<section class="bg-white py-12 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="mb-8 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between lg:mb-10">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2 lg:text-3xl"><?= h(block('home_company_show', 'heading')) ?></h2>
+                <p class="max-w-2xl text-gray-500"><?= h(block('home_company_show', 'subheading')) ?></p>
+            </div>
+            <a href="<?= url('/about#company-show') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
+                <?= h(block('home_company_show', 'link_text')) ?>
+            </a>
+        </div>
+
+        <?php if (empty($companyShowItems)): ?>
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6">
+                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-brand-600">Factory</p>
+                    <h3 class="mt-3 text-xl font-bold text-gray-900"><?= h($site['company_business_type'] ?? 'Manufacturing Capability') ?></h3>
+                    <p class="mt-3 text-sm leading-6 text-gray-500"><?= h(mb_substr((string)($site['company_bio'] ?? ''), 0, 180)) ?></p>
+                </div>
+                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <p class="text-sm text-gray-500">Main Products</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900"><?= h($site['company_main_products'] ?? '-') ?></p>
+                </div>
+                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <p class="text-sm text-gray-500">Established</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900"><?= h($site['company_year_established'] ?? '-') ?></p>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <?php foreach (array_slice($companyShowItems, 0, 4) as $item): ?>
+                    <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                        <figure class="aspect-[4/3] overflow-hidden bg-gray-100">
+                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Company'))) ?>"
+                                 alt="<?= h($item['title'] ?? 'Company Show') ?>"
+                                 class="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                                 loading="lazy"
+                                 decoding="async">
+                        </figure>
+                        <div class="p-4">
+                            <h3 class="line-clamp-1 font-semibold text-gray-900"><?= h($item['title'] ?? 'Company Show') ?></h3>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<!-- Certificates -->
+<section class="bg-slate-50 py-12 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="mb-8 text-center lg:mb-10">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3 lg:text-3xl"><?= h(block('home_certificates', 'heading')) ?></h2>
+            <p class="mx-auto max-w-2xl text-gray-500"><?= h(block('home_certificates', 'subheading')) ?></p>
+        </div>
+
+        <?php if (empty($certificateItems)): ?>
+            <div class="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+                <?php foreach ([$site['company_sgs_report'] ?? '', $site['company_rating'] ?? '', $site['company_response_time'] ?? ''] as $idx => $value): ?>
+                    <?php $labels = ['Verified Report', 'Supplier Rating', 'Response Time']; ?>
+                    <div class="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm">
+                        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <p class="text-sm text-gray-500"><?= h($labels[$idx]) ?></p>
+                        <p class="mt-2 text-lg font-semibold text-gray-900"><?= h((string)$value !== '' ? (string)$value : '-') ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-2 gap-5 md:grid-cols-4">
+                <?php foreach (array_slice($certificateItems, 0, 4) as $item): ?>
+                    <article class="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                        <figure class="aspect-[4/3] overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Certificate'))) ?>"
+                                 alt="<?= h($item['title'] ?? 'Certificate') ?>"
+                                 class="h-full w-full object-contain p-3"
+                                 loading="lazy"
+                                 decoding="async">
+                        </figure>
+                        <h3 class="mt-3 line-clamp-1 text-center text-sm font-semibold text-gray-900"><?= h($item['title'] ?? 'Certificate') ?></h3>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -265,6 +383,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 </a>
             <?php endforeach; ?>
         </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<!-- Latest Articles -->
+<section class="bg-white py-12 lg:py-20">
+    <div class="container mx-auto px-4 lg:px-8">
+        <div class="mb-8 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between lg:mb-10">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2 lg:text-3xl"><?= h(block('home_articles', 'heading')) ?></h2>
+                <p class="max-w-2xl text-gray-500"><?= h(block('home_articles', 'subheading')) ?></p>
+            </div>
+            <a href="<?= url('/blog') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
+                <?= h(block('home_articles', 'link_text')) ?>
+            </a>
+        </div>
+
+        <?php if (empty($latestPosts)): ?>
+            <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center text-sm text-gray-500">
+                <?= h(block('home_articles', 'empty_text')) ?>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <?php foreach ($latestPosts as $post): ?>
+                    <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                        <a href="<?= h($post['url']) ?>" class="block aspect-[16/10] overflow-hidden bg-gray-100">
+                            <img src="<?= h(get_image_url($post['cover'] ?? null, 640, 400, (string)($post['title'] ?? 'Article'))) ?>"
+                                 alt="<?= h($post['title']) ?>"
+                                 class="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                                 loading="lazy"
+                                 decoding="async">
+                        </a>
+                        <div class="p-5">
+                            <div class="mb-3 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                                <span><i class="far fa-calendar mr-1"></i><?= h(format_date($post['created_at'] ?? '', 'Y-m-d')) ?></span>
+                                <?php if (!empty($post['category_name'])): ?>
+                                    <span class="rounded-full bg-brand-50 px-2.5 py-1 font-medium text-brand-700"><?= h($post['category_name']) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <h3 class="line-clamp-2 text-lg font-bold text-gray-900">
+                                <a href="<?= h($post['url']) ?>" class="transition-colors hover:text-brand-600"><?= h($post['title']) ?></a>
+                            </h3>
+                            <p class="mt-3 line-clamp-3 text-sm leading-6 text-gray-500"><?= h($post['summary'] ?? '') ?></p>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </div>
 </section>

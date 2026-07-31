@@ -27,17 +27,15 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Main Content -->
             <div class="lg:w-8/12">
-                <?php if (!empty($item['cover'])): ?>
-                    <figure class="rounded-2xl overflow-hidden shadow-lg mb-8">
-                        <img src="<?= h(asset_url((string)$item['cover'])) ?>" 
-                             alt="<?= h($item['title']) ?>" 
-                             class="w-full h-auto"
-                             loading="eager"
-                             decoding="async"
-                             fetchpriority="high">
-                    </figure>
-                <?php endif; ?>
-                
+                <figure class="rounded-2xl overflow-hidden shadow-lg mb-8">
+                    <img src="<?= h(get_image_url($item['cover'] ?? null, 900, 600, (string)($item['title'] ?? 'Case'))) ?>"
+                         alt="<?= h($item['title']) ?>"
+                         class="w-full h-auto"
+                         loading="eager"
+                         decoding="async"
+                         fetchpriority="high">
+                </figure>
+
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Project Details</h2>
                     <article class="rich-content">
@@ -60,14 +58,14 @@
                         <p class="text-gray-600 mb-4">
                             If you are interested in this solution or have similar needs, please contact our expert team.
                         </p>
-                        <a href="<?= url('/contact') ?>" 
+                        <a href="<?= url('/contact') ?>"
                            class="block w-full text-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors">
                             Request Quote
                         </a>
                     </div>
 
                     <!-- Back Button -->
-                    <a href="<?= url('/cases') ?>" 
+                    <a href="<?= url('/cases') ?>"
                        class="block w-full text-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
                         Back to All Cases
                     </a>

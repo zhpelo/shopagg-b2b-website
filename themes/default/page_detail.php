@@ -47,16 +47,14 @@
                 </div>
             </header>
 
-            <?php if (!empty($item['cover'])): ?>
-                <figure class="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-                    <img src="<?= h(asset_url((string)$item['cover'])) ?>"
-                         alt="<?= h($item['title']) ?>"
-                         class="max-h-[520px] w-full object-cover"
-                         loading="eager"
-                         decoding="async"
-                         fetchpriority="high">
-                </figure>
-            <?php endif; ?>
+            <figure class="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                <img src="<?= h(get_image_url($item['cover'] ?? null, 1200, 630, (string)($item['title'] ?? 'Page'))) ?>"
+                     alt="<?= h($item['title']) ?>"
+                     class="max-h-[520px] w-full object-cover"
+                     loading="eager"
+                     decoding="async"
+                     fetchpriority="high">
+            </figure>
 
             <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 lg:p-10">
                 <article class="rich-content">
