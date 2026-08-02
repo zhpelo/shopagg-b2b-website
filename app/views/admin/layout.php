@@ -29,11 +29,11 @@
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
         elseif (str_starts_with($current_path, '/admin/appearance')) $active_group = 'appearance';
 
-        $user_role = $_SESSION['admin_role'] ?? 'staff';
-        $user_perms = $_SESSION['admin_permissions'] ?? [];
+        $user_role = \App\Core\AuthManager::getUserRole() ?? 'staff';
+        $user_perms = \App\Core\AuthManager::getPermissions();
 
         $can_access = function ($perm) use ($user_role, $user_perms) {
-            return $user_role === 'admin' || in_array($perm, $user_perms);
+            return $user_role === 'admin' || in_array($perm, $user_perms, true);
         };
         $content_nav_url = $can_access('blog') ? '/admin/posts' : '/admin/cases';
     ?>
