@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\PostModel;
 use App\Models\Message;
 use App\Models\Inquiry;
+use App\Plugins\Exceptions\FormValidationException;
 
 class SiteController extends BaseController {
     public function home(): void {
@@ -274,13 +275,17 @@ class SiteController extends BaseController {
     public function contact(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             csrf_check();
-            $input = plugin_filter('form.before_validate', [
-                'name' => trim((string)$_POST['name']),
-                'email' => trim((string)$_POST['email']),
-                'company' => trim((string)($_POST['company'] ?? '')),
-                'phone' => trim((string)($_POST['phone'] ?? '')),
-                'message' => trim((string)$_POST['message']),
-            ], ['form' => 'contact']);
+            try {
+                $input = plugin_filter('form.before_validate', [
+                    'name' => trim((string)$_POST['name']),
+                    'email' => trim((string)$_POST['email']),
+                    'company' => trim((string)($_POST['company'] ?? '')),
+                    'phone' => trim((string)($_POST['phone'] ?? '')),
+                    'message' => trim((string)$_POST['message']),
+                ], ['form' => 'contact']);
+            } catch (FormValidationException) {
+                $this->redirectAfterFormValidationFailure('/contact');
+            }
             $id = (new Message())->create($input);
             plugin_event('message.created', ['id' => $id, 'data' => $input]);
             plugin_event('form.submitted', ['form' => 'contact', 'id' => $id, 'data' => $input]);
@@ -292,22 +297,44 @@ class SiteController extends BaseController {
 
     public function inquiry(): void {
         csrf_check();
-        $input = plugin_filter('form.before_validate', [
-            'product_id' => (int)($_POST['product_id'] ?? 0),
-            'name' => trim((string)$_POST['name']),
-            'email' => trim((string)$_POST['email']),
-            'company' => trim((string)($_POST['company'] ?? '')),
-            'phone' => trim((string)($_POST['phone'] ?? '')),
-            'quantity' => trim((string)($_POST['quantity'] ?? '')),
-            'message' => trim((string)($_POST['message'] ?? '')),
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
-            'source_url' => $_SERVER['HTTP_REFERER'] ?? '',
-        ], ['form' => 'inquiry']);
+        try {
+            $input = plugin_filter('form.before_validate', [
+                'product_id' => (int)($_POST['product_id'] ?? 0),
+                'name' => trim((string)$_POST['name']),
+                'email' => trim((string)$_POST['email']),
+                'company' => trim((string)($_POST['company'] ?? '')),
+                'phone' => trim((string)($_POST['phone'] ?? '')),
+                'quantity' => trim((string)($_POST['quantity'] ?? '')),
+                'message' => trim((string)($_POST['message'] ?? '')),
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                'source_url' => $_SERVER['HTTP_REFERER'] ?? '',
+            ], ['form' => 'inquiry']);
+        } catch (FormValidationException) {
+            $this->redirectAfterFormValidationFailure('/products');
+        }
         $id = (new Inquiry())->create($input);
         plugin_event('inquiry.created', ['id' => $id, 'data' => $input]);
         plugin_event('form.submitted', ['form' => 'inquiry', 'id' => $id, 'data' => $input]);
         $this->renderSite('thanks');
+    }
+
+    private function redirectAfterFormValidationFailure(string $fallback): never {
+        $target = url($fallback);
+        $referer = trim((string)($_SERVER['HTTP_REFERER'] ?? ''));
+        if ($referer !== '') {
+            $parts = parse_url($referer);
+            $host = strtolower((string)($parts['host'] ?? ''));
+            $currentHost = strtolower(preg_replace('/:\d+$/', '', (string)($_SERVER['HTTP_HOST'] ?? '')) ?? '');
+            if ($host !== '' && $host === $currentHost) {
+                $path = (string)($parts['path'] ?? '');
+                if ($path !== '' && str_starts_with($path, '/')) {
+                    $target = $path . (isset($parts['query']) ? '?' . $parts['query'] : '');
+                }
+            }
+        }
+        header('Location: ' . $target, true, 303);
+        exit;
     }
 
     public function robots(): void {

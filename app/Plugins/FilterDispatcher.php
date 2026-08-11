@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Plugins;
 
+use App\Plugins\Exceptions\FormValidationException;
 use App\Plugins\Support\Handler;
 
 final class FilterDispatcher {
@@ -18,6 +19,9 @@ final class FilterDispatcher {
                     throw new \UnexpectedValueException("过滤器 {$filterName} 返回类型不兼容");
                 }
                 $value = $candidate;
+            } catch (FormValidationException $e) {
+                if ($filterName === 'form.before_validate') throw $e;
+                $this->registry->recordFailure($listener['plugin_id'], $e);
             } catch (\Throwable $e) {
                 $this->registry->recordFailure($listener['plugin_id'], $e);
             } finally {

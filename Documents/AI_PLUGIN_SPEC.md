@@ -14,6 +14,7 @@
 10. 后台写路由声明 `admin`、`permission:plugin.{id}.{permission}`、`csrf`。
 11. 插件升级新增数据结构时新增迁移文件，永远不要修改已发布迁移。
 12. 输出前执行：`php shopagg plugin:test <dir>`、`php shopagg plugin:pack <dir>`。
+13. 在 `form.before_validate` 中需要阻止核心表单写入时，抛出 `App\Plugins\Exceptions\FormValidationException`；不要在其他 Filter 或 Event 中用 `exit` 中断请求。
 
 常用对象：
 
