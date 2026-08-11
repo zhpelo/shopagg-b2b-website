@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 // 标记入口点，防止直接访问 app 目录文件
 define('APP_ENTRY_POINT', true);
-define('APP_VERSION', '1.2.3');
+define('APP_VERSION', '1.3.0');
 // 应用安全响应头
 if (!headers_sent()) {
     header('X-Content-Type-Options: nosniff');
@@ -110,12 +110,20 @@ require APP_ROOT . '/app/Helpers/Helpers.php';
 
 use App\Core\Router;
 use App\Core\Database;
+use App\Plugins\PluginRuntime;
 
 // 数据库（首次访问时初始化 schema）
 Database::getInstance();
+
+// 插件运行时仅加载已编译的 PHP 注册表，不扫描插件目录或解析 Manifest。
+$pluginRuntime = PluginRuntime::boot();
 
 // 路由
 $router = new Router();
 require APP_ROOT . '/app/routes.php';
 register_routes($router);
+$pluginRuntime->registerRoutes($router);
+$pluginRuntime->events()->dispatch('system.booted', ['version' => APP_VERSION]);
+$pluginRuntime->events()->dispatch('system.request.started', ['method' => $_SERVER['REQUEST_METHOD'] ?? 'GET', 'uri' => $_SERVER['REQUEST_URI'] ?? '/']);
 $router->run();
+$pluginRuntime->events()->dispatch('system.response.generated', ['status' => http_response_code()]);

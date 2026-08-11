@@ -8,8 +8,23 @@ declare(strict_types=1);
 use App\Core\Router;
 use App\Controllers\SiteController;
 use App\Controllers\AdminController;
+use App\Controllers\PluginAdminController;
+use App\Controllers\PluginCronController;
+use App\Controllers\AppStoreController;
 
 function register_routes(Router $router): void {
+    $router->add('GET', '/admin/app-store', [AppStoreController::class, 'index']);
+    // 插件平台：Cron 使用独立 Token；管理路由由 PluginAdminController 强制管理员认证。
+    $router->add('GET', '/plugin-cron', [PluginCronController::class, 'run']);
+    $router->add('GET', '/admin/plugins', [PluginAdminController::class, 'index']);
+    $router->add('POST', '/admin/plugins/upload', [PluginAdminController::class, 'upload']);
+    $router->add('GET', '/admin/plugins/market', [PluginAdminController::class, 'market']);
+    $router->add('POST', '/admin/plugins/market/install', [PluginAdminController::class, 'installMarket']);
+    $router->add('POST', '/admin/plugins/action', [PluginAdminController::class, 'action']);
+    $router->add('GET', '/admin/plugins/settings', [PluginAdminController::class, 'settings']);
+    $router->add('POST', '/admin/plugins/settings', [PluginAdminController::class, 'saveSettings']);
+    $router->add('POST', '/admin/plugins/jobs/run', [PluginAdminController::class, 'runJobs']);
+    $router->add('POST', '/admin/plugins/jobs/action', [PluginAdminController::class, 'jobAction']);
     // 前台
     $router->add('GET', '/', [SiteController::class, 'home']);
     $router->add('GET', '/products', [SiteController::class, 'products']);

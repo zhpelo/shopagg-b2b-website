@@ -84,6 +84,7 @@ $tips = $contentConfig['tips'] ?? [];
         </div>
 
         <div class="xl:col-span-4">
+            <?= plugin_slot('admin.post.sidebar', ['item' => $item ?? [], 'content_type' => $contentType ?? 'post']) ?>
             <div class="card p-6 mb-6">
                 <div class="section-title">
                     <span class="icon-box info"><i class="fas fa-cog"></i></span>

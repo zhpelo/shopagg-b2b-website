@@ -233,6 +233,30 @@ function asset_url(string $path): string {
     return url($path);
 }
 
+// ============================================================================
+// 插件扩展点 - 核心与主题均可使用，未启用插件时为常数时间空操作
+// ============================================================================
+
+function plugin_event(string $name, mixed $event = null): void {
+    if (class_exists(\App\Plugins\PluginRuntime::class)) \App\Plugins\PluginRuntime::instance()->events()->dispatch($name, $event);
+}
+
+function plugin_filter(string $name, mixed $value, array $context = []): mixed {
+    return class_exists(\App\Plugins\PluginRuntime::class)
+        ? \App\Plugins\PluginRuntime::instance()->filters()->apply($name, $value, $context)
+        : $value;
+}
+
+function plugin_slot(string $name, array $context = []): string {
+    return class_exists(\App\Plugins\PluginRuntime::class)
+        ? \App\Plugins\PluginRuntime::instance()->slots()->render($name, $context)
+        : '';
+}
+
+function plugin_services(): ?\App\Plugins\ServiceRegistry {
+    return class_exists(\App\Plugins\PluginRuntime::class) ? \App\Plugins\PluginRuntime::instance()->services() : null;
+}
+
 
 // ============================================================================
 // 文件上传处理

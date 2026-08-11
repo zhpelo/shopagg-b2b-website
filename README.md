@@ -6,7 +6,7 @@
 
 PHP + SQLite · 零依赖 · 开箱即用
 
-[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.1.7-blue.svg)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)
 
 [功能特性](#-功能特性) · [快速开始](#-快速开始) · [部署指南](#-部署指南) · [技术架构](#-技术架构) · [开发文档](#-开发文档)
 
@@ -81,6 +81,23 @@ PHP + SQLite · 零依赖 · 开箱即用
 </td>
 </tr>
 </table>
+
+### 插件系统（v1.3）
+
+- 进程内模块化插件运行时，兼容普通 PHP 共享主机。
+- 插件可注册前后台页面、API、Webhook、事件、过滤器、页面插槽、业务服务和分片任务。
+- Manifest 驱动，启停后编译为 PHP 缓存；正常请求不扫描插件目录。
+- 插件使用独立命名空间数据表、迁移、设置、日志、任务和动态 Staff 权限。
+- 支持后台上传 ZIP、ShopAgg 插件市场、版本升级以及默认保留数据的卸载方式。
+- 提供 AI 规范、JSON Schema、CLI 生成/校验/打包工具和可运行示例。
+
+```bash
+php shopagg plugin:make my-plugin
+php shopagg plugin:validate plugin-dev/my-plugin
+php shopagg plugin:pack plugin-dev/my-plugin
+```
+
+开发文档见 [`Documents/插件开发指南.md`](Documents/插件开发指南.md)，AI 生成插件时可直接提供 [`Documents/AI_PLUGIN_SPEC.md`](Documents/AI_PLUGIN_SPEC.md) 作为上下文。
 
 ### 前台功能
 

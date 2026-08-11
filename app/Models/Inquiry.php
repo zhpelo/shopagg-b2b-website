@@ -40,7 +40,7 @@ class Inquiry extends BaseModel {
         $stmt->execute();
     }
 
-    public function create(array $data): void {
+    public function create(array $data): int {
         $stmt = $this->db->prepare("INSERT INTO inquiries (product_id, name, email, company, phone, message, quantity, ip, user_agent, source_url, created_at, status) 
             VALUES (:pid, :n, :e, :c, :p, :m, :q, :ip, :ua, :url, :t, 'pending')");
         $stmt->bindValue(':pid', (int)($data['product_id'] ?? 0));
@@ -55,6 +55,7 @@ class Inquiry extends BaseModel {
         $stmt->bindValue(':url', $data['source_url'] ?? '');
         $stmt->bindValue(':t', gmdate('c'));
         $stmt->execute();
+        return $this->db->lastInsertRowID();
     }
 
     public function delete(int $id): void {
@@ -63,4 +64,3 @@ class Inquiry extends BaseModel {
         $stmt->execute();
     }
 }
-

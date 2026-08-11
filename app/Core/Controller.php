@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Plugins\PluginRuntime;
+
 /**
  * 基础控制器类
  * 
@@ -38,10 +40,16 @@ abstract class Controller {
         // 获取页面内容
         $pageContent = $this->loadViewFile($view, $actualThemePath, $defaultThemePath, $data);
         
-        // 记录主题用于视图使用
-        echo $this->loadFileContent($actualThemePath . '/header.php', $defaultThemePath . '/header.php', $data) ?? '';
-        echo $pageContent;
-        echo $this->loadFileContent($actualThemePath . '/footer.php', $defaultThemePath . '/footer.php', $data) ?? '';
+        // 先完整生成页面，再统一执行插件过滤器和页面插槽，避免主题必须逐个适配插件。
+        $html = ($this->loadFileContent($actualThemePath . '/header.php', $defaultThemePath . '/header.php', $data) ?? '')
+            . $pageContent
+            . ($this->loadFileContent($actualThemePath . '/footer.php', $defaultThemePath . '/footer.php', $data) ?? '');
+        if (class_exists(PluginRuntime::class)) {
+            $runtime = PluginRuntime::instance();
+            $html = $runtime->filters()->apply('site.response.html', $html, ['theme' => $theme, 'view' => $view]);
+            $html = $runtime->renderPageSlots($html, ['theme' => $theme, 'view' => $view, 'data' => $data]);
+        }
+        echo $html;
     }
 
     /**
@@ -162,4 +170,3 @@ abstract class Controller {
         return strpos($url, 'http') !== 0 && strpos($url, '/') === 0;
     }
 }
-

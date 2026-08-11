@@ -18,7 +18,7 @@ class Message extends BaseModel {
         $stmt->execute();
     }
 
-    public function create(array $data): void {
+    public function create(array $data): int {
         $stmt = $this->db->prepare("INSERT INTO messages (name, email, company, phone, message, created_at) 
             VALUES (:n, :e, :c, :p, :m, :t)");
         $stmt->bindValue(':n', $data['name']);
@@ -28,6 +28,6 @@ class Message extends BaseModel {
         $stmt->bindValue(':m', $data['message']);
         $stmt->bindValue(':t', gmdate('c'));
         $stmt->execute();
+        return $this->db->lastInsertRowID();
     }
 }
-

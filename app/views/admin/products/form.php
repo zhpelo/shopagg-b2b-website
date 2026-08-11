@@ -245,6 +245,7 @@ $priceRangeMax = $product['price_range_max'] ?? '';
 
         <!-- 右侧栏 -->
         <div class="xl:col-span-4">
+            <?= plugin_slot('admin.product.sidebar', ['product' => $product ?? [], 'categories' => $categories ?? []]) ?>
             <!-- 状态 -->
             <div class="card mb-5 p-6">
                 <div class="section-title">

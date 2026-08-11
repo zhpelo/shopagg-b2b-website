@@ -4,6 +4,8 @@
     <p class="mt-2 text-sm text-white-500">今天是 <?= date('Y年m月d日 l') ?>，让我们看看网站的运营情况</p>
 </div>
 
+<?= plugin_slot('admin.dashboard', ['counts' => $counts]) ?>
+
 <!-- 快捷操作 -->
 <div class="mb-5">
     <div class="section-title">
@@ -361,5 +363,4 @@
         </div>
     </div>
 </div>
-
 

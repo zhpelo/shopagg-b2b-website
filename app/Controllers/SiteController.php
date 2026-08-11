@@ -85,17 +85,19 @@ class SiteController extends BaseController {
             $seoDescription = (string)($this->siteData['site']['seo_description'] ?: $this->siteData['site']['tagline'] ?? '');
         }
         
-        $this->renderSite('product_list', [
+        $pageData = plugin_filter('product.list_data', [
             'title' => $title,
             'items' => $items,
             'categories' => $categories,
             'current_category' => $currentCategory,
+        ], ['category' => $currentCategory]);
+        $this->renderSite('product_list', array_merge($pageData, [
             'seo' => [
                 'title' => $title . ' - ' . $this->siteData['site']['name'],
                 'description' => $seoDescription,
                 'canonical' => $currentCategory ? base_url() . '/product-category/' . rawurlencode((string)$currentCategory['slug']) : base_url() . '/products',
             ]
-        ]);
+        ]));
     }
 
     public function productDetail(string $slug): void {
@@ -134,7 +136,7 @@ class SiteController extends BaseController {
 
         $priceMode = normalize_product_price_mode((string)($item['price_mode'] ?? 'tier'));
         
-        $this->renderSite('product_detail', [
+        $productData = plugin_filter('product.detail_data', [
             'item' => $item,
             'category' => $category,
             'images' => $item['images'] ?? [],
@@ -145,12 +147,14 @@ class SiteController extends BaseController {
             'related_products' => $relatedProducts,
             'whatsapp' => $this->siteData['site']['whatsapp'],
             'inquiry_form' => true,
+        ], ['slug' => $slug]);
+        $this->renderSite('product_detail', array_merge($productData, [
             'seo' => [
                 'title' => ($item['seo_title'] ?: $item['title']) . ' - ' . $this->siteData['site']['name'],
                 'description' => $item['seo_description'] ?: ($item['summary'] ?: $this->siteData['site']['tagline']),
                 'keywords' => $item['seo_keywords'] ?? '',
             ]
-        ]);
+        ]));
     }
 
     public function cases(): void {
@@ -270,13 +274,16 @@ class SiteController extends BaseController {
     public function contact(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             csrf_check();
-            (new Message())->create([
+            $input = plugin_filter('form.before_validate', [
                 'name' => trim((string)$_POST['name']),
                 'email' => trim((string)$_POST['email']),
                 'company' => trim((string)($_POST['company'] ?? '')),
                 'phone' => trim((string)($_POST['phone'] ?? '')),
                 'message' => trim((string)$_POST['message']),
-            ]);
+            ], ['form' => 'contact']);
+            $id = (new Message())->create($input);
+            plugin_event('message.created', ['id' => $id, 'data' => $input]);
+            plugin_event('form.submitted', ['form' => 'contact', 'id' => $id, 'data' => $input]);
             $this->renderSite('thanks');
             return;
         }
@@ -285,7 +292,7 @@ class SiteController extends BaseController {
 
     public function inquiry(): void {
         csrf_check();
-        (new Inquiry())->create([
+        $input = plugin_filter('form.before_validate', [
             'product_id' => (int)($_POST['product_id'] ?? 0),
             'name' => trim((string)$_POST['name']),
             'email' => trim((string)$_POST['email']),
@@ -296,7 +303,10 @@ class SiteController extends BaseController {
             'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
             'source_url' => $_SERVER['HTTP_REFERER'] ?? '',
-        ]);
+        ], ['form' => 'inquiry']);
+        $id = (new Inquiry())->create($input);
+        plugin_event('inquiry.created', ['id' => $id, 'data' => $input]);
+        plugin_event('form.submitted', ['form' => 'inquiry', 'id' => $id, 'data' => $input]);
         $this->renderSite('thanks');
     }
 

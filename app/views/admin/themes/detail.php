@@ -129,9 +129,9 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
             <div class="flex flex-col justify-between p-6 lg:col-span-5">
                 <div>
                     <div class="mb-5 flex items-center justify-between gap-3">
-                        <a href="<?= url('/admin/appearance/themes') ?>" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900">
+                        <a href="<?= url('/admin/app-store?type=theme') ?>" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900">
                             <i class="fas fa-arrow-left text-xs"></i>
-                            返回网站模版
+                            返回应用商店
                         </a>
                         <span class="rounded-full <?= $isFree ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-700' ?> px-3 py-1 text-xs font-semibold"><?= h($priceText) ?></span>
                     </div>

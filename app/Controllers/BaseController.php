@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Setting;
+use App\Plugins\PluginRuntime;
 
 /**
  * 基础网站控制器
@@ -169,6 +170,11 @@ abstract class BaseController extends Controller {
                 'canonical' => $this->getCurrentUrl(),
             ]
         );
+        if (class_exists(PluginRuntime::class)) {
+            $runtime = PluginRuntime::instance();
+            $viewData = $runtime->filters()->apply('site.page_data', $viewData, ['view' => $view]);
+            $viewData['seo'] = $runtime->filters()->apply('site.seo', $viewData['seo'], ['view' => $view]);
+        }
         
         // 调用父类的 render 方法
         $this->render($theme, $view, $viewData);

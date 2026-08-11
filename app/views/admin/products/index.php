@@ -66,6 +66,7 @@ $statusMap = [
                     <span>添加产品</span>
                 </a>
             <?php endif; ?>
+            <?= plugin_slot('admin.product.list_actions', ['filters' => $filters, 'counts' => $counts]) ?>
         </div>
     </div>
 </div>
@@ -192,6 +193,7 @@ $statusMap = [
                         批量删除
                     </button>
                 <?php endif; ?>
+                <?= plugin_slot('admin.product.bulk_actions', ['trash' => $isTrash, 'filters' => $filters]) ?>
             </div>
         </div>
 
@@ -275,6 +277,7 @@ $statusMap = [
                                             <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
                                         </button>
                                     <?php endif; ?>
+                                    <?= plugin_slot('admin.product.row_actions', ['product' => $row, 'trash' => $isTrash]) ?>
                                 </div>
                             </td>
                         </tr>

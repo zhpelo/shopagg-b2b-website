@@ -1,0 +1,11 @@
+{
+  "api_version": "1.0.0",
+  "core_filters": ["site.page_data", "site.seo", "site.response.html", "product.list_data", "product.detail_data", "post.detail_data", "form.before_validate"],
+  "core_events": ["system.booted", "system.request.started", "system.response.generated", "system.404", "product.saved", "product.deleted", "post.saved", "inquiry.created", "inquiry.status_changed", "message.created", "form.submitted", "admin.product.bulk_action"],
+  "standard_domain_events": ["member.registered", "member.logged_in", "order.created", "order.status_changed", "order.paid", "order.refunded", "payment.completed", "payment.failed", "points.changed", "notification.sent"],
+  "core_slots": ["site.head", "site.body_start", "site.content.before", "site.content.after", "site.footer", "admin.navigation", "admin.dashboard", "admin.product.sidebar", "admin.product.list_actions", "admin.product.bulk_actions", "admin.product.row_actions", "admin.post.sidebar", "admin.post.list_actions", "admin.post.row_actions"],
+  "single_services": ["member.identity", "order.manager", "points.manager", "cart.manager"],
+  "multiple_services": ["payment.gateway", "notification.channel", "form.type", "file.converter", "data.importer", "data.exporter", "data.collector"],
+  "middleware": ["admin", "permission:{permission}", "csrf", "member", "webhook"],
+  "responses": ["html", "json", "redirect", "download", "stream"]
+}

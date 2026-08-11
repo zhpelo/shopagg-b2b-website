@@ -19,7 +19,7 @@ class Updater {
     private const GITHUB_REPO_URL = 'https://github.com/zhpelo/shopagg-b2b-website';
     
     /** 当前版本号兜底值（正常由 APP_VERSION 常量提供） */
-    private const CURRENT_VERSION = '1.1.7';
+    private const CURRENT_VERSION = '1.3.0';
 
     /** 更新包安全限制 */
     private const MAX_DOWNLOAD_BYTES = 268435456; // 256 MB

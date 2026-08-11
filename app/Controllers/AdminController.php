@@ -542,6 +542,7 @@ class AdminController extends Controller {
         $data = $this->getProductFormData();
         $productId = $this->productModel->create($data);
         $this->handleProductPricing($productId, (string)$data['price_mode']);
+        plugin_event('product.saved', ['id' => $productId, 'operation' => 'created', 'data' => $data]);
         $this->redirect('/admin/products');
     }
 
@@ -575,6 +576,7 @@ class AdminController extends Controller {
         $data = $this->getProductFormData($product);
         $this->productModel->update($id, $data);
         $this->handleProductPricing($id, (string)$data['price_mode']);
+        plugin_event('product.saved', ['id' => $id, 'operation' => 'updated', 'data' => $data]);
         $this->redirect('/admin/products');
     }
 
@@ -583,6 +585,7 @@ class AdminController extends Controller {
         $id = (int)($_POST['id'] ?? 0);
         if ($id > 0) {
             $this->productModel->softDelete($id);
+            plugin_event('product.deleted', ['id' => $id, 'mode' => 'soft']);
         }
         $this->redirect($this->getProductReturnPath());
     }
@@ -628,6 +631,9 @@ class AdminController extends Controller {
                 break;
             case 'permanent_delete':
                 $this->productModel->bulkPermanentDelete($ids);
+                break;
+            default:
+                if ($action !== '') plugin_event('admin.product.bulk_action', ['action' => $action, 'product_ids' => array_map('intval', $ids), 'input' => $_POST]);
                 break;
         }
 
@@ -1375,7 +1381,9 @@ class AdminController extends Controller {
     {
         csrf_check();
         $config = $this->contentConfig('post');
-        $this->postModel->create($this->getContentFormData('post'));
+        $data = $this->getContentFormData('post');
+        $id = $this->postModel->create($data);
+        plugin_event('post.saved', ['id' => $id, 'type' => 'post', 'operation' => 'created', 'data' => $data]);
         $this->redirect($config['index_url']);
     }
 
@@ -1395,7 +1403,9 @@ class AdminController extends Controller {
         csrf_check();
         $config = $this->contentConfig('post');
         $id = (int)($_GET['id'] ?? 0);
-        $this->postModel->update($id, $this->getContentFormData('post'), 'post');
+        $data = $this->getContentFormData('post');
+        $this->postModel->update($id, $data, 'post');
+        plugin_event('post.saved', ['id' => $id, 'type' => 'post', 'operation' => 'updated', 'data' => $data]);
         $this->redirect($config['index_url']);
     }
 
@@ -1506,6 +1516,7 @@ class AdminController extends Controller {
         $redirect = $_POST['redirect'] ?? '/admin/inquiries';
         if ($id && in_array($status, ['pending', 'contacted', 'quoted', 'closed'])) {
             $this->inquiryModel->updateStatus($id, $status);
+            plugin_event('inquiry.status_changed', ['id' => $id, 'status' => $status]);
         }
         $this->redirect($redirect);
     }

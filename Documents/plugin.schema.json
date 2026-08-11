@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.shopagg.com/schemas/plugin-v1.json",
+  "title": "ShopAgg Plugin Manifest",
+  "type": "object",
+  "required": ["schema_version", "id", "name", "vendor", "version", "description", "requires", "autoload"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 64},
+    "name": {"type": "string", "minLength": 1},
+    "vendor": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "description": {"type": "string"},
+    "requires": {
+      "type": "object",
+      "properties": {
+        "shopagg": {"type": "string"}, "php": {"type": "string"},
+        "extensions": {"type": "array", "items": {"type": "string"}},
+        "functions": {"type": "array", "items": {"type": "string"}},
+        "commands": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "autoload": {"type": "object", "required": ["psr4"], "properties": {"psr4": {"type": "object", "additionalProperties": {"type": "string"}}}},
+    "lifecycle": {"type": "string"},
+    "routes": {"type": "array", "items": {"type": "object", "required": ["method", "path", "handler"]}},
+    "events": {"type": ["array", "object"]}, "filters": {"type": ["array", "object"]}, "slots": {"type": ["array", "object"]},
+    "services": {"type": ["array", "object"]},
+    "provides_services": {"type": ["array", "object"]},
+    "requires_services": {"type": ["array", "object"]},
+    "load_order": {"type": "integer"},
+    "jobs": {"type": ["array", "object"]},
+    "admin_menu": {"type": "array"}, "permissions": {"type": "array"}, "settings": {"type": "object"},
+    "dependencies": {"type": "array"}, "conflicts": {"type": "array"},
+    "assets": {"type": "array", "items": {"oneOf": [
+      {"type": "string"},
+      {"type": "object", "required": ["path"], "properties": {
+        "path": {"type": "string"}, "location": {"enum": ["head", "footer"]},
+        "routes": {"type": "array", "items": {"type": "string"}},
+        "views": {"type": "array", "items": {"type": "string"}},
+        "defer": {"type": "boolean"}, "module": {"type": "boolean"}
+      }}
+    ]}}
+  },
+  "additionalProperties": true
+}

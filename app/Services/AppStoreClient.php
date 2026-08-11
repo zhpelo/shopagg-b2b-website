@@ -5,6 +5,7 @@ namespace App\Services;
 
 final class AppStoreClient {
     private const TYPE_B2B_THEME = 'b2b_theme';
+    private const TYPE_B2B_PLUGIN = 'b2b_plugin';
     private const USER_AGENT = 'ShopAGG-B2B-Website-AppStore/1.0';
 
     private string $baseUrl;
@@ -55,6 +56,24 @@ final class AppStoreClient {
             'message' => '',
             'status' => $response['status'],
         ];
+    }
+
+    public function listB2BPlugins(): array {
+        $response = $this->request('GET', '/resources', ['type' => self::TYPE_B2B_PLUGIN], false);
+        if (!$response['ok']) return ['ok' => false, 'plugins' => [], 'message' => $this->messageFromResponse($response), 'status' => $response['status']];
+        $payload = is_array($response['data']) ? $response['data'] : [];
+        return ['ok' => true, 'plugins' => is_array($payload['data'] ?? null) ? $payload['data'] : [], 'message' => '', 'status' => $response['status']];
+    }
+
+    public function getB2BPlugin(int $resourceId): array {
+        $response = $this->request('GET', '/resources/' . $resourceId, [], false);
+        if (!$response['ok']) return ['ok' => false, 'resource' => null, 'message' => $this->messageFromResponse($response), 'status' => $response['status']];
+        $payload = is_array($response['data']) ? $response['data'] : [];
+        $resource = $payload['resource'] ?? null;
+        if (!is_array($resource) || ($resource['type'] ?? '') !== self::TYPE_B2B_PLUGIN) {
+            return ['ok' => false, 'resource' => null, 'message' => '该资源不是 B2B 网站插件', 'status' => $response['status']];
+        }
+        return ['ok' => true, 'resource' => $resource, 'message' => '', 'status' => $response['status']];
     }
 
     public function getB2BTheme(int $resourceId): array {

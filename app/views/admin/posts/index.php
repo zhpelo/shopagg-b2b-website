@@ -41,6 +41,7 @@ $countUnit = $contentConfig['count_unit'] ?? '个';
                 <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-plus"></i></span>
                 <span>新建<?= h($singular) ?></span>
             </a>
+            <?= plugin_slot('admin.post.list_actions', ['content_type' => $contentConfig['type'] ?? 'post', 'items' => $items]) ?>
         </div>
     </div>
 </div>
@@ -139,6 +140,7 @@ $countUnit = $contentConfig['count_unit'] ?? '个';
                                     <button type="button" data-post-action="<?= url($deleteUrl) ?>" data-post-payload="<?= h(json_encode(['id' => (int)$row['id']])) ?>" class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition hover:bg-rose-100" data-confirm-message="确定要删除该<?= h($singular) ?>吗？此操作不可恢复。">
                                         <span class="inline-flex h-5 w-5 items-center justify-center"><i class="fas fa-trash-alt"></i></span>
                                     </button>
+                                    <?= plugin_slot('admin.post.row_actions', ['item' => $row, 'content_type' => $contentConfig['type'] ?? 'post']) ?>
                                 </div>
                             </td>
                         </tr>

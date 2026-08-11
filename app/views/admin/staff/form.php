@@ -92,6 +92,17 @@
                                 'settings' => ['系统设置', 'cog', 'text-rose-600'],
                                 'staff' => ['员工管理', 'users', 'text-slate-700']
                             ];
+                            if (class_exists(\App\Plugins\PluginRuntime::class)) {
+                                foreach (\App\Plugins\PluginRuntime::instance()->cache()['permissions'] as $permission) {
+                                    $permissionId = (string)($permission['id'] ?? $permission['value'] ?? '');
+                                    if ($permissionId === '') continue;
+                                    $available_perms[$permissionId] = [
+                                        (string)($permission['label'] ?? $permissionId),
+                                        (string)($permission['icon'] ?? 'plug'),
+                                        'text-violet-600',
+                                    ];
+                                }
+                            }
                             $user_perms = $user['permissions'] ?? [];
                             foreach ($available_perms as $key => $info):
                             ?>
