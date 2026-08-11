@@ -119,7 +119,7 @@ class AdminController extends Controller {
             $this->redirect('/admin');
         }
 
-        if (str_starts_with($path, '/admin/appearance') && AuthManager::getUserRole() !== 'admin') {
+        if ((str_starts_with($path, '/admin/appearance') || str_starts_with($path, '/admin/app-store/themes')) && AuthManager::getUserRole() !== 'admin') {
             $this->redirect('/admin');
         }
     }
@@ -1906,7 +1906,13 @@ class AdminController extends Controller {
      */
     public function themeList(): void {
         $themes = $this->getInstalledThemes();
-        $appStore = $this->buildAppStoreThemeState($themes);
+        $client = $this->makeAppStoreClient();
+        $appStore = [
+            'has_token' => $client->hasToken(),
+            'masked_token' => $client->maskedToken(),
+            'site_domain' => $this->appStoreLicenseDomain(),
+            'wechat_pay' => $this->appStoreWechatPayState(),
+        ];
         $currentTheme = $this->settingModel->get('theme', 'default');
         $currentThemeName = $currentTheme;
         foreach ($themes as $theme) {
@@ -1939,13 +1945,13 @@ class AdminController extends Controller {
     public function themeAppStoreDetail(string $id): void {
         $resourceId = (int)$id;
         if ($resourceId <= 0) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('请选择要查看的 App Store 主题'));
+            $this->redirect('/admin/app-store/themes?error=' . urlencode('请选择要查看的 App Store 主题'));
         }
 
         $client = $this->makeAppStoreClient();
         $response = $client->getB2BTheme($resourceId);
         if (!$response['ok'] || !is_array($response['resource'] ?? null)) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode($response['message'] ?? '无法获取 App Store 主题详情'));
+            $this->redirect('/admin/app-store/themes?error=' . urlencode($response['message'] ?? '无法获取 App Store 主题详情'));
         }
 
         $themes = $this->getInstalledThemes();
@@ -1983,9 +1989,9 @@ class AdminController extends Controller {
             }
 
             $result = $this->installThemeFromUpload($file);
-            $this->redirect('/admin/appearance/themes?success=' . urlencode('主题已上传：' . $result['name']));
+            $this->redirect('/admin/app-store/themes?success=' . urlencode('主题已上传：' . $result['name']));
         } catch (\RuntimeException $e) {
-            $this->redirect('/admin/appearance/themes/upload?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/themes/upload?error=' . urlencode($e->getMessage()));
         }
     }
 
@@ -2048,9 +2054,9 @@ class AdminController extends Controller {
             }
 
             $this->appStoreThemeInstallModel->deleteByThemeSlug($theme);
-            $this->redirect('/admin/appearance/themes?success=' . urlencode('主题已删除：' . $themeName));
+            $this->redirect('/admin/app-store/themes?success=' . urlencode('主题已删除：' . $themeName));
         } catch (\RuntimeException $e) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/themes?error=' . urlencode($e->getMessage()));
         }
     }
 
@@ -2066,17 +2072,17 @@ class AdminController extends Controller {
         if ($clearToken) {
             $this->settingModel->set('app_store_api_token', '');
             unset($_SESSION['app_store_wechat_pay']);
-            $this->redirect('/admin/appearance/themes?success=' . urlencode('已解除当前站点的 ShopAGG 账户绑定'));
+            $this->redirect('/admin/app-store/themes?success=' . urlencode('已解除当前站点的 ShopAGG 账户绑定'));
         }
 
         if ($apiToken === '') {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('请输入 App Store API Token'));
+            $this->redirect('/admin/app-store/themes?error=' . urlencode('请输入 App Store API Token'));
         }
 
         $client = new AppStoreClient($this->defaultAppStoreApiBase(), $apiToken);
         $accountResponse = $client->me();
         if (!$accountResponse['ok']) {
-            $this->redirect('/admin/appearance/themes?error=' . urlencode('Token 验证失败：' . $this->appStoreResponseMessage($accountResponse)));
+            $this->redirect('/admin/app-store/themes?error=' . urlencode('Token 验证失败：' . $this->appStoreResponseMessage($accountResponse)));
         }
 
         $account = is_array($accountResponse['data'] ?? null) ? $accountResponse['data'] : [];
@@ -2084,7 +2090,7 @@ class AdminController extends Controller {
 
         $this->settingModel->set('app_store_api_token', $apiToken);
 
-        $this->redirect('/admin/appearance/themes?success=' . urlencode('当前站点已绑定 ShopAGG 账户：' . $accountLabel));
+        $this->redirect('/admin/app-store/themes?success=' . urlencode('当前站点已绑定 ShopAGG 账户：' . $accountLabel));
     }
 
     /**
@@ -2303,7 +2309,7 @@ class AdminController extends Controller {
         return is_array($_SESSION['app_store_wechat_pay'] ?? null) ? $_SESSION['app_store_wechat_pay'] : null;
     }
 
-    private function safeThemeReturnPath(string $fallback = '/admin/appearance/themes'): string {
+    private function safeThemeReturnPath(string $fallback = '/admin/app-store/themes'): string {
         $returnTo = trim((string)($_POST['return_to'] ?? ''));
         if ($returnTo === '') {
             return $fallback;
@@ -2320,7 +2326,7 @@ class AdminController extends Controller {
             $path = substr($path, strlen($basePath)) ?: '/';
         }
 
-        if (!str_starts_with($path, '/admin/appearance/themes')) {
+        if (!str_starts_with($path, '/admin/app-store/themes')) {
             return $fallback;
         }
 

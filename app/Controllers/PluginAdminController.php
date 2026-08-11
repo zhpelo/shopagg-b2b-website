@@ -57,9 +57,9 @@ final class PluginAdminController extends Controller {
             if (strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION)) !== 'zip') throw new \RuntimeException('仅支持 ZIP 插件包');
             $result = $this->manager->installZip((string)$file['tmp_name']);
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
-            $this->redirect('/admin/plugins?success=' . urlencode('插件已安装：' . $result['manifest']['name']));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode('插件已安装：' . $result['manifest']['name']));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/plugins?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/plugins?error=' . urlencode($e->getMessage()));
         }
     }
 
@@ -89,7 +89,7 @@ final class PluginAdminController extends Controller {
             }
             $result = $this->manager->installZip($zip, 'app-store');
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
-            $this->redirect('/admin/plugins?success=' . urlencode('市场插件已安装：' . $result['manifest']['name']));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode('市场插件已安装：' . $result['manifest']['name']));
         } catch (\Throwable $e) {
             $this->redirect('/admin/app-store?type=plugin&error=' . urlencode($e->getMessage()));
         } finally {
@@ -111,16 +111,16 @@ final class PluginAdminController extends Controller {
                 'rebuild' => $this->manager->rebuildCache(),
                 default => throw new \RuntimeException('未知插件操作'),
             };
-            $this->redirect('/admin/plugins?success=' . urlencode('操作完成'));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode('操作完成'));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/plugins?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/plugins?error=' . urlencode($e->getMessage()));
         }
     }
 
     public function settings(): void {
         $id = trim((string)($_GET['id'] ?? ''));
         $plugin = $this->registry->find($id);
-        if (!$plugin) $this->redirect('/admin/plugins?error=' . urlencode('插件不存在'));
+        if (!$plugin) $this->redirect('/admin/app-store/plugins?error=' . urlencode('插件不存在'));
         $values = [];
         foreach (($plugin['manifest']['settings'] ?? []) as $key => $field) $values[$key] = $this->registry->option($id, (string)$key, $field['default'] ?? null);
         $this->renderAdmin('插件设置 - ' . $plugin['name'], 'admin/plugins/settings', ['plugin' => $plugin, 'values' => $values]);
@@ -131,16 +131,16 @@ final class PluginAdminController extends Controller {
         $id = trim((string)($_POST['plugin_id'] ?? ''));
         try {
             $this->manager->saveSettings($id, $_POST);
-            $this->redirect('/admin/plugins/settings?id=' . rawurlencode($id) . '&success=' . urlencode('设置已保存'));
+            $this->redirect('/admin/app-store/plugins/settings?id=' . rawurlencode($id) . '&success=' . urlencode('设置已保存'));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/plugins/settings?id=' . rawurlencode($id) . '&error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/plugins/settings?id=' . rawurlencode($id) . '&error=' . urlencode($e->getMessage()));
         }
     }
 
     public function runJobs(): void {
         csrf_check();
         $results = (new JobRunner())->runDue(10);
-        $this->redirect('/admin/plugins?success=' . urlencode('已处理 ' . count($results) . ' 个任务分片'));
+        $this->redirect('/admin/app-store/plugins?success=' . urlencode('已处理 ' . count($results) . ' 个任务分片'));
     }
 
     public function jobAction(): void {
@@ -154,9 +154,9 @@ final class PluginAdminController extends Controller {
                 'cancel' => $runner->cancel($jobId),
                 default => throw new \RuntimeException('未知任务操作'),
             };
-            $this->redirect('/admin/plugins?success=' . urlencode('任务操作完成'));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode('任务操作完成'));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/plugins?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/plugins?error=' . urlencode($e->getMessage()));
         }
     }
 

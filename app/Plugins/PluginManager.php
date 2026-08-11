@@ -231,8 +231,7 @@ final class PluginManager {
             'zip' => class_exists(\ZipArchive::class),
             'curl' => function_exists('curl_init'),
             'storage_writable' => is_writable(APP_ROOT . '/storage'),
-            'uploads_writable' => is_writable(APP_ROOT . '/uploads'),
-            'cache_file' => (new PluginCache())->file(),
+            'uploads_writable' => is_writable(APP_ROOT . '/uploads')
         ];
     }
 

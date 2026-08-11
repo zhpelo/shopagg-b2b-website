@@ -8,3 +8,4 @@ storage/blocks/
 .env
 storage/
 uploads/logs/*.log
+examples/*

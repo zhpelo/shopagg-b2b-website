@@ -11,6 +11,9 @@ use App\Plugins\PluginManager;
 use App\Services\AppStoreClient;
 
 final class AppStoreController extends Controller {
+    private const CATALOG_CACHE_KEY = 'app_store_catalog_cache_v1';
+    private const CATALOG_CACHE_TTL = 300;
+
     public function __construct() {
         if (!AuthManager::isAuthenticated()) $this->redirect('/admin/login');
         if (AuthManager::getUserRole() !== 'admin') $this->redirect('/admin');
@@ -24,8 +27,9 @@ final class AppStoreController extends Controller {
 
         $settings = new Setting();
         $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $settings->get('app_store_api_token', ''));
-        $themeResponse = $client->listB2BThemes();
-        $pluginResponse = $client->listB2BPlugins();
+        $catalog = $this->loadCatalog($client, $settings, (string)($_GET['refresh'] ?? '') === '1');
+        $themeResponse = $catalog['themes'];
+        $pluginResponse = $catalog['plugins'];
         $items = array_merge(
             $this->normalizeThemes($themeResponse['themes'] ?? []),
             $this->normalizePlugins($pluginResponse['plugins'] ?? [])
@@ -56,6 +60,11 @@ final class AppStoreController extends Controller {
             'counts' => $counts,
             'filters' => compact('query', 'type', 'status', 'price'),
             'hasToken' => $client->hasToken(),
+            'catalogStatus' => [
+                'source' => $catalog['source'],
+                'fetched_at' => $catalog['fetched_at'],
+                'notice' => $catalog['notice'],
+            ],
             'errors' => array_values(array_filter([
                 trim((string)($_GET['error'] ?? '')),
                 ($themeResponse['ok'] ?? false) ? '' : '主题：' . ($themeResponse['message'] ?? '暂时无法连接应用商店'),
@@ -63,6 +72,71 @@ final class AppStoreController extends Controller {
             ])),
         ]);
     }
+
+    private function loadCatalog(AppStoreClient $client, Setting $settings, bool $forceRefresh): array {
+        $cached = json_decode($settings->get(self::CATALOG_CACHE_KEY, ''), true);
+        $hasCache = is_array($cached)
+            && is_array($cached['themes'] ?? null)
+            && is_array($cached['plugins'] ?? null)
+            && (int)($cached['fetched_at'] ?? 0) > 0;
+        $cacheAge = $hasCache ? time() - (int)$cached['fetched_at'] : PHP_INT_MAX;
+
+        if (!$forceRefresh && $hasCache && $cacheAge < self::CATALOG_CACHE_TTL) {
+            return [
+                'themes' => $cached['themes'],
+                'plugins' => $cached['plugins'],
+                'source' => 'cache',
+                'fetched_at' => (int)$cached['fetched_at'],
+                'notice' => '',
+            ];
+        }
+
+        $remote = $client->listCatalog();
+        $themes = $remote['themes'];
+        $plugins = $remote['plugins'];
+        if (($themes['ok'] ?? false) && ($plugins['ok'] ?? false)) {
+            $fetchedAt = time();
+            $settings->set(self::CATALOG_CACHE_KEY, json_encode([
+                'fetched_at' => $fetchedAt,
+                'themes' => $themes,
+                'plugins' => $plugins,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
+            return [
+                'themes' => $themes,
+                'plugins' => $plugins,
+                'source' => 'remote',
+                'fetched_at' => $fetchedAt,
+                'notice' => '',
+            ];
+        }
+
+        if ($hasCache) {
+            if (!($themes['ok'] ?? false)) $themes = $cached['themes'];
+            if (!($plugins['ok'] ?? false)) $plugins = $cached['plugins'];
+            return [
+                'themes' => $themes,
+                'plugins' => $plugins,
+                'source' => 'stale-cache',
+                'fetched_at' => (int)$cached['fetched_at'],
+                'notice' => '远程目录暂时不可用，当前显示上次成功更新的数据。',
+            ];
+        }
+
+        return [
+            'themes' => $themes,
+            'plugins' => $plugins,
+            'source' => 'remote-error',
+            'fetched_at' => 0,
+            'notice' => '',
+        ];
+    }
+
+    public function legacyPlugins(): void { $this->redirectWithQuery('/admin/app-store/plugins'); }
+    public function legacyPluginMarket(): void { $this->redirectWithQuery('/admin/app-store?type=plugin'); }
+    public function legacyPluginSettings(): void { $this->redirectWithQuery('/admin/app-store/plugins/settings'); }
+    public function legacyThemes(): void { $this->redirectWithQuery('/admin/app-store/themes'); }
+    public function legacyThemeUpload(): void { $this->redirectWithQuery('/admin/app-store/themes/upload'); }
+    public function legacyThemeDetail(string $id): void { $this->redirectWithQuery('/admin/app-store/themes/' . rawurlencode($id)); }
 
     private function normalizePlugins(array $resources): array {
         $installed = [];
@@ -80,7 +154,7 @@ final class AppStoreController extends Controller {
                 'installed' => $local !== null,
                 'installed_version' => $localVersion,
                 'needs_update' => $local !== null && $remoteVersion !== '' && $localVersion !== '' && version_compare($remoteVersion, $localVersion, '>'),
-                'manage_url' => '/admin/plugins',
+                'manage_url' => '/admin/app-store/plugins',
                 'detail_url' => '',
             ]);
         }
@@ -104,8 +178,8 @@ final class AppStoreController extends Controller {
                 'installed' => $isInstalled,
                 'installed_version' => $localVersion,
                 'needs_update' => $isInstalled && $remoteVersion !== '' && $localVersion !== '' && version_compare($remoteVersion, $localVersion, '>'),
-                'manage_url' => '/admin/appearance/themes',
-                'detail_url' => $id > 0 ? '/admin/appearance/themes/app-store/' . $id : '',
+                'manage_url' => '/admin/app-store/themes',
+                'detail_url' => $id > 0 ? '/admin/app-store/themes/' . $id : '',
             ]);
         }
         return $items;
@@ -144,5 +218,11 @@ final class AppStoreController extends Controller {
         $content = ob_get_clean() ?: '';
         $showNav = true;
         require APP_ROOT . '/app/views/admin/layout.php';
+    }
+
+    private function redirectWithQuery(string $path): void {
+        $query = $_GET;
+        $target = $path . ($query !== [] ? (str_contains($path, '?') ? '&' : '?') . http_build_query($query) : '');
+        $this->redirect($target);
     }
 }

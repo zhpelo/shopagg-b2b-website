@@ -27,7 +27,7 @@
         elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
         elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
         elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
-        elseif (str_starts_with($current_path, '/admin/app-store') || str_starts_with($current_path, '/admin/plugins') || str_starts_with($current_path, '/admin/appearance/themes') || $current_path === '/admin/appearance') $active_group = 'apps';
+        elseif (str_starts_with($current_path, '/admin/app-store') || $current_path === '/admin/appearance') $active_group = 'apps';
         elseif (str_starts_with($current_path, '/admin/appearance')) $active_group = 'appearance';
 
         $user_role = \App\Core\AuthManager::getUserRole() ?? 'staff';
@@ -192,14 +192,14 @@
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
                         </a>
                     <?php elseif ($active_group === 'apps'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/app-store') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store') ?>">
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/app-store' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-store"></i></span>浏览应用
                         </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/plugins') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/plugins') ?>">
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/app-store/plugins') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store/plugins') ?>">
                             <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-plug"></i></span>插件管理
                         </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/themes') || $current_path === '/admin/appearance' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/themes') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-swatchbook"></i></span>网站模板
+                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/app-store/themes') || $current_path === '/admin/appearance' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store/themes') ?>">
+                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-swatchbook"></i></span>主题管理
                         </a>
                     <?php elseif ($active_group === 'appearance'): ?>
                         

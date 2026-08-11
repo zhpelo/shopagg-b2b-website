@@ -37,36 +37,91 @@ final class AppStoreClient {
     }
 
     public function listB2BThemes(): array {
-        $response = $this->request('GET', '/resources', ['type' => self::TYPE_B2B_THEME], false);
-        if (!$response['ok']) {
-            return [
-                'ok' => false,
-                'themes' => [],
-                'message' => $this->messageFromResponse($response),
-                'status' => $response['status'],
-            ];
-        }
-
-        $payload = is_array($response['data']) ? $response['data'] : [];
-        $themes = $payload['data'] ?? [];
-
-        return [
-            'ok' => true,
-            'themes' => is_array($themes) ? $themes : [],
-            'message' => '',
-            'status' => $response['status'],
-        ];
+        return $this->formatResourceList(
+            $this->request('GET', '/resources', ['type' => self::TYPE_B2B_THEME], false, true),
+            'themes'
+        );
     }
 
     public function listB2BPlugins(): array {
-        $response = $this->request('GET', '/resources', ['type' => self::TYPE_B2B_PLUGIN], false);
-        if (!$response['ok']) return ['ok' => false, 'plugins' => [], 'message' => $this->messageFromResponse($response), 'status' => $response['status']];
-        $payload = is_array($response['data']) ? $response['data'] : [];
-        return ['ok' => true, 'plugins' => is_array($payload['data'] ?? null) ? $payload['data'] : [], 'message' => '', 'status' => $response['status']];
+        return $this->formatResourceList(
+            $this->request('GET', '/resources', ['type' => self::TYPE_B2B_PLUGIN], false, true),
+            'plugins'
+        );
+    }
+
+    /**
+     * Fetch both public catalogs concurrently so a slow endpoint does not block
+     * the other one. The short timeout is intentional: callers keep a local
+     * stale cache for shared-hosting environments with unreliable outbound HTTP.
+     */
+    public function listCatalog(): array {
+        if (!function_exists('curl_multi_init') || $this->baseUrl === '') {
+            return [
+                'themes' => $this->listB2BThemes(),
+                'plugins' => $this->listB2BPlugins(),
+            ];
+        }
+
+        $requests = [
+            'themes' => self::TYPE_B2B_THEME,
+            'plugins' => self::TYPE_B2B_PLUGIN,
+        ];
+        $multi = curl_multi_init();
+        $handles = [];
+
+        foreach ($requests as $key => $type) {
+            $url = $this->baseUrl . '/resources?' . http_build_query(['type' => $type]);
+            $headers = ['Accept: application/json', 'User-Agent: ' . self::USER_AGENT];
+            if ($this->token !== '') {
+                $headers[] = 'Authorization: Bearer ' . $this->token;
+            }
+            $handle = curl_init($url);
+            curl_setopt_array($handle, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_TIMEOUT => 8,
+                CURLOPT_HTTPHEADER => $headers,
+            ]);
+            curl_multi_add_handle($multi, $handle);
+            $handles[$key] = $handle;
+        }
+
+        $active = null;
+        do {
+            $status = curl_multi_exec($multi, $active);
+        } while ($status === CURLM_CALL_MULTI_PERFORM);
+
+        while ($active && $status === CURLM_OK) {
+            if (curl_multi_select($multi, 1.0) === -1) {
+                usleep(10000);
+            }
+            do {
+                $status = curl_multi_exec($multi, $active);
+            } while ($status === CURLM_CALL_MULTI_PERFORM);
+        }
+
+        $responses = [];
+        foreach ($handles as $key => $handle) {
+            $raw = curl_multi_getcontent($handle);
+            $responses[$key] = $this->responseFromCurl(
+                $raw,
+                (int)curl_getinfo($handle, CURLINFO_HTTP_CODE),
+                curl_error($handle)
+            );
+            curl_multi_remove_handle($multi, $handle);
+            curl_close($handle);
+        }
+        curl_multi_close($multi);
+
+        return [
+            'themes' => $this->formatResourceList($responses['themes'], 'themes'),
+            'plugins' => $this->formatResourceList($responses['plugins'], 'plugins'),
+        ];
     }
 
     public function getB2BPlugin(int $resourceId): array {
-        $response = $this->request('GET', '/resources/' . $resourceId, [], false);
+        $response = $this->request('GET', '/resources/' . $resourceId, [], false, true);
         if (!$response['ok']) return ['ok' => false, 'resource' => null, 'message' => $this->messageFromResponse($response), 'status' => $response['status']];
         $payload = is_array($response['data']) ? $response['data'] : [];
         $resource = $payload['resource'] ?? null;
@@ -77,7 +132,7 @@ final class AppStoreClient {
     }
 
     public function getB2BTheme(int $resourceId): array {
-        $response = $this->request('GET', '/resources/' . $resourceId, [], false);
+        $response = $this->request('GET', '/resources/' . $resourceId, [], false, true);
         if (!$response['ok']) {
             return [
                 'ok' => false,
@@ -182,7 +237,7 @@ final class AppStoreClient {
         }
     }
 
-    private function request(string $method, string $path, array $data = [], bool $requiresToken = true): array {
+    private function request(string $method, string $path, array $data = [], bool $requiresToken = true, bool $fast = false): array {
         if ($this->baseUrl === '') {
             return [
                 'ok' => false,
@@ -223,8 +278,8 @@ final class AppStoreClient {
         curl_setopt_array($curl, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => $fast ? 3 : 8,
+            CURLOPT_TIMEOUT => $fast ? 8 : 30,
             CURLOPT_HTTPHEADER => $headers,
         ]);
 
@@ -240,6 +295,10 @@ final class AppStoreClient {
         $error = curl_error($curl);
         curl_close($curl);
 
+        return $this->responseFromCurl($raw, $status, $error);
+    }
+
+    private function responseFromCurl(string|bool $raw, int $status, string $error): array {
         if ($raw === false) {
             return [
                 'ok' => false,
@@ -250,14 +309,32 @@ final class AppStoreClient {
             ];
         }
 
-        $decoded = json_decode((string)$raw, true);
-
+        $decoded = json_decode($raw, true);
         return [
             'ok' => $status >= 200 && $status < 300,
             'status' => $status,
             'data' => is_array($decoded) ? $decoded : null,
-            'raw' => (string)$raw,
+            'raw' => $raw,
             'message' => $error,
+        ];
+    }
+
+    private function formatResourceList(array $response, string $key): array {
+        if (!$response['ok']) {
+            return [
+                'ok' => false,
+                $key => [],
+                'message' => $this->messageFromResponse($response),
+                'status' => $response['status'],
+            ];
+        }
+
+        $payload = is_array($response['data']) ? $response['data'] : [];
+        return [
+            'ok' => true,
+            $key => is_array($payload['data'] ?? null) ? $payload['data'] : [],
+            'message' => '',
+            'status' => $response['status'],
         ];
     }
 

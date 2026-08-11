@@ -16,12 +16,22 @@ function register_routes(Router $router): void {
     $router->add('GET', '/admin/app-store', [AppStoreController::class, 'index']);
     // 插件平台：Cron 使用独立 Token；管理路由由 PluginAdminController 强制管理员认证。
     $router->add('GET', '/plugin-cron', [PluginCronController::class, 'run']);
-    $router->add('GET', '/admin/plugins', [PluginAdminController::class, 'index']);
+    $router->add('GET', '/admin/app-store/plugins', [PluginAdminController::class, 'index']);
+    $router->add('POST', '/admin/app-store/plugins/upload', [PluginAdminController::class, 'upload']);
+    $router->add('GET', '/admin/app-store/plugins/market', [PluginAdminController::class, 'market']);
+    $router->add('POST', '/admin/app-store/plugins/install', [PluginAdminController::class, 'installMarket']);
+    $router->add('POST', '/admin/app-store/plugins/action', [PluginAdminController::class, 'action']);
+    $router->add('GET', '/admin/app-store/plugins/settings', [PluginAdminController::class, 'settings']);
+    $router->add('POST', '/admin/app-store/plugins/settings', [PluginAdminController::class, 'saveSettings']);
+    $router->add('POST', '/admin/app-store/plugins/jobs/run', [PluginAdminController::class, 'runJobs']);
+    $router->add('POST', '/admin/app-store/plugins/jobs/action', [PluginAdminController::class, 'jobAction']);
+    // 旧插件 URL 兼容：GET 跳转到统一地址，POST 暂时保留处理能力。
+    $router->add('GET', '/admin/plugins', [AppStoreController::class, 'legacyPlugins']);
+    $router->add('GET', '/admin/plugins/market', [AppStoreController::class, 'legacyPluginMarket']);
+    $router->add('GET', '/admin/plugins/settings', [AppStoreController::class, 'legacyPluginSettings']);
     $router->add('POST', '/admin/plugins/upload', [PluginAdminController::class, 'upload']);
-    $router->add('GET', '/admin/plugins/market', [PluginAdminController::class, 'market']);
     $router->add('POST', '/admin/plugins/market/install', [PluginAdminController::class, 'installMarket']);
     $router->add('POST', '/admin/plugins/action', [PluginAdminController::class, 'action']);
-    $router->add('GET', '/admin/plugins/settings', [PluginAdminController::class, 'settings']);
     $router->add('POST', '/admin/plugins/settings', [PluginAdminController::class, 'saveSettings']);
     $router->add('POST', '/admin/plugins/jobs/run', [PluginAdminController::class, 'runJobs']);
     $router->add('POST', '/admin/plugins/jobs/action', [PluginAdminController::class, 'jobAction']);
@@ -155,10 +165,20 @@ function register_routes(Router $router): void {
     $router->add('POST', '/admin/settings-updater/migrations/run', [AdminController::class, 'updaterRunMigrations']);
 
     // 后台：外观区块 - 网站模版
-    $router->add('GET', '/admin/appearance', [AdminController::class, 'themeList']);
-    $router->add('GET', '/admin/appearance/themes', [AdminController::class, 'themeList']);
-    $router->add('GET', '/admin/appearance/themes/upload', [AdminController::class, 'themeUploadForm']);
-    $router->add('GET', '/admin/appearance/themes/app-store/:id', [AdminController::class, 'themeAppStoreDetail']);
+    $router->add('GET', '/admin/appearance', [AppStoreController::class, 'legacyThemes']);
+    $router->add('GET', '/admin/app-store/themes', [AdminController::class, 'themeList']);
+    $router->add('GET', '/admin/app-store/themes/upload', [AdminController::class, 'themeUploadForm']);
+    $router->add('GET', '/admin/app-store/themes/:id', [AdminController::class, 'themeAppStoreDetail']);
+    $router->add('POST', '/admin/app-store/themes/upload', [AdminController::class, 'themeUpload']);
+    $router->add('POST', '/admin/app-store/themes/activate', [AdminController::class, 'themeActivate']);
+    $router->add('POST', '/admin/app-store/themes/delete', [AdminController::class, 'themeDelete']);
+    $router->add('POST', '/admin/app-store/themes/settings', [AdminController::class, 'themeAppStoreSettings']);
+    $router->add('POST', '/admin/app-store/themes/install', [AdminController::class, 'themeAppStoreInstall']);
+    $router->add('POST', '/admin/app-store/themes/purchase', [AdminController::class, 'themeAppStorePurchase']);
+    // 旧主题 URL 兼容。
+    $router->add('GET', '/admin/appearance/themes', [AppStoreController::class, 'legacyThemes']);
+    $router->add('GET', '/admin/appearance/themes/upload', [AppStoreController::class, 'legacyThemeUpload']);
+    $router->add('GET', '/admin/appearance/themes/app-store/:id', [AppStoreController::class, 'legacyThemeDetail']);
     $router->add('POST', '/admin/appearance/themes/upload', [AdminController::class, 'themeUpload']);
     $router->add('POST', '/admin/appearance/themes/activate', [AdminController::class, 'themeActivate']);
     $router->add('POST', '/admin/appearance/themes/delete', [AdminController::class, 'themeDelete']);
