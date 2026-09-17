@@ -75,6 +75,8 @@ class AdminController extends Controller {
         'Description' => 'description',
         'Version' => 'version',
         'License' => 'license',
+        'Language' => 'language',
+        'Text Direction' => 'text_direction',
     ];
 
     /**
@@ -2475,6 +2477,8 @@ class AdminController extends Controller {
             'author_uri' => $metadata['author_uri'],
             'theme_uri' => $metadata['theme_uri'],
             'license' => $metadata['license'],
+            'language' => $metadata['language'],
+            'text_direction' => $metadata['text_direction'],
             'preview_url' => is_file($previewPath) ? asset_url('/themes/' . rawurlencode($slug) . '/screenshot.jpg') : null,
             'is_active' => $slug === $currentTheme,
             'is_valid' => $validation['valid'],
@@ -2553,6 +2557,8 @@ class AdminController extends Controller {
             'description' => '',
             'version' => '',
             'license' => '',
+            'language' => '',
+            'text_direction' => '',
         ];
     }
 
@@ -3155,6 +3161,37 @@ class AdminController extends Controller {
                 $val = trim((string)($submitted[$blockKey][$fieldKey] ?? ''));
                 $default = (string)($field['default'] ?? '');
                 $fieldType = (string)($field['type'] ?? 'text');
+
+                if (in_array($fieldType, ['number', 'range'], true)) {
+                    if ($val === '' || !is_numeric($val)) {
+                        $val = $default;
+                    }
+                    if ($val !== '' && is_numeric($val)) {
+                        $number = (float)$val;
+                        if (isset($field['min']) && is_numeric($field['min'])) {
+                            $number = max((float)$field['min'], $number);
+                        }
+                        if (isset($field['max']) && is_numeric($field['max'])) {
+                            $number = min((float)$field['max'], $number);
+                        }
+                        $step = isset($field['step']) && is_numeric($field['step']) ? (float)$field['step'] : 1.0;
+                        $val = $step >= 1 && floor($number) === $number
+                            ? (string)(int)$number
+                            : rtrim(rtrim(number_format($number, 4, '.', ''), '0'), '.');
+                    }
+                } elseif ($fieldType === 'color') {
+                    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $val)) {
+                        $val = preg_match('/^#[0-9a-fA-F]{6}$/', $default) ? $default : '';
+                    }
+                } elseif ($fieldType === 'toggle') {
+                    $val = $val === 'yes' ? 'yes' : 'no';
+                } elseif ($fieldType === 'url' && $val !== '') {
+                    $isRelativeUrl = str_starts_with($val, '/') || str_starts_with($val, '#');
+                    $isSupportedUrl = preg_match('#^(https?://|mailto:|tel:)#i', $val) === 1;
+                    if (!$isRelativeUrl && !$isSupportedUrl) {
+                        $val = $default;
+                    }
+                }
 
                 if ($fieldType === 'select') {
                     $options = is_array($field['options'] ?? null) ? $field['options'] : [];

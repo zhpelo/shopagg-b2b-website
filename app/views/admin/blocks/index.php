@@ -66,7 +66,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-white">模板区块配置</h1>
-                <p class="text-indigo-100 mt-1">按页面分组管理模板区块内容，支持文字、图片、颜色和图标配置</p>
+                <p class="text-indigo-100 mt-1">按页面分组管理内容、显示状态、顺序、媒体、颜色和按钮链接</p>
             </div>
             <span class="px-3 py-1 bg-white/20 text-white text-sm rounded-lg">主题：<?= h($theme) ?></span>
         </div>
@@ -95,9 +95,17 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
             </div>
         <?php else: ?>
             <div class="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div class="mb-4">
-                    <p class="text-sm font-semibold text-slate-900">按所属页面查看区块</p>
-                    <p class="mt-1 text-sm text-slate-500">先选择页面分组，再编辑该页面下的具体区块。</p>
+                <div class="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900">按所属页面查看区块</p>
+                        <p class="mt-1 text-sm text-slate-500">先选择页面分组，再编辑该页面下的具体区块。</p>
+                    </div>
+                    <label class="relative block w-full lg:max-w-xs">
+                        <span class="sr-only">搜索区块</span>
+                        <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="search" data-block-search placeholder="搜索区块名称或说明"
+                               class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                    </label>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
@@ -125,7 +133,16 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                         data-block-group="<?= h($groupKey) ?>"
                                         class="block-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors <?= $blockKey === $activeBlockKey ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600' ?>"
                                         onclick="switchBlockTab('<?= h($blockKey) ?>')">
-                                    <?= h($block['label']) ?>
+                                    <span><?= h($block['label']) ?></span>
+                                    <?php
+                                        $customFieldCount = 0;
+                                        foreach (($block['fields'] ?? []) as $countFieldKey => $_countField) {
+                                            if (isset($userValues[$blockKey][$countFieldKey]) && (string)$userValues[$blockKey][$countFieldKey] !== '') {
+                                                $customFieldCount++;
+                                            }
+                                        }
+                                    ?>
+                                    <?php if ($customFieldCount > 0): ?><span class="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700" title="已自定义字段数"><?= $customFieldCount ?></span><?php endif; ?>
                                 </button>
                             <?php endforeach; ?>
                         </div>
@@ -363,6 +380,40 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                                     <a href="https://fontawesome.com/icons" target="_blank" class="text-xs text-indigo-500 hover:underline">图标库</a>
                                                 </div>
 
+                                            <?php elseif ($fieldType === 'toggle'): ?>
+                                                <label class="inline-flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
+                                                    <input type="hidden" name="<?= h($fieldName) ?>" value="no">
+                                                    <input id="<?= h($fieldInputId) ?>" type="checkbox" name="<?= h($fieldName) ?>" value="yes"
+                                                           <?= $currentVal === 'yes' ? 'checked' : '' ?> class="peer sr-only">
+                                                    <span class="relative h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-indigo-600 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-5"></span>
+                                                    <span class="text-sm font-medium text-slate-700"><?= h((string)($field['on_label'] ?? '启用')) ?></span>
+                                                </label>
+
+                                            <?php elseif ($fieldType === 'number'): ?>
+                                                <div class="flex items-center gap-3">
+                                                    <input id="<?= h($fieldInputId) ?>" type="number" name="<?= h($fieldName) ?>" value="<?= h($currentVal) ?>"
+                                                           min="<?= h((string)($field['min'] ?? '')) ?>" max="<?= h((string)($field['max'] ?? '')) ?>" step="<?= h((string)($field['step'] ?? '1')) ?>"
+                                                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                                                    <?php if (!empty($field['suffix'])): ?><span class="shrink-0 text-sm text-slate-500"><?= h((string)$field['suffix']) ?></span><?php endif; ?>
+                                                </div>
+
+                                            <?php elseif ($fieldType === 'range'): ?>
+                                                <div class="flex items-center gap-4" data-range-field>
+                                                    <input id="<?= h($fieldInputId) ?>" type="range" name="<?= h($fieldName) ?>" value="<?= h($currentVal) ?>"
+                                                           min="<?= h((string)($field['min'] ?? '0')) ?>" max="<?= h((string)($field['max'] ?? '100')) ?>" step="<?= h((string)($field['step'] ?? '1')) ?>"
+                                                           data-range-suffix="<?= h((string)($field['suffix'] ?? '')) ?>"
+                                                           class="h-2 min-w-0 flex-1 cursor-pointer accent-indigo-600">
+                                                    <output class="min-w-16 rounded-lg bg-slate-900 px-3 py-2 text-center text-sm font-semibold text-white"><?= h($currentVal) ?><?= h((string)($field['suffix'] ?? '')) ?></output>
+                                                </div>
+
+                                            <?php elseif ($fieldType === 'url'): ?>
+                                                <div class="relative">
+                                                    <i class="fas fa-link pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                                    <input id="<?= h($fieldInputId) ?>" type="text" inputmode="url" name="<?= h($fieldName) ?>" value="<?= h($currentVal) ?>"
+                                                           class="w-full rounded-xl border border-slate-300 py-2.5 pl-11 pr-4 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                                                           placeholder="<?= h((string)($field['placeholder'] ?? $defaultVal)) ?>">
+                                                </div>
+
                                             <?php elseif ($fieldType === 'select'): ?>
                                                 <?php
                                                     $selectOptions = is_array($field['options'] ?? null) ? $field['options'] : [];
@@ -397,6 +448,7 @@ if ($activeBlockKey === $firstBlockKey && $activeGroupKey !== '' && isset($group
                                             <?php if ($userVal !== '' && $userVal !== $defaultVal && $fieldType !== 'color'): ?>
                                                 <p class="text-xs text-slate-400 mt-1">默认值：<?= h(mb_substr($defaultVal, 0, 80)) ?><?= mb_strlen($defaultVal) > 80 ? '...' : '' ?></p>
                                             <?php endif; ?>
+                                            <?php if (!empty($field['help'])): ?><p class="mt-1.5 text-xs leading-5 text-slate-500"><?= h((string)$field['help']) ?></p><?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -591,6 +643,28 @@ document.querySelectorAll('input[type="color"]').forEach((colorInput) => {
         colorInput.addEventListener('input', () => { textInput.value = colorInput.value; });
     }
 });
+
+document.querySelectorAll('[data-range-field]').forEach((field) => {
+    const input = field.querySelector('input[type="range"]');
+    const output = field.querySelector('output');
+    if (!input || !output) return;
+    input.addEventListener('input', () => {
+        output.textContent = input.value + (input.dataset.rangeSuffix || '');
+    });
+});
+
+const blockSearch = document.querySelector('[data-block-search]');
+if (blockSearch) {
+    blockSearch.addEventListener('input', () => {
+        const query = blockSearch.value.trim().toLocaleLowerCase();
+        document.querySelectorAll('[data-block-tab]').forEach((tab) => {
+            const key = tab.dataset.blockTab || '';
+            const panel = document.querySelector('[data-block-panel="' + key + '"]');
+            const haystack = (tab.textContent + ' ' + (panel ? panel.textContent : '')).toLocaleLowerCase();
+            tab.classList.toggle('hidden', query !== '' && !haystack.includes(query));
+        });
+    });
+}
 
 document.querySelectorAll('[data-block-image-picker]').forEach((button) => {
     button.addEventListener('click', () => {
