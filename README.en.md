@@ -107,7 +107,7 @@ php shopagg plugin:validate plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-See the [plugin development guide](Documents/插件开发指南.md). You can also provide [`Documents/AI_PLUGIN_SPEC.md`](Documents/AI_PLUGIN_SPEC.md) as context when using AI to generate a plugin.
+See the [plugin development guide](../Documents/shopagg-b2b-website/Documents/插件开发指南.md). You can also provide the [AI plugin specification](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md) as context when generating a plugin. The machine-readable schema remains in this repository at `Documents/plugin.schema.json`.
 
 ### Frontend
 
@@ -308,7 +308,7 @@ Browser requests GET /product/steel-pipe
 │
 ├── uploads/                    # User uploads, organized by month
 ├── assets/admin/               # Admin assets
-└── Documents/                  # Developer documentation
+└── Documents/plugin.schema.json # Machine-readable plugin schema; reading docs are in the workspace Documents/
 ```
 
 ### Data model
@@ -341,14 +341,14 @@ The system currently has 17 tables:
 
 ## 📖 Developer documentation
 
-The complete developer documentation is in `Documents/`:
+The complete developer documentation is centralized in the workspace [Documents directory](../Documents/shopagg-b2b-website/Documents/):
 
 | Document | Contents |
 |---|---|
-| [System architecture](Documents/系统架构文档.md) | Layers, core modules, database design, and security architecture (Chinese) |
-| [Theme development guide](Documents/网站模板开发指南.md) | Theme conventions, template variables, helpers, and blocks (Chinese) |
-| [Plugin development guide](Documents/插件开发指南.md) | Plugin development (Chinese) |
-| [AI plugin specification](Documents/AI_PLUGIN_SPEC.md) | Plugin specification for AI-assisted development |
+| [System architecture](../Documents/shopagg-b2b-website/Documents/系统架构文档.md) | Layers, core modules, database design, and security architecture (Chinese) |
+| [Theme development guide](../Documents/shopagg-b2b-website/Documents/网站模板开发指南.md) | Theme conventions, template variables, helpers, and blocks (Chinese) |
+| [Plugin development guide](../Documents/shopagg-b2b-website/Documents/插件开发指南.md) | Plugin development (Chinese) |
+| [AI plugin specification](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md) | Plugin specification for AI-assisted development |
 
 ### Theme development conventions
 

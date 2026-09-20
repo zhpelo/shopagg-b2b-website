@@ -107,7 +107,7 @@ php shopagg plugin:validate plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-开发文档见 [`Documents/插件开发指南.md`](Documents/插件开发指南.md)，AI 生成插件时可直接提供 [`Documents/AI_PLUGIN_SPEC.md`](Documents/AI_PLUGIN_SPEC.md) 作为上下文。
+开发文档见[插件开发指南](../Documents/shopagg-b2b-website/Documents/插件开发指南.md)，AI 生成插件时可直接提供 [AI 插件规范](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md)作为上下文。机器校验 Schema 仍保留在本项目的 `Documents/plugin.schema.json`。
 
 ### 前台功能
 
@@ -329,7 +329,7 @@ server {
 │
 ├── uploads/                    # 用户上传文件（按月分目录）
 ├── assets/admin/               # 后台静态资源
-└── Documents/                  # 开发文档
+└── Documents/plugin.schema.json # 插件 Manifest 的机器校验 Schema；阅读文档在工作区根目录 Documents/
 ```
 
 ### 数据模型
@@ -362,12 +362,12 @@ server {
 
 ## 📖 开发文档
 
-完整的开发文档位于 `Documents/` 目录：
+完整的阅读文档统一位于工作区根目录的 [`Documents/shopagg-b2b-website/`](../Documents/shopagg-b2b-website/Documents/)，本项目只保留运行时/工具链需要的 Schema：
 
 | 文档 | 说明 |
 |------|------|
-| `系统架构文档.md` | 分层架构、核心模块详解、数据库设计、安全架构 |
-| `网站模板开发指南.md` | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
+| [系统架构文档.md](../Documents/shopagg-b2b-website/Documents/系统架构文档.md) | 分层架构、核心模块详解、数据库设计、安全架构 |
+| [网站模板开发指南.md](../Documents/shopagg-b2b-website/Documents/网站模板开发指南.md) | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
 
 ### 主题开发约定
 
