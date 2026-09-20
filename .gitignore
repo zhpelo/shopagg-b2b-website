@@ -1,12 +1,9 @@
 uploads/
-storage/site.db
-storage/site.db-wal
-storage/site.db-shm
-storage/blocks/
+storage/
 .DS_Store
 .htaccess
 .env
-storage/
-uploads/logs/*.log
 examples/*
 extensions/*
+themes/*
+!themes/default/

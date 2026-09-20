@@ -1,16 +1,26 @@
 <div align="center">
 
-# SHOPAGG B2B Website
+# 灯塔 CMS
 
-**轻量级外贸企业 B2B 官网系统**
+**Lighthouse CMS · 面向中国工厂与外贸公司的开源 B2B 官网系统**
 
 PHP + SQLite · 零依赖 · 开箱即用
+
+[简体中文](README.md) · [English](README.en.md)
 
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)
 
 [功能特性](#-功能特性) · [快速开始](#-快速开始) · [部署指南](#-部署指南) · [技术架构](#-技术架构) · [开发文档](#-开发文档)
 
 </div>
+
+---
+
+## 📣 品牌更名公告
+
+项目原名 **SHOPAGG B2B Website**，现正式更名为 **灯塔 CMS**（英文名 **Lighthouse CMS**）。灯塔 CMS 由 SHOPAGG 开源，面向中国工厂与外贸公司，帮助企业建立和管理自己的 B2B 外贸官网。
+
+此次更名仅涉及项目品牌。现有 GitHub 仓库地址、演示地址、`shopagg` 命令行工具及 ShopAgg 插件市场名称仍沿用原有标识；文档中的这些名称均指向当前实际可用的地址、命令或服务。
 
 ---
 
@@ -36,7 +46,7 @@ PHP + SQLite · 零依赖 · 开箱即用
 
 ## ✨ 功能特性
 
-### 为什么选择 SHOPAGG？
+### 为什么选择灯塔 CMS？
 
 <table>
 <tr>
