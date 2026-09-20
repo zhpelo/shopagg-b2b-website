@@ -18,7 +18,7 @@ $refreshQuery = http_build_query(array_filter([
     <header class="rounded-xl border border-slate-200 bg-white px-5 py-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">ShopAGG App Store</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">SHOPAGG App Store</p>
                 <h1 class="mt-1 text-2xl font-bold text-slate-900">应用商店</h1>
                 <p class="mt-1 text-sm text-slate-500">浏览并安装插件和网站主题。</p>
             </div>
@@ -59,15 +59,37 @@ $refreshQuery = http_build_query(array_filter([
     <?php if ($items === []): ?>
         <div class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"><i class="fas fa-search text-2xl text-slate-300"></i><h2 class="mt-3 font-bold text-slate-800">没有找到匹配应用</h2><p class="mt-1 text-sm text-slate-500">请更换关键词或清除筛选条件。</p></div>
     <?php else: ?>
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
             <?php foreach ($items as $item): ?>
-                <article class="flex min-h-[286px] flex-col rounded-xl border border-slate-200 bg-white">
-                    <div class="flex gap-3 border-b border-slate-100 p-4">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100 text-lg text-slate-500"><?php if ($item['image']): ?><img class="h-full w-full object-cover" src="<?= h($item['image']) ?>" alt=""><?php else: ?><i class="fas fa-<?= $item['type'] === 'plugin' ? 'plug' : 'swatchbook' ?>"></i><?php endif; ?></div>
-                        <div class="min-w-0 flex-1"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><span class="text-xs font-semibold text-indigo-600"><?= $item['type'] === 'plugin' ? '插件' : '网站主题' ?></span><h3 class="truncate text-base font-bold text-slate-900"><?= h($item['name']) ?></h3></div><span class="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700"><?= h($item['price_text']) ?></span></div><p class="mt-1 truncate text-xs text-slate-500"><?= h($item['vendor']) ?><?php if ($item['version']): ?> · v<?= h($item['version']) ?><?php endif; ?></p></div>
-                    </div>
-                    <div class="flex-1 p-4"><p class="line-clamp-3 text-sm leading-6 text-slate-600"><?= h($item['description'] ?: '暂无应用介绍') ?></p><?php if ($item['tags']): ?><div class="mt-3 flex flex-wrap gap-1.5"><?php foreach (array_slice($item['tags'], 0, 3) as $tag): ?><span class="rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-500"><?= h($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if ($item['installed']): ?><p class="mt-3 text-xs font-semibold <?= $item['needs_update'] ? 'text-amber-700' : 'text-emerald-700' ?>"><?= $item['needs_update'] ? '有可用更新' : '已安装' ?><?php if ($item['installed_version']): ?> · v<?= h($item['installed_version']) ?><?php endif; ?></p><?php endif; ?></div>
-                    <div class="border-t border-slate-100 p-3"><?php if ($item['installed']): ?><a class="flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url($item['manage_url']) ?>"><?= $item['needs_update'] ? '查看更新' : '管理' ?></a><?php elseif ($item['type'] === 'theme'): ?><a class="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" href="<?= url($item['detail_url']) ?>">查看并安装</a><?php else: ?><form action="<?= url('/admin/app-store/plugins/install') ?>" method="post"><input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>"><input type="hidden" name="resource_id" value="<?= (int)$item['id'] ?>"><button class="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" type="submit">下载安装</button></form><?php endif; ?></div>
+                <article class="min-w-0 overflow-hidden border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <a class="group flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600" href="<?= url($item['detail_url']) ?>">
+                        <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-indigo-50 via-violet-100 to-indigo-300">
+                            <?php if ($item['image']): ?>
+                                <img class="h-full w-full object-cover" src="<?= h($item['image']) ?>" alt="" loading="lazy">
+                            <?php else: ?>
+                                <div class="flex h-full flex-col items-center justify-center gap-4 text-indigo-600" aria-hidden="true">
+                                    <i class="fas fa-<?= $item['type'] === 'plugin' ? 'plug' : 'swatchbook' ?> text-6xl"></i>
+                                    <span class="text-lg font-bold tracking-wide">SHOPAGG</span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] flex-wrap items-start gap-2">
+                                <span class="bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 shadow-sm"><?= $item['type'] === 'plugin' ? '插件' : '网站主题' ?></span>
+                                <span class="px-3 py-1.5 text-sm font-semibold text-white shadow-sm <?= $item['is_free'] ? 'bg-emerald-500' : 'bg-indigo-600' ?>"><?= h($item['price_text']) ?></span>
+                            </div>
+                        </div>
+                        <div class="flex flex-1 flex-col px-6 pb-6 pt-7">
+                            <h3 class="line-clamp-2 text-xl font-bold leading-snug text-slate-900 group-hover:text-blue-600" title="<?= h($item['name']) ?>"><?= h($item['name']) ?></h3>
+                            <p class="mt-2 text-sm text-slate-400"><?php if ($item['version']): ?>v<?= h($item['version']) ?> · <?php endif; ?><?= h($item['vendor']) ?></p>
+                            <div class="mt-5 min-h-[112px] flex-1">
+                                <p class="line-clamp-4 text-base leading-7 text-slate-600"><?= h($item['description'] ?: '暂无应用介绍') ?></p>
+                                <?php if ($item['installed']): ?><p class="mt-3 text-xs font-semibold <?= $item['needs_update'] ? 'text-amber-700' : 'text-emerald-700' ?>"><?= $item['needs_update'] ? '有可用更新' : '已安装' ?><?php if ($item['installed_version']): ?> · v<?= h($item['installed_version']) ?><?php endif; ?></p><?php endif; ?>
+                            </div>
+                            <div class="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-slate-200 pt-4 text-sm">
+                                <span class="inline-flex items-center gap-2 text-slate-500"><i class="fas fa-download" aria-hidden="true"></i><?= number_format($item['installs_count']) ?> 次安装</span>
+                                <span class="font-semibold text-blue-600"><?= $item['version'] !== '' ? '最新版本 v' . h($item['version']) : '版本未标注' ?></span>
+                            </div>
+                        </div>
+                    </a>
                 </article>
             <?php endforeach; ?>
         </div>

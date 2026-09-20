@@ -86,6 +86,7 @@ abstract class BaseController extends Controller {
             
             // 公司信息 - 基本
             'company_bio' => $settings['company_bio'] ?? '',
+            'company_profile_image' => $settings['company_profile_image'] ?? '',
             'company_business_type' => $settings['company_business_type'] ?? '',
             'company_main_products' => $settings['company_main_products'] ?? '',
             'company_year_established' => $settings['company_year_established'] ?? '',

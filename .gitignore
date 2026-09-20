@@ -9,3 +9,4 @@ storage/blocks/
 storage/
 uploads/logs/*.log
 examples/*
+extensions/*

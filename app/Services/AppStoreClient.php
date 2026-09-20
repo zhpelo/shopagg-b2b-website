@@ -6,7 +6,7 @@ namespace App\Services;
 final class AppStoreClient {
     private const TYPE_B2B_THEME = 'b2b_theme';
     private const TYPE_B2B_PLUGIN = 'b2b_plugin';
-    private const USER_AGENT = 'ShopAGG-B2B-Website-AppStore/1.0';
+    private const USER_AGENT = 'SHOPAGG-B2B-Website-AppStore/1.0';
 
     private string $baseUrl;
     private string $token;

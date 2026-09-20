@@ -148,7 +148,7 @@ return [
         'group' => 'home',
         'group_label' => '首页',
         'label' => '为什么选择我们',
-        'description' => '为什么选择我们板块',
+        'description' => '为什么选择我们板块；未单独设置展示媒体时，使用公司资料中的公司形象照片。',
         'fields' => [
             'is_visible' => ['type' => 'select', 'label' => '是否显示', 'default' => 'yes', 'options' => ['yes' => '显示', 'no' => '隐藏']],
             'heading'    => ['type' => 'text', 'label' => 'Heading',    'default' => 'Why Choose Us'],

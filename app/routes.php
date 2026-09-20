@@ -17,6 +17,7 @@ function register_routes(Router $router): void {
     // 插件平台：Cron 使用独立 Token；管理路由由 PluginAdminController 强制管理员认证。
     $router->add('GET', '/plugin-cron', [PluginCronController::class, 'run']);
     $router->add('GET', '/admin/app-store/plugins', [PluginAdminController::class, 'index']);
+    $router->add('GET', '/admin/app-store/plugins/:id', [PluginAdminController::class, 'detail']);
     $router->add('POST', '/admin/app-store/plugins/upload', [PluginAdminController::class, 'upload']);
     $router->add('GET', '/admin/app-store/plugins/market', [PluginAdminController::class, 'market']);
     $router->add('POST', '/admin/app-store/plugins/install', [PluginAdminController::class, 'installMarket']);

@@ -10,6 +10,20 @@
             <textarea class="min-h-[150px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" name="company_bio" rows="6" placeholder="介绍公司背景、历史和优势..."><?= h($settings['company_bio'] ?? '') ?></textarea>
         </label>
 
+        <div class="mt-6 space-y-3">
+            <label class="text-sm font-medium text-slate-700" for="company_profile_image_picker">公司形象照片</label>
+            <input type="hidden" name="company_profile_image" id="company_profile_image" value="<?= h($settings['company_profile_image'] ?? '') ?>">
+            <button type="button" id="company_profile_image_picker" class="flex h-44 w-full max-w-sm cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition hover:border-indigo-300 hover:bg-indigo-50/40 focus:outline-none focus:ring-2 focus:ring-indigo-300" data-media-picker-target="company_profile_image" data-media-picker-fit="cover" data-media-picker-image-only="true" aria-label="从媒体库选择公司形象照片">
+                <?php if (!empty($settings['company_profile_image'])): ?>
+                    <img src="<?= h(asset_url((string)$settings['company_profile_image'])) ?>" alt="" class="h-full w-full object-cover">
+                <?php else: ?>
+                    <span class="text-center text-slate-400"><i class="fas fa-image text-2xl"></i><span class="mt-2 block text-xs">点击选择图片</span></span>
+                <?php endif; ?>
+            </button>
+            <button type="button" class="<?= empty($settings['company_profile_image']) ? 'hidden ' : '' ?>text-sm font-medium text-rose-600 hover:text-rose-700" data-media-picker-clear-target="company_profile_image">移除照片</button>
+            <p class="text-xs text-slate-500">用于默认主题关于我们页面，并在首页「Why Choose Us」未单独设置展示媒体时使用；与社交分享图独立设置。</p>
+        </div>
+
         <div class="mt-6 grid gap-5 md:grid-cols-2">
             <label class="space-y-2">
                 <span class="text-sm font-medium text-slate-700">业务类型</span>

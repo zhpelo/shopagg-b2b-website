@@ -155,7 +155,7 @@ final class AppStoreController extends Controller {
                 'installed_version' => $localVersion,
                 'needs_update' => $local !== null && $remoteVersion !== '' && $localVersion !== '' && version_compare($remoteVersion, $localVersion, '>'),
                 'manage_url' => '/admin/app-store/plugins',
-                'detail_url' => '',
+                'detail_url' => '/admin/app-store/plugins/' . (int)($resource['id'] ?? 0),
             ]);
         }
         return $items;
@@ -195,10 +195,11 @@ final class AppStoreController extends Controller {
             'type' => $type,
             'name' => (string)($resource['name'] ?? ($type === 'theme' ? '未命名主题' : '未命名插件')),
             'slug' => (string)($state['slug'] ?? ''),
-            'vendor' => (string)($resource['vendor'] ?? $resource['author'] ?? $resource['developer'] ?? 'ShopAGG'),
+            'vendor' => (string)($resource['vendor'] ?? $resource['author'] ?? $resource['developer'] ?? 'SHOPAGG'),
             'version' => (string)($resource['version'] ?? ''),
             'description' => trim((string)($resource['description'] ?? $resource['short_description'] ?? '')),
             'image' => (string)($resource['cover_image'] ?? $resource['banner_image'] ?? $resource['icon_url'] ?? ''),
+            'installs_count' => max(0, (int)($resource['installs_count'] ?? 0)),
             'is_free' => $isFree,
             'price_text' => $isFree ? '免费' : (string)($resource['price_formatted'] ?? ('¥' . number_format((float)($resource['price'] ?? 0), 2))),
             'tags' => array_values(array_map(static fn($tag): string => (string)$tag, array_filter($tags, static fn($tag): bool => is_scalar($tag) && (string)$tag !== ''))),

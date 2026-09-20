@@ -67,9 +67,40 @@ final class PluginAdminController extends Controller {
         $this->redirect('/admin/app-store?type=plugin');
     }
 
+    public function detail(string $id): void {
+        $resourceId = (int)$id;
+        if ($resourceId <= 0) {
+            $this->redirect('/admin/app-store?type=plugin&error=' . urlencode('插件 ID 无效'));
+        }
+
+        $settings = new Setting();
+        $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $settings->get('app_store_api_token', ''));
+        $response = $client->getB2BPlugin($resourceId);
+        if (!($response['ok'] ?? false) || !is_array($response['resource'] ?? null)) {
+            $this->redirect('/admin/app-store?type=plugin&error=' . urlencode((string)($response['message'] ?? '无法获取插件详情')));
+        }
+
+        $plugin = $response['resource'];
+        $metadata = is_array($plugin['metadata'] ?? null) ? $plugin['metadata'] : [];
+        $slug = sanitize_slug_input((string)($plugin['plugin_id'] ?? $metadata['plugin_id'] ?? $plugin['slug'] ?? ''));
+        $installedPlugin = $slug !== '' ? $this->registry->find($slug) : null;
+        $remoteVersion = (string)($plugin['version'] ?? '');
+        $installedVersion = (string)($installedPlugin['installed_version'] ?? '');
+
+        $this->renderAdmin('插件详情 - ' . (string)($plugin['name'] ?? 'App Store 插件'), 'admin/plugins/detail', [
+            'plugin' => $plugin,
+            'installedPlugin' => $installedPlugin,
+            'needsUpdate' => $installedPlugin !== null && $remoteVersion !== '' && $installedVersion !== '' && version_compare($remoteVersion, $installedVersion, '>'),
+            'hasToken' => $client->hasToken(),
+        ]);
+    }
+
     public function installMarket(): void {
         csrf_check();
         $resourceId = (int)($_POST['resource_id'] ?? 0);
+        $errorReturn = !empty($_POST['from_detail']) && $resourceId > 0
+            ? '/admin/app-store/plugins/' . $resourceId
+            : '/admin/app-store?type=plugin';
         $setting = new Setting();
         $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $setting->get('app_store_api_token', ''));
         $directory = APP_ROOT . '/storage/tmp/plugins';
@@ -91,7 +122,7 @@ final class PluginAdminController extends Controller {
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
             $this->redirect('/admin/app-store/plugins?success=' . urlencode('市场插件已安装：' . $result['manifest']['name']));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/app-store?type=plugin&error=' . urlencode($e->getMessage()));
+            $this->redirect($errorReturn . (str_contains($errorReturn, '?') ? '&' : '?') . 'error=' . urlencode($e->getMessage()));
         } finally {
             if (is_file($zip)) @unlink($zip);
         }

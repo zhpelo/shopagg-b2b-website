@@ -2122,7 +2122,7 @@ ${iconHtml}
 
     function renderSettingsPickerPreview(container, url, fit) {
         const objectClass = fit === 'cover' ? 'h-full w-full object-cover' : 'max-h-full max-w-full object-contain';
-        container.innerHTML = `<img src="${escapeHtmlAttr(url)}" alt="" class="${objectClass}">`;
+        container.innerHTML = `<img src="${escapeHtmlAttr(normalizeMediaSelectionUrl(url))}" alt="" class="${objectClass}">`;
     }
 
     function initSettingsGeneralPickers() {
@@ -2136,7 +2136,26 @@ ${iconHtml}
                 openMediaLibrary((url) => {
                     targetInput.value = url;
                     renderSettingsPickerPreview(picker, url, picker.dataset.mediaPickerFit || 'contain');
+                    const clearButton = picker.parentElement?.querySelector('[data-media-picker-clear-target]');
+                    clearButton?.classList.remove('hidden');
+                }, false, {
+                    type: 'image',
+                    lockType: picker.dataset.mediaPickerImageOnly === 'true'
                 });
+            });
+        });
+
+        document.querySelectorAll('[data-media-picker-clear-target]').forEach((clearButton) => {
+            clearButton.addEventListener('click', () => {
+                const targetId = clearButton.dataset.mediaPickerClearTarget || '';
+                const targetInput = document.getElementById(targetId);
+                const picker = Array.from(document.querySelectorAll('[data-media-picker-target]'))
+                    .find((item) => item.dataset.mediaPickerTarget === targetId);
+                if (!targetInput || !picker) return;
+
+                targetInput.value = '';
+                picker.innerHTML = '<span class="text-center text-slate-400"><i class="fas fa-image text-2xl"></i><span class="mt-2 block text-xs">点击选择图片</span></span>';
+                clearButton.classList.add('hidden');
             });
         });
     }

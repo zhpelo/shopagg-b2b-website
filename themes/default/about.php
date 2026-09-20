@@ -2,7 +2,7 @@
 /**
  * 页面模板：关于我们
  * 作用：展示企业概况、资质数据、贸易能力与公司展示/证书。
- * 变量：$site（站点设置，包含公司信息与展示图片JSON）。
+ * 变量：$site（站点设置，包含公司信息、公司形象照片与展示图片JSON）。
  * 注意：展示数据来自后台设置的 company_* 与 company_show_json/company_certificates_json。
  */
 ?>
@@ -42,7 +42,7 @@
             </div>
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="<?= h(get_image_url($site['og_image'] ?? null, 800, 400, 'Company Overview')) ?>" 
+                    <img src="<?= h(get_image_url($site['company_profile_image'] ?? null, 800, 400, 'Company Overview')) ?>"
                          alt="Company Overview" 
                          class="w-full h-auto"
                          loading="eager"
@@ -64,7 +64,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                         <div class="lg:col-span-2">
                             <figure class="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
-                                <img src="<?= h(get_image_url($site['og_image'] ?? null, 400, 300, 'Company Profile')) ?>" 
+                                <img src="<?= h(get_image_url($site['company_profile_image'] ?? null, 400, 300, 'Company Profile')) ?>"
                                      alt="Company Profile" 
                                      class="w-full h-full object-cover"
                                      loading="lazy"

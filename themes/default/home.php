@@ -32,8 +32,8 @@ if ($whyMedia === '' && $legacyWhyImage !== '') {
     $whyMedia = $legacyWhyImage;
     $whyMediaType = 'image';
 }
-if ($whyMedia === '' && !empty($site['og_image'])) {
-    $whyMedia = (string)$site['og_image'];
+if ($whyMedia === '' && !empty($site['company_profile_image'])) {
+    $whyMedia = (string)$site['company_profile_image'];
     $whyMediaType = 'image';
 }
 $legacyValueProps = block_all('home_value_props');

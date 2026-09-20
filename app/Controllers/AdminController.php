@@ -385,7 +385,7 @@ class AdminController extends Controller {
         $groups = [
             'general' => ['site_name', 'site_tagline', 'site_currency', 'site_logo', 'site_favicon', 'seo_title', 'seo_keywords', 'seo_description', 'og_image'],
             'company' => [
-                'company_bio', 'company_business_type', 'company_main_products', 'company_year_established',
+                'company_bio', 'company_profile_image', 'company_business_type', 'company_main_products', 'company_year_established',
                 'company_employees', 'company_address', 'company_plant_area', 'company_registered_capital',
                 'company_sgs_report', 'company_rating', 'company_response_time', 'company_main_markets',
                 'company_trade_staff', 'company_incoterms', 'company_payment_terms', 'company_lead_time',
@@ -2074,7 +2074,7 @@ class AdminController extends Controller {
         if ($clearToken) {
             $this->settingModel->set('app_store_api_token', '');
             unset($_SESSION['app_store_wechat_pay']);
-            $this->redirect('/admin/app-store/themes?success=' . urlencode('已解除当前站点的 ShopAGG 账户绑定'));
+            $this->redirect('/admin/app-store/themes?success=' . urlencode('已解除当前站点的 SHOPAGG 账户绑定'));
         }
 
         if ($apiToken === '') {
@@ -2088,11 +2088,11 @@ class AdminController extends Controller {
         }
 
         $account = is_array($accountResponse['data'] ?? null) ? $accountResponse['data'] : [];
-        $accountLabel = (string)($account['email'] ?? $account['name'] ?? 'ShopAGG 账户');
+        $accountLabel = (string)($account['email'] ?? $account['name'] ?? 'SHOPAGG 账户');
 
         $this->settingModel->set('app_store_api_token', $apiToken);
 
-        $this->redirect('/admin/app-store/themes?success=' . urlencode('当前站点已绑定 ShopAGG 账户：' . $accountLabel));
+        $this->redirect('/admin/app-store/themes?success=' . urlencode('当前站点已绑定 SHOPAGG 账户：' . $accountLabel));
     }
 
     /**

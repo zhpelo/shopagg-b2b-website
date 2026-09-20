@@ -286,7 +286,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                 <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
                     <?php if (!$appStore['has_token']): ?>
                         <p class="font-semibold text-amber-700">当前站点还未绑定 API Token。</p>
-                        <p class="mt-2">请返回网站模版页面绑定 ShopAGG 账户后再安装或购买主题。</p>
+                        <p class="mt-2">请返回网站模版页面绑定 SHOPAGG 账户后再安装或购买主题。</p>
                     <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
                         <p class="font-semibold text-amber-700">此主题需要购买授权。</p>
                         <p class="mt-2">授权会按当前站点域名绑定：<?= h($appStore['site_domain'] ?? base_url()) ?></p>
