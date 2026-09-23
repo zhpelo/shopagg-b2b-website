@@ -1,11 +1,16 @@
 <?php
 
 /**
- * SHOPAGG B2B Website - Entry Point
+ * Lighthouse CMS（ 灯塔CMS ） - Entry Point
+ * 
+ * 项目原名 SHOPAGG B2B Website，现正式更名为 灯塔 CMS（英文名 Lighthouse CMS）。
+ * 灯塔 CMS 由 SHOPAGG 开源，面向中国工厂与外贸公司，帮助企业建立和管理自己的 B2B 外贸官网
+ * 此次更名仅涉及项目品牌。现有 GitHub 仓库地址、演示地址、shopagg 命令行工具及 ShopAgg 插件市场名称仍沿用原有标识；
+ *
  * @author    SHOPAGG 
  * @link      https://www.shopagg.com
- * @package   SHOPAGG B2B Website
- * @copyright Copyright (c) 2015–2026 SHOPAGG. All rights reserved.
+ * @package   Lighthouse CMS
+ * @copyright Copyright (c) 2024–2026 SHOPAGG. All rights reserved.
  * @license   MIT License
  */
 
@@ -13,7 +18,7 @@ declare(strict_types=1);
 
 // 标记入口点，防止直接访问 app 目录文件
 define('APP_ENTRY_POINT', true);
-define('APP_VERSION', '1.3.1');
+define('APP_VERSION', '1.3.2');
 // 应用安全响应头
 if (!headers_sent()) {
     header('X-Content-Type-Options: nosniff');
