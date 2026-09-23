@@ -63,7 +63,7 @@ $changelog = trim((string)($sections['changelog'] ?? ''));
                     <?php elseif ($installedPlugin !== null): ?>
                         <a class="inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700" href="<?= url('/admin/app-store/plugins') ?>">管理已安装插件</a>
                     <?php else: ?>
-                        <p class="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">此插件需要购买或授权后才能安装。<?php if (!$hasToken): ?><a class="font-semibold underline" href="<?= url('/admin/app-store/themes#app-store-account') ?>">配置 App Store 账户</a><?php endif; ?></p>
+                        <p class="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">此插件需要购买或授权后才能安装。<?php if (!$hasToken): ?><a class="font-semibold underline" href="<?= url('/admin/app-store/settings') ?>">配置 App Store 账户</a><?php endif; ?></p>
                     <?php endif; ?>
                     <?php if ($installedPlugin !== null && !empty($needsUpdate)): ?><a class="mt-3 block text-center text-sm font-semibold text-slate-500 hover:text-slate-800" href="<?= url('/admin/app-store/plugins') ?>">管理已安装插件</a><?php endif; ?>
                 </div>

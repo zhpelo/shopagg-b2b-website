@@ -23,6 +23,7 @@ $refreshQuery = http_build_query(array_filter([
                 <p class="mt-1 text-sm text-slate-500">浏览并安装插件和网站主题。</p>
             </div>
             <div class="flex flex-wrap gap-2">
+                <a class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store/settings') ?>"><i class="fas fa-key mr-2 text-slate-400"></i>账户设置</a>
                 <a class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store/plugins') ?>"><i class="fas fa-plug mr-2 text-slate-400"></i>管理插件</a>
                 <a class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store/themes') ?>"><i class="fas fa-swatchbook mr-2 text-slate-400"></i>管理主题</a>
             </div>
@@ -38,7 +39,7 @@ $refreshQuery = http_build_query(array_filter([
     <?php if (!$hasToken): ?>
         <div class="flex flex-col gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:flex-row sm:items-center sm:justify-between">
             <span>浏览无需绑定账户；安装付费或授权资源时需要配置 App Store Token。</span>
-            <a class="font-semibold text-amber-800 underline underline-offset-2" href="<?= url('/admin/app-store/themes#app-store-account') ?>">配置账户</a>
+            <a class="font-semibold text-amber-800 underline underline-offset-2" href="<?= url('/admin/app-store/settings') ?>">配置账户</a>
         </div>
     <?php endif; ?>
     <?php if (($catalogStatus['notice'] ?? '') !== ''): ?><div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"><?= h($catalogStatus['notice']) ?></div><?php endif; ?>

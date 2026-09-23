@@ -121,7 +121,7 @@ class AdminController extends Controller {
             $this->redirect('/admin');
         }
 
-        if ((str_starts_with($path, '/admin/appearance') || str_starts_with($path, '/admin/app-store/themes')) && AuthManager::getUserRole() !== 'admin') {
+        if ((str_starts_with($path, '/admin/appearance') || str_starts_with($path, '/admin/app-store/themes') || str_starts_with($path, '/admin/app-store/settings')) && AuthManager::getUserRole() !== 'admin') {
             $this->redirect('/admin');
         }
     }
@@ -1933,6 +1933,21 @@ class AdminController extends Controller {
     }
 
     /**
+     * App Store 账户与 API Token 配置
+     */
+    public function appStoreSettings(): void {
+        $client = $this->makeAppStoreClient();
+        $this->renderAdmin('App Store 账户设置', $this->renderView('admin/app-store/settings', [
+            'appStore' => [
+                'has_token' => $client->hasToken(),
+                'masked_token' => $client->maskedToken(),
+                'site_domain' => $this->appStoreLicenseDomain(),
+                'token_url' => 'https://www.shopagg.com/dashboard/api-tokens',
+            ],
+        ]));
+    }
+
+    /**
      * 网站主题上传页面
      */
     public function themeUploadForm(): void {
@@ -2074,17 +2089,17 @@ class AdminController extends Controller {
         if ($clearToken) {
             $this->settingModel->set('app_store_api_token', '');
             unset($_SESSION['app_store_wechat_pay']);
-            $this->redirect('/admin/app-store/themes?success=' . urlencode('已解除当前站点的 SHOPAGG 账户绑定'));
+            $this->redirect('/admin/app-store/settings?success=' . urlencode('已解除当前站点的 SHOPAGG 账户绑定'));
         }
 
         if ($apiToken === '') {
-            $this->redirect('/admin/app-store/themes?error=' . urlencode('请输入 App Store API Token'));
+            $this->redirect('/admin/app-store/settings?error=' . urlencode('请输入 App Store API Token'));
         }
 
         $client = new AppStoreClient($this->defaultAppStoreApiBase(), $apiToken);
         $accountResponse = $client->me();
         if (!$accountResponse['ok']) {
-            $this->redirect('/admin/app-store/themes?error=' . urlencode('Token 验证失败：' . $this->appStoreResponseMessage($accountResponse)));
+            $this->redirect('/admin/app-store/settings?error=' . urlencode('Token 验证失败：' . $this->appStoreResponseMessage($accountResponse)));
         }
 
         $account = is_array($accountResponse['data'] ?? null) ? $accountResponse['data'] : [];
@@ -2092,7 +2107,7 @@ class AdminController extends Controller {
 
         $this->settingModel->set('app_store_api_token', $apiToken);
 
-        $this->redirect('/admin/app-store/themes?success=' . urlencode('当前站点已绑定 SHOPAGG 账户：' . $accountLabel));
+        $this->redirect('/admin/app-store/settings?success=' . urlencode('Token 验证成功，当前站点已绑定 SHOPAGG 账户：' . $accountLabel));
     }
 
     /**

@@ -286,7 +286,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                 <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
                     <?php if (!$appStore['has_token']): ?>
                         <p class="font-semibold text-amber-700">当前站点还未绑定 API Token。</p>
-                        <p class="mt-2">请返回网站模版页面绑定 SHOPAGG 账户后再安装或购买主题。</p>
+                        <p class="mt-2">请先前往 App Store 账户设置页面绑定 SHOPAGG 账户，再安装或购买主题。</p>
                     <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
                         <p class="font-semibold text-amber-700">此主题需要购买授权。</p>
                         <p class="mt-2">授权会按当前站点域名绑定：<?= h($appStore['site_domain'] ?? base_url()) ?></p>
@@ -303,9 +303,9 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
 
                 <div class="space-y-3">
                     <?php if (!$appStore['has_token']): ?>
-                        <a href="<?= url('/admin/app-store/themes') ?>" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
+                        <a href="<?= url('/admin/app-store/settings') ?>" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
                             <i class="fas fa-link"></i>
-                            返回绑定 API Token
+                            配置 API Token
                         </a>
                     <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
                         <form action="<?= url('/admin/app-store/themes/purchase') ?>" method="post" class="space-y-3">

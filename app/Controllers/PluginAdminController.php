@@ -47,6 +47,12 @@ final class PluginAdminController extends Controller {
         ]);
     }
 
+    public function uploadForm(): void {
+        $this->renderAdmin('上传插件', 'admin/plugins/upload', [
+            'requiredFiles' => ['plugin.json', 'README.md'],
+        ]);
+    }
+
     public function upload(): void {
         csrf_check();
         try {
@@ -59,7 +65,7 @@ final class PluginAdminController extends Controller {
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
             $this->redirect('/admin/app-store/plugins?success=' . urlencode('插件已安装：' . $result['manifest']['name']));
         } catch (\Throwable $e) {
-            $this->redirect('/admin/app-store/plugins?error=' . urlencode($e->getMessage()));
+            $this->redirect('/admin/app-store/plugins/upload?error=' . urlencode($e->getMessage()));
         }
     }
 
