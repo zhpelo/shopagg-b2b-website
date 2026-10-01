@@ -107,7 +107,7 @@ php shopagg plugin:validate plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-开发文档见[插件开发指南](../Documents/shopagg-b2b-website/Documents/插件开发指南.md)，AI 生成插件时可直接提供 [AI 插件规范](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md)作为上下文。机器校验 Schema 仍保留在本项目的 `Documents/plugin.schema.json`。
+开发文档见[插件开发](../Documents/灯塔CMS/插件开发.md)，AI 生成插件时可直接提供[插件规范](../Documents/灯塔CMS/插件规范.md)作为上下文。机器校验 Schema 仍保留在本项目的 `Documents/plugin.schema.json`。
 
 ### 前台功能
 
@@ -342,7 +342,7 @@ server {
 | `settings` | 站点配置 | key-value 存储，包含 `site_currency` 全局货币 |
 | `products` | 产品 | `slug`、`images_json`、`category_id`、`price_mode`、`price_range_min`、`price_range_max` |
 | `product_prices` | 阶梯价格 | `min_qty`、`max_qty`、`price`（`currency` 为历史字段） |
-| `product_skus` | 多规格 SKU 价格 | `sku_name`、`min_qty`、`price`、`sort_order` |
+| `product_skus` | 多规格 SKU 价格 | 稳定 `id`、`sku_name`、`min_qty`、`price`、`sort_order`、`deleted_at` |
 | `product_categories` | 统一分类 | `type`(product/post)、`parent_id` 树形 |
 | `posts` | 文章/案例/页面 | `post_type`(post/case/page) |
 | `inquiries` | 产品询盘 | `status`(pending/replied/closed) |
@@ -362,12 +362,12 @@ server {
 
 ## 📖 开发文档
 
-完整的阅读文档统一位于工作区根目录的 [`Documents/shopagg-b2b-website/`](../Documents/shopagg-b2b-website/Documents/)，本项目只保留运行时/工具链需要的 Schema：
+完整的阅读文档在工作区 [文档索引](../Documents/文档索引.md) 的灯塔CMS 目录下，本项目只保留运行时/工具链需要的 Schema：
 
 | 文档 | 说明 |
 |------|------|
-| [系统架构文档.md](../Documents/shopagg-b2b-website/Documents/系统架构文档.md) | 分层架构、核心模块详解、数据库设计、安全架构 |
-| [网站模板开发指南.md](../Documents/shopagg-b2b-website/Documents/网站模板开发指南.md) | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
+| [系统架构](../Documents/灯塔CMS/系统架构.md) | 分层架构、核心模块详解、数据库设计、安全架构 |
+| [模板开发](../Documents/灯塔CMS/模板开发.md) | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
 
 ### 主题开发约定
 

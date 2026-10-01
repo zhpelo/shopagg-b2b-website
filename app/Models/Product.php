@@ -298,27 +298,92 @@ class Product extends BaseModel {
         }
     }
 
-    public function getSkus(int $productId): array {
-        return $this->fetchAll("SELECT * FROM product_skus WHERE product_id = :pid ORDER BY sort_order ASC, id ASC", [':pid' => $productId]);
+    public function getSkus(int $productId, bool $includeDeleted = false): array {
+        $query = "SELECT * FROM product_skus WHERE product_id = :pid";
+        if (!$includeDeleted) {
+            $query .= " AND deleted_at IS NULL";
+        }
+        return $this->fetchAll($query . " ORDER BY sort_order ASC, id ASC", [':pid' => $productId]);
+    }
+
+    /**
+     * Resolve a stable SKU reference for cart and inventory plugins.
+     * Archived rows are hidden by default but remain addressable for audits.
+     */
+    public function getSkuById(int $skuId, bool $includeDeleted = false): ?array {
+        $query = "SELECT * FROM product_skus WHERE id = :id";
+        if (!$includeDeleted) {
+            $query .= " AND deleted_at IS NULL";
+        }
+        return $this->fetchOne($query, [':id' => $skuId]);
     }
 
     public function saveSkus(int $productId, array $skus): void {
-        $delete = $this->db->prepare("DELETE FROM product_skus WHERE product_id = :pid");
-        $delete->bindValue(':pid', $productId);
-        $delete->execute();
+        if (!$this->db->exec('BEGIN IMMEDIATE')) {
+            throw new \RuntimeException('无法开始保存 SKU：' . $this->db->lastErrorMsg());
+        }
 
-        foreach ($skus as $index => $sku) {
-            $stmt = $this->db->prepare("INSERT INTO product_skus (product_id, sku_name, min_qty, price, sort_order, created_at, updated_at)
-                VALUES (:pid, :name, :min, :price, :sort, :created, :updated)");
+        try {
             $now = gmdate('c');
-            $stmt->bindValue(':pid', $productId);
-            $stmt->bindValue(':name', (string)$sku['sku_name']);
-            $stmt->bindValue(':min', (int)$sku['min_qty']);
-            $stmt->bindValue(':price', (float)$sku['price']);
-            $stmt->bindValue(':sort', (int)($sku['sort_order'] ?? $index));
-            $stmt->bindValue(':created', $now);
-            $stmt->bindValue(':updated', $now);
-            $stmt->execute();
+            $submittedIds = [];
+
+            // Mark the previous active set first, then reactivate submitted rows.
+            // The transaction keeps this invisible to other requests until commit.
+            $archive = $this->db->prepare("UPDATE product_skus
+                SET deleted_at = :deleted, updated_at = :updated
+                WHERE product_id = :pid AND deleted_at IS NULL");
+            $archive->bindValue(':pid', $productId, SQLITE3_INTEGER);
+            $archive->bindValue(':deleted', $now, SQLITE3_TEXT);
+            $archive->bindValue(':updated', $now, SQLITE3_TEXT);
+            if ($archive->execute() === false) {
+                throw new \RuntimeException('无法归档 SKU：' . $this->db->lastErrorMsg());
+            }
+
+            foreach ($skus as $index => $sku) {
+                $skuId = max(0, (int)($sku['id'] ?? 0));
+                if ($skuId > 0) {
+                    if (isset($submittedIds[$skuId])) {
+                        throw new \InvalidArgumentException('不能重复提交同一个 SKU');
+                    }
+
+                    $stmt = $this->db->prepare("UPDATE product_skus
+                        SET sku_name = :name, min_qty = :min, price = :price, sort_order = :sort,
+                            deleted_at = NULL, updated_at = :updated
+                        WHERE id = :id AND product_id = :pid");
+                    $stmt->bindValue(':id', $skuId, SQLITE3_INTEGER);
+                    $stmt->bindValue(':pid', $productId, SQLITE3_INTEGER);
+                    $stmt->bindValue(':name', (string)$sku['sku_name'], SQLITE3_TEXT);
+                    $stmt->bindValue(':min', (int)$sku['min_qty'], SQLITE3_INTEGER);
+                    $stmt->bindValue(':price', (float)$sku['price'], SQLITE3_FLOAT);
+                    $stmt->bindValue(':sort', (int)($sku['sort_order'] ?? $index), SQLITE3_INTEGER);
+                    $stmt->bindValue(':updated', $now, SQLITE3_TEXT);
+                    if ($stmt->execute() === false || $this->db->changes() !== 1) {
+                        throw new \InvalidArgumentException('SKU 不存在或不属于当前产品');
+                    }
+                    $submittedIds[$skuId] = true;
+                    continue;
+                }
+
+                $stmt = $this->db->prepare("INSERT INTO product_skus (product_id, sku_name, min_qty, price, sort_order, created_at, updated_at, deleted_at)
+                    VALUES (:pid, :name, :min, :price, :sort, :created, :updated, NULL)");
+                $stmt->bindValue(':pid', $productId, SQLITE3_INTEGER);
+                $stmt->bindValue(':name', (string)$sku['sku_name'], SQLITE3_TEXT);
+                $stmt->bindValue(':min', (int)$sku['min_qty'], SQLITE3_INTEGER);
+                $stmt->bindValue(':price', (float)$sku['price'], SQLITE3_FLOAT);
+                $stmt->bindValue(':sort', (int)($sku['sort_order'] ?? $index), SQLITE3_INTEGER);
+                $stmt->bindValue(':created', $now, SQLITE3_TEXT);
+                $stmt->bindValue(':updated', $now, SQLITE3_TEXT);
+                if ($stmt->execute() === false) {
+                    throw new \RuntimeException('无法创建 SKU：' . $this->db->lastErrorMsg());
+                }
+            }
+
+            if (!$this->db->exec('COMMIT')) {
+                throw new \RuntimeException('无法完成 SKU 保存：' . $this->db->lastErrorMsg());
+            }
+        } catch (\Throwable $e) {
+            $this->db->exec('ROLLBACK');
+            throw $e;
         }
     }
 

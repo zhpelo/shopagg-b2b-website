@@ -470,14 +470,16 @@ function normalize_price_range(array $post): array {
 /**
  * 规范化多规格 SKU 价格数据
  *
- * @param array $post $_POST 数据（包含 sku_name[]、sku_min_qty[]、sku_price[]）
- * @return array SKU 价格数组，每个元素包含 sku_name、min_qty、price、sort_order
+ * @param array $post $_POST 数据（包含 sku_id[]、sku_name[]、sku_min_qty[]、sku_price[]）
+ * @return array SKU 价格数组，已有规格会保留稳定的 id
  */
 function normalize_product_skus(array $post): array {
+    $ids = $post['sku_id'] ?? [];
     $names = $post['sku_name'] ?? [];
     $mins = $post['sku_min_qty'] ?? [];
     $prices = $post['sku_price'] ?? [];
 
+    if (!is_array($ids)) $ids = [$ids];
     if (!is_array($names)) $names = [$names];
     if (!is_array($mins)) $mins = [$mins];
     if (!is_array($prices)) $prices = [$prices];
@@ -493,6 +495,7 @@ function normalize_product_skus(array $post): array {
         }
 
         $skus[] = [
+            'id' => max(0, (int)($ids[$idx] ?? 0)),
             'sku_name' => $name,
             'min_qty' => $min,
             'price' => (float)$priceRaw,

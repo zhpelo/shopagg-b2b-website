@@ -1866,6 +1866,7 @@ ${iconHtml}
             const row = document.createElement('div');
             row.className = 'sku-price-row mb-3 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[44px_minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,1fr)_56px] md:items-end';
             row.innerHTML = `
+<input type="hidden" name="sku_id[]" value="0">
 <label class="flex h-11 items-center justify-center md:mb-0">
 <input type="checkbox" class="sku-select h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200">
 </label>

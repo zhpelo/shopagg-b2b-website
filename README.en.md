@@ -107,7 +107,7 @@ php shopagg plugin:validate plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-See the [plugin development guide](../Documents/shopagg-b2b-website/Documents/插件开发指南.md). You can also provide the [AI plugin specification](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md) as context when generating a plugin. The machine-readable schema remains in this repository at `Documents/plugin.schema.json`.
+See the [plugin development guide](../Documents/灯塔CMS/插件开发.md). You can also provide the [plugin specification](../Documents/灯塔CMS/插件规范.md) as context when generating a plugin. The machine-readable schema remains in this repository at `Documents/plugin.schema.json`.
 
 ### Frontend
 
@@ -321,7 +321,7 @@ The system currently has 17 tables:
 | `settings` | Site settings | Key-value data, including global `site_currency` |
 | `products` | Products | `slug`, `images_json`, `category_id`, `price_mode`, `price_range_min`, `price_range_max` |
 | `product_prices` | Tiered prices | `min_qty`, `max_qty`, `price`; `currency` is a legacy field |
-| `product_skus` | SKU prices | `sku_name`, `min_qty`, `price`, `sort_order` |
+| `product_skus` | SKU prices | Stable `id`, `sku_name`, `min_qty`, `price`, `sort_order`, `deleted_at` |
 | `product_categories` | Shared categories | `type` (product/post), hierarchical `parent_id` |
 | `posts` | Blog posts, cases, pages | `post_type` (post/case/page) |
 | `inquiries` | Product inquiries | `status` (pending/replied/closed) |
@@ -341,14 +341,14 @@ The system currently has 17 tables:
 
 ## 📖 Developer documentation
 
-The complete developer documentation is centralized in the workspace [Documents directory](../Documents/shopagg-b2b-website/Documents/):
+Developer reading docs are listed under 灯塔CMS in the workspace [document index](../Documents/文档索引.md):
 
 | Document | Contents |
 |---|---|
-| [System architecture](../Documents/shopagg-b2b-website/Documents/系统架构文档.md) | Layers, core modules, database design, and security architecture (Chinese) |
-| [Theme development guide](../Documents/shopagg-b2b-website/Documents/网站模板开发指南.md) | Theme conventions, template variables, helpers, and blocks (Chinese) |
-| [Plugin development guide](../Documents/shopagg-b2b-website/Documents/插件开发指南.md) | Plugin development (Chinese) |
-| [AI plugin specification](../Documents/shopagg-b2b-website/Documents/AI_PLUGIN_SPEC.md) | Plugin specification for AI-assisted development |
+| [System architecture](../Documents/灯塔CMS/系统架构.md) | Layers, core modules, database design, and security architecture (Chinese) |
+| [Theme development guide](../Documents/灯塔CMS/模板开发.md) | Theme conventions, template variables, helpers, and blocks (Chinese) |
+| [Plugin development guide](../Documents/灯塔CMS/插件开发.md) | Plugin development (Chinese) |
+| [Plugin specification](../Documents/灯塔CMS/插件规范.md) | Plugin specification for AI-assisted development |
 
 ### Theme development conventions
 
