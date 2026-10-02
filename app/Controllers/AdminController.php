@@ -1782,7 +1782,7 @@ class AdminController extends Controller {
 
     // --- Rendering Helpers ---
     private function renderAdmin(string $title, string $content, bool $showNav = true): void {
-        include APP_ROOT . '/app/views/admin/layout.php';
+        \App\Core\AdminPageRenderer::render($title, $content, $showNav);
     }
 
     private function renderView(string $view, array $data = []): string {

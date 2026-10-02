@@ -249,6 +249,7 @@ final class PluginManager {
             'points.manager' => \App\Plugins\Contracts\PointsManagerInterface::class,
             'cart.manager' => \App\Plugins\Contracts\CartManagerInterface::class,
             'payment.gateway' => \App\Plugins\Contracts\PaymentGatewayInterface::class,
+            'payment.reconciler' => \App\Plugins\Contracts\PaymentReconcilerInterface::class,
             'notification.channel' => \App\Plugins\Contracts\NotificationChannelInterface::class,
             'form.type' => \App\Plugins\Contracts\FormTypeProviderInterface::class,
             'file.converter' => \App\Plugins\Contracts\FileConverterInterface::class,

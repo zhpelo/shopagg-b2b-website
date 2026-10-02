@@ -58,7 +58,11 @@ final class PluginManifest {
         }
         $routeKeys = [];
         $routeNames = [];
-        foreach (($manifest['routes'] ?? []) as $index => $route) {
+        foreach (is_array($manifest['routes'] ?? null) ? $manifest['routes'] : [] as $index => $route) {
+            if (!is_array($route)) {
+                $errors[] = ['code' => 'manifest.route', 'path' => "routes.{$index}", 'message' => '路由必须是对象'];
+                continue;
+            }
             $method = strtoupper((string)($route['method'] ?? 'GET'));
             $path = (string)($route['path'] ?? '');
             if (!in_array($method, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], true) || !str_starts_with($path, '/') || empty($route['handler'])) {
@@ -71,6 +75,50 @@ final class PluginManifest {
             $name = trim((string)($route['name'] ?? ''));
             if ($name !== '' && isset($routeNames[$name])) $errors[] = ['code' => 'manifest.route_name_duplicate', 'path' => "routes.{$index}.name", 'message' => "插件内路由名称重复：{$name}"];
             if ($name !== '') $routeNames[$name] = true;
+            $layout = (string)($route['layout'] ?? 'standalone');
+            if (!in_array($layout, ['standalone', 'theme', 'admin'], true)) {
+                $errors[] = ['code' => 'manifest.route_layout', 'path' => "routes.{$index}.layout", 'message' => 'layout 仅支持 standalone、theme 或 admin'];
+            }
+            if (isset($route['title']) && (!is_string($route['title']) || mb_strlen($route['title']) > 120)) {
+                $errors[] = ['code' => 'manifest.route_title', 'path' => "routes.{$index}.title", 'message' => 'title 必须是最长 120 字符的静态字符串'];
+            }
+        }
+        $allowedSections = ['inbox', 'catalog', 'commerce', 'content', 'appearance', 'extensions', 'system'];
+        $menuIds = [];
+        foreach (is_array($manifest['admin_menu'] ?? null) ? $manifest['admin_menu'] : [] as $index => $menu) {
+            if (!is_array($menu)) {
+                $errors[] = ['code' => 'manifest.admin_menu', 'path' => "admin_menu.{$index}", 'message' => '后台菜单必须是对象'];
+                continue;
+            }
+            $label = trim((string)($menu['label'] ?? ''));
+            $url = trim((string)($menu['url'] ?? ''));
+            if ($label === '' || mb_strlen($label) > 40 || !str_starts_with($url, '/')) {
+                $errors[] = ['code' => 'manifest.admin_menu', 'path' => "admin_menu.{$index}", 'message' => '后台菜单必须包含 label，并使用站内绝对路径 url'];
+            }
+            $id = trim((string)($menu['id'] ?? ''));
+            if ($id !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', $id) !== 1) {
+                $errors[] = ['code' => 'manifest.admin_menu_id', 'path' => "admin_menu.{$index}.id", 'message' => '菜单 id 仅允许小写字母、数字和中间连字符'];
+            }
+            if ($id !== '' && isset($menuIds[$id])) {
+                $errors[] = ['code' => 'manifest.admin_menu_id_duplicate', 'path' => "admin_menu.{$index}.id", 'message' => "菜单 id 重复：{$id}"];
+            }
+            if ($id !== '') $menuIds[$id] = true;
+            $section = trim((string)($menu['section'] ?? ''));
+            if ($section !== '' && !in_array($section, $allowedSections, true)) {
+                $errors[] = ['code' => 'manifest.admin_menu_section', 'path' => "admin_menu.{$index}.section", 'message' => 'section 不是受支持的后台业务分组'];
+            }
+            if (isset($menu['order']) && filter_var($menu['order'], FILTER_VALIDATE_INT) === false) {
+                $errors[] = ['code' => 'manifest.admin_menu_order', 'path' => "admin_menu.{$index}.order", 'message' => 'order 必须是整数'];
+            }
+            if (isset($menu['active_patterns']) && !is_array($menu['active_patterns'])) {
+                $errors[] = ['code' => 'manifest.admin_menu_patterns', 'path' => "admin_menu.{$index}.active_patterns", 'message' => 'active_patterns 必须是路径数组'];
+            } else {
+                foreach ((array)($menu['active_patterns'] ?? []) as $patternIndex => $pattern) {
+                    if (!is_string($pattern) || !str_starts_with($pattern, '/')) {
+                        $errors[] = ['code' => 'manifest.admin_menu_pattern', 'path' => "admin_menu.{$index}.active_patterns.{$patternIndex}", 'message' => '激活规则必须是以 / 开头的路径'];
+                    }
+                }
+            }
         }
         $normalized = self::normalize($manifest);
         return self::result($normalized, $errors);

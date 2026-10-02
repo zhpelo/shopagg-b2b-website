@@ -11,236 +11,111 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@4.13.5/es2021/jodit.fat.min.css" integrity="sha384-z1CAdjZT0Ot4X7eoNzGTz5RCl/Gp9y6nEqBwAJVdhr+B/kFJy+M9TIbEmgy9V2L9" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= url('/assets/admin/rich-content.css').'?v='.APP_VERSION ?>">
     <link rel="stylesheet" href="<?= url('/assets/admin/style.css').'?v='.APP_VERSION ?>">
+    <?php if (($showNav ?? true) && class_exists(\App\Plugins\PluginRuntime::class)): ?>
+        <?= \App\Plugins\PluginRuntime::instance()->adminAssetTags('head') ?>
+    <?php endif; ?>
+    <?php if ($showNav ?? true): ?>
+        <script>
+            (() => {
+                if (!matchMedia('(min-width: 1024px)').matches) return;
+                let collapsed;
+                try { collapsed = localStorage.getItem('shopagg.admin.sidebar.collapsed'); } catch (_) {}
+                if (collapsed === null || collapsed === undefined) collapsed = matchMedia('(max-width: 1279px)').matches ? '1' : '0';
+                document.documentElement.classList.toggle('admin-sidebar-collapsed', collapsed === '1');
+            })();
+        </script>
+    <?php endif; ?>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js" integrity="sha384-DgmC6Xe2bSN2WjTDXzWYbUbxyhNP+NNkGDR/g78pCXV7E7rcVTGxVg0uIVCUUcBc" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body class="<?= ($showNav ?? true) ? 'min-h-screen bg-slate-100 text-slate-800' : 'login-page' ?>">
     <?php if ($showNav ?? true):
-        $current_path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-        $basePath = base_path();
-        if ($basePath !== '' && strpos($current_path, $basePath) === 0) {
-            $current_path = substr($current_path, strlen($basePath)) ?: '/';
-        }
-        $active_group = '';
-        if (str_starts_with($current_path, '/admin/products') || str_starts_with($current_path, '/admin/product-categories')) $active_group = 'catalog';
-        elseif (str_starts_with($current_path, '/admin/posts') || str_starts_with($current_path, '/admin/post-categories') || str_starts_with($current_path, '/admin/cases') || str_starts_with($current_path, '/admin/pages') || str_starts_with($current_path, '/admin/media')) $active_group = 'content';
-        elseif (str_starts_with($current_path, '/admin/messages') || str_starts_with($current_path, '/admin/inquiries')) $active_group = 'inbox';
-        elseif (str_starts_with($current_path, '/admin/staff')) $active_group = 'staff';
-        elseif (str_starts_with($current_path, '/admin/settings')) $active_group = 'settings';
-        elseif (str_starts_with($current_path, '/admin/app-store') || $current_path === '/admin/appearance') $active_group = 'apps';
-        elseif (str_starts_with($current_path, '/admin/appearance')) $active_group = 'appearance';
-
+        $current_path = \App\Core\AuthManager::normalizePath((string)(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/'));
         $user_role = \App\Core\AuthManager::getUserRole() ?? 'staff';
-        $user_perms = \App\Core\AuthManager::getPermissions();
-
-        $can_access = function ($perm) use ($user_role, $user_perms) {
-            return $user_role === 'admin' || in_array($perm, $user_perms, true);
-        };
-        $content_nav_url = $can_access('blog') ? '/admin/posts' : '/admin/cases';
+        $pluginRuntime = class_exists(\App\Plugins\PluginRuntime::class) ? \App\Plugins\PluginRuntime::instance() : null;
+        $legacyAdminNavigation = $pluginRuntime ? $pluginRuntime->slots()->render('admin.navigation', ['path' => $current_path, 'role' => $user_role]) : '';
+        $adminNavigation = \App\Core\AdminNavigation::build(
+            $current_path,
+            $pluginRuntime ? (array)($pluginRuntime->cache()['admin_menu'] ?? []) : [],
+            trim($legacyAdminNavigation) !== ''
+        );
     ?>
-        <!-- 第一级主导航 -->
-        <nav class="admin-navbar border-b border-slate-200 bg-white/95 backdrop-blur" role="navigation" aria-label="main navigation">
-            <div class="container admin-navbar-inner flex items-center justify-between gap-6 py-4">
-                <div class="admin-navbar-brand flex items-center gap-3">
-                    <a class="logo-link inline-flex items-center rounded-xl p-2 transition" href="<?= url('/admin') ?>">
-                        <img src="<?= url('/assets/admin/images/shopagg-logo.png') ?>" alt="logo" class="h-9 max-h-9">
-                    </a>
-                </div>
+        <aside class="admin-sidebar" id="adminSidebar" aria-label="后台导航" data-admin-sidebar>
+            <div class="admin-sidebar-header">
+                <a class="admin-sidebar-brand" href="<?= url('/admin') ?>" aria-label="返回仪表盘">
+                    <img src="<?= url('/assets/admin/images/shopagg-logo.png') ?>" alt="Lighthouse CMS">
+                </a>
+                <a href="#" class="admin-sidebar-close" aria-label="关闭导航" data-sidebar-dismiss>
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </a>
+            </div>
 
-                <button type="button" class="admin-nav-toggle inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 lg:hidden" aria-label="打开导航菜单" aria-controls="adminNavbar" aria-expanded="false" data-nav-toggle data-target="adminNavbar">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                </button>
+            <nav class="admin-sidebar-nav" aria-label="后台功能">
+                <?php $dashboard = $adminNavigation['dashboard']; ?>
+                <a class="admin-sidebar-dashboard<?= $dashboard['active'] ? ' is-active' : '' ?>" href="<?= url($dashboard['url']) ?>" <?= $dashboard['active'] ? 'aria-current="page"' : '' ?> data-tooltip="<?= h($dashboard['label']) ?>">
+                    <span class="admin-nav-icon"><i class="fas fa-<?= h($dashboard['icon']) ?>" aria-hidden="true"></i></span>
+                    <span class="admin-nav-label"><?= h($dashboard['label']) ?></span>
+                </a>
 
-                <div id="adminNavbar" class="admin-nav-menu hidden w-full flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-xl lg:flex lg:w-auto lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none" data-nav-menu>
-                    <div class="admin-nav-mobile-header lg:hidden">
-                        <div>
-                            <strong>后台管理</strong>
-                            <span>选择要管理的功能</span>
-                        </div>
-                        <button type="button" class="admin-nav-close inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600" aria-label="关闭导航菜单" data-nav-dismiss>
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-2">
-                        <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-home"></i></span>仪表盘
-                        </a>
-                        <?php if ($can_access('inbox')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'inbox' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-envelope"></i></span>收件箱
-                            </a>
-                        <?php endif; ?>
-                        <?php if ($can_access('products')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'catalog' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-box"></i></span>产品中心
-                            </a>
-                        <?php endif; ?>
-                        <?php if ($can_access('blog') || $can_access('cases')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'content' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url($content_nav_url) ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-pen-nib"></i></span>内容管理
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if ($user_role === 'admin'): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'apps' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/app-store') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-store"></i></span>应用商店
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if (class_exists(\App\Plugins\PluginRuntime::class)): ?>
-                            <?php foreach (\App\Plugins\PluginRuntime::instance()->cache()['admin_menu'] as $pluginMenu):
-                                $menuPermission = (string)($pluginMenu['permission'] ?? '');
-                                if ($menuPermission !== '' && !$can_access($menuPermission)) continue;
-                                $menuUrl = (string)($pluginMenu['url'] ?? '');
-                                if ($menuUrl === '') continue;
-                            ?>
-                                <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= h(url($menuUrl)) ?>">
-                                    <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-<?= h($pluginMenu['icon'] ?? 'plug') ?>"></i></span><?= h($pluginMenu['label'] ?? $pluginMenu['plugin_id']) ?>
+                <?php foreach ($adminNavigation['sections'] as $section): ?>
+                    <details class="admin-sidebar-group<?= $section['active'] ? ' is-active' : '' ?>" data-nav-group="<?= h($section['id']) ?>" <?= $section['active'] ? 'open data-active="true"' : '' ?>>
+                        <summary aria-expanded="<?= $section['active'] ? 'true' : 'false' ?>" data-tooltip="<?= h($section['label']) ?>">
+                            <span class="admin-nav-icon"><i class="fas fa-<?= h($section['icon']) ?>" aria-hidden="true"></i></span>
+                            <span class="admin-nav-label"><?= h($section['label']) ?></span>
+                            <i class="fas fa-chevron-down admin-nav-chevron" aria-hidden="true"></i>
+                        </summary>
+                        <div class="admin-sidebar-items">
+                            <?php foreach ($section['items'] as $item): ?>
+                                <a class="admin-sidebar-item<?= $item['active'] ? ' is-active' : '' ?>" href="<?= h(url($item['url'])) ?>" <?= $item['active'] ? 'aria-current="page"' : '' ?>>
+                                    <span class="admin-item-marker" aria-hidden="true"></span>
+                                    <span><?= h($item['label']) ?></span>
                                 </a>
                             <?php endforeach; ?>
-                            <?= plugin_slot('admin.navigation', ['path' => $current_path, 'role' => $user_role]) ?>
-                        <?php endif; ?>
+                            <?php if ($section['id'] === 'extensions' && $section['legacy']): ?>
+                                <div class="admin-legacy-navigation" data-deprecated-slot="admin.navigation">
+                                    <?= $legacyAdminNavigation ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </details>
+                <?php endforeach; ?>
+            </nav>
 
-                        <?php if ($user_role === 'admin'): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'appearance' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/blocks') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-paint-brush"></i></span>外观区块
-                            </a>
-                        <?php endif; ?>
+            <div class="admin-sidebar-footer">
+                <span class="admin-sidebar-version">Lighthouse CMS · v<?= h(APP_VERSION) ?></span>
+            </div>
+        </aside>
+        <a href="#" class="admin-sidebar-backdrop" aria-label="关闭导航" data-sidebar-dismiss></a>
 
-                        <?php if ($can_access('settings')): ?>
-                            <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $active_group === 'settings' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?>" href="<?= url('/admin/settings-general') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-cog"></i></span>系统设置
-                            </a>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="admin-profile-area flex items-center justify-end">
-                        <div class="group relative w-full lg:w-auto" data-profile-menu>
-                            <button type="button" class="admin-profile-toggle inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 lg:w-auto" aria-expanded="false" data-profile-menu-toggle>
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-circle"></i></span>
-                                <span class="min-w-0 flex-1 truncate text-left"><?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?></span>
-                                <span class="text-xs text-slate-400"><i class="fas fa-chevron-down"></i></span>
-                            </button>
-                            <div class="admin-profile-dropdown invisible absolute right-0 top-full z-50 min-w-[13rem] pt-2 opacity-0 transition duration-150 group-hover:visible group-hover:opacity-100">
-                            <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-                                <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/admin/profile') ?>">
-                                    <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-id-card"></i></span>个人资料
-                                </a>
-                                <?php if ($user_role === 'admin'): ?>
-                                    <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium <?= $active_group === 'staff' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' ?> transition" href="<?= url('/admin/staff') ?>">
-                                        <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-users"></i></span>员工管理
-                                    </a>
-                                <?php endif; ?>
-                                <a class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" href="<?= url('/') ?>" target="_blank">
-                                    <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-external-link-alt"></i></span>访问网站
-                                </a>
-                                <div class="my-2 h-px bg-slate-200"></div>
-                                <button type="button" class="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50" data-post-action="<?= url('/admin/logout') ?>" data-post-payload="{}">
-                                    <span class="inline-flex h-5 w-5 items-center justify-center mr-2"><i class="fas fa-sign-out-alt"></i></span>退出登录
-                                </button>
-                            </div>
-                            </div>
+        <header class="admin-topbar">
+            <div class="admin-topbar-leading">
+                <a href="#adminSidebar" class="admin-sidebar-toggle" role="button" aria-label="切换导航栏" aria-controls="adminSidebar" aria-expanded="true" data-sidebar-toggle>
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </a>
+                <div class="admin-topbar-title">
+                    <span>后台管理</span>
+                    <strong><?= h($title) ?></strong>
+                </div>
+            </div>
+            <div class="admin-topbar-actions">
+                <a class="admin-topbar-site" href="<?= url('/') ?>" target="_blank" rel="noopener">
+                    <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i><span>访问网站</span>
+                </a>
+                <div class="admin-profile-menu" data-profile-menu>
+                    <button type="button" class="admin-profile-toggle" aria-expanded="false" data-profile-menu-toggle>
+                        <i class="fas fa-circle-user" aria-hidden="true"></i>
+                        <span><?= h($_SESSION['admin_display_name'] ?? $_SESSION['admin_user'] ?? 'Admin') ?></span>
+                        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="admin-profile-dropdown">
+                        <div>
+                            <a href="<?= url('/admin/profile') ?>"><i class="fas fa-id-card" aria-hidden="true"></i>个人资料</a>
+                            <button type="button" data-post-action="<?= url('/admin/logout') ?>" data-post-payload="{}"><i class="fas fa-right-from-bracket" aria-hidden="true"></i>退出登录</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="button" class="admin-nav-backdrop hidden" aria-label="关闭导航菜单" data-nav-dismiss></button>
-        </nav>
-
-        <!-- 第二级二级导航 -->
-        <?php if ($active_group): ?>
-            <nav class="admin-subnav border-b border-slate-200 bg-white">
-                <div class="container admin-subnav-container flex items-center overflow-x-auto whitespace-nowrap">
-                    <?php if ($active_group === 'catalog'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/products' || str_contains($current_path, '/admin/products/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/products') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-list"></i></span>产品列表
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/product-categories') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/product-categories') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-folder"></i></span>产品分类
-                        </a>
-                    <?php elseif ($active_group === 'content'): ?>
-                        <?php if ($can_access('blog')): ?>
-                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/posts' || str_contains($current_path, '/admin/posts/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/posts') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-newspaper"></i></span>文章管理
-                            </a>
-                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/pages' || str_contains($current_path, '/admin/pages/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/pages') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-file-lines"></i></span>页面管理
-                            </a>
-                        <?php endif; ?>
-                        <?php if ($can_access('cases')): ?>
-                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/cases' || str_contains($current_path, '/admin/cases/') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/cases') ?>">
-                                <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-briefcase"></i></span>案例管理
-                            </a>
-                        <?php endif; ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/admin/media') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/media') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-photo-video"></i></span>媒体库
-                        </a>
-                    <?php elseif ($active_group === 'inbox'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/messages') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/messages') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-comment-dots"></i></span>联系留言
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/inquiries') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/inquiries') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-file-invoice"></i></span>询单管理
-                        </a>
-                    <?php elseif ($active_group === 'staff'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/staff' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-list"></i></span>员工列表
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_contains($current_path, '/create') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/staff/create') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-user-plus"></i></span>新增员工
-                        </a>
-                    <?php elseif ($active_group === 'apps'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/app-store' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-store"></i></span>浏览应用
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/app-store/plugins') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store/plugins') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-plug"></i></span>插件管理
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/app-store/themes') || $current_path === '/admin/appearance' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store/themes') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-swatchbook"></i></span>主题管理
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/app-store/settings' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/app-store/settings') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-key"></i></span>账户设置
-                        </a>
-                    <?php elseif ($active_group === 'appearance'): ?>
-                        
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/block') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/blocks') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-puzzle-piece"></i></span>模板区块
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/menus') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/menus') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-bars"></i></span>菜单管理
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= str_starts_with($current_path, '/admin/appearance/sliders') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/appearance/sliders') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-images"></i></span>轮播图
-                        </a>
-                    <?php elseif ($active_group === 'settings'): ?>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-general' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-general') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-cog text-xs"></i></span>基础设置
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= in_array($current_path, ['/admin/settings-company', '/admin/settings-trade', '/admin/settings-media'], true) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-company') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-building text-xs"></i></span>公司资料
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-contact' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-contact') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-phone text-xs"></i></span>联系方式
-                        </a>
-                        <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-translate' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-translate') ?>">
-                            <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-language text-xs"></i></span>翻译设置
-                        </a>
-                        <?php if ($user_role === 'admin'): ?>
-                            <a class="inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-custom' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-custom') ?>">
-                                <span class="inline-flex h-4 w-4 items-center justify-center"><i class="fas fa-code text-xs"></i></span>自定义代码
-                            </a>
-                        <?php endif; ?>
-                        <a class="inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition <?= $current_path === '/admin/settings-updater' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-900' ?>" href="<?= url('/admin/settings-updater') ?>">
-                            <span class="inline-flex h-5 w-5 items-center justify-center mr-1"><i class="fas fa-sync-alt"></i></span>程序更新
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </nav>
-        <?php endif; ?>
-
+        </header>
     <?php endif; ?>
 
     <div class="admin-main">
@@ -500,6 +375,9 @@
         </div>
     </footer>
 
+    <?php if (($showNav ?? true) && class_exists(\App\Plugins\PluginRuntime::class)): ?>
+        <?= \App\Plugins\PluginRuntime::instance()->adminAssetTags('footer') ?>
+    <?php endif; ?>
     <script src="https://cdn.jsdelivr.net/npm/jodit@4.13.5/es2021/jodit.fat.min.js" integrity="sha384-IccFe3rXbed180gRH7yBTP+/cUVVxY0TImIHZ2IPflDaaEY1YoCOVTSZ8a63Sr9J" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 

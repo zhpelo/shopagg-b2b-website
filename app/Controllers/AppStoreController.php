@@ -217,8 +217,7 @@ final class AppStoreController extends Controller {
         ob_start();
         require $viewFile;
         $content = ob_get_clean() ?: '';
-        $showNav = true;
-        require APP_ROOT . '/app/views/admin/layout.php';
+        \App\Core\AdminPageRenderer::render($title, $content);
     }
 
     private function redirectWithQuery(string $path): void {

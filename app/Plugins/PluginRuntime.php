@@ -107,6 +107,14 @@ final class PluginRuntime {
                             (new \App\Controllers\PluginPageController())->show($html, (array)($route['seo'] ?? []));
                             return;
                         }
+                        if (($route['layout'] ?? 'standalone') === 'admin') {
+                            $title = trim((string)($route['title'] ?? ''));
+                            if ($title === '') {
+                                $title = (string)($this->cache['plugins'][$pluginId]['manifest']['name'] ?? '插件管理');
+                            }
+                            \App\Core\AdminPageRenderer::render($title, $this->adminContentFragment($html));
+                            return;
+                        }
                         Response::html($html)->send();
                     } catch (\Throwable $e) {
                         $this->registry->recordFailure($pluginId, $e);
@@ -135,9 +143,15 @@ final class PluginRuntime {
         return $html;
     }
 
+    public function adminAssetTags(string $location): string {
+        return $this->assetTags($location, ['surface' => 'admin']);
+    }
+
     private function assetTags(string $location, array $context): string {
         $tags = '';
-        $requestPath = (string)(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
+        $requestPath = \App\Core\AuthManager::normalizePath(
+            (string)(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/')
+        );
         foreach ($this->cache['assets'] as $asset) {
             $path = (string)($asset['path'] ?? $asset['value'] ?? '');
             if ($path === '' || !PluginManifest::safeRelativePath($path)) continue;
@@ -168,6 +182,17 @@ final class PluginRuntime {
             if (preg_match('#^' . str_replace('\\*', '.*', $quoted) . '$#', $path)) return true;
         }
         return false;
+    }
+
+    /**
+     * New admin routes should return a fragment. During the compatibility
+     * window, safely unwrap older plugins that still return a full document.
+     */
+    private function adminContentFragment(string $html): string {
+        if (stripos($html, '<html') === false && stripos($html, '<body') === false) return $html;
+        if (preg_match('/<body\b[^>]*>(.*)<\/body>/is', $html, $body) !== 1) return $html;
+        $fragment = trim($body[1]);
+        return '<div class="plugin-admin-fragment">' . $fragment . '</div>';
     }
 
     public function rebuild(): void {

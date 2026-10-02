@@ -7,3 +7,4 @@ examples/*
 extensions/*
 themes/*
 !themes/default/
+Documents/
