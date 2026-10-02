@@ -3203,3 +3203,575 @@ body.jodit_fullsize-box_true {
         overflow-wrap: anywhere;
     }
 }
+
+/* ==================== Primer-inspired admin visual system ====================
+ * Content-first defaults shared by core and plugin admin pages.
+ * Keep semantic status colors, but use restrained surfaces, borders and shadows.
+ */
+:root {
+    --admin-canvas-default: #ffffff;
+    --admin-canvas-subtle: #f6f8fa;
+    --admin-canvas-inset: #eff2f5;
+    --admin-border-default: #d0d7de;
+    --admin-border-muted: #d8dee4;
+    --admin-fg-default: #1f2328;
+    --admin-fg-muted: #656d76;
+    --admin-fg-subtle: #8c959f;
+    --admin-accent-fg: #0969da;
+    --admin-accent-emphasis: #0969da;
+    --admin-accent-muted: #ddf4ff;
+    --admin-success-fg: #1a7f37;
+    --admin-success-emphasis: #1f883d;
+    --admin-danger-fg: #cf222e;
+    --admin-danger-muted: #ffebe9;
+    --admin-attention-fg: #9a6700;
+    --admin-attention-muted: #fff8c5;
+    --admin-radius-small: 3px;
+    --admin-radius-medium: 6px;
+    --admin-radius-large: 12px;
+    --admin-shadow-resting: 0 1px 0 rgba(31, 35, 40, .04);
+    --admin-shadow-floating: 0 8px 24px rgba(140, 149, 159, .2);
+
+    /* Backward-compatible aliases used by existing admin components. */
+    --primary-solid: var(--admin-accent-emphasis);
+    --link-solid: var(--admin-accent-fg);
+    --card-shadow: var(--admin-shadow-resting);
+    --card-hover-shadow: var(--admin-shadow-resting);
+    --border-radius: var(--admin-radius-medium);
+    --border-radius-sm: var(--admin-radius-medium);
+    --border-radius-xs: var(--admin-radius-small);
+}
+
+body {
+    background: var(--admin-canvas-subtle);
+    color: var(--admin-fg-default);
+}
+
+body:not(.login-page) :where(
+    [class~="rounded-lg"],
+    [class~="rounded-xl"],
+    [class~="rounded-2xl"],
+    [class~="rounded-[10px]"],
+    [class~="rounded-[14px]"]
+) {
+    border-radius: var(--admin-radius-medium) !important;
+}
+
+body:not(.login-page) :where([class~="rounded-[20px]"], [class~="rounded-3xl"]) {
+    border-radius: var(--admin-radius-large) !important;
+}
+
+body:not(.login-page) .border-slate-200 {
+    border-color: var(--admin-border-default) !important;
+}
+
+body:not(.login-page) .border-slate-100 {
+    border-color: var(--admin-border-muted) !important;
+}
+
+.admin-content-section {
+    color: var(--admin-fg-default);
+}
+
+.admin-main :where(.card, .admin-table, .activity-card, .stat-card) {
+    border: 1px solid var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    background: var(--admin-canvas-default);
+    box-shadow: var(--admin-shadow-resting);
+}
+
+.admin-main :where(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl) {
+    box-shadow: var(--admin-shadow-resting) !important;
+}
+
+/* Page titles are content headers, not promotional banners. */
+.page-header,
+.dashboard-header {
+    margin-bottom: 1.5rem;
+    padding: 0 0 1rem !important;
+    border: 0;
+    border-bottom: 1px solid var(--admin-border-default);
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--admin-fg-default);
+    box-shadow: none !important;
+}
+
+.page-header h1,
+.dashboard-header h1 {
+    margin-bottom: 0 !important;
+    color: var(--admin-fg-default) !important;
+    font-size: 1.5rem !important;
+    line-height: 1.35;
+}
+
+.page-header p,
+.dashboard-header p,
+.dashboard-header .subtitle {
+    color: var(--admin-fg-muted) !important;
+}
+
+.page-header h1 > .inline-flex:first-child {
+    width: 32px !important;
+    height: 32px !important;
+    margin-right: .25rem !important;
+    border-radius: var(--admin-radius-medium) !important;
+    background: var(--admin-accent-muted) !important;
+    color: var(--admin-accent-fg) !important;
+    font-size: .875rem;
+}
+
+.page-header .header-actions a,
+.page-header .header-actions button {
+    border: 1px solid var(--admin-border-default) !important;
+    border-radius: var(--admin-radius-medium) !important;
+    background: var(--admin-canvas-subtle) !important;
+    color: var(--admin-fg-default) !important;
+    box-shadow: var(--admin-shadow-resting) !important;
+}
+
+.page-header .header-actions a:hover,
+.page-header .header-actions button:hover {
+    border-color: #afb8c1 !important;
+    background: #f3f4f6 !important;
+}
+
+.page-header .header-actions a[href*="/create"] {
+    border-color: rgba(27, 31, 36, .15) !important;
+    background: var(--admin-success-emphasis) !important;
+    color: #fff !important;
+}
+
+.page-header .header-actions a[href*="/create"]:hover {
+    background: var(--admin-success-fg) !important;
+}
+
+/* Primer-style underline tabs keep local navigation visually lightweight. */
+.modern-tabs {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--admin-border-default);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.modern-tabs a {
+    margin-bottom: -1px;
+    padding: .65rem .25rem .7rem;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: var(--admin-fg-muted);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.modern-tabs a:hover {
+    background: transparent;
+    color: var(--admin-fg-default);
+    border-bottom-color: var(--admin-border-default);
+}
+
+.modern-tabs a.is-active {
+    background: transparent;
+    color: var(--admin-fg-default);
+    border-bottom-color: #fd8c73;
+}
+
+.section-title {
+    gap: .5rem;
+    margin-bottom: .75rem;
+    color: var(--admin-fg-default);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.section-title .icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--admin-radius-medium);
+}
+
+/* Forms use a compact control radius and a single, accessible focus treatment. */
+.admin-main :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    select,
+    textarea
+) {
+    border-color: var(--admin-border-default) !important;
+    border-radius: var(--admin-radius-medium) !important;
+    padding-block: .5rem !important;
+    box-shadow: inset 0 1px 0 rgba(208, 215, 222, .2);
+}
+
+.admin-main :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    select,
+    textarea
+):focus {
+    border-color: var(--admin-accent-emphasis) !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, .2) !important;
+}
+
+.admin-main :where(button, a).bg-indigo-600,
+.admin-main :where(button, a).bg-slate-900 {
+    border: 1px solid rgba(27, 31, 36, .15);
+    background: var(--admin-success-emphasis) !important;
+    color: #fff !important;
+    box-shadow: var(--admin-shadow-resting) !important;
+}
+
+.admin-main :where(button, a).bg-indigo-600:hover,
+.admin-main :where(button, a).bg-slate-900:hover {
+    background: var(--admin-success-fg) !important;
+    transform: none !important;
+}
+
+.admin-table {
+    overflow: hidden;
+}
+
+.admin-table thead th {
+    padding: .65rem 1rem;
+    border-bottom-color: var(--admin-border-default);
+    background: var(--admin-canvas-subtle);
+    color: var(--admin-fg-muted);
+    letter-spacing: .02em;
+    text-transform: none;
+}
+
+.admin-table tbody td {
+    padding: .75rem 1rem;
+    border-bottom-color: var(--admin-border-muted);
+}
+
+.admin-table tbody tr:hover {
+    background: var(--admin-canvas-subtle);
+}
+
+.empty-state {
+    padding: 2.5rem 2rem;
+    color: var(--admin-fg-muted);
+}
+
+.stat-card,
+.quick-action {
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.stat-card:hover,
+.quick-action:hover {
+    border-color: #afb8c1;
+    box-shadow: var(--admin-shadow-resting);
+    transform: none;
+}
+
+.stat-card::before {
+    height: 2px;
+    border-radius: var(--admin-radius-medium) var(--admin-radius-medium) 0 0;
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--admin-radius-medium);
+    font-size: 1.125rem;
+}
+
+.stat-icon.primary,
+.stat-icon.link { background: var(--admin-accent-muted); color: var(--admin-accent-fg); }
+.stat-icon.success { background: #dafbe1; color: var(--admin-success-fg); }
+.stat-icon.warning { background: var(--admin-attention-muted); color: var(--admin-attention-fg); }
+.stat-icon.danger { background: var(--admin-danger-muted); color: var(--admin-danger-fg); }
+.stat-icon.info { background: #ddf4ff; color: #0969da; }
+.stat-icon.dark { background: var(--admin-canvas-inset); color: var(--admin-fg-muted); }
+
+.stat-value {
+    color: var(--admin-fg-default);
+    font-size: 2rem;
+}
+
+.stat-label,
+.activity-stat .label {
+    color: var(--admin-fg-muted);
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.quick-action {
+    border: 1px solid var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    box-shadow: var(--admin-shadow-resting);
+}
+
+/* Navigation and overlays share the same neutral surfaces. */
+.admin-sidebar {
+    border-right-color: var(--admin-border-default);
+    background: var(--admin-canvas-subtle);
+    box-shadow: none;
+}
+
+.admin-sidebar-header,
+.admin-sidebar-footer {
+    border-color: var(--admin-border-default);
+}
+
+.admin-sidebar-brand,
+.admin-sidebar-close,
+.admin-sidebar-dashboard,
+.admin-sidebar-group > summary,
+.admin-sidebar-item,
+.admin-legacy-navigation a {
+    border-radius: var(--admin-radius-medium);
+}
+
+.admin-sidebar-dashboard,
+.admin-sidebar-group > summary {
+    min-height: 40px;
+    color: var(--admin-fg-muted);
+}
+
+.admin-sidebar-dashboard:hover,
+.admin-sidebar-group > summary:hover,
+.admin-sidebar-item:hover,
+.admin-legacy-navigation a:hover {
+    background: rgba(208, 215, 222, .32);
+    color: var(--admin-fg-default);
+}
+
+.admin-sidebar-dashboard.is-active,
+.admin-sidebar-group.is-active > summary,
+.admin-sidebar-item.is-active {
+    background: var(--admin-accent-muted);
+    color: var(--admin-accent-fg);
+}
+
+.admin-topbar {
+    border-bottom-color: var(--admin-border-default);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: none;
+}
+
+.admin-sidebar-toggle,
+.admin-topbar-site,
+.admin-profile-toggle {
+    border-color: var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    background: var(--admin-canvas-subtle);
+    color: var(--admin-fg-default);
+    box-shadow: var(--admin-shadow-resting);
+}
+
+.admin-sidebar-toggle:hover,
+.admin-topbar-site:hover,
+.admin-profile-toggle:hover {
+    border-color: #afb8c1;
+    background: #f3f4f6;
+}
+
+.admin-profile-dropdown > div {
+    border-color: var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    box-shadow: var(--admin-shadow-floating);
+}
+
+.admin-profile-dropdown a,
+.admin-profile-dropdown button {
+    border-radius: var(--admin-radius-medium);
+}
+
+.media-library-modal-card,
+#product-selector-modal > .relative.z-10 {
+    border: 1px solid var(--admin-border-default);
+    border-radius: var(--admin-radius-large) !important;
+    box-shadow: var(--admin-shadow-floating) !important;
+}
+
+/* Commerce keeps its storefront identity; admin fragments inherit the admin UI. */
+.admin-main .plugin-admin-fragment .lc-page {
+    padding: .25rem 0 1rem;
+    background: transparent;
+    color: var(--admin-fg-default);
+    font-family: inherit;
+}
+
+.admin-main .plugin-admin-fragment .lc-heading {
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--admin-border-default);
+}
+
+.admin-main .plugin-admin-fragment :where(.lc-heading h1, .lc-page h1) {
+    margin-top: 0;
+    color: var(--admin-fg-default);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-main .plugin-admin-fragment :where(.lc-page p, .lc-lead) {
+    color: var(--admin-fg-muted);
+    line-height: 1.5;
+}
+
+.admin-main .plugin-admin-fragment .lc-eyebrow {
+    color: var(--admin-fg-muted);
+    letter-spacing: .04em;
+    text-transform: none;
+}
+
+.admin-main .plugin-admin-fragment :where(.lc-card, .lc-stat, .lc-empty) {
+    border: 1px solid var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    background: var(--admin-canvas-default);
+    box-shadow: var(--admin-shadow-resting);
+}
+
+.admin-main .plugin-admin-fragment .lc-card {
+    padding: 1rem;
+}
+
+.admin-main .plugin-admin-fragment .lc-button {
+    min-height: 34px;
+    border: 1px solid rgba(27, 31, 36, .15);
+    border-radius: var(--admin-radius-medium);
+    padding: .45rem .8rem;
+    background: var(--admin-success-emphasis);
+    box-shadow: var(--admin-shadow-resting);
+    font-weight: 600;
+}
+
+.admin-main .plugin-admin-fragment .lc-button:hover {
+    background: var(--admin-success-fg);
+    box-shadow: var(--admin-shadow-resting);
+    transform: none;
+}
+
+.admin-main .plugin-admin-fragment .lc-button-secondary {
+    border-color: var(--admin-border-default);
+    background: var(--admin-canvas-subtle);
+    color: var(--admin-fg-default) !important;
+}
+
+.admin-main .plugin-admin-fragment .lc-button-secondary:hover {
+    background: #f3f4f6;
+}
+
+.admin-main .plugin-admin-fragment :where(
+    .lc-form input,
+    .lc-form textarea,
+    .lc-grid input,
+    .lc-filter input,
+    .lc-filter select,
+    .lc-card input,
+    .lc-card select
+) {
+    border-color: var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    padding: .5rem .75rem;
+    box-shadow: inset 0 1px 0 rgba(208, 215, 222, .2);
+}
+
+.admin-main .plugin-admin-fragment :where(
+    .lc-form input,
+    .lc-form textarea,
+    .lc-grid input,
+    .lc-filter input,
+    .lc-filter select,
+    .lc-card input,
+    .lc-card select
+):focus {
+    border-color: var(--admin-accent-emphasis);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, .2);
+}
+
+.admin-main .plugin-admin-fragment .lc-table th {
+    padding: .65rem .75rem;
+    background: var(--admin-canvas-subtle);
+    color: var(--admin-fg-muted);
+    letter-spacing: .02em;
+    text-transform: none;
+}
+
+.admin-main .plugin-admin-fragment .lc-table td {
+    padding: .75rem;
+    border-bottom-color: var(--admin-border-muted);
+}
+
+.admin-main .plugin-admin-fragment :where(.lc-alert, .lc-note, .lc-methods label) {
+    border-radius: var(--admin-radius-medium);
+}
+
+/* Login follows the same quiet shell instead of a separate visual language. */
+body.login-page {
+    background: var(--admin-canvas-subtle) !important;
+    color: var(--admin-fg-default);
+}
+
+.login-card {
+    border: 1px solid var(--admin-border-default);
+    border-radius: var(--admin-radius-medium);
+    background: var(--admin-canvas-default);
+    box-shadow: var(--admin-shadow-floating);
+}
+
+.login-logo .icon-wrap {
+    border-radius: var(--admin-radius-medium);
+    background: #24292f;
+    box-shadow: none;
+}
+
+.login-page input {
+    border-color: var(--admin-border-default) !important;
+    border-radius: var(--admin-radius-medium) !important;
+    box-shadow: inset 0 1px 0 rgba(208, 215, 222, .2) !important;
+}
+
+.login-page input:focus {
+    border-color: var(--admin-accent-emphasis) !important;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, .2) !important;
+}
+
+body.login-page .login-btn {
+    border: 1px solid rgba(27, 31, 36, .15);
+    border-radius: var(--admin-radius-medium) !important;
+    background: var(--admin-success-emphasis);
+    box-shadow: var(--admin-shadow-resting);
+}
+
+body.login-page .login-btn:hover {
+    background: var(--admin-success-fg);
+    box-shadow: var(--admin-shadow-resting);
+    transform: none;
+}
+
+@media screen and (max-width: 768px) {
+    .page-header,
+    .dashboard-header {
+        padding: 0 0 .875rem !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .modern-tabs {
+        padding: 0;
+    }
+
+    .admin-table {
+        border-radius: var(--admin-radius-medium);
+    }
+
+    .media-library-modal-card,
+    #product-selector-modal > .relative.z-10 {
+        border: 0;
+        border-radius: 0 !important;
+    }
+}
