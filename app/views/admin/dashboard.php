@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <div class="action-text">新建页面</div>
-                    <div class="action-desc">维护关于我们和服务页面</div>
+                    <div class="action-desc">可以添加自定义页面</div>
                 </div>
             </a>
         </div>
