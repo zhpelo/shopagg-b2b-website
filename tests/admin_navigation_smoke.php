@@ -67,6 +67,12 @@ expect(count($companyItems) === 1, '公司资料应只保留一个导航入口')
 expect(($companyItems[0]['label'] ?? '') === '公司资料', '合并后导航应显示为公司资料');
 expect((bool)($companyItems[0]['active'] ?? false), '公司资料页应激活对应导航');
 
+$layoutSource = (string)file_get_contents(APP_ROOT . '/app/views/admin/layout.php');
+expect(str_contains($layoutSource, 'name="admin-sidebar-navigation"'), '侧栏分组应使用原生互斥名称保证手风琴行为');
+
+$styleSource = (string)file_get_contents(APP_ROOT . '/assets/admin/style.css');
+expect(str_contains($styleSource, '.admin-sidebar-group:not([open]) > .admin-sidebar-items'), '关闭的侧栏分组应明确隐藏子导航');
+
 $manifest = [
     'schema_version' => 1,
     'id' => 'navigation-test',

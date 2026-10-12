@@ -59,7 +59,7 @@
                 </a>
 
                 <?php foreach ($adminNavigation['sections'] as $section): ?>
-                    <details class="admin-sidebar-group<?= $section['active'] ? ' is-active' : '' ?>" data-nav-group="<?= h($section['id']) ?>" <?= $section['active'] ? 'open data-active="true"' : '' ?>>
+                    <details class="admin-sidebar-group<?= $section['active'] ? ' is-active' : '' ?>" name="admin-sidebar-navigation" data-nav-group="<?= h($section['id']) ?>" <?= $section['active'] ? 'open data-active="true"' : '' ?>>
                         <summary aria-expanded="<?= $section['active'] ? 'true' : 'false' ?>" data-tooltip="<?= h($section['label']) ?>">
                             <span class="admin-nav-icon"><i class="fas fa-<?= h($section['icon']) ?>" aria-hidden="true"></i></span>
                             <span class="admin-nav-label"><?= h($section['label']) ?></span>

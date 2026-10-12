@@ -1567,6 +1567,10 @@ video {
     padding-left: 1.6rem;
 }
 
+.admin-sidebar-group:not([open]) > .admin-sidebar-items {
+    display: none;
+}
+
 .admin-sidebar-item {
     position: relative;
     display: flex;
