@@ -1,442 +1,216 @@
 <div align="center">
 
+<a href="https://shopagg.org/">
+  <img src="https://shopagg.org/assets/images/lighthouse-logo.png" width="96" height="96" alt="灯塔 CMS Logo">
+</a>
+
 # 灯塔 CMS
 
 **Lighthouse CMS · 面向中国工厂与外贸公司的开源 B2B 官网系统**
 
-PHP + SQLite · 零依赖 · 开箱即用
+纯 PHP + SQLite · 自托管 · 可扩展 · MIT 开源
+
+[官网](https://shopagg.org/) · [在线演示](https://demo.shopagg.org/) · [使用文档](https://shopagg.org/usage) · [开发文档](https://shopagg.org/developer) · [版本发布](https://shopagg.org/releases)
 
 [简体中文](README.md) · [English](README.en.md)
 
-[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)
-
-[功能特性](#-功能特性) · [快速开始](#-快速开始) · [部署指南](#-部署指南) · [技术架构](#-技术架构) · [开发文档](#-开发文档)
+[![Website](https://img.shields.io/badge/Website-shopagg.org-0FA5FC?logo=googlechrome&logoColor=white)](https://shopagg.org/)
+[![Latest release](https://img.shields.io/github/v/release/zhpelo/shopagg-b2b-website?display_name=tag&sort=semver)](https://shopagg.org/releases)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-777BB4?logo=php&logoColor=white)](https://shopagg.org/api/compatibility.json)
+[![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://shopagg.org/developer/data-model)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E.svg)](LICENSE)
 
 </div>
 
 ---
 
-## 📣 品牌更名公告
+## 项目简介
 
-项目原名 **SHOPAGG B2B Website**，现正式更名为 **灯塔 CMS**（英文名 **Lighthouse CMS**）。灯塔 CMS 由 SHOPAGG 开源，面向中国工厂与外贸公司，帮助企业建立和管理自己的 B2B 外贸官网。
+灯塔 CMS 是一套面向 B2B 外贸业务的开源官网系统，将产品展示、内容运营、客户询盘、主题外观和插件扩展整合在一个轻量应用中。核心程序使用 PHP 8.1+ 与 SQLite3，不依赖 Composer 包，适合部署到普通虚拟主机、VPS 或企业自有服务器。
 
-此次更名仅涉及项目品牌。现有 GitHub 仓库地址、演示地址、`shopagg` 命令行工具及 ShopAgg 插件市场名称仍沿用原有标识；文档中的这些名称均指向当前实际可用的地址、命令或服务。
+项目原名 **SHOPAGG B2B Website**。品牌现已更名为 **灯塔 CMS（Lighthouse CMS）**，GitHub 仓库地址和 `shopagg` 插件 CLI 名称继续沿用。
 
----
+想先了解产品定位和完整能力，请访问：
 
-## 🖥 界面预览
+- [灯塔 CMS 官网](https://shopagg.org/)
+- [32 项产品能力清单](https://shopagg.org/capabilities)
+- [在线演示站](https://demo.shopagg.org/)
+- [当前稳定版与下载信息](https://shopagg.org/releases)
 
-前台演示：https://demo.shopagg.org/
+## 核心能力
 
-### 前台展示
-<img  alt="image" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
+| 领域 | 主要能力 | 进一步了解 |
+|---|---|---|
+| 产品与商品 | 分类、图集、四种价格模式、多规格 SKU、软删除 | [产品管理文档](https://shopagg.org/usage/product-management) |
+| 内容与媒体 | 文章、案例、独立页面、富文本、媒体库 | [内容与外观文档](https://shopagg.org/usage/content-and-appearance) |
+| 询盘与线索 | 联系留言、产品询盘、处理状态、CSV 导出 | [询盘与日常运营](https://shopagg.org/usage/inquiries) |
+| 主题与外观 | 主题切换、可配置区块、菜单、轮播图 | [主题开发文档](https://shopagg.org/developer/themes) |
+| 插件与扩展 | 路由、事件、过滤器、服务、任务、后台页面 | [插件开发文档](https://shopagg.org/developer/plugins) |
+| 应用商店 | 浏览、安装和升级插件及 B2B 网站主题 | [设置与扩展](https://shopagg.org/usage/settings-and-extensions) |
+| 运维与更新 | GitHub Release 更新、更新前备份、迁移、日志 | [运维文档](https://shopagg.org/developer/operations) |
+| 权限与安全 | Staff 权限、CSRF、上传校验、安全响应头 | [安全边界](https://shopagg.org/developer/security) |
+| SEO 与国际化 | SEO 字段、Sitemap、Open Graph、249 种在线翻译语言 | [完整能力清单](https://shopagg.org/capabilities) |
 
+完整且可检索的功能状态以官网的[产品能力清单](https://shopagg.org/capabilities)为准，也可以直接读取[产品能力 JSON](https://shopagg.org/api/capabilities.json)。
 
-### 后台管理
+## 界面预览
+
+访问 [demo.shopagg.org](https://demo.shopagg.org/) 体验前台页面；后台功能和操作流程可从[使用文档](https://shopagg.org/usage)了解。
+
+### 前台
+
+<img alt="灯塔 CMS 前台页面" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
+
+### 后台
 
 | 仪表盘 | 产品管理 |
 |:---:|:---:|
-| <img alt="image" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790" />| <img alt="image" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460" />|
+| <img alt="灯塔 CMS 仪表盘" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="灯塔 CMS 产品管理" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
 
 | 媒体库 | 系统设置 |
 |:---:|:---:|
-|<img alt="image" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8c6b-8fee5833cc6e" />| <img alt="image" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd" />|
+| <img alt="灯塔 CMS 媒体库" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="灯塔 CMS 系统设置" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
 
----
+## 快速开始
 
-## ✨ 功能特性
+### 运行环境
 
-### 为什么选择灯塔 CMS？
+| 项目 | 要求 |
+|---|---|
+| PHP | 8.1 或更高版本 |
+| PHP 扩展 | `sqlite3`、`mbstring`、`fileinfo` |
+| Web 服务器 | Apache（启用 `mod_rewrite`）或 Nginx |
+| 可写目录 | `storage/`、`uploads/` |
 
-<table>
-<tr>
-<td width="50%">
+最新兼容性信息可读取[兼容性 JSON](https://shopagg.org/api/compatibility.json)。完整的 Apache、Nginx 和生产环境配置见[安装与入门](https://shopagg.org/usage/getting-started)。
 
-**🚀 极简部署**
-- 无需 Composer、Node.js 或任何构建工具
-- 上传文件 → 访问网址 → 自动完成初始化
-- SQLite 文件数据库，无需安装数据库服务
-- 支持根目录和子目录两种部署方式
+### 安装
 
-</td>
-<td width="50%">
+```bash
+git clone https://github.com/zhpelo/shopagg-b2b-website.git
+cd shopagg-b2b-website
+chmod -R 755 storage uploads
+```
 
-**🎨 主题系统**
-- 前后台完全分离的主题机制
-- 区块编辑器：后台可视化修改页面文案、产品选择和轮播区块
-- 可定制品牌色、导航菜单、首页轮播图
-- default 主题已按移动端优先优化，适配手机产品列表、详情和询盘场景
-- 支持自定义 head/footer 代码注入
+将站点根目录指向项目目录，然后访问网站。系统会自动创建 SQLite 数据库并执行待处理迁移。
 
-</td>
-</tr>
-<tr>
-<td width="50%">
+后台默认入口为 `/admin/login`。初始账号通常为 `admin` / `admin123`，首次登录后请立即修改密码。
 
-**🌍 外贸场景优化**
-- 产品阶梯价格 / 多规格 SKU 价格 / 价格区间 / 面谈价格，支持全局货币配置
-- 产品询盘系统（含状态跟踪、CSV 导出）
-- 公司资质、贸易能力等专业展示模块
-- Google 翻译集成，12 种语言一键切换
+安装完成后建议继续阅读：
 
-</td>
-<td width="50%">
+1. [首次登录与初始化](https://shopagg.org/usage/getting-started#first-login)
+2. [产品管理与价格模式](https://shopagg.org/usage/product-management)
+3. [内容、菜单、轮播与主题外观](https://shopagg.org/usage/content-and-appearance)
+4. [插件、员工权限和程序更新](https://shopagg.org/usage/settings-and-extensions)
+5. [上线检查与常见问题](https://shopagg.org/usage/launch-and-faq)
 
-**🔒 安全可靠**
-- 四层安全防护：Web 服务器 → htaccess → 响应头 → 应用层
-- CSRF 令牌校验所有 POST 请求
-- 文件上传 MIME 验证 + getimagesize 双重检查
-- 基于角色的后台权限控制
+## 技术设计
 
-</td>
-</tr>
-</table>
+- **纯 PHP MVC**：单入口、集中路由、控制器、模型和视图分层。
+- **SQLite3**：站点数据默认保存在 `storage/site.db`，数据库结构通过迁移演进。
+- **主题系统**：前台主题位于 `themes/{theme}`，内容区块可在后台维护。
+- **Plugin API 1.0**：Manifest 驱动的插件运行时，支持缓存、隔离数据、任务和服务契约。
+- **可迁移部署**：不绑定特定云平台，可部署到 Apache、Nginx 和常见 PHP 主机。
 
-### 插件系统（v1.3）
+深入阅读：[系统架构](https://shopagg.org/developer/architecture) · [数据模型](https://shopagg.org/developer/data-model) · [应用开发](https://shopagg.org/developer/application-development)
 
-- 进程内模块化插件运行时，兼容普通 PHP 共享主机。
-- 插件可注册前后台页面、API、Webhook、事件、过滤器、页面插槽、业务服务和分片任务。
-- Manifest 驱动，启停后编译为 PHP 缓存；正常请求不扫描插件目录。
-- 插件使用独立命名空间数据表、迁移、设置、日志、任务和动态 Staff 权限。
-- 支持后台上传 ZIP、ShopAgg 插件市场、版本升级以及默认保留数据的卸载方式。
-- 提供 AI 规范、JSON Schema、CLI 生成/校验/打包工具和可运行示例。
+### 目录结构
+
+```text
+shopagg-b2b-website/
+├── index.php               # 应用入口
+├── app/
+│   ├── Controllers/        # 前后台控制器
+│   ├── Core/               # 路由、数据库、认证、迁移等核心模块
+│   ├── Models/             # SQLite 数据模型
+│   ├── Plugins/            # Plugin API 1.0 运行时
+│   ├── Migrations/         # 核心数据库迁移
+│   ├── views/admin/        # 后台页面
+│   └── routes.php          # 路由注册
+├── themes/                 # 前台主题
+├── plugin-dev/             # 本地插件开发目录
+├── plugin-assets/          # 已发布的插件静态资源
+├── storage/                # 数据库、缓存、备份和日志
+├── uploads/                # 用户上传文件
+└── shopagg                 # 插件开发 CLI
+```
+
+## 插件与主题开发
+
+业务扩展优先使用 Plugin API，避免直接修改核心文件。插件 CLI 支持创建、校验、测试和打包：
 
 ```bash
 php shopagg plugin:make my-plugin
 php shopagg plugin:validate plugin-dev/my-plugin
+php shopagg plugin:test plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-开发文档见[插件开发](../Documents/灯塔CMS/插件开发.md)，AI 生成插件时可直接提供[插件规范](../Documents/灯塔CMS/插件规范.md)作为上下文。机器校验 Schema 仍保留在本项目的 `Documents/plugin.schema.json`。
+- [插件开发完整指南](https://shopagg.org/developer/plugins)
+- [主题目录、区块字段和安全输出规范](https://shopagg.org/developer/themes)
+- [控制器、模型、迁移和后台页面开发](https://shopagg.org/developer/application-development)
+- [安全边界与发布前检查](https://shopagg.org/developer/security)
 
-### 前台功能
+## 开发与验证
 
-| 模块 | 说明 |
-|------|------|
-| **产品中心** | 产品列表、分类筛选、详情页、图片画廊、阶梯价格、多规格 SKU 价格、价格区间、面谈价格、相关产品推荐 |
-| **内容发布** | 博客文章、成功案例、自定义页面，统一内容引擎 |
-| **企业展示** | 关于我们（公司简介、资质认证、生产能力）、联系我们 |
-| **询盘系统** | 产品快捷询盘、通用联系表单，双通道获客 |
-| **SEO 优化** | 全站 SEO 字段、自动生成 robots.txt 和 sitemap.xml、OG 标签 |
-| **多语言** | Google Translate 集成，支持 249 种语言，可按浏览器自动翻译 |
-| **轮播图** | 首页轮播图，后台可视化管理，支持自定义链接和文案 |
-| **导航菜单** | 可视化拖拽排序，支持多级菜单，多个菜单区块 |
-
-### 后台功能
-
-| 模块 | 说明 |
-|------|------|
-| **仪表盘** | 核心数据概览（产品 / 文章 / 询盘 / 留言），一目了然 |
-| **产品管理** | 增删改查、图片集、横幅图、标签、供应商、阶梯价格 / 多规格 SKU / 价格区间 / 面谈价格编辑与批量设置 |
-| **内容管理** | 案例 / 博客 / 页面统一管理，富文本编辑器 |
-| **分类管理** | 产品分类和文章分类，树形结构 |
-| **询盘管理** | 状态流转（待处理→已回复→已关闭）、详情查看、CSV 导出 |
-| **留言管理** | 联系表单留言查看与处理 |
-| **媒体库** | 文件上传、目录管理、搜索筛选、批量操作 |
-| **菜单管理** | 拖拽排序、多级嵌套、多个菜单位置 |
-| **轮播图管理** | 图片上传、文案编辑、链接和排序 |
-| **区块编辑** | 可视化修改页面中的标题、描述、按钮文案等 |
-| **员工管理** | 创建 Staff 账号，按模块分配细粒度权限 |
-| **系统设置** | 基础信息 / 全局货币 / 公司资料 / 贸易能力 / 联系方式 / 翻译 / 自定义代码 |
-
----
-
-## 🚀 快速开始
-
-### 环境要求
-
-| 项目 | 最低要求 |
-|------|---------|
-| PHP | 8.1 或更高 |
-| PHP 扩展 | `sqlite3`、`mbstring`、`fileinfo` |
-| Web 服务器 | Apache（需 `mod_rewrite`）或 Nginx |
-| 磁盘空间 | ≥ 50 MB（不含上传文件） |
-
-### 三步完成安装
-
-```bash
-# 1. 获取项目
-git clone https://github.com/zhpelo/shopagg-b2b-website.git
-cd shopagg-b2b-website
-
-# 2. 设置目录权限
-chmod -R 755 storage uploads
-
-# 3. 访问网站 —— 完成！
-# 系统自动创建数据库、初始化数据表和默认管理员账号
-```
-
-### 登录后台
-
-| 项目 | 值 |
-|------|----|
-| 后台地址 | `http://你的域名/admin/login` |
-| 默认用户名 | `admin` |
-| 默认密码 | `admin123` |
-
-> ⚠️ **首次登录后请立即修改默认密码。**
-
----
-
-## 📦 部署指南
-
-### Apache 部署
-
-项目已内置 `.htaccess`，确保 Apache 启用 `mod_rewrite` 和 `AllowOverride All` 即可。
-
-**子目录部署**（如部署到 `https://example.com/b2b/`）仅需修改一行：
-
-```apache
-# .htaccess
-RewriteBase /b2b/
-```
-
-系统会自动检测子目录路径，所有链接自动适配。
-
-### Nginx 部署
-
-```nginx
-server {
-    listen 80;
-    server_name example.com;
-    root /var/www/html;
-    index index.php;
-
-    # 安全规则 —— 禁止访问敏感文件和目录
-    location ~* ^/(storage|\.git)/ { deny all; }
-    location ~* \.(db|sqlite|sqlite3|env|log)$ { deny all; }
-
-    # 静态资源缓存
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff2?)$ {
-        expires 30d;
-        access_log off;
-    }
-
-    # PHP 处理
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    # URL 重写
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-}
-```
-
-### 生产环境清单
-
-- [ ] 修改默认管理员密码
-- [ ] 启用 HTTPS
-- [ ] 确认 `storage/` 和 `uploads/` 对 Web 用户可写
-- [ ] 确认 `storage/` 目录禁止 Web 直接访问
-- [ ] 关闭调试模式（删除 `.env` 或设为 `APP_DEBUG=false`）
-- [ ] 定期备份 `storage/site.db` 和 `uploads/`
-- [ ] 为 Staff 账号分配最小必要权限
-
----
-
-## 🏗 技术架构
-
-### 技术栈
-
-| 层次 | 技术 | 说明 |
-|------|------|------|
-| **后端** | PHP 8.1+ | 纯 PHP，无框架依赖 |
-| **数据库** | SQLite3 | 文件数据库，WAL 模式 |
-| **架构** | MVC | PSR-4 自动加载 |
-| **后台 CSS** | Tailwind CSS + 原生 CSS | 本地预编译，部署时不依赖 Node.js 或 Tailwind CDN |
-| **默认前台主题 CSS** | Tailwind CSS | 主题独立按需加载 CDN |
-| **图标** | Font Awesome 6 | 后台本地静态资源 |
-| **富文本** | Jodit Editor | 后台本地静态资源 |
-| **轮播** | Swiper.js 11 | 按需加载 |
-| **拖拽排序** | SortableJS | 后台本地静态资源 |
-
-### 系统架构图
-
-```
-                            ┌─────────────┐
-                            │  HTTP 请求   │
-                            └──────┬──────┘
-                                   │
-                                   ▼
-                      ┌────────────────────────┐
-                      │   index.php（单入口）    │
-                      │  常量 · Session · 加载   │
-                      └────────────┬───────────┘
-                                   │
-                    ┌──────────────┼──────────────┐
-                    ▼              ▼               ▼
-             ┌────────────┐ ┌──────────┐  ┌─────────────┐
-             │   Router   │ │ Helpers  │  │  Database   │
-             │  路由分发   │ │ 全局函数  │  │ SQLite 单例  │
-             └─────┬──────┘ └──────────┘  └──────┬──────┘
-                   │                             │
-          ┌────────┴────────┐                    │
-          ▼                 ▼                    ▼
-   ┌──────────────┐  ┌───────────────┐   ┌───────────┐
-   │  Site        │  │  Admin        │   │  Migrator  │
-   │  Controller  │  │  Controller   │   │  迁移系统   │
-   │  (前台)       │  │  (后台)       │   └───────────┘
-   └──────┬───────┘  └───────┬───────┘
-          │                  │
-          ▼                  ▼
-   ┌──────────────┐  ┌───────────────┐
-   │   Models     │  │    Views      │
-   │  数据模型     │  │ 主题 / 后台    │
-   └──────────────┘  └───────────────┘
-```
-
-### 请求生命周期
-
-```
-浏览器请求 GET /product/steel-pipe
-    │
-    ├── 1. Apache/Nginx 重写 → index.php
-    ├── 2. 定义常量、Session、错误处理
-    ├── 3. PSR-4 自动加载 + 全局辅助函数
-    ├── 4. Database::getInstance() → 自动执行迁移
-    ├── 5. Router 匹配 → SiteController::productDetail('steel-pipe')
-    ├── 6. 控制器查询 Model → 组装数据
-    └── 7. 渲染: header.php + product_detail.php + footer.php → HTML 输出
-```
-
-### 目录结构
-
-```
-├── index.php                   # 唯一入口
-├── .htaccess                   # Apache 重写 + 安全规则
-├── .env                        # 环境变量（APP_DEBUG）
-│
-├── app/                        # 应用核心
-│   ├── Core/                   # 框架核心（Router / Database / Auth / Media / Migrator）
-│   ├── Controllers/            # 控制器（Site / Admin / Base）
-│   ├── Models/                 # 数据模型（12 个）
-│   ├── Helpers/                # 全局辅助函数 + 安全工具
-│   ├── Migrations/             # 版本化数据库迁移（17 个）
-│   ├── views/admin/            # 后台视图模板
-│   └── routes.php              # 路由注册
-│
-├── themes/                     # 前台主题
-│   └── default/                # 默认主题（响应式模板 + blocks 定义）
-│
-├── storage/                    # 运行时数据（禁止 Web 访问）
-│   ├── site.db                 # SQLite 数据库
-│   ├── blocks/                 # 区块自定义配置
-│   ├── backups/                # 数据库备份
-│   └── logs/                   # 更新日志
-│
-├── uploads/                    # 用户上传文件（按月分目录）
-├── assets/admin/               # 后台静态资源
-└── Documents/plugin.schema.json # 插件 Manifest 的机器校验 Schema；阅读文档在工作区根目录 Documents/
-```
-
-### 数据模型
-
-系统当前包含 17 张数据表：
-
-| 表 | 说明 | 关键字段 |
-|---|------|---------|
-| `users` | 后台用户 | `role`(admin/staff)、`permissions` |
-| `settings` | 站点配置 | key-value 存储，包含 `site_currency` 全局货币 |
-| `products` | 产品 | `slug`、`images_json`、`category_id`、`price_mode`、`price_range_min`、`price_range_max` |
-| `product_prices` | 阶梯价格 | `min_qty`、`max_qty`、`price`（`currency` 为历史字段） |
-| `product_skus` | 多规格 SKU 价格 | 稳定 `id`、`sku_name`、`min_qty`、`price`、`sort_order`、`deleted_at` |
-| `product_categories` | 统一分类 | `type`(product/post)、`parent_id` 树形 |
-| `posts` | 文章/案例/页面 | `post_type`(post/case/page) |
-| `inquiries` | 产品询盘 | `status`(pending/replied/closed) |
-| `messages` | 联系留言 | — |
-| `sliders` | 轮播图区块 | `slug` 标识 |
-| `slider_items` | 轮播图片 | `slider_id` 外键、`sort_order` |
-| `menus` | 菜单区块 | `slug` 标识（main-nav / footer） |
-| `menu_items` | 菜单项 | `parent_id` 无限级、`sort_order` |
-| `media_files` | 媒体文件索引 | 路径、MIME、尺寸等元数据 |
-| `update_logs` | 系统更新日志 | 版本、状态、执行时间 |
-| `app_store_theme_installs` | App Store 主题安装记录 | 主题资源、授权和安装状态 |
-| `migrations` | 迁移记录 | 已执行迁移文件 |
-
-> 💡 博客、案例、自定义页面共用 `posts` 表，通过 `post_type` 区分。产品价格统一读取 `settings.site_currency`，不再读取产品价格行里的历史 `currency` 字段。
-
----
-
-## 📖 开发文档
-
-完整的阅读文档在工作区 [文档索引](../Documents/文档索引.md) 的灯塔CMS 目录下，本项目只保留运行时/工具链需要的 Schema：
-
-| 文档 | 说明 |
-|------|------|
-| [系统架构](../Documents/灯塔CMS/系统架构.md) | 分层架构、核心模块详解、数据库设计、安全架构 |
-| [模板开发](../Documents/灯塔CMS/模板开发.md) | 主题开发规范、模板变量参考、辅助函数 API、区块系统 |
-
-### 后台样式构建
-
-正式发行包已经包含 `assets/admin/tailwind.min.css` 和 `assets/admin/style.min.css`，部署和运行网站不需要 Node.js，也不会下载 Tailwind CDN。修改后台模板、`assets/admin/base.js` 中的 Tailwind 工具类或 `assets/admin/style.css` 后，开发者需要执行：
+正式发行包已经包含后台所需的编译后 CSS。只有修改后台 Tailwind 类名或 `assets/admin/style.css` 时，才需要 Node.js：
 
 ```bash
 npm ci
 npm run build:admin-css
 ```
 
-请提交重新生成的两份 `.min.css`。可维护的 `assets/admin/style.css` 保留在 Git 仓库中，但与 `node_modules`、构建缓存、源码映射及后台 CSS 构建配置一样，不进入 GitHub 自动生成的 Release 归档。插件后台页面如需自定义样式，应在插件 Manifest 的 `assets` 中声明插件自己的 CSS，核心构建不会扫描运行时安装的插件。
+提交 PHP 改动前，至少运行相关语法检查；修改后台导航后可运行现有冒烟测试：
 
-后台使用的 Font Awesome 6.4.0、Jodit 4.13.5 和 SortableJS 1.15.7 固定保存在 `assets/admin/vendor/`，部署时不访问第三方 CDN。升级版本时应同时替换资源与各自的许可证文件；Font Awesome 仅携带现代浏览器使用的 WOFF2 字体，以控制发行包体积。
-
-### 主题开发约定
-
-- 可让客户修改的页面内容放在 `themes/{theme}/blocks.php`，前台模板通过 `block()` / `block_all()` 读取。
-- 产品展示区块使用 `product_picker`，不要让后台用户手填产品 ID。
-- 首页首屏、Banner 等轮播内容使用 `/admin/appearance/sliders`，模板区块用 `slider_slug` 下拉选择轮播图区块。
-- 媒体字段使用 `image` / `media` 类型，模板输出时使用 `asset_url()` 并配合 `h()` 转义。
-- 新主题和 default 主题调整应优先用 Tailwind CSS 类名，`style.css` 只保留主题元数据和少量补充样式。
-- 提交主题变更前至少检查 PHP 语法、`blocks.php` 的 `product_picker` / `slider_slug` 命中，以及手机端无横向溢出。
-
-### 快速扩展
-
-**新增前台页面：**
-
-```php
-// 1. app/routes.php — 注册路由
-$router->add('GET', '/faq', [SiteController::class, 'faq']);
-
-// 2. SiteController — 添加方法
-public function faq(): void {
-    $this->renderSite('faq', ['seo' => ['title' => 'FAQ']]);
-}
-
-// 3. themes/default/faq.php — 创建模板
+```bash
+php tests/admin_navigation_smoke.php
 ```
 
-**新增数据库表：**
+更完整的开发约定与运维验收步骤见[开发文档](https://shopagg.org/developer)和[运维文档](https://shopagg.org/developer/operations)。
 
-```php
-// 创建迁移文件: app/Migrations/20260412120000_create_faqs_table.php
-return new class {
-    public function up(SQLite3 $db): void {
-        $db->exec('CREATE TABLE IF NOT EXISTS faqs (...)');
-    }
-    public function down(SQLite3 $db): void {
-        $db->exec('DROP TABLE IF EXISTS faqs');
-    }
-};
-// 下次请求时自动执行，无需手动操作
-```
+## 文档与机器可读资源
+
+官网同时提供面向用户、开发者、搜索引擎和 AI 的资料：
+
+| 资源 | 地址 |
+|---|---|
+| 官网首页 | [shopagg.org](https://shopagg.org/) |
+| 使用文档 | [shopagg.org/usage](https://shopagg.org/usage) |
+| 开发文档 | [shopagg.org/developer](https://shopagg.org/developer) |
+| 产品能力清单 | [shopagg.org/capabilities](https://shopagg.org/capabilities) |
+| 版本发布 | [shopagg.org/releases](https://shopagg.org/releases) |
+| AI 项目摘要 | [llms.txt](https://shopagg.org/llms.txt) |
+| AI 完整上下文 | [llms-full.txt](https://shopagg.org/llms-full.txt) |
+| 项目信息 JSON | [api/project.json](https://shopagg.org/api/project.json) |
+| 产品能力 JSON | [api/capabilities.json](https://shopagg.org/api/capabilities.json) |
+| 文档索引 JSON | [api/docs/index.json](https://shopagg.org/api/docs/index.json) |
+| 最新版本 JSON | [api/releases/latest.json](https://shopagg.org/api/releases/latest.json) |
+| 静态 API OpenAPI | [api/openapi.json](https://shopagg.org/api/openapi.json) |
+
+## 版本与更新
+
+稳定版本通过 GitHub Release 发布，后台可以检查新版本、下载更新包，并在覆盖文件前创建备份。发布历史、下载地址和版本说明统一展示在[官网版本页](https://shopagg.org/releases)。
+
+生产环境升级前请先阅读[程序更新、备份与故障恢复](https://shopagg.org/developer/operations)，并备份 `storage/site.db`、`uploads/` 和自定义主题。
+
+## 参与贡献
+
+欢迎提交 Issue 和 Pull Request：
+
+1. Fork 本仓库并从最新代码创建分支。
+2. 保持改动聚焦，并补充必要的验证。
+3. 提交 Pull Request，说明问题、行为变化和验证方式。
+
+准备贡献前建议阅读[开发文档](https://shopagg.org/developer)，了解核心架构、插件边界、主题规范和安全要求。
+
+## License
+
+[MIT License](LICENSE) — 可自由用于个人和商业项目，也可以修改与分发。
 
 ---
 
-## 🤝 贡献
+<div align="center">
 
-欢迎提交 Issue 和 Pull Request。
+了解产品、阅读文档或获取最新版本，请访问 **[灯塔 CMS 官网](https://shopagg.org/)**。
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 提交 Pull Request
-
----
-
-## 📄 License
-
-[MIT License](LICENSE) — 可自由使用、修改和分发。
+</div>

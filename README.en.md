@@ -1,423 +1,222 @@
 <div align="center">
 
+<a href="https://shopagg.org/">
+  <img src="https://shopagg.org/assets/images/lighthouse-logo.png" width="96" height="96" alt="Lighthouse CMS Logo">
+</a>
+
 # Lighthouse CMS
 
 **An open-source B2B website system for Chinese manufacturers and trading companies**
 
-PHP + SQLite · No package-manager dependencies · Ready to use
+Pure PHP + SQLite · Self-hosted · Extensible · MIT licensed
+
+[Website](https://shopagg.org/) · [Live demo](https://demo.shopagg.org/) · [User guide](https://shopagg.org/usage) · [Developer docs](https://shopagg.org/developer) · [Releases](https://shopagg.org/releases)
 
 [简体中文](README.md) · [English](README.en.md)
 
-[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-8892BF?logo=php&logoColor=white)](https://www.php.net/) [![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) ![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)
-
-[Features](#-features) · [Quick start](#-quick-start) · [Deployment](#-deployment) · [Architecture](#-architecture) · [Developer documentation](#-developer-documentation)
+[![Website](https://img.shields.io/badge/Website-shopagg.org-0FA5FC?logo=googlechrome&logoColor=white)](https://shopagg.org/)
+[![Latest release](https://img.shields.io/github/v/release/zhpelo/shopagg-b2b-website?display_name=tag&sort=semver)](https://shopagg.org/releases)
+[![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-777BB4?logo=php&logoColor=white)](https://shopagg.org/api/compatibility.json)
+[![SQLite](https://img.shields.io/badge/SQLite3-003B57?logo=sqlite&logoColor=white)](https://shopagg.org/developer/data-model)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E.svg)](LICENSE)
 
 </div>
 
 ---
 
-## 📣 Brand announcement
+## Overview
 
-The project formerly known as **SHOPAGG B2B Website** is now named **Lighthouse CMS** (**灯塔 CMS** in Chinese). Open-sourced by SHOPAGG, Lighthouse CMS helps Chinese manufacturers and trading companies build and manage their own B2B export websites.
+Lighthouse CMS is an open-source website system built for B2B export businesses. It brings product presentation, content operations, customer inquiries, themes, and plugin extensions into one lightweight application. The core runs on PHP 8.1+ and SQLite3 with no Composer packages required at runtime, making it suitable for shared hosting, VPS deployments, and company-owned servers.
 
-This is a project-brand change. The existing GitHub repository and demo URLs, the `shopagg` command-line tool, and the ShopAgg plugin marketplace retain their current identifiers. References to those identifiers below point to the actual URLs, command, and service in use.
+The project was formerly named **SHOPAGG B2B Website**. Its product name is now **Lighthouse CMS** (**灯塔 CMS** in Chinese), while the GitHub repository URL and the `shopagg` plugin CLI retain their existing names.
 
----
+Start with these official resources:
 
-## 🖥 Preview
+- [Lighthouse CMS website](https://shopagg.org/)
+- [Complete product capability catalog](https://shopagg.org/capabilities)
+- [Live demo](https://demo.shopagg.org/)
+- [Current stable release and downloads](https://shopagg.org/releases)
 
-Live frontend demo: https://demo.shopagg.org/
+## Core capabilities
+
+| Area | Highlights | Learn more |
+|---|---|---|
+| Products and catalog | Categories, galleries, four pricing modes, multi-variant SKUs, soft deletion | [Product management](https://shopagg.org/usage/product-management) |
+| Content and media | Posts, case studies, standalone pages, rich text, media library | [Content and appearance](https://shopagg.org/usage/content-and-appearance) |
+| Inquiries and leads | Contact messages, product inquiries, workflow states, CSV export | [Inquiries and daily operations](https://shopagg.org/usage/inquiries) |
+| Themes and appearance | Theme switching, configurable blocks, menus, sliders | [Theme development](https://shopagg.org/developer/themes) |
+| Plugins and extensions | Routes, events, filters, services, jobs, admin pages | [Plugin development](https://shopagg.org/developer/plugins) |
+| App Store | Browse, install, and update plugins and B2B website themes | [Settings and extensions](https://shopagg.org/usage/settings-and-extensions) |
+| Operations and updates | GitHub Release updates, pre-update backups, migrations, logs | [Operations](https://shopagg.org/developer/operations) |
+| Permissions and security | Staff permissions, CSRF protection, upload validation, security headers | [Security boundaries](https://shopagg.org/developer/security) |
+| SEO and localization | SEO fields, Sitemap, Open Graph, 249 online translation languages | [Capability catalog](https://shopagg.org/capabilities) |
+
+The official [product capability catalog](https://shopagg.org/capabilities) is the source of truth for supported features. Integrations can consume the same information through the [capabilities JSON endpoint](https://shopagg.org/api/capabilities.json).
+
+## Preview
+
+Visit [demo.shopagg.org](https://demo.shopagg.org/) to explore the public site. The [user guide](https://shopagg.org/usage) explains the admin workflows and daily operations.
 
 ### Frontend
 
-<img alt="Frontend preview" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce" />
+<img alt="Lighthouse CMS frontend" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
 
 ### Admin panel
 
 | Dashboard | Product management |
 |:---:|:---:|
-| <img alt="Dashboard preview" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790" /> | <img alt="Product management preview" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460" /> |
+| <img alt="Lighthouse CMS dashboard" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="Lighthouse CMS product management" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
 
-| Media library | System settings |
+| Media library | Settings |
 |:---:|:---:|
-| <img alt="Media library preview" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8c6b-8fee5833cc6e" /> | <img alt="System settings preview" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd" /> |
+| <img alt="Lighthouse CMS media library" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="Lighthouse CMS settings" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
 
----
-
-## ✨ Features
-
-### Why Lighthouse CMS?
-
-<table>
-<tr>
-<td width="50%">
-
-**🚀 Simple deployment**
-- No Composer, Node.js, or build tools required
-- Upload the files, visit the site, and let it initialize automatically
-- SQLite database file; no separate database server required
-- Supports installation at the domain root or in a subdirectory
-
-</td>
-<td width="50%">
-
-**🎨 Theme system**
-- Separate frontend and admin theme mechanisms
-- Visual block editor for page copy, product selection, and sliders
-- Customizable brand colors, navigation, and homepage sliders
-- Mobile-first default theme for product browsing and inquiries
-- Custom code injection in the page head and footer
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**🌍 Built for B2B exporting**
-- Tiered pricing, SKU pricing, price ranges, and prices on request, with a global currency setting
-- Product inquiries with status tracking and CSV export
-- Modules for certifications and trading capabilities
-- Google Translate integration with a 12-language quick switcher
-
-</td>
-<td width="50%">
-
-**🔒 Security controls**
-- Four layers of protection: web server, `.htaccess`, response headers, and application code
-- CSRF tokens on all POST requests
-- MIME and `getimagesize` checks for file uploads
-- Role-based admin permissions
-
-</td>
-</tr>
-</table>
-
-### Plugin system (v1.3)
-
-- An in-process, modular plugin runtime compatible with standard shared PHP hosting.
-- Plugins can register frontend and admin pages, APIs, webhooks, events, filters, page slots, business services, and chunked tasks.
-- Manifests compile to a PHP cache when plugins are enabled or disabled; normal requests do not scan plugin directories.
-- Plugins have namespaced tables, migrations, settings, logs, tasks, and dynamic Staff permissions.
-- Supports ZIP upload in the admin panel, the ShopAgg plugin marketplace, version upgrades, and uninstallation that preserves data by default.
-- Includes an AI specification, JSON Schema, CLI tools to generate, validate, and package plugins, and a working example.
-
-```bash
-php shopagg plugin:make my-plugin
-php shopagg plugin:validate plugin-dev/my-plugin
-php shopagg plugin:pack plugin-dev/my-plugin
-```
-
-See the [plugin development guide](../Documents/灯塔CMS/插件开发.md). You can also provide the [plugin specification](../Documents/灯塔CMS/插件规范.md) as context when generating a plugin. The machine-readable schema remains in this repository at `Documents/plugin.schema.json`.
-
-### Frontend
-
-| Module | Description |
-|---|---|
-| **Product catalog** | Listings, category filters, detail pages, galleries, tiered and SKU pricing, price ranges, prices on request, and related products |
-| **Content publishing** | Blog posts, case studies, and custom pages in one content engine |
-| **Company profile** | About and contact pages, certifications, and production capabilities |
-| **Inquiries** | Product-specific inquiry forms and a general contact form |
-| **SEO** | Site-wide SEO fields, generated `robots.txt` and `sitemap.xml`, and Open Graph tags |
-| **Languages** | Google Translate integration supporting 249 languages and optional automatic translation based on the browser language |
-| **Sliders** | Visually managed homepage sliders with custom links and text |
-| **Navigation** | Drag-and-drop ordering, nested items, and multiple menu areas |
-
-### Admin panel
-
-| Module | Description |
-|---|---|
-| **Dashboard** | Summary of products, posts, inquiries, and messages |
-| **Products** | Create, edit, and delete products; galleries, banners, tags, suppliers, tiered and SKU pricing, price ranges, and bulk editing |
-| **Content** | Manage case studies, blog posts, and pages with a rich-text editor |
-| **Categories** | Hierarchical product and post categories |
-| **Inquiries** | Pending → replied → closed workflow, details, and CSV export |
-| **Messages** | View and handle contact-form messages |
-| **Media library** | Uploads, folders, search, filters, and bulk actions |
-| **Menus** | Drag-and-drop ordering, nested items, and multiple menu locations |
-| **Sliders** | Image upload, copy editing, links, and ordering |
-| **Block editor** | Visual editing for page titles, descriptions, buttons, and more |
-| **Staff** | Staff accounts with module-level permissions |
-| **Settings** | Site details, global currency, company profile, trading capabilities, contact details, translation, and custom code |
-
----
-
-## 🚀 Quick start
+## Quick start
 
 ### Requirements
 
-| Item | Minimum |
+| Item | Requirement |
 |---|---|
 | PHP | 8.1 or newer |
 | PHP extensions | `sqlite3`, `mbstring`, `fileinfo` |
 | Web server | Apache with `mod_rewrite`, or Nginx |
-| Disk space | At least 50 MB, excluding uploads |
+| Writable directories | `storage/`, `uploads/` |
 
-### Install in three steps
+Read the [compatibility JSON](https://shopagg.org/api/compatibility.json) for the latest machine-readable requirements. The [installation guide](https://shopagg.org/usage/getting-started) covers Apache, Nginx, and production configuration.
+
+### Install
 
 ```bash
-# 1. Get the project
 git clone https://github.com/zhpelo/shopagg-b2b-website.git
 cd shopagg-b2b-website
-
-# 2. Set directory permissions
 chmod -R 755 storage uploads
-
-# 3. Visit the site to finish installation
-# The system creates the database, tables, and initial admin account automatically.
 ```
 
-### Admin login
+Point the site document root at the project directory, then open the site in a browser. Lighthouse CMS creates the SQLite database and runs pending migrations automatically.
 
-| Item | Value |
-|---|---|
-| URL | `http://your-domain/admin/login` |
-| Default username | `admin` |
-| Default password | `admin123` |
+The default admin entry point is `/admin/login`. Initial installations commonly use `admin` / `admin123`; change the password immediately after the first login.
 
-> ⚠️ **Change the default password immediately after your first login.**
+Continue with the official guides:
 
----
+1. [First login and initialization](https://shopagg.org/usage/getting-started#first-login)
+2. [Products and pricing modes](https://shopagg.org/usage/product-management)
+3. [Content, menus, sliders, and themes](https://shopagg.org/usage/content-and-appearance)
+4. [Plugins, staff permissions, and program updates](https://shopagg.org/usage/settings-and-extensions)
+5. [Launch checklist and troubleshooting](https://shopagg.org/usage/launch-and-faq)
 
-## 📦 Deployment
+## Technical design
 
-### Apache
+- **Pure PHP MVC:** a single entry point with routing, controllers, models, and views.
+- **SQLite3:** site data lives in `storage/site.db` by default and evolves through versioned migrations.
+- **Theme system:** frontend themes live in `themes/{theme}`, with content blocks editable from the admin panel.
+- **Plugin API 1.0:** a manifest-driven runtime with caching, isolated data, jobs, and service contracts.
+- **Portable deployment:** runs on Apache, Nginx, and common PHP hosting without depending on a particular cloud provider.
 
-The repository includes `.htaccess`. Enable `mod_rewrite` and `AllowOverride All` in Apache.
+Read more: [System architecture](https://shopagg.org/developer/architecture) · [Data model](https://shopagg.org/developer/data-model) · [Application development](https://shopagg.org/developer/application-development)
 
-For a **subdirectory installation** such as `https://example.com/b2b/`, change one line:
-
-```apache
-# .htaccess
-RewriteBase /b2b/
-```
-
-The system detects the subdirectory and adjusts its links automatically.
-
-### Nginx
-
-```nginx
-server {
-    listen 80;
-    server_name example.com;
-    root /var/www/html;
-    index index.php;
-
-    # Deny access to sensitive files and directories
-    location ~* ^/(storage|\.git)/ { deny all; }
-    location ~* \.(db|sqlite|sqlite3|env|log)$ { deny all; }
-
-    # Cache static assets
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff2?)$ {
-        expires 30d;
-        access_log off;
-    }
-
-    # Handle PHP
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    # Rewrite URLs
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-}
-```
-
-### Production checklist
-
-- [ ] Change the default admin password.
-- [ ] Enable HTTPS.
-- [ ] Make `storage/` and `uploads/` writable by the web-server user.
-- [ ] Deny direct web access to `storage/`.
-- [ ] Disable debugging by removing `.env` or setting `APP_DEBUG=false`.
-- [ ] Back up `storage/site.db` and `uploads/` regularly.
-- [ ] Grant Staff accounts only the permissions they need.
-
----
-
-## 🏗 Architecture
-
-### Technology stack
-
-| Layer | Technology | Notes |
-|---|---|---|
-| **Backend** | PHP 8.1+ | Plain PHP; no framework dependency |
-| **Database** | SQLite3 | File-based database in WAL mode |
-| **Architecture** | MVC | PSR-4 autoloading |
-| **Admin CSS** | Tailwind CSS + native CSS | Locally precompiled; deployment does not require Node.js or the Tailwind CDN |
-| **Default frontend theme CSS** | Tailwind CSS | The theme loads the CDN independently when needed |
-| **Icons** | Font Awesome 6 | Local admin assets |
-| **Rich text** | Jodit Editor | Local admin assets |
-| **Sliders** | Swiper.js 11 | Loaded when needed |
-| **Drag-and-drop** | SortableJS | Local admin assets |
-
-### System diagram
+### Project structure
 
 ```text
-HTTP request
-    │
-    ▼
-index.php (single entry point: constants, session, loading)
-    │
-    ├── Router ──► SiteController  ──► Models ──► Frontend theme
-    │          └─► AdminController ──► Models ──► Admin views
-    ├── Helpers
-    └── Database (SQLite singleton) ──► Migrator
+shopagg-b2b-website/
+├── index.php               # Application entry point
+├── app/
+│   ├── Controllers/        # Frontend and admin controllers
+│   ├── Core/               # Routing, database, auth, migrations, and other core modules
+│   ├── Models/             # SQLite data models
+│   ├── Plugins/            # Plugin API 1.0 runtime
+│   ├── Migrations/         # Core database migrations
+│   ├── views/admin/        # Admin views
+│   └── routes.php          # Route registration
+├── themes/                 # Frontend themes
+├── plugin-dev/             # Local plugin development
+├── plugin-assets/          # Published plugin assets
+├── storage/                # Database, cache, backups, and logs
+├── uploads/                # User uploads
+└── shopagg                 # Plugin development CLI
 ```
 
-### Request lifecycle
+## Plugin and theme development
 
-```text
-Browser requests GET /product/steel-pipe
-    │
-    ├── 1. Apache/Nginx rewrites the URL to index.php
-    ├── 2. Initialize constants, session, and error handling
-    ├── 3. Load PSR-4 classes and global helpers
-    ├── 4. Database::getInstance() runs pending migrations
-    ├── 5. Router calls SiteController::productDetail('steel-pipe')
-    ├── 6. Controller queries models and prepares data
-    └── 7. Render header.php + product_detail.php + footer.php as HTML
+Use the Plugin API for standalone business features instead of modifying core files. The CLI can scaffold, validate, test, and package plugins:
+
+```bash
+php shopagg plugin:make my-plugin
+php shopagg plugin:validate plugin-dev/my-plugin
+php shopagg plugin:test plugin-dev/my-plugin
+php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
-### Directory layout
+- [Complete plugin development guide](https://shopagg.org/developer/plugins)
+- [Theme structure, block fields, and secure output](https://shopagg.org/developer/themes)
+- [Controllers, models, migrations, and admin pages](https://shopagg.org/developer/application-development)
+- [Security boundaries and release checks](https://shopagg.org/developer/security)
 
-```text
-├── index.php                   # Single entry point
-├── .htaccess                   # Apache rewrite and security rules
-├── .env                        # Environment variables, including APP_DEBUG
-│
-├── app/                        # Application core
-│   ├── Core/                   # Router, Database, Auth, Media, Migrator
-│   ├── Controllers/            # Site, Admin, and Base controllers
-│   ├── Models/                 # Data models (12)
-│   ├── Helpers/                # Global helpers and security utilities
-│   ├── Migrations/             # Versioned database migrations (17)
-│   ├── views/admin/            # Admin view templates
-│   └── routes.php              # Route registration
-│
-├── themes/                     # Frontend themes
-│   └── default/                # Responsive default theme and block definitions
-│
-├── storage/                    # Runtime data; deny web access
-│   ├── site.db                 # SQLite database
-│   ├── blocks/                 # Custom block configuration
-│   ├── backups/                # Database backups
-│   └── logs/                   # Update logs
-│
-├── uploads/                    # User uploads, organized by month
-├── assets/admin/               # Admin assets
-└── Documents/plugin.schema.json # Machine-readable plugin schema; reading docs are in the workspace Documents/
-```
+## Development and validation
 
-### Data model
-
-The system currently has 17 tables:
-
-| Table | Purpose | Key fields |
-|---|---|---|
-| `users` | Admin users | `role` (admin/staff), `permissions` |
-| `settings` | Site settings | Key-value data, including global `site_currency` |
-| `products` | Products | `slug`, `images_json`, `category_id`, `price_mode`, `price_range_min`, `price_range_max` |
-| `product_prices` | Tiered prices | `min_qty`, `max_qty`, `price`; `currency` is a legacy field |
-| `product_skus` | SKU prices | Stable `id`, `sku_name`, `min_qty`, `price`, `sort_order`, `deleted_at` |
-| `product_categories` | Shared categories | `type` (product/post), hierarchical `parent_id` |
-| `posts` | Blog posts, cases, pages | `post_type` (post/case/page) |
-| `inquiries` | Product inquiries | `status` (pending/replied/closed) |
-| `messages` | Contact messages | — |
-| `sliders` | Slider blocks | `slug` |
-| `slider_items` | Slider images | `slider_id`, `sort_order` |
-| `menus` | Menu blocks | `slug` (main-nav/footer) |
-| `menu_items` | Menu items | Hierarchical `parent_id`, `sort_order` |
-| `media_files` | Media index | Path, MIME type, dimensions, and other metadata |
-| `update_logs` | System update logs | Version, status, execution time |
-| `app_store_theme_installs` | App Store theme installs | Theme asset, license, and installation state |
-| `migrations` | Migration history | Applied migration files |
-
-> 💡 Blog posts, case studies, and custom pages share the `posts` table and are distinguished by `post_type`. Product prices use `settings.site_currency`; the legacy `currency` field on price rows is no longer read.
-
----
-
-## 📖 Developer documentation
-
-Developer reading docs are listed under 灯塔CMS in the workspace [document index](../Documents/文档索引.md):
-
-| Document | Contents |
-|---|---|
-| [System architecture](../Documents/灯塔CMS/系统架构.md) | Layers, core modules, database design, and security architecture (Chinese) |
-| [Theme development guide](../Documents/灯塔CMS/模板开发.md) | Theme conventions, template variables, helpers, and blocks (Chinese) |
-| [Plugin development guide](../Documents/灯塔CMS/插件开发.md) | Plugin development (Chinese) |
-| [Plugin specification](../Documents/灯塔CMS/插件规范.md) | Plugin specification for AI-assisted development |
-
-### Building admin styles
-
-Release archives include the compiled `assets/admin/tailwind.min.css` and `assets/admin/style.min.css`, so production deployment does not require Node.js and the admin does not download Tailwind from a CDN. Developers need the build tool after changing Tailwind utility classes in admin templates or `assets/admin/base.js`, or after editing `assets/admin/style.css`:
+Release archives already include compiled admin CSS. Node.js is only required when changing admin Tailwind classes or `assets/admin/style.css`:
 
 ```bash
 npm ci
 npm run build:admin-css
 ```
 
-Commit both regenerated `.min.css` files. The maintainable `assets/admin/style.css` remains in the Git repository, but it is excluded from GitHub's automatically generated release archives together with `node_modules`, build caches, source maps, and the admin CSS build configuration. Plugin admin pages that require custom styles should declare their own CSS in the plugin Manifest `assets`; the core build does not scan plugins installed at runtime.
+Run syntax checks for changed PHP files before submitting. If you modify the admin navigation, run the existing smoke test:
 
-Font Awesome 6.4.0, Jodit 4.13.5, and SortableJS 1.15.7 are pinned under `assets/admin/vendor/`, so the admin does not contact their third-party CDNs at runtime. When upgrading, replace both the assets and their license files. Font Awesome includes only the WOFF2 fonts used by modern browsers to keep release archives small.
-
-### Theme development conventions
-
-- Put customer-editable content in `themes/{theme}/blocks.php`; read it in frontend templates with `block()` and `block_all()`.
-- Use `product_picker` for product blocks instead of asking admins to enter product IDs.
-- Manage homepage hero and banner slides at `/admin/appearance/sliders`; select slider blocks with a `slider_slug` field.
-- Use `image` or `media` fields for assets, then render them with `asset_url()` and escape output with `h()`.
-- Prefer Tailwind CSS classes when changing new or default themes. Keep `style.css` for theme metadata and a small amount of additional CSS.
-- Before submitting a theme change, check PHP syntax, confirm `product_picker` and `slider_slug` work in `blocks.php`, and verify there is no horizontal overflow on mobile.
-
-### Extend the system
-
-**Add a frontend page:**
-
-```php
-// 1. Register a route in app/routes.php
-$router->add('GET', '/faq', [SiteController::class, 'faq']);
-
-// 2. Add a method to SiteController
-public function faq(): void {
-    $this->renderSite('faq', ['seo' => ['title' => 'FAQ']]);
-}
-
-// 3. Create themes/default/faq.php
+```bash
+php tests/admin_navigation_smoke.php
 ```
 
-**Add a database table:**
+See the [developer documentation](https://shopagg.org/developer) and [operations guide](https://shopagg.org/developer/operations) for coding conventions and release validation.
 
-```php
-// Create app/Migrations/20260412120000_create_faqs_table.php
-return new class {
-    public function up(SQLite3 $db): void {
-        $db->exec('CREATE TABLE IF NOT EXISTS faqs (...)');
-    }
-    public function down(SQLite3 $db): void {
-        $db->exec('DROP TABLE IF EXISTS faqs');
-    }
-};
-// Runs automatically on the next request.
-```
+## Documentation and machine-readable resources
+
+The official website publishes resources for operators, developers, search engines, integrations, and AI systems:
+
+| Resource | URL |
+|---|---|
+| Official website | [shopagg.org](https://shopagg.org/) |
+| User guide | [shopagg.org/usage](https://shopagg.org/usage) |
+| Developer documentation | [shopagg.org/developer](https://shopagg.org/developer) |
+| Product capabilities | [shopagg.org/capabilities](https://shopagg.org/capabilities) |
+| Releases | [shopagg.org/releases](https://shopagg.org/releases) |
+| AI project summary | [llms.txt](https://shopagg.org/llms.txt) |
+| Full AI context | [llms-full.txt](https://shopagg.org/llms-full.txt) |
+| Project JSON | [api/project.json](https://shopagg.org/api/project.json) |
+| Capabilities JSON | [api/capabilities.json](https://shopagg.org/api/capabilities.json) |
+| Documentation index JSON | [api/docs/index.json](https://shopagg.org/api/docs/index.json) |
+| Latest release JSON | [api/releases/latest.json](https://shopagg.org/api/releases/latest.json) |
+| Static API OpenAPI document | [api/openapi.json](https://shopagg.org/api/openapi.json) |
+
+## Releases and updates
+
+Stable builds are published through GitHub Releases. The admin panel can check for new versions, download update packages, and create backups before replacing files. The [official releases page](https://shopagg.org/releases) provides release history, downloads, and version notes.
+
+Before updating a production site, read the [update, backup, and recovery guide](https://shopagg.org/developer/operations), then back up `storage/site.db`, `uploads/`, and any custom themes.
+
+## Contributing
+
+Issues and pull requests are welcome:
+
+1. Fork the repository and create a branch from the latest code.
+2. Keep each change focused and include appropriate validation.
+3. Open a pull request describing the problem, behavior change, and validation performed.
+
+Before contributing, read the [developer documentation](https://shopagg.org/developer) for the architecture, plugin boundaries, theme conventions, and security requirements.
+
+## License
+
+[MIT License](LICENSE) — free to use, modify, and distribute in personal and commercial projects.
 
 ---
 
-## 🤝 Contributing
+<div align="center">
 
-Issues and pull requests are welcome.
+Visit the **[Lighthouse CMS website](https://shopagg.org/)** to explore the product, read the documentation, or download the latest release.
 
-1. Fork this repository.
-2. Create a feature branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add amazing feature'`).
-4. Push the branch (`git push origin feature/amazing-feature`).
-5. Open a pull request.
+</div>
+EOF
 
----
-
-## 📄 License
-
-[MIT License](LICENSE) — free to use, modify, and distribute.
+wc -l README.en.md
+git diff --stat
+git diff --check
+git status --short
