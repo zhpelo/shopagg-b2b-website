@@ -18,3 +18,4 @@ node_modules/
 
 # Runtime-published plugin assets are rebuilt from installed plugin packages.
 assets/plugins/
+plugin-dev/
