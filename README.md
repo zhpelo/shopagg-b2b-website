@@ -146,6 +146,12 @@ php shopagg plugin:test plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
+插件使用固定安装目录 `storage/plugins/{plugin-id}/`，版本号保存在 `plugin.json` 和数据库中。上传 ZIP 或使用 `plugin:install` 会直接替换已有插件并保留启停状态；新插件需手动启用。同版本也可重装，站点不保留可切换的历史安装版本。更新会完整替换代码和发布资源，移除新包不再包含的旧文件；静态资源通过 `?ver=` 刷新缓存。
+
+安装、更新和启用时的代码、资源与数据库恢复文件只保留在本次操作的临时目录中；操作成功或恢复成功后清理。恢复失败时保留目录并报告路径。已启用插件更新会执行新增迁移和同步定时任务，不会重复调用 `activate()`。恢复只覆盖操作中捕获的异常，不保证发现更新后页面上的所有运行错误。安装前可在独立 CLI 进程运行 `plugin:test` 完成类契约校验。
+
+升级到此布局时，系统自动将旧的版本目录迁移为固定目录：已启用插件保留实际运行版本，其他插件保留已安装版本；迁移成功后移除旧版本树。升级前请备份 `storage/site.db`、`storage/plugins/` 和 `assets/plugins/`。已有历史数据库备份不会自动删除。
+
 - [插件开发完整指南](https://shopagg.org/developer/plugins)
 - [主题目录、区块字段和安全输出规范](https://shopagg.org/developer/themes)
 - [控制器、模型、迁移和后台页面开发](https://shopagg.org/developer/application-development)
@@ -164,6 +170,12 @@ npm run build:admin-css
 
 ```bash
 php tests/admin_navigation_smoke.php
+```
+
+插件安装、更新与恢复流程可在隔离的临时目录中验证：
+
+```bash
+php tests/plugin_installation_smoke.php
 ```
 
 更完整的开发约定与运维验收步骤见[开发文档](https://shopagg.org/developer)和[运维文档](https://shopagg.org/developer/operations)。

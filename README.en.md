@@ -146,6 +146,12 @@ php shopagg plugin:test plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
+Plugins install into a fixed `storage/plugins/{plugin-id}/` directory. Versions remain in `plugin.json` and the database. Installing an existing plugin replaces its files and preserves its activation state; new plugins require manual activation. Same-version reinstalls are also allowed; the site does not retain historical installations for version switching. Published assets also use fixed directories with a `?ver=` cache parameter.
+
+Temporary code, asset, and database backups are removed after a successful operation or recovery. Failed recovery retains its workspace and reports its path. Active updates run new migrations and synchronize scheduled jobs without invoking `activate()` again. Recovery covers exceptions during the operation, not every runtime error after installation. Run `plugin:test` in a separate CLI process for full class-contract validation.
+
+An automatic migration converts legacy version trees, retaining the running version of active plugins and the installed version of inactive plugins. Obsolete version trees are removed only after migration succeeds. Back up `storage/site.db`, `storage/plugins/`, and `assets/plugins/` before upgrading. Existing historical database backups are left intact. Run `php tests/plugin_installation_smoke.php` to verify installation, updates, and recovery in an isolated temporary directory.
+
 - [Complete plugin development guide](https://shopagg.org/developer/plugins)
 - [Theme structure, block fields, and secure output](https://shopagg.org/developer/themes)
 - [Controllers, models, migrations, and admin pages](https://shopagg.org/developer/application-development)

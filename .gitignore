@@ -3,8 +3,6 @@ storage/
 .DS_Store
 .htaccess
 .env
-examples/*
-extensions/*
 themes/*
 !themes/default/
 Documents/
@@ -18,4 +16,5 @@ node_modules/
 
 # Runtime-published plugin assets are rebuilt from installed plugin packages.
 assets/plugins/
-plugin-dev/
+
+tests/plugin_installation_smoke.php

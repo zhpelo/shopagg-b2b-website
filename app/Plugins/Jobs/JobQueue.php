@@ -36,6 +36,17 @@ final class JobQueue {
 
     public function schedule(string $name, string $handler, int $everySeconds, array $payload = []): int {
         if ($everySeconds < 60) throw new \InvalidArgumentException('周期任务最短间隔为 60 秒');
-        return $this->dispatch($name, $handler, $payload, 'schedule:' . $name, new \DateTimeImmutable('now'), 3, $everySeconds);
+        $id = $this->dispatch($name, $handler, $payload, 'schedule:' . $name, new \DateTimeImmutable('now'), 3, $everySeconds);
+        $stmt = $this->db->prepare("UPDATE plugin_jobs SET cursor_json=CASE WHEN handler<>:handler THEN NULL ELSE cursor_json END,
+            handler=:handler,payload_json=:payload,recurrence_seconds=:interval,
+            status=CASE WHEN status IN ('cancelled','completed') THEN 'pending' ELSE status END,
+            updated_at=:now WHERE id=:id");
+        $stmt->bindValue(':handler', $handler, SQLITE3_TEXT);
+        $stmt->bindValue(':payload', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), SQLITE3_TEXT);
+        $stmt->bindValue(':interval', $everySeconds, SQLITE3_INTEGER);
+        $stmt->bindValue(':now', gmdate('c'), SQLITE3_TEXT);
+        $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+        $stmt->execute();
+        return $id;
     }
 }

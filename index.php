@@ -118,6 +118,7 @@ use App\Core\Database;
 use App\Plugins\PluginRuntime;
 
 // 数据库（首次访问时初始化 schema）
+\App\Plugins\PluginOperationLock::beginRequest();
 Database::getInstance();
 
 // 插件运行时仅加载已编译的 PHP 注册表，不扫描插件目录或解析 Manifest。
@@ -131,4 +132,6 @@ $pluginRuntime->registerRoutes($router);
 $pluginRuntime->events()->dispatch('system.booted', ['version' => APP_VERSION]);
 $pluginRuntime->events()->dispatch('system.request.started', ['method' => $_SERVER['REQUEST_METHOD'] ?? 'GET', 'uri' => $_SERVER['REQUEST_URI'] ?? '/']);
 $router->run();
-$pluginRuntime->events()->dispatch('system.response.generated', ['status' => http_response_code()]);
+if (!\App\Plugins\PluginOperationLock::changed()) {
+    $pluginRuntime->events()->dispatch('system.response.generated', ['status' => http_response_code()]);
+}

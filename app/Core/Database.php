@@ -71,6 +71,9 @@ HTACCESS;
      */
     private static function runMigrations(): void {
         $migrator = new Migrator();
-        $migrator->runAllPending();
+        $result = $migrator->runAllPending();
+        if (!($result['success'] ?? false)) {
+            throw new \RuntimeException('数据库迁移失败：' . implode('；', array_column($result['errors'] ?? [], 'error')));
+        }
     }
 }

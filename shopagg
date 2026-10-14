@@ -25,6 +25,7 @@ $command = array_shift($args) ?? 'help';
 if ($command === 'plugin') $command = 'plugin:' . (array_shift($args) ?? 'help');
 
 try {
+    \App\Plugins\PluginOperationLock::beginRequest();
     switch ($command) {
         case 'plugin:make':
             $id = sanitize_slug_input((string)($args[0] ?? ''));
@@ -89,11 +90,6 @@ try {
             echo "Plugin disabled\n";
             break;
 
-        case 'plugin:rollback':
-            (new PluginManager())->rollback((string)($args[0] ?? ''), isset($args[1]) ? (string)$args[1] : null);
-            echo "Plugin version switched\n";
-            break;
-
         case 'plugin:jobs':
             $limit = max(1, min(100, (int)($args[0] ?? 10)));
             echo json_encode((new JobRunner())->runDue($limit), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
@@ -109,7 +105,6 @@ try {
             echo "  php shopagg plugin:install <plugin.zip>\n";
             echo "  php shopagg plugin:enable <plugin-id>\n";
             echo "  php shopagg plugin:disable <plugin-id>\n";
-            echo "  php shopagg plugin:rollback <plugin-id> [version]\n";
             echo "  php shopagg plugin:jobs [limit]\n";
             break;
 

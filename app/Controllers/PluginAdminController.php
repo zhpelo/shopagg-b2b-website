@@ -31,8 +31,6 @@ final class PluginAdminController extends Controller {
 
     public function index(): void {
         $plugins = $this->manager->all();
-        foreach ($plugins as &$plugin) $plugin['available_versions'] = $this->manager->availableVersions((string)$plugin['plugin_id']);
-        unset($plugin);
         $jobs = [];
         $result = $this->db->query('SELECT * FROM plugin_jobs ORDER BY id DESC LIMIT 50');
         while ($result && ($row = $result->fetchArray(SQLITE3_ASSOC))) $jobs[] = $row;
@@ -63,7 +61,7 @@ final class PluginAdminController extends Controller {
             if (strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION)) !== 'zip') throw new \RuntimeException('仅支持 ZIP 插件包');
             $result = $this->manager->installZip((string)$file['tmp_name']);
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
-            $this->redirect('/admin/app-store/plugins?success=' . urlencode('插件已安装：' . $result['manifest']['name']));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode(($result['updated'] ? '插件已更新：' : '插件已安装：') . $result['manifest']['name']));
         } catch (\Throwable $e) {
             $this->redirect('/admin/app-store/plugins/upload?error=' . urlencode($e->getMessage()));
         }
@@ -126,7 +124,7 @@ final class PluginAdminController extends Controller {
             }
             $result = $this->manager->installZip($zip, 'app-store');
             if (!$result['valid']) throw new \RuntimeException(implode('；', array_column($result['errors'], 'message')));
-            $this->redirect('/admin/app-store/plugins?success=' . urlencode('市场插件已安装：' . $result['manifest']['name']));
+            $this->redirect('/admin/app-store/plugins?success=' . urlencode(($result['updated'] ? '市场插件已更新：' : '市场插件已安装：') . $result['manifest']['name']));
         } catch (\Throwable $e) {
             $this->redirect($errorReturn . (str_contains($errorReturn, '?') ? '&' : '?') . 'error=' . urlencode($e->getMessage()));
         } finally {
@@ -144,7 +142,6 @@ final class PluginAdminController extends Controller {
                 'disable' => $this->manager->disable($id),
                 'remove' => $this->manager->remove($id, false),
                 'purge' => $this->manager->remove($id, true),
-                'rollback' => $this->manager->rollback($id, trim((string)($_POST['target_version'] ?? ''))),
                 'rebuild' => $this->manager->rebuildCache(),
                 default => throw new \RuntimeException('未知插件操作'),
             };

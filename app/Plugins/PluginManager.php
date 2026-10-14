@@ -20,6 +20,7 @@ final class PluginManager {
 
     public function __construct() {
         $this->db = Database::getInstance();
+        $this->db->enableExceptions(true);
         $this->registry = new PluginRegistry($this->db);
     }
 
@@ -37,10 +38,11 @@ final class PluginManager {
         }
     }
 
-    public function validateDirectory(string $directory): array {
+    public function validateDirectory(string $directory, ?bool $loadContracts = null): array {
         $validation = PluginManifest::validateFile(rtrim($directory, '/') . '/plugin.json');
         if (!$validation['valid']) return $validation;
         $manifest = $validation['manifest'];
+        $loadContracts ??= !$this->hasLoadedClasses($manifest);
         $errors = [];
         $warnings = [];
         foreach (PluginManifest::environmentErrors($manifest) as $message) {
@@ -61,12 +63,14 @@ final class PluginManager {
                 $errors[] = ['code' => 'php.syntax', 'path' => substr($file->getPathname(), strlen(rtrim($directory, '/')) + 1), 'line' => $e->getLine(), 'message' => $e->getMessage(), 'suggestion' => '修复 PHP 语法后重新验证'];
             }
         }
-        if ($errors === [] && $warnings === []) {
+        if ($errors === [] && $warnings === [] && $loadContracts) {
             try {
                 $errors = array_merge($errors, $this->contractErrors($directory, $manifest));
             } catch (\Throwable $e) {
                 $errors[] = ['code' => 'contract.load', 'path' => 'autoload.psr4', 'message' => $e->getMessage(), 'suggestion' => '检查类加载期间使用的父类、接口和 PHP 扩展'];
             }
+        } elseif ($errors === [] && !$loadContracts) {
+            $warnings[] = ['code' => 'contract.deferred', 'path' => 'autoload.psr4', 'message' => '当前请求已加载此插件的类；已校验新包语法，类契约检查需在独立 CLI 请求中执行', 'suggestion' => '安装前使用 plugin:test 校验新包'];
         } elseif ($errors === [] && $warnings !== []) {
             $warnings[] = ['code' => 'contract.skipped', 'path' => 'requires', 'message' => '当前服务器环境不满足要求，已跳过类加载契约测试', 'suggestion' => '在满足插件环境要求的服务器上再次执行 plugin:test'];
         }
@@ -74,84 +78,165 @@ final class PluginManager {
     }
 
     public function installDirectory(string $directory, string $source = 'private'): array {
-        $validation = $this->validateDirectory($directory);
-        if (!$validation['valid']) return $validation;
-        $manifest = $validation['manifest'];
-        $id = $manifest['id'];
-        $version = $manifest['version'];
-        $destination = APP_ROOT . '/storage/plugins/' . $id . '/' . $version;
-        if (is_dir($destination)) throw new \RuntimeException("插件版本已存在：{$id} {$version}");
-        $this->copyDirectory($directory, $destination);
+        return PluginOperationLock::exclusive(fn(): array => $this->replaceDirectory($directory, $source));
+    }
+
+    private function replaceDirectory(string $directory, string $source): array {
+        $workspace = PluginFiles::workspace();
+        $destination = null;
+        $assets = null;
+        $codeReplaced = false;
+        $assetsReplaced = false;
+        $restore = false;
+        $cleanup = true;
         try {
+            // Validate the exact staged package that will be installed.
+            PluginFiles::copy($directory, $workspace . '/package');
+            $basic = PluginManifest::validateFile($workspace . '/package/plugin.json');
+            if (!$basic['valid']) return $basic;
+            $validation = $this->validateDirectory($workspace . '/package', !$this->hasLoadedClasses($basic['manifest']));
+            if (!$validation['valid']) return $validation;
+            $manifest = $validation['manifest'];
+            $id = $manifest['id'];
+            $version = $manifest['version'];
+            $row = $this->registry->find($id);
+            $enabled = ($row['status'] ?? '') === 'enabled';
+            $destination = PluginFiles::code($id);
+            $assets = PluginFiles::assets($id);
+            if (is_link($destination) || is_link($assets)) throw new \RuntimeException('插件安装目录不允许符号链接');
+            if (is_dir($destination) && $row === null) throw new \RuntimeException('插件目录已存在但未注册，不能覆盖');
+            if ($enabled) {
+                $this->assertCanEnable($id, $manifest);
+                $this->assertCompatibleDependents($id, $manifest);
+            }
+            $this->backupDatabase($workspace . '/database.sqlite');
+            $restore = true;
+            PluginFiles::invalidate($destination);
+            if (is_dir($destination)) PluginFiles::move($destination, $workspace . '/previous-code');
+            $codeReplaced = true;
+            PluginFiles::move($workspace . '/package', $destination);
+            if (is_dir($assets)) PluginFiles::move($assets, $workspace . '/previous-assets');
+            $assetsReplaced = true;
             $this->registry->save($manifest, $source, 'installed');
-            $this->registry->log($id, 'info', "已安装版本 {$version}");
+            $status = $enabled ? 'enabled' : (($row['status'] ?? '') === 'disabled' ? 'disabled' : 'installed');
+            $this->registry->setStatus($id, $status, $enabled ? $version : null);
+            if ($enabled) {
+                foreach ($this->registry->enabled() as $dependent) {
+                    if ($dependent['plugin_id'] !== $id) $this->assertRequiredServices((string)$dependent['plugin_id'], $dependent['manifest']);
+                }
+            }
             $this->rebuildCache();
+            if ($enabled) {
+                // Updates preserve activation, like WordPress: do not run activate again.
+                $this->registerAutoload($manifest, $destination);
+                $this->runMigrations($id, $version, $manifest, $destination);
+                $this->seedScheduledJobs($this->standaloneContext($id, $version, $destination), $manifest);
+                $this->publishAssets($id, $destination);
+            }
+            PluginFiles::invalidate($destination);
+            $this->registry->log($id, 'info', ($row === null || $row['status'] === 'removed' ? '已安装版本 ' : '已更新至版本 ') . $version);
+            $this->rebuildCache();
+            $restore = false;
+            return ['valid' => true, 'errors' => [], 'warnings' => $validation['warnings'] ?? [], 'manifest' => $manifest, 'installed_path' => $destination, 'updated' => $row !== null && $row['status'] !== 'removed'];
         } catch (\Throwable $e) {
-            $this->removeDirectory($destination);
+            if ($restore) {
+                try {
+                    if ($codeReplaced) $this->restoreDirectory($destination, $workspace . '/previous-code');
+                    if ($assetsReplaced) $this->restoreDirectory($assets, $workspace . '/previous-assets');
+                    $this->restoreDatabase($workspace . '/database.sqlite');
+                    $this->rebuildCache();
+                } catch (\Throwable $recovery) {
+                    $cleanup = false;
+                    throw new \RuntimeException('插件更新失败且恢复未完成，恢复文件保留于 ' . $workspace . '：' . $recovery->getMessage(), 0, $e);
+                }
+            }
             throw $e;
+        } finally {
+            if ($cleanup) $this->cleanupWorkspace($workspace);
         }
-        return ['valid' => true, 'errors' => [], 'warnings' => $validation['warnings'] ?? [], 'manifest' => $manifest, 'installed_path' => $destination];
     }
 
     public function enable(string $pluginId): void {
+        PluginOperationLock::exclusive(fn() => $this->enablePlugin($pluginId));
+    }
+
+    private function enablePlugin(string $pluginId): void {
         $row = $this->requirePlugin($pluginId);
+        if ($row['status'] === 'enabled') return;
         $manifest = $row['manifest'];
         $version = (string)$row['installed_version'];
-        $environment = PluginManifest::environmentErrors($manifest);
-        if ($environment !== []) throw new \RuntimeException(implode('；', $environment));
-        $this->assertDependencies($pluginId, $manifest);
-        $this->assertRequiredServices($pluginId, $manifest);
-        $this->assertNoRouteConflicts($pluginId, $manifest);
-        $this->assertNoServiceConflicts($pluginId, $manifest);
-        $base = APP_ROOT . '/storage/plugins/' . $pluginId . '/' . $version;
+        $this->assertCanEnable($pluginId, $manifest);
+        $base = PluginFiles::code($pluginId);
         if (!is_dir($base)) throw new \RuntimeException('插件代码目录不存在');
         $this->registerAutoload($manifest, $base);
-        $backup = $this->backupDatabase($pluginId, $version);
+        $workspace = PluginFiles::workspace();
+        $assets = PluginFiles::assets($pluginId);
+        $assetsReplaced = false;
+        $backup = false;
+        $cleanup = true;
         try {
+            $this->backupDatabase($workspace . '/database.sqlite');
+            $backup = true;
+            if (is_dir($assets)) PluginFiles::move($assets, $workspace . '/previous-assets');
+            $assetsReplaced = true;
             $this->runMigrations($pluginId, $version, $manifest, $base);
             $context = $this->standaloneContext($pluginId, $version, $base);
             $this->invokeLifecycle($manifest, 'activate', $context);
             $this->seedScheduledJobs($context, $manifest);
-            $this->publishAssets($pluginId, $version, $base, $manifest);
+            $this->publishAssets($pluginId, $base);
             $this->registry->setStatus($pluginId, 'enabled', $version);
             $this->registry->log($pluginId, 'info', "已启用版本 {$version}");
             $this->rebuildCache();
         } catch (\Throwable $e) {
-            $source = new SQLite3($backup, SQLITE3_OPEN_READONLY);
-            try { $source->backup($this->db); } finally { $source->close(); }
-            $this->removeDirectory(APP_ROOT . '/assets/plugins/' . $pluginId . '/' . $version);
-            $this->removeDirectory(APP_ROOT . '/uploads/plugins/' . $pluginId . '/' . $version);
-            $this->rebuildCache();
-            throw new \RuntimeException('插件启用失败，已恢复数据库：' . $e->getMessage(), 0, $e);
+            try {
+                if ($assetsReplaced) $this->restoreDirectory($assets, $workspace . '/previous-assets');
+                if ($backup) $this->restoreDatabase($workspace . '/database.sqlite');
+                $this->rebuildCache();
+            } catch (\Throwable $recovery) {
+                $cleanup = false;
+                throw new \RuntimeException('插件启用失败且恢复未完成，恢复文件保留于 ' . $workspace . '：' . $recovery->getMessage(), 0, $e);
+            }
+            throw new \RuntimeException('插件启用失败，已恢复数据库和静态资源：' . $e->getMessage(), 0, $e);
+        } finally {
+            if ($cleanup) $this->cleanupWorkspace($workspace);
         }
     }
 
     public function disable(string $pluginId): void {
+        PluginOperationLock::exclusive(fn() => $this->disablePlugin($pluginId));
+    }
+
+    private function disablePlugin(string $pluginId): void {
         $row = $this->requirePlugin($pluginId);
         if ($row['status'] === 'enabled') {
             $version = (string)$row['active_version'];
-            $base = APP_ROOT . '/storage/plugins/' . $pluginId . '/' . $version;
+            $base = PluginFiles::code($pluginId);
             $activeManifest = is_array($row['active_manifest'] ?? null) ? $row['active_manifest'] : $row['manifest'];
             $this->registerAutoload($activeManifest, $base);
             $this->invokeLifecycle($activeManifest, 'deactivate', $this->standaloneContext($pluginId, $version, $base));
         }
-        $this->registry->setStatus($pluginId, 'disabled', $row['active_version'] ? (string)$row['active_version'] : null);
+        $this->registry->setStatus($pluginId, 'disabled', null);
         $this->registry->log($pluginId, 'info', '已停用');
         $this->rebuildCache();
     }
 
     public function remove(string $pluginId, bool $purgeData = false): void {
+        PluginOperationLock::exclusive(fn() => $this->removePlugin($pluginId, $purgeData));
+    }
+
+    private function removePlugin(string $pluginId, bool $purgeData): void {
         $row = $this->requirePlugin($pluginId);
         if ($row['status'] === 'enabled') $this->disable($pluginId);
         $version = (string)($row['active_version'] ?: $row['installed_version']);
-        $base = APP_ROOT . '/storage/plugins/' . $pluginId . '/' . $version;
+        $base = PluginFiles::code($pluginId);
         if (is_dir($base)) {
             $lifecycleManifest = $row['active_version'] && is_array($row['active_manifest'] ?? null) ? $row['active_manifest'] : $row['manifest'];
             $this->registerAutoload($lifecycleManifest, $base);
             $this->invokeLifecycle($lifecycleManifest, 'uninstall', $this->standaloneContext($pluginId, $version, $base));
         }
-        $this->removeDirectory(APP_ROOT . '/storage/plugins/' . $pluginId);
-        $this->removeDirectory(APP_ROOT . '/assets/plugins/' . $pluginId);
+        PluginFiles::invalidate($base);
+        $this->removeDirectory($base);
+        $this->removeDirectory(PluginFiles::assets($pluginId));
         $this->removeDirectory(APP_ROOT . '/uploads/plugins/' . $pluginId);
         if ($purgeData) {
             $prefix = 'p_' . str_replace('-', '_', $pluginId) . '_';
@@ -185,40 +270,6 @@ final class PluginManager {
         }
     }
 
-    public function availableVersions(string $pluginId): array {
-        $this->requirePlugin($pluginId);
-        $directory = APP_ROOT . '/storage/plugins/' . $pluginId;
-        if (!is_dir($directory)) return [];
-        $versions = [];
-        foreach (new \DirectoryIterator($directory) as $item) {
-            if ($item->isDot() || !$item->isDir()) continue;
-            $manifestFile = $item->getPathname() . '/plugin.json';
-            $validation = PluginManifest::validateFile($manifestFile);
-            if ($validation['valid'] && ($validation['manifest']['id'] ?? '') === $pluginId) $versions[] = (string)$validation['manifest']['version'];
-        }
-        usort($versions, static fn(string $a, string $b): int => version_compare($b, $a));
-        return array_values(array_unique($versions));
-    }
-
-    public function rollback(string $pluginId, ?string $targetVersion = null): void {
-        $row = $this->requirePlugin($pluginId);
-        $active = (string)($row['active_version'] ?? '');
-        $versions = array_values(array_filter($this->availableVersions($pluginId), static fn(string $version): bool => $version !== $active));
-        if ($targetVersion === null || $targetVersion === '') {
-            $older = array_values(array_filter($versions, static fn(string $version): bool => $active === '' || version_compare($version, $active, '<')));
-            $targetVersion = $older[0] ?? ($versions[0] ?? '');
-        }
-        if ($targetVersion === '' || !in_array($targetVersion, $versions, true)) throw new \RuntimeException('没有可回滚的插件版本');
-        $base = APP_ROOT . '/storage/plugins/' . $pluginId . '/' . $targetVersion;
-        $validation = $this->validateDirectory($base);
-        if (!$validation['valid'] || ($validation['manifest']['id'] ?? '') !== $pluginId || ($validation['manifest']['version'] ?? '') !== $targetVersion) {
-            throw new \RuntimeException('目标回滚版本无效');
-        }
-        $this->registry->save($validation['manifest'], (string)$row['source']);
-        $this->enable($pluginId);
-        $this->registry->log($pluginId, 'warning', "已回滚代码到版本 {$targetVersion}；数据库迁移保持向前兼容状态");
-    }
-
     public function rebuildCache(): array {
         $cache = (new PluginCache())->rebuild($this->registry->enabled());
         PluginRuntime::reset();
@@ -242,6 +293,53 @@ final class PluginManager {
         $row = $this->registry->find($pluginId);
         if ($row === null) throw new \RuntimeException("插件不存在：{$pluginId}");
         return $row;
+    }
+
+    private function hasLoadedClasses(array $manifest): bool {
+        foreach (get_declared_classes() as $class) {
+            foreach (array_keys($manifest['autoload']['psr4']) as $prefix) {
+                if (str_starts_with($class, $prefix)) return true;
+            }
+        }
+        return false;
+    }
+
+    private function assertCanEnable(string $id, array $manifest): void {
+        $environment = PluginManifest::environmentErrors($manifest);
+        if ($environment !== []) throw new \RuntimeException(implode('；', $environment));
+        $this->assertDependencies($id, $manifest);
+        $this->assertRequiredServices($id, $manifest);
+        $this->assertNoRouteConflicts($id, $manifest);
+        $this->assertNoServiceConflicts($id, $manifest);
+    }
+
+    private function assertCompatibleDependents(string $id, array $manifest): void {
+        foreach ($this->registry->enabled() as $row) {
+            if ($row['plugin_id'] === $id) continue;
+            foreach (($row['manifest']['dependencies'] ?? []) as $dependency) {
+                $dependencyId = is_array($dependency) ? (string)($dependency['id'] ?? '') : (string)$dependency;
+                $constraint = is_array($dependency) ? (string)($dependency['version'] ?? '*') : '*';
+                if ($dependencyId === $id && !PluginManifest::satisfies($manifest['version'], $constraint)) throw new \RuntimeException('新版本不满足已启用插件的依赖：' . $row['plugin_id']);
+            }
+        }
+    }
+
+    private function restoreDirectory(string $destination, string $backup): void {
+        PluginFiles::invalidate($destination);
+        PluginFiles::remove($destination);
+        if (is_dir($backup)) PluginFiles::move($backup, $destination);
+        PluginFiles::invalidate($destination);
+    }
+
+    private function restoreDatabase(string $backup): void {
+        $source = new SQLite3($backup, SQLITE3_OPEN_READONLY);
+        try { if (!$source->backup($this->db)) throw new \RuntimeException('无法恢复插件数据库快照'); }
+        finally { $source->close(); }
+    }
+
+    private function cleanupWorkspace(string $workspace): void {
+        try { PluginFiles::remove($workspace); }
+        catch (\Throwable $e) { error_log('[Plugin Cleanup] ' . $e->getMessage()); }
     }
 
     private function contractErrors(string $directory, array $manifest): array {
@@ -436,10 +534,28 @@ final class PluginManager {
     }
 
     private function seedScheduledJobs(PluginContext $context, array $manifest): void {
+        $scheduled = [];
         foreach (($manifest['jobs'] ?? []) as $name => $job) {
             if (!is_array($job) || empty($job['handler'])) continue;
             $interval = (int)($job['interval'] ?? 0);
-            if ($interval >= 60) $context->jobs()->schedule((string)$name, (string)$job['handler'], $interval, (array)($job['payload'] ?? []));
+            if ($interval >= 60) {
+                $scheduled[] = 'schedule:' . $name;
+                $context->jobs()->schedule((string)$name, (string)$job['handler'], $interval, (array)($job['payload'] ?? []));
+            }
+        }
+        $stmt = $this->db->prepare("SELECT id,idempotency_key FROM plugin_jobs WHERE plugin_id=:id AND substr(idempotency_key,1,9)='schedule:' AND status IN ('pending','retry','failed')");
+        $stmt->bindValue(':id', $context->pluginId(), SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $obsolete = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            if (!in_array($row['idempotency_key'], $scheduled, true)) $obsolete[] = (int)$row['id'];
+        }
+        $result->finalize();
+        foreach ($obsolete as $id) {
+            $cancel = $this->db->prepare("UPDATE plugin_jobs SET status='cancelled',updated_at=:now WHERE id=:id");
+            $cancel->bindValue(':now', gmdate('c'), SQLITE3_TEXT);
+            $cancel->bindValue(':id', $id, SQLITE3_INTEGER);
+            $cancel->execute();
         }
     }
 
@@ -461,27 +577,24 @@ final class PluginManager {
         if (is_file($base . '/vendor/autoload.php')) require_once $base . '/vendor/autoload.php';
     }
 
-    private function publishAssets(string $id, string $version, string $base, array $manifest): void {
+    private function publishAssets(string $id, string $base): void {
         $source = $base . '/assets';
         if (!is_dir($source)) return;
-        $destination = APP_ROOT . '/assets/plugins/' . $id . '/' . $version;
+        $destination = PluginFiles::assets($id);
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS));
         foreach ($iterator as $file) {
             if (!$file->isFile() || !in_array(strtolower($file->getExtension()), self::ALLOWED_ASSET_EXTENSIONS, true)) continue;
             $relative = substr($file->getPathname(), strlen($source) + 1);
             $target = $destination . '/' . $relative;
-            if (!is_dir(dirname($target))) mkdir(dirname($target), 0755, true);
+            PluginFiles::mkdir(dirname($target));
             if (!copy($file->getPathname(), $target)) throw new \RuntimeException('无法发布插件资源');
         }
     }
 
-    private function backupDatabase(string $pluginId, string $version): string {
-        $directory = APP_ROOT . '/storage/backups/plugins';
-        if (!is_dir($directory)) mkdir($directory, 0755, true);
-        $target = $directory . '/' . $pluginId . '-' . gmdate('Ymd-His') . '-v' . $version . '.sqlite';
+    private function backupDatabase(string $target): void {
         $backup = new SQLite3($target);
-        try { $this->db->backup($backup); } finally { $backup->close(); }
-        return $target;
+        try { if (!$this->db->backup($backup)) throw new \RuntimeException('无法创建插件数据库快照'); }
+        finally { $backup->close(); }
     }
 
     private function extractZip(string $zipPath, string $destination): void {
@@ -525,21 +638,7 @@ final class PluginManager {
         return $directory;
     }
 
-    private function copyDirectory(string $source, string $destination): void {
-        if (!mkdir($destination, 0755, true) && !is_dir($destination)) throw new \RuntimeException('无法创建插件目录');
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($iterator as $item) {
-            $target = $destination . '/' . $iterator->getSubPathName();
-            if ($item->isLink()) throw new \RuntimeException('插件目录不允许符号链接');
-            if ($item->isDir()) { if (!is_dir($target)) mkdir($target, 0755, true); }
-            elseif (!copy($item->getPathname(), $target)) throw new \RuntimeException('无法复制插件文件');
-        }
-    }
-
     private function removeDirectory(string $directory): void {
-        if (!is_dir($directory)) return;
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach ($iterator as $item) $item->isDir() ? @rmdir($item->getPathname()) : @unlink($item->getPathname());
-        @rmdir($directory);
+        PluginFiles::remove($directory);
     }
 }

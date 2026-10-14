@@ -21,7 +21,7 @@
 
             <div class="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">
                 <p class="font-semibold"><i class="fas fa-shield-halved mr-2" aria-hidden="true"></i>请只上传可信来源的插件</p>
-                <p class="mt-1">插件可以运行服务器端代码。安装完成后不会自动启用，您可以返回插件管理页检查后再启用。</p>
+                <p class="mt-1">插件可以运行服务器端代码。新插件安装后需手动启用；更新已有插件会替换代码并保留启停状态，更新失败时自动恢复。</p>
             </div>
         </section>
 
@@ -32,7 +32,7 @@
                     <p>压缩包中只能包含一个插件包。</p>
                     <p>插件根目录必须包含有效的 `plugin.json` 和 `README.md`。</p>
                     <p>版本号必须使用 SemVer，插件 ID 只能包含小写字母、数字和连字符。</p>
-                    <p>系统会检查 PHP 语法、PSR-4 目录、依赖和运行环境；已存在的相同版本不会覆盖。</p>
+                    <p>系统会检查 PHP 语法和 PSR-4 目录；更新已启用插件时还会检查依赖与运行环境。已有插件会被上传的安装包替换，同版本也可重新安装。</p>
                 </div>
             </details>
             <details class="rounded-xl border border-slate-200 bg-white">

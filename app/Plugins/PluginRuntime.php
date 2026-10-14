@@ -55,7 +55,7 @@ final class PluginRuntime {
                     }
                     return;
                 }
-                if (random_int(1, 100) !== 1) return;
+                if (PluginOperationLock::changed() || random_int(1, 100) !== 1) return;
                 if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request();
                 try { (new \App\Plugins\Jobs\JobRunner())->runDue(1); } catch (\Throwable $e) { error_log('[Plugin Scheduler] ' . $e->getMessage()); }
             });
@@ -82,7 +82,7 @@ final class PluginRuntime {
             $row = $this->registry->find($pluginId);
             if (!$row) throw new \RuntimeException("插件不存在：{$pluginId}");
             $version = (string)($row['active_version'] ?: $row['installed_version']);
-            $plugin = ['version' => $version, 'base' => APP_ROOT . '/storage/plugins/' . $pluginId . '/' . $version];
+            $plugin = ['version' => $version, 'base' => PluginFiles::code($pluginId)];
         }
         return $this->contexts[$pluginId] = new PluginContext($pluginId, $plugin['version'], $plugin['base'], $this);
     }

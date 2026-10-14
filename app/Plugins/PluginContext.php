@@ -48,7 +48,7 @@ final class PluginContext {
     public function assets(): PluginAssets { return new PluginAssets($this->pluginId, $this->version); }
     public function forms(): object { return new class { public function csrfField(): string { return '<input type="hidden" name="csrf" value="' . h(csrf_token()) . '">'; } }; }
     public function media(): MediaManager { return new MediaManager(); }
-    public function uploads(): string { return APP_ROOT . '/assets/plugins/' . $this->pluginId . '/' . $this->version; }
+    public function uploads(): string { return PluginFiles::assets($this->pluginId); }
     public function temporaryFiles(): string {
         $path = APP_ROOT . '/storage/tmp/plugins/' . $this->pluginId;
         if (!is_dir($path)) mkdir($path, 0755, true);

@@ -14,7 +14,8 @@ final class PluginCache {
         if (!is_file($this->file)) return self::empty();
         try {
             $cache = require $this->file;
-            if (is_array($cache)) return array_replace_recursive(self::empty(), $cache);
+            if (is_array($cache) && ($cache['layout_version'] ?? 0) === 2) return array_replace_recursive(self::empty(), $cache);
+            if (is_array($cache)) return $this->rebuild((new PluginRegistry())->enabled());
         } catch (\Throwable $e) {
             error_log('[Plugin Cache] 主缓存无效：' . $e->getMessage());
         }
@@ -22,7 +23,7 @@ final class PluginCache {
         if (!is_file($fallback)) return self::empty();
         try {
             $cache = require $fallback;
-            return is_array($cache) ? array_replace_recursive(self::empty(), $cache) : self::empty();
+            return is_array($cache) && ($cache['layout_version'] ?? 0) === 2 ? array_replace_recursive(self::empty(), $cache) : $this->rebuild((new PluginRegistry())->enabled());
         } catch (\Throwable $e) {
             error_log('[Plugin Cache] 备用缓存无效：' . $e->getMessage());
             return self::empty();
@@ -42,7 +43,7 @@ final class PluginCache {
             $m['services'] = array_replace($providedServices, $declaredServices);
             $id = (string)$m['id'];
             $version = (string)$row['active_version'];
-            $base = APP_ROOT . '/storage/plugins/' . $id . '/' . $version;
+            $base = PluginFiles::code($id);
             $cache['plugins'][$id] = ['id' => $id, 'version' => $version, 'base' => $base, 'manifest' => $m];
             foreach (($m['autoload']['psr4'] ?? []) as $prefix => $path) {
                 $cache['autoload'][$prefix] = $base . '/' . trim((string)$path, '/');
@@ -81,14 +82,17 @@ final class PluginCache {
         $fallbackCurrent = $this->file . '.last.' . bin2hex(random_bytes(4)) . '.tmp';
         if (file_put_contents($fallbackCurrent, $content, LOCK_EX) !== false) rename($fallbackCurrent, $this->file . '.last.php');
         else @unlink($fallbackCurrent);
-        if (function_exists('opcache_invalidate')) @opcache_invalidate($this->file, true);
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($this->file, true);
+            @opcache_invalidate($this->file . '.last.php', true);
+        }
         return $cache;
     }
 
     public function file(): string { return $this->file; }
 
     public static function empty(): array {
-        return ['plugins' => [], 'autoload' => [], 'routes' => [], 'events' => [], 'filters' => [], 'slots' => [], 'services' => [], 'jobs' => [], 'admin_menu' => [], 'permissions' => [], 'assets' => []];
+        return ['layout_version' => 2, 'plugins' => [], 'autoload' => [], 'routes' => [], 'events' => [], 'filters' => [], 'slots' => [], 'services' => [], 'jobs' => [], 'admin_menu' => [], 'permissions' => [], 'assets' => []];
     }
 
     private function sortDependencies(array $plugins): array {
