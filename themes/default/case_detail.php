@@ -11,7 +11,7 @@
         <div class="flex items-center">
             <div class="max-w-3xl">
                 <span class="inline-block px-3 py-1 bg-white/20 text-white text-sm font-medium rounded-full mb-4">
-                    Success Case
+                    <?= h(block('ui_case_detail', 'label_fc19629c', 'Success Case')) ?>
                 </span>
                 <h1 class="text-3xl lg:text-5xl font-bold mb-4 leading-tight"><?= h($item['title']) ?></h1>
                 <?php if (!empty($item['summary'])): ?>
@@ -28,8 +28,7 @@
             <!-- Main Content -->
             <div class="lg:w-8/12">
                 <figure class="rounded-2xl overflow-hidden shadow-lg mb-8">
-                    <img src="<?= h(get_image_url($item['cover'] ?? null, 900, 600, (string)($item['title'] ?? 'Case'))) ?>"
-                         alt="<?= h($item['title']) ?>"
+                    <img src="<?= h(get_image_url($item['cover'] ?? null, 900, 600, (string)($item['title'] ?? 'Case'))) ?>" alt="<?= h($item['title']) ?>"
                          class="w-full h-auto"
                          loading="eager"
                          decoding="async"
@@ -37,7 +36,7 @@
                 </figure>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Project Details</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6"><?= h(block('ui_case_detail', 'label_387ef928', 'Project Details')) ?></h2>
                     <article class="rich-content">
                         <?= process_rich_text($item['content']) ?>
                     </article>
@@ -49,25 +48,25 @@
                 <div class="space-y-6">
                     <!-- About This Case -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">About This Case</h3>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4"><?= h(block('ui_case_detail', 'label_a16bff42', 'About This Case')) ?></h3>
                         <div class="mb-4">
-                            <label class="block text-sm text-gray-500 mb-1">Publish Time</label>
+                            <label class="block text-sm text-gray-500 mb-1"><?= h(block('ui_case_detail', 'label_bb48cb11', 'Publish Time')) ?></label>
                             <p class="font-medium text-gray-900"><?= format_date($item['created_at'], 'Y-m-d') ?></p>
                         </div>
                         <hr class="border-gray-100 my-4">
                         <p class="text-gray-600 mb-4">
-                            If you are interested in this solution or have similar needs, please contact our expert team.
+                            <?= h(block('ui_case_detail', 'label_cde963bc', 'If you are interested in this solution or have similar needs, please contact our expert team.')) ?>
                         </p>
-                        <a href="<?= url('/contact') ?>"
+                        <a href="<?= h(url('/contact')) ?>"
                            class="block w-full text-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors">
-                            Request Quote
+                            <?= h(block('ui_case_detail', 'label_46718cba', 'Request Quote')) ?>
                         </a>
                     </div>
 
                     <!-- Back Button -->
-                    <a href="<?= url('/cases') ?>"
+                    <a href="<?= h(url('/cases')) ?>"
                        class="block w-full text-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
-                        Back to All Cases
+                        <?= h(block('ui_case_detail', 'label_aaadada5', 'Back to All Cases')) ?>
                     </a>
                 </div>
             </div>

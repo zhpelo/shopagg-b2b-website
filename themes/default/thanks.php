@@ -13,28 +13,28 @@
                 <div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100 text-green-600">
                     <i class="fas fa-check-circle text-4xl"></i>
                 </div>
-                
-                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Inquiry Sent Successfully!</h1>
+
+                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4"><?= h(block('ui_thanks', 'label_e54b2564', 'Inquiry Sent Successfully!')) ?></h1>
                 <p class="text-gray-600 mb-6">
-                    Thank you for your interest. Our team will review your requirements and get back to you soon.
+                    <?= h(block('ui_thanks', 'label_2191f9b1', 'Thank you for your interest. Our team will review your requirements and get back to you soon.')) ?>
                 </p>
-                
+
                 <div class="bg-blue-50 rounded-xl p-4 mb-8">
                     <p class="text-blue-800 font-medium">
-                        Expected Response Time: We usually reply within 24 hours during business days.
+                        <?= h(block('ui_thanks', 'label_2b001de4', 'Expected Response Time: We usually reply within 24 hours during business days.')) ?>
                     </p>
                 </div>
-                
+
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="<?= url('/') ?>" 
+                    <a href="<?= h(url('/')) ?>"
                        class="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
                         <i class="fas fa-home mr-2"></i>
-                        Back to Home
+                        <?= h(block('ui_thanks', 'label_69863d42', 'Back to Home')) ?>
                     </a>
-                    <a href="<?= url('/products') ?>" 
+                    <a href="<?= h(url('/products')) ?>"
                        class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors">
                         <i class="fas fa-box mr-2"></i>
-                        View More Products
+                        <?= h(block('ui_thanks', 'label_fffe8213', 'View More Products')) ?>
                     </a>
                 </div>
             </div>

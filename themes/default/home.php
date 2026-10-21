@@ -13,18 +13,20 @@ foreach ($selectedProducts as &$selectedProduct) {
     $selectedProduct['url'] = url('/product/' . ($selectedProduct['slug'] ?? $selectedProduct['id']));
 }
 unset($selectedProduct);
-$featuredProducts = !empty($selectedProducts) ? $selectedProducts : $products;
-$latestPosts = get_posts(['limit' => 3, 'type' => 'post']);
+$featuredProducts = !empty($selectedProducts) ? $selectedProducts : get_products(['limit' => lighthouse_theme_limit('home_featured', 8)]);
+$featuredProducts = array_slice($featuredProducts, 0, lighthouse_theme_limit('home_featured', 8));
+$cases = get_cases(['limit' => lighthouse_theme_limit('home_cases', 6)]);
+$latestPosts = get_posts(['limit' => lighthouse_theme_limit('home_articles', 3), 'type' => 'post']);
 $heroSliderSlug = trim((string)block('home_hero', 'slider_slug'));
 $carouselProducts = get_carousel_products(3, $heroSliderSlug !== '' ? $heroSliderSlug : 'home-hero');
 $heroAutoplay = block('home_hero', 'autoplay', 'yes') === 'yes';
 $heroShowOverlay = block('home_hero', 'show_overlay', 'yes') !== 'no';
 $companyShowJson = $site['company_show_json'] ?? '[]';
 $companyShowItems = is_array($companyShowJson) ? $companyShowJson : json_decode((string)$companyShowJson, true);
-$companyShowItems = is_array($companyShowItems) ? array_values(array_filter($companyShowItems, static fn($item) => !empty($item['img'] ?? ''))) : [];
+$companyShowItems = is_array($companyShowItems) ? array_slice(array_values(array_filter($companyShowItems, static fn($item) => !empty($item['img'] ?? ''))), 0, lighthouse_theme_limit('home_company_show', 6)) : [];
 $certificateJson = $site['company_certificates_json'] ?? '[]';
 $certificateItems = is_array($certificateJson) ? $certificateJson : json_decode((string)$certificateJson, true);
-$certificateItems = is_array($certificateItems) ? array_values(array_filter($certificateItems, static fn($item) => !empty($item['img'] ?? ''))) : [];
+$certificateItems = is_array($certificateItems) ? array_slice(array_values(array_filter($certificateItems, static fn($item) => !empty($item['img'] ?? ''))), 0, lighthouse_theme_limit('home_certificates', 6)) : [];
 $whyMediaType = block('home_why_us', 'media_type', 'image') === 'video' ? 'video' : 'image';
 $whyMedia = trim((string)block('home_why_us', 'media'));
 $legacyWhyImage = trim((string)block('home_why_us', 'image'));
@@ -67,8 +69,7 @@ $valueProps = [
                     <!-- Background Image -->
                     <div class="absolute inset-0">
                         <img
-                            src="<?= h(get_image_url($p['image'] ?? null, 1980, 900)) ?>"
-                            alt="<?= h($p['title']) ?>"
+                            src="<?= h(get_image_url($p['image'] ?? null, 1980, 900)) ?>" alt="<?= h($p['title']) ?>"
                             class="w-full h-full object-cover"
                             loading="eager"
                             decoding="async"
@@ -101,8 +102,8 @@ $valueProps = [
                                 <a href="<?= h($p['url']) ?>" class="w-full px-6 py-3 text-center bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-lg sm:w-auto sm:px-8">
                                     <?= h($p['link_text'] ?? 'View Details') ?>
                                 </a>
-                                <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 text-center border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors sm:w-auto sm:px-8">
-                                    Contact
+                                <a href="<?= h(url('/contact')) ?>" class="w-full px-6 py-3 text-center border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-gray-900 transition-colors sm:w-auto sm:px-8">
+                                    <?= h(block('ui_home', 'label_73ac94c3', 'Contact')) ?>
                                 </a>
                             </div>
                         </div>
@@ -173,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-500"><?= nl2br(h(block('home_featured', 'text'))) ?></p>
                 <?php endif; ?>
             </div>
-            <a href="<?= url('/products') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
+            <a href="<?= h(url('/products')) ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
                 <?= h(block('home_featured', 'link_text')) ?>
             </a>
         </div>
@@ -188,8 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <?php foreach ($featuredProducts as $p): ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                     <a href="<?= h($p['url']) ?>" class="block aspect-square overflow-hidden">
-                        <img src="<?= h(get_image_url($p['cover'] ?? null, 400, 400, (string)($p['title'] ?? 'Product'))) ?>" 
-                             alt="<?= h($p['title']) ?>" 
+                        <img src="<?= h(get_image_url($p['cover'] ?? null, 400, 400, (string)($p['title'] ?? 'Product'))) ?>" alt="<?= h($p['title']) ?>"
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                              loading="lazy"
                              decoding="async">
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?= h(block('home_why_us', 'badge3')) ?>
                     </li>
                 </ul>
-                <a href="<?= url('/about') ?>" class="inline-flex w-full items-center justify-center rounded-lg border-2 border-brand-600 px-6 py-2.5 font-medium text-brand-600 transition-colors hover:bg-brand-600 hover:text-white sm:w-auto">
+                <a href="<?= h(url('/about')) ?>" class="inline-flex w-full items-center justify-center rounded-lg border-2 border-brand-600 px-6 py-2.5 font-medium text-brand-600 transition-colors hover:bg-brand-600 hover:text-white sm:w-auto">
                     <?= h(block('home_why_us', 'link_text')) ?>
                 </a>
             </div>
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                muted
                                playsinline
                                preload="metadata">
-                            <source src="<?= h(asset_url($whyMedia)) ?>">
+                            <source src="<?= h(lighthouse_theme_media_url($whyMedia)) ?>">
                         </video>
                     <?php else: ?>
                         <img src="<?= h(get_image_url($whyMedia !== '' ? $whyMedia : null, 800, 400, 'Factory')) ?>"
@@ -269,6 +269,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </section>
 <?php endif; ?>
 
+<?php lighthouse_theme_render_video($site ?? []); ?>
+
 <?php if ($homeBlockVisible('home_company_show')): ?>
 <!-- Company Show -->
 <section class="bg-white py-12 lg:py-20">
@@ -278,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="text-2xl font-bold text-gray-900 mb-2 lg:text-3xl"><?= h(block('home_company_show', 'heading')) ?></h2>
                 <p class="max-w-2xl text-gray-500"><?= h(block('home_company_show', 'subheading')) ?></p>
             </div>
-            <a href="<?= url('/about#company-show') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
+            <a href="<?= h(url('/about#company-show')) ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
                 <?= h(block('home_company_show', 'link_text')) ?>
             </a>
         </div>
@@ -286,16 +288,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php if (empty($companyShowItems)): ?>
             <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-6">
-                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-brand-600">Factory</p>
+                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-brand-600"><?= h(block('ui_home', 'label_7007efad', 'Factory')) ?></p>
                     <h3 class="mt-3 text-xl font-bold text-gray-900"><?= h($site['company_business_type'] ?? 'Manufacturing Capability') ?></h3>
                     <p class="mt-3 text-sm leading-6 text-gray-500"><?= h(mb_substr((string)($site['company_bio'] ?? ''), 0, 180)) ?></p>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                    <p class="text-sm text-gray-500">Main Products</p>
+                    <p class="text-sm text-gray-500"><?= h(block('ui_home', 'label_48b49a9c', 'Main Products')) ?></p>
                     <p class="mt-2 text-lg font-semibold text-gray-900"><?= h($site['company_main_products'] ?? '-') ?></p>
                 </div>
                 <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                    <p class="text-sm text-gray-500">Established</p>
+                    <p class="text-sm text-gray-500"><?= h(block('ui_home', 'label_bd796d2d', 'Established')) ?></p>
                     <p class="mt-2 text-lg font-semibold text-gray-900"><?= h($site['company_year_established'] ?? '-') ?></p>
                 </div>
             </div>
@@ -304,8 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <?php foreach (array_slice($companyShowItems, 0, 4) as $item): ?>
                     <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                         <figure class="aspect-[4/3] overflow-hidden bg-gray-100">
-                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Company'))) ?>"
-                                 alt="<?= h($item['title'] ?? 'Company Show') ?>"
+                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Company'))) ?>" alt="<?= h($item['title'] ?? 'Company Show') ?>"
                                  class="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                                  loading="lazy"
                                  decoding="async">
@@ -348,8 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <?php foreach (array_slice($certificateItems, 0, 4) as $item): ?>
                     <article class="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                         <figure class="aspect-[4/3] overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
-                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Certificate'))) ?>"
-                                 alt="<?= h($item['title'] ?? 'Certificate') ?>"
+                            <img src="<?= h(get_image_url((string)($item['img'] ?? ''), 600, 450, (string)($item['title'] ?? 'Certificate'))) ?>" alt="<?= h($item['title'] ?? 'Certificate') ?>"
                                  class="h-full w-full object-contain p-3"
                                  loading="lazy"
                                  decoding="async">
@@ -371,10 +371,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3"><?= h(block('home_cases', 'heading')) ?></h2>
             <p class="text-gray-500"><?= h(block('home_cases', 'subheading')) ?></p>
         </div>
-        
+
         <?php if (empty($cases)): ?>
             <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-12 text-center text-sm text-gray-500">
-                No cases available.
+                <?= h(block('ui_home', 'label_d7121a6e', 'No cases available.')) ?>
             </div>
         <?php else: ?>
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -382,8 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="<?= h($c['url']) ?>" class="group">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
                         <div class="aspect-[3/2] overflow-hidden">
-                            <img src="<?= h(get_image_url($c['cover'] ?? null, 600, 400, (string)($c['title'] ?? 'Case'))) ?>" 
-                                 alt="<?= h($c['title']) ?>" 
+                            <img src="<?= h(get_image_url($c['cover'] ?? null, 600, 400, (string)($c['title'] ?? 'Case'))) ?>" alt="<?= h($c['title']) ?>"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                  loading="lazy"
                                  decoding="async">
@@ -409,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="text-2xl font-bold text-gray-900 mb-2 lg:text-3xl"><?= h(block('home_articles', 'heading')) ?></h2>
                 <p class="max-w-2xl text-gray-500"><?= h(block('home_articles', 'subheading')) ?></p>
             </div>
-            <a href="<?= url('/blog') ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
+            <a href="<?= h(url('/blog')) ?>" class="inline-flex w-full items-center justify-center rounded-lg bg-brand-50 px-6 py-2.5 font-medium text-brand-700 transition-colors hover:bg-brand-100 sm:w-auto">
                 <?= h(block('home_articles', 'link_text')) ?>
             </a>
         </div>
@@ -423,8 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <?php foreach ($latestPosts as $post): ?>
                     <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                         <a href="<?= h($post['url']) ?>" class="block aspect-[16/10] overflow-hidden bg-gray-100">
-                            <img src="<?= h(get_image_url($post['cover'] ?? null, 640, 400, (string)($post['title'] ?? 'Article'))) ?>"
-                                 alt="<?= h($post['title']) ?>"
+                            <img src="<?= h(get_image_url($post['cover'] ?? null, 640, 400, (string)($post['title'] ?? 'Article'))) ?>" alt="<?= h($post['title']) ?>"
                                  class="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                                  loading="lazy"
                                  decoding="async">
@@ -456,12 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-center lg:p-16">
             <!-- Decorative gradient overlay -->
             <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
-            
+
             <div class="relative z-10">
                 <h2 class="text-2xl lg:text-4xl font-bold text-white mb-4"><?= h(block('home_cta', 'heading')) ?></h2>
                 <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto"><?= h(block('home_cta', 'text')) ?></p>
                 <div class="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                    <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg sm:w-auto sm:px-8">
+                    <a href="<?= h(url('/contact')) ?>" class="w-full px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg sm:w-auto sm:px-8">
                         <?= h(block('home_cta', 'btn1_text')) ?>
                     </a>
                     <?php

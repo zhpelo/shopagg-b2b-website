@@ -14,25 +14,25 @@
                 <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3"><?= h(block('page_about', 'label')) ?></p>
                 <h1 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-3 font-serif"><?= h($site['name'] ?? 'Company') ?></h1>
                 <p class="text-lg text-gray-600 mb-6 lg:text-xl"><?= h($site['tagline'] ?? 'General Information') ?></p>
-                
+
                 <!-- KPIs -->
                 <div class="grid grid-cols-1 gap-3 mb-8 sm:grid-cols-3 sm:gap-4">
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Rating</span>
+                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_389c8a70', 'Rating')) ?></span>
                         <span class="text-lg font-bold text-gray-900"><?= h($site['company_rating'] ?? '5.0/5') ?></span>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Avg. Response</span>
+                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_9a393006', 'Avg. Response')) ?></span>
                         <span class="text-lg font-bold text-gray-900"><?= h($site['company_response_time'] ?? '≤24h') ?></span>
                     </div>
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1">Established</span>
+                        <span class="block text-xs text-gray-500 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_bd796d2d', 'Established')) ?></span>
                         <span class="text-lg font-bold text-gray-900"><?= h($site['company_year_established'] ?? '-') ?></span>
                     </div>
                 </div>
-                
+
                 <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                    <a href="<?= url('/contact') ?>" class="w-full px-6 py-3 bg-brand-600 text-white text-center font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-md sm:w-auto sm:px-8">
+                    <a href="<?= h(url('/contact')) ?>" class="w-full px-6 py-3 bg-brand-600 text-white text-center font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-md sm:w-auto sm:px-8">
                         <?= h(block('page_about', 'cta_btn1')) ?>
                     </a>
                     <a href="#company-show" class="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 text-center font-semibold rounded-lg hover:border-gray-400 transition-colors sm:w-auto sm:px-8">
@@ -43,7 +43,7 @@
             <div class="relative">
                 <div class="rounded-2xl overflow-hidden shadow-2xl">
                     <img src="<?= h(get_image_url($site['company_profile_image'] ?? null, 800, 400, 'Company Overview')) ?>"
-                         alt="Company Overview" 
+                         alt="Company Overview"
                          class="w-full h-auto"
                          loading="eager"
                          decoding="async">
@@ -60,12 +60,12 @@
             <div class="lg:w-9/12 space-y-8">
                 <!-- Company Profile -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8" id="company-profile">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Company Profile</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6"><?= h(block('ui_about', 'label_da6136a1', 'Company Profile')) ?></h2>
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
                         <div class="lg:col-span-2">
                             <figure class="rounded-xl overflow-hidden shadow-md aspect-[4/3]">
                                 <img src="<?= h(get_image_url($site['company_profile_image'] ?? null, 400, 300, 'Company Profile')) ?>"
-                                     alt="Company Profile" 
+                                     alt="Company Profile"
                                      class="w-full h-full object-cover"
                                      loading="lazy"
                                      decoding="async">
@@ -79,30 +79,30 @@
                             <table class="min-w-[520px] w-full text-sm">
                                 <tbody class="divide-y divide-gray-100">
                                     <tr>
-                                        <td class="py-3 text-gray-500 w-2/5"><i class="fas fa-check text-green-500 mr-2"></i>Business Type:</td>
+                                        <td class="py-3 text-gray-500 w-2/5"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_b8b74919', 'Business Type:')) ?></td>
                                         <td class="py-3 font-medium text-gray-900"><?= h($site['company_business_type'] ?? 'Trading Company') ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Main Products:</td>
+                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_1a4f7352', 'Main Products:')) ?></td>
                                         <td class="py-3 font-medium text-brand-600"><?= h($site['company_main_products'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Year Established:</td>
+                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_f3f76e48', 'Year Established:')) ?></td>
                                         <td class="py-3 font-medium text-gray-900"><?= h($site['company_year_established'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Employees:</td>
+                                        <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_55080664', 'Employees:')) ?></td>
                                         <td class="py-3 font-medium text-gray-900"><?= h($site['company_employees'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 text-gray-500 align-top">Address:</td>
+                                        <td class="py-3 text-gray-500 align-top"><?= h(block('ui_about', 'label_21775c6b', 'Address:')) ?></td>
                                         <td class="py-3 font-medium text-gray-900"><?= h($site['company_address'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <td class="py-3 text-gray-500">SGS Audit No.:</td>
+                                        <td class="py-3 text-gray-500"><?= h(block('ui_about', 'label_c0f29566', 'SGS Audit No.:')) ?></td>
                                         <td class="py-3 font-bold text-gray-900">
-                                            <?= h($site['company_sgs_report'] ?? '-') ?> 
-                                            <a href="#" class="text-brand-600 hover:underline ml-2">Verify Now</a>
+                                            <?= h($site['company_sgs_report'] ?? '-') ?>
+                                            <a href="#" class="text-brand-600 hover:underline ml-2"><?= h(block('ui_about', 'label_809ed9f4', 'Verify Now')) ?></a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -111,11 +111,11 @@
                             <hr class="border-gray-100 my-4">
                             <div class="flex flex-col gap-3 sm:flex-row sm:gap-8">
                                 <div>
-                                    <span class="text-gray-500">Rating:</span>
+                                    <span class="text-gray-500"><?= h(block('ui_about', 'label_686db27e', 'Rating:')) ?></span>
                                     <span class="font-bold text-gray-900 ml-2"><?= h($site['company_rating'] ?? '5.0/5') ?></span>
                                 </div>
                                 <div>
-                                    <span class="text-gray-500">Avg. Response Time:</span>
+                                    <span class="text-gray-500"><?= h(block('ui_about', 'label_4a52e8ab', 'Avg. Response Time:')) ?></span>
                                     <span class="font-bold text-gray-900 ml-2"><?= h($site['company_response_time'] ?? '≤24h') ?></span>
                                 </div>
                             </div>
@@ -129,38 +129,38 @@
                 <!-- General Information -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <div class="flex flex-wrap justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-gray-900">General Information</h3>
-                        <span class="text-sm text-gray-500">6 items verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
+                        <h3 class="text-xl font-bold text-gray-900"><?= h(block('ui_about', 'label_ff8492b1', 'General Information')) ?></h3>
+                        <span class="text-sm text-gray-500"><?= h(block('ui_about', 'label_614155db', '6 items verified by SGS')) ?> <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
                     <div class="overflow-x-auto">
                     <table class="min-w-[520px] w-full">
                         <tbody class="divide-y divide-gray-100">
                             <tr>
-                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>Business Type:</td>
+                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_b8b74919', 'Business Type:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_business_type'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Main Products:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_1a4f7352', 'Main Products:')) ?></td>
                                 <td class="py-3 font-medium text-brand-600"><?= h($site['company_main_products'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Year Established:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_f3f76e48', 'Year Established:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_year_established'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Employees:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_55080664', 'Employees:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_employees'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500">Address:</td>
+                                <td class="py-3 text-gray-500"><?= h(block('ui_about', 'label_21775c6b', 'Address:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_address'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Plant Area:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_c614298b', 'Plant Area:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_plant_area'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Registered Capital:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_9461f571', 'Registered Capital:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_registered_capital'] ?? '-') ?></td>
                             </tr>
                         </tbody>
@@ -171,42 +171,42 @@
                 <!-- Trade Capacity -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <div class="flex flex-wrap justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-gray-900">Trade Capacity</h3>
-                        <span class="text-sm text-gray-500">7 items verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
+                        <h3 class="text-xl font-bold text-gray-900"><?= h(block('ui_about', 'label_5745be8f', 'Trade Capacity')) ?></h3>
+                        <span class="text-sm text-gray-500"><?= h(block('ui_about', 'label_6069e2c', '7 items verified by SGS')) ?> <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
                     <div class="overflow-x-auto">
                     <table class="min-w-[520px] w-full">
                         <tbody class="divide-y divide-gray-100">
                             <tr>
-                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>Main Markets:</td>
+                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_62119a09', 'Main Markets:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_main_markets'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Trade Staff:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_1a077ac7', 'Trade Staff:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_trade_staff'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Incoterms:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_4ad895e3', 'Incoterms:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_incoterms'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Payment Terms:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_882de154', 'Payment Terms:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_payment_terms'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Avg. Lead Time:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_b329803a', 'Avg. Lead Time:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_lead_time'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Overseas Agent:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_dbab40c', 'Overseas Agent:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_overseas_agent'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500">Export Year:</td>
+                                <td class="py-3 text-gray-500"><?= h(block('ui_about', 'label_554a836', 'Export Year:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_export_year'] ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i>Nearest Port:</td>
+                                <td class="py-3 text-gray-500"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_a192f63a', 'Nearest Port:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_nearest_port'] ?? '-') ?></td>
                             </tr>
                         </tbody>
@@ -217,14 +217,14 @@
                 <!-- R&D Capacity -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <div class="flex flex-wrap justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-gray-900">R&D Capacity</h3>
-                        <span class="text-sm text-gray-500">All information verified by SGS <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
+                        <h3 class="text-xl font-bold text-gray-900"><?= h(block('ui_about', 'label_46bb7f59', 'R&D Capacity')) ?></h3>
+                        <span class="text-sm text-gray-500"><?= h(block('ui_about', 'label_a2afda38', 'All information verified by SGS')) ?> <i class="fas fa-check-circle text-green-500 ml-1"></i></span>
                     </div>
                     <div class="overflow-x-auto">
                     <table class="min-w-[520px] w-full">
                         <tbody>
                             <tr>
-                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i>R&D Engineers:</td>
+                                <td class="py-3 text-gray-500 w-1/3"><i class="fas fa-check text-green-500 mr-2"></i><?= h(block('ui_about', 'label_aa92c9e1', 'R&D Engineers:')) ?></td>
                                 <td class="py-3 font-medium text-gray-900"><?= h($site['company_rd_engineers'] ?? '-') ?></td>
                             </tr>
                         </tbody>
@@ -233,21 +233,20 @@
                 </div>
 
                 <!-- Company Show -->
-                <?php 
+                <?php
                 $showJson = $site['company_show_json'] ?? '[]';
                 $showItems = is_array($showJson) ? $showJson : json_decode($showJson, true);
-                if (!empty($showItems) && is_array($showItems)): 
+                if (!empty($showItems) && is_array($showItems)):
                 ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8" id="company-show">
                     <h3 class="text-xl font-bold text-gray-900 mb-6"><?= h(block('page_about', 'company_show_title')) ?></h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <?php foreach ($showItems as $item): 
+                        <?php foreach ($showItems as $item):
                             if (empty($item['img'])) continue;
                         ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-3">
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2">
-                                    <img src="<?= h(asset_url((string)$item['img'])) ?>" 
-                                         alt="<?= h($item['title'] ?? '') ?>" 
+                                    <img src="<?= h(lighthouse_theme_media_url((string)$item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>"
                                          class="w-full h-full object-cover"
                                          loading="lazy"
                                          decoding="async">
@@ -260,21 +259,20 @@
                 <?php endif; ?>
 
                 <!-- Certificates -->
-                <?php 
+                <?php
                 $certJson = $site['company_certificates_json'] ?? '[]';
                 $certItems = is_array($certJson) ? $certJson : json_decode($certJson, true);
-                if (!empty($certItems) && is_array($certItems)): 
+                if (!empty($certItems) && is_array($certItems)):
                 ?>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-6"><?= h(block('page_about', 'certificates_title')) ?></h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <?php foreach ($certItems as $item): 
+                        <?php foreach ($certItems as $item):
                             if (empty($item['img'])) continue;
                         ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-3">
                                 <figure class="aspect-[4/3] rounded-lg overflow-hidden mb-2 bg-gray-50 border border-dashed border-gray-200">
-                                    <img src="<?= h(asset_url((string)$item['img'])) ?>" 
-                                         alt="<?= h($item['title'] ?? '') ?>" 
+                                    <img src="<?= h(lighthouse_theme_media_url((string)$item['img'])) ?>" alt="<?= h($item['title'] ?? '') ?>"
                                          class="w-full h-full object-contain p-2"
                                          loading="lazy"
                                          decoding="async">
@@ -293,7 +291,7 @@
                     <!-- Contact Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <h3 class="font-bold text-gray-900 mb-4"><?= h(block('page_about', 'sidebar_title')) ?></h3>
-                        <a href="<?= url('/contact') ?>" 
+                        <a href="<?= h(url('/contact')) ?>"
                            class="block w-full text-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors mb-3">
                             <?= h(block('page_about', 'sidebar_btn')) ?>
                         </a>
@@ -313,15 +311,15 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <div class="space-y-4">
                             <div>
-                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Business Type</span>
+                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_3e9fe619', 'Business Type')) ?></span>
                                 <span class="font-semibold text-gray-900"><?= h($site['company_business_type'] ?? '-') ?></span>
                             </div>
                             <div>
-                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Products</span>
+                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_48b49a9c', 'Main Products')) ?></span>
                                 <span class="font-semibold text-gray-900 break-words"><?= h($site['company_main_products'] ?? '-') ?></span>
                             </div>
                             <div>
-                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1">Main Markets</span>
+                                <span class="block text-xs text-gray-400 uppercase tracking-wider mb-1"><?= h(block('ui_about', 'label_c80ea749', 'Main Markets')) ?></span>
                                 <span class="font-semibold text-gray-900 break-words"><?= h($site['company_main_markets'] ?? '-') ?></span>
                             </div>
                         </div>

@@ -16,5 +16,6 @@ node_modules/
 
 # Runtime-published plugin assets are rebuilt from installed plugin packages.
 assets/plugins/
-
-tests/plugin_installation_smoke.php
+tests/
+tools/
+dist/

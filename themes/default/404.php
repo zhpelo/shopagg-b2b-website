@@ -10,12 +10,12 @@
     <div class="container mx-auto px-4 lg:px-8 text-center">
         <div class="max-w-lg mx-auto">
             <h1 class="text-8xl lg:text-9xl font-bold text-gray-200 mb-4">404</h1>
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Page Not Found</h2>
-            <p class="text-gray-600 mb-8">The page you are looking for does not exist or has been moved.</p>
-            <a href="<?= url('/') ?>" 
+            <h2 class="text-3xl font-bold text-gray-900 mb-4"><?= h(block('ui_404', 'label_71c5b377', 'Page Not Found')) ?></h2>
+            <p class="text-gray-600 mb-8"><?= h(block('ui_404', 'label_3847c29d', 'The page you are looking for does not exist or has been moved.')) ?></p>
+            <a href="<?= h(url('/')) ?>"
                class="inline-flex items-center px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors shadow-md">
                 <i class="fas fa-home mr-2"></i>
-                Go Home
+                <?= h(block('ui_404', 'label_eb233972', 'Go Home')) ?>
             </a>
         </div>
     </div>

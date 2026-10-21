@@ -17,9 +17,7 @@ if (!function_exists('renderCategoryList')) {
             $hasChildren = !empty($cat['children']);
             $paddingLeft = 1 + ($level * 1);
 ?>
-        <a href="<?= url('/blog') ?>?category=<?= (int)$cat['id'] ?>"
-           class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
-           style="padding-left: <?= $paddingLeft ?>rem;">
+        <a href="<?= url('/blog') ?>?category=<?= (int)$cat['id'] ?>" class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>" style="padding-left: <?= $paddingLeft ?>rem;">
             <?php if ($level > 0): ?>
                 <span class="text-gray-300 mr-2">└</span>
             <?php endif; ?>
@@ -39,11 +37,11 @@ if (!function_exists('renderCategoryList')) {
 <section class="bg-gradient-to-r from-amber-400 to-orange-500 text-white">
     <div class="container mx-auto px-4 lg:px-8 py-12">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="<?= h(block('ui_post_list', 'label_d43fa44c', 'breadcrumb')) ?>">
             <ol class="flex min-w-max items-center space-x-2">
-                <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
+                <li><a href="<?= h(url('/')) ?>" class="text-white/80 hover:text-white"><?= h(block('ui_post_list', 'label_52f50eae', 'Home')) ?></a></li>
                 <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
-                <li><a href="<?= url('/blog') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>">Blog</a></li>
+                <li><a href="<?= url('/blog') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>"><?= h(block('ui_post_list', 'label_c79c4311', 'Blog')) ?></a></li>
                 <?php if ($currentCategory): ?>
                     <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
                     <li class="text-white font-medium"><?= h($currentCategory['name']) ?></li>
@@ -56,7 +54,7 @@ if (!function_exists('renderCategoryList')) {
             <?php if ($currentCategory): ?>
                 <?= h($currentCategory['description'] ?? 'Get the latest industry insights and company news') ?>
             <?php else: ?>
-                Get the latest industry insights and company news
+                <?= h(block('ui_post_list', 'label_6e4606f1', 'Get the latest industry insights and company news')) ?>
             <?php endif; ?>
         </p>
     </div>
@@ -72,11 +70,11 @@ if (!function_exists('renderCategoryList')) {
                         <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-400">
                             <i class="fas fa-file-alt text-3xl"></i>
                         </div>
-                        <p class="text-gray-500 mb-4">No articles found</p>
+                        <p class="text-gray-500 mb-4"><?= h(block('ui_post_list', 'label_6e04e991', 'No articles found')) ?></p>
                         <?php if ($currentCategory): ?>
-                            <a href="<?= url('/blog') ?>" class="inline-flex items-center px-6 py-2.5 bg-brand-100 text-brand-700 font-medium rounded-lg hover:bg-brand-200 transition-colors">
+                            <a href="<?= h(url('/blog')) ?>" class="inline-flex items-center px-6 py-2.5 bg-brand-100 text-brand-700 font-medium rounded-lg hover:bg-brand-200 transition-colors">
                                 <i class="fas fa-arrow-left mr-2"></i>
-                                View All Articles
+                                <?= h(block('ui_post_list', 'label_8b0d9992', 'View All Articles')) ?>
                             </a>
                         <?php endif; ?>
                     </div>
@@ -87,8 +85,7 @@ if (!function_exists('renderCategoryList')) {
                                 <div class="flex flex-col md:flex-row">
                                     <div class="md:w-1/3 flex-shrink-0">
                                         <a href="<?= h($item['url']) ?>" class="block h-48 md:h-full">
-                                            <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Article'))) ?>"
-                                                 alt="<?= h($item['title']) ?>"
+                                            <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Article'))) ?>" alt="<?= h($item['title']) ?>"
                                                  class="w-full h-full object-cover"
                                                  loading="lazy"
                                                  decoding="async">
@@ -116,7 +113,7 @@ if (!function_exists('renderCategoryList')) {
                                             <?= h($item['summary']) ?>
                                         </p>
                                         <a href="<?= h($item['url']) ?>" class="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition-colors">
-                                            Read Full Article →
+                                            <?= h(block('ui_post_list', 'label_b2b9ee7a', 'Read Full Article →')) ?>
                                         </a>
                                     </div>
                                 </div>
@@ -134,14 +131,13 @@ if (!function_exists('renderCategoryList')) {
                     <div class="px-4 py-4 bg-gradient-to-r from-emerald-500 to-teal-600">
                         <h3 class="font-bold text-white flex items-center">
                             <i class="fas fa-folder-open mr-2"></i>
-                            Categories
+                            <?= h(block('ui_post_list', 'label_f075e98d', 'Categories')) ?>
                         </h3>
                     </div>
                     <div class="max-h-80 overflow-y-auto lg:max-h-none lg:overflow-visible">
-                        <a href="<?= url('/blog') ?>"
-                           class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
+                        <a href="<?= url('/blog') ?>" class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
                             <i class="fas fa-list w-5 mr-2 <?= !$currentCategory ? 'text-emerald-500' : 'text-gray-400' ?>"></i>
-                            All Articles
+                            <?= h(block('ui_post_list', 'label_25f34c4f', 'All Articles')) ?>
                         </a>
                         <?php renderCategoryList($categories, $currentCategory ? (int)$currentCategory['id'] : 0); ?>
                     </div>
@@ -152,14 +148,14 @@ if (!function_exists('renderCategoryList')) {
                 <div class="bg-gradient-to-br from-slate-900 to-brand-700 rounded-xl p-5 text-white lg:p-6">
                     <h3 class="font-bold text-lg mb-3 flex items-center">
                         <i class="fas fa-headset mr-2"></i>
-                        Need Help?
+                        <?= h(block('ui_post_list', 'label_478c3941', 'Need Help?')) ?>
                     </h3>
                     <p class="text-white/90 text-sm mb-4">
-                        If you have any questions, feel free to contact our professional team.
+                        <?= h(block('ui_post_list', 'label_3b42ed2f', 'If you have any questions, feel free to contact our professional team.')) ?>
                     </p>
-                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-slate-900 transition-colors">
+                    <a href="<?= h(url('/contact')) ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-slate-900 transition-colors">
                         <i class="fas fa-envelope mr-2"></i>
-                        Contact
+                        <?= h(block('ui_post_list', 'label_73ac94c3', 'Contact')) ?>
                     </a>
                 </div>
             </aside>

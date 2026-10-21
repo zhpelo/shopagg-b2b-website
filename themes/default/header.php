@@ -8,7 +8,7 @@
  */
 
 // 获取菜单项（如果没有设置，将使用默认菜单）
-$menuItems = get_menu_items('main-nav');
+$menuItems = get_menu_items(block('header', 'menu_slug', 'main-nav'));
 $hasMenu = !empty($menuItems);
 $seoTitle = trim((string)($seo['title'] ?? $site['name'] ?? ''));
 $seoDescription = default_theme_meta_description((string)($seo['description'] ?? $site['tagline'] ?? ''));
@@ -85,8 +85,8 @@ $schemaGraph = default_theme_schema_graph($site, [
     <meta name="twitter:title" content="<?= h($seoTitle) ?>">
     <meta name="twitter:description" content="<?= h($seoDescription) ?>">
     <?php if (!empty($site['favicon'])): ?>
-        <link rel="icon" type="image/x-icon" href="<?= h(asset_url((string)$site['favicon'])) ?>">
-        <link rel="shortcut icon" href="<?= h(asset_url((string)$site['favicon'])) ?>">
+        <link rel="icon" type="image/x-icon" href="<?= h(lighthouse_theme_media_url((string)$site['favicon'])) ?>">
+        <link rel="shortcut icon" href="<?= h(lighthouse_theme_media_url((string)$site['favicon'])) ?>">
     <?php endif; ?>
     <script type="application/ld+json"><?= json_encode($schemaGraph, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?></script>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
@@ -140,17 +140,19 @@ $schemaGraph = default_theme_schema_graph($site, [
         }
     </style>
     <?= get_head_code() ?>
+    <link rel="stylesheet" href="<?= h(get_stylesheet_directory_uri() . '/theme-support.css?v=' . (string)filemtime(__DIR__ . '/theme-support.css')) ?>">
+    <style>:root{--lighthouse-primary:<?= h(block('brand_colors', 'primary', '#257346')) ?>;--lighthouse-surface:<?= h(block('brand_colors', 'surface', '#f4f7f9')) ?>;--lighthouse-ink:<?= h(block('brand_colors', 'ink', '#162332')) ?>}</style>
 </head>
 
 <body class="bg-gray-50 font-sans antialiased">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 border-b border-gray-100 bg-white/95 shadow-sm backdrop-blur" aria-label="Main navigation">
+    <nav class="sticky top-0 z-50 border-b border-gray-100 bg-white/95 shadow-sm backdrop-blur" aria-label="<?= h(block('ui_header', 'label_c5a8374a', 'Main navigation')) ?>">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center h-16 lg:h-20">
                 <!-- Logo -->
-                <a href="<?= url('/') ?>" class="flex min-w-0 items-center">
+                <a href="<?= h(url('/')) ?>" class="flex min-w-0 items-center">
                     <?php if (!empty($site['logo'])): ?>
-                        <img src="<?= h(asset_url((string)$site['logo'])) ?>" alt="<?= h($site['name']) ?>" class="h-9 max-w-[150px] object-contain sm:max-w-[190px] lg:h-14 lg:max-w-[240px]">
+                        <img src="<?= h(lighthouse_theme_media_url((string)$site['logo'])) ?>" alt="<?= h($site['name']) ?>" class="h-9 max-w-[150px] object-contain sm:max-w-[190px] lg:h-14 lg:max-w-[240px]">
                     <?php else: ?>
                         <div class="min-w-0">
                             <div class="max-w-[210px] truncate text-lg font-bold text-gray-900 sm:max-w-none lg:text-xl"><?= h($site['name']) ?></div>
@@ -161,18 +163,18 @@ $schemaGraph = default_theme_schema_graph($site, [
 
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    <?php render_menu('main-nav', false); ?>
-                    <button id="desktop-search-btn" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-100 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Open site search" aria-controls="desktop-search-panel" aria-expanded="false">
+                    <?php render_menu(block('header', 'menu_slug', 'main-nav'), false); ?>
+                    <button id="desktop-search-btn" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-100 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="<?= h(block('ui_header', 'label_f276c8fc', 'Open site search')) ?>" aria-controls="desktop-search-panel" aria-expanded="false">
                         <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
                     <?= get_google_translate_widget($site, 'px-4 py-2 text-gray-700') ?>
-                    <a href="<?= url(block('header', 'cta_url', '/contact')) ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
+                    <a href="<?= h(url(block('header', 'cta_url', '/contact'))) ?>" class="ml-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
                         <?= h(block('header', 'cta_text')) ?>
                     </a>
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" type="button" class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 hover:text-brand-600 focus:outline-none" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false">
+                <button id="mobile-menu-btn" type="button" class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 hover:text-brand-600 focus:outline-none" aria-label="<?= h(block('ui_header', 'label_5f4ec78', 'Open navigation menu')) ?>" aria-controls="mobile-menu" aria-expanded="false">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
@@ -181,13 +183,13 @@ $schemaGraph = default_theme_schema_graph($site, [
             <div id="desktop-search-panel" class="absolute inset-x-0 top-full hidden border-t border-gray-100 bg-white shadow-lg" aria-hidden="true">
                 <div class="container mx-auto px-4 py-5 lg:px-8">
                     <form action="<?= url('/search') ?>" method="get" role="search" class="mx-auto flex max-w-3xl items-center gap-3">
-                        <label for="desktop-search-input" class="sr-only">Search the website</label>
+                        <label for="desktop-search-input" class="sr-only"><?= h(block('ui_header', 'label_108ed5f7', 'Search the website')) ?></label>
                         <div class="relative flex-1">
                             <i class="fas fa-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
                             <input id="desktop-search-input" type="search" name="q" value="<?= h($headerSearchQuery) ?>" maxlength="120" required autocomplete="off" placeholder="<?= h($searchPlaceholder) ?>" class="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-gray-900 outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-100">
                         </div>
-                        <button type="submit" class="inline-flex items-center rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-700">Search</button>
-                        <button id="desktop-search-close" type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900" aria-label="Close site search">
+                        <button type="submit" class="inline-flex items-center rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-700"><?= h(block('ui_header', 'label_c646a2c9', 'Search')) ?></button>
+                        <button id="desktop-search-close" type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900" aria-label="<?= h(block('ui_header', 'label_6c37dca6', 'Close site search')) ?>">
                             <i class="fas fa-times" aria-hidden="true"></i>
                         </button>
                     </form>
@@ -197,20 +199,20 @@ $schemaGraph = default_theme_schema_graph($site, [
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-100 bg-white max-h-[calc(100svh-4rem)] overflow-y-auto">
                 <div class="py-4 space-y-2">
-                    <?php render_menu('main-nav', true); ?>
+                    <?php render_menu(block('header', 'menu_slug', 'main-nav'), true); ?>
                     <form action="<?= url('/search') ?>" method="get" role="search" class="px-4 pt-2">
-                        <label for="mobile-search-input" class="sr-only">Search the website</label>
+                        <label for="mobile-search-input" class="sr-only"><?= h(block('ui_header', 'label_108ed5f7', 'Search the website')) ?></label>
                         <div class="flex items-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-100">
                             <i class="fas fa-search ml-4 text-gray-400" aria-hidden="true"></i>
                             <input id="mobile-search-input" type="search" name="q" value="<?= h($headerSearchQuery) ?>" maxlength="120" required autocomplete="off" placeholder="<?= h($searchPlaceholder) ?>" class="min-w-0 flex-1 bg-transparent px-3 py-3 text-sm text-gray-900 outline-none">
-                            <button type="submit" class="self-stretch bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700">Search</button>
+                            <button type="submit" class="self-stretch bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700"><?= h(block('ui_header', 'label_c646a2c9', 'Search')) ?></button>
                         </div>
                     </form>
                     <div class="px-4 pt-2">
                         <?= get_google_translate_widget($site, 'block w-full rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50') ?>
                     </div>
                     <div class="px-4 pt-2">
-                        <a href="<?= url(block('header', 'cta_url', '/contact')) ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
+                        <a href="<?= h(url(block('header', 'cta_url', '/contact'))) ?>" class="block w-full text-center px-6 py-2.5 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors">
                             <?= h(block('header', 'cta_text')) ?>
                         </a>
                     </div>

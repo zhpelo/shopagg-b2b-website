@@ -1,11 +1,11 @@
 <?php
 /**
  * 默认主题 - 区块配置文件
- * 
+ *
  * 定义所有可在后台自定义的模板区块内容。
  * 每个区块包含：label（后台显示名）、fields（字段列表）。
  * 字段类型：text / textarea / image / media / icon / color / select / repeater
- * 
+ *
  * 前台模板通过 block('区块key', '字段key') 读取值。
  * 用户修改保存在 storage/blocks/{theme}.php，不修改本文件。
  */
@@ -59,7 +59,7 @@ try {
 
 $defaultFooterMenu = (string)(array_key_first($menuOptions) ?? '');
 
-return [
+$definitions = [
 
     // ============================================================
     // 首页 - 首屏轮播
@@ -417,3 +417,7 @@ return [
     ],
 
 ];
+
+$definitions['header']['fields']['menu_slug'] = ['type' => 'select', 'label' => '主导航菜单', 'default' => 'main-nav', 'options' => $menuOptions + ['main-nav' => '主导航 (main-nav)']];
+
+return (require __DIR__ . '/block-settings.php')($definitions);

@@ -12,11 +12,11 @@ $recommendedPosts = $recommended_posts ?? [];
 <section class="py-8">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="<?= h(block('ui_post_detail', 'label_d43fa44c', 'breadcrumb')) ?>">
             <ol class="flex min-w-max items-center space-x-2 text-gray-500">
-                <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
+                <li><a href="<?= h(url('/')) ?>" class="hover:text-brand-600"><?= h(block('ui_post_detail', 'label_52f50eae', 'Home')) ?></a></li>
                 <li><i class="fas fa-chevron-right text-xs"></i></li>
-                <li><a href="<?= url('/blog') ?>" class="hover:text-brand-600">Blog</a></li>
+                <li><a href="<?= h(url('/blog')) ?>" class="hover:text-brand-600"><?= h(block('ui_post_detail', 'label_c79c4311', 'Blog')) ?></a></li>
                 <?php if ($category): ?>
                     <li><i class="fas fa-chevron-right text-xs"></i></li>
                     <li><a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>" class="hover:text-brand-600"><?= h($category['name']) ?></a></li>
@@ -47,8 +47,7 @@ $recommendedPosts = $recommended_posts ?? [];
 
             <!-- Featured Image -->
             <figure class="mb-8 rounded-xl overflow-hidden shadow-lg">
-                <img src="<?= h(get_image_url($item['cover'] ?? null, 1200, 630, (string)($item['title'] ?? 'Article'))) ?>"
-                     alt="<?= h($item['title']) ?>"
+                <img src="<?= h(get_image_url($item['cover'] ?? null, 1200, 630, (string)($item['title'] ?? 'Article'))) ?>" alt="<?= h($item['title']) ?>"
                      class="w-full h-auto"
                      loading="eager"
                      decoding="async"
@@ -64,15 +63,15 @@ $recommendedPosts = $recommended_posts ?? [];
 
             <!-- Article Navigation -->
             <?php if ($previousPost || $nextPost): ?>
-                <nav class="mb-8 grid gap-4 border-y border-gray-200 py-6 md:grid-cols-2" aria-label="Article navigation">
+                <nav class="mb-8 grid gap-4 border-y border-gray-200 py-6 md:grid-cols-2" aria-label="<?= h(block('ui_post_detail', 'label_86f98b4d', 'Article navigation')) ?>">
                     <?php if ($previousPost): ?>
-                        <a href="<?= url('/blog/' . $previousPost['slug']) ?>"
+                        <a href="<?= h(url('/blog/' . $previousPost['slug'])) ?>"
                            class="group flex min-h-28 items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition hover:border-brand-200 hover:shadow-md">
                             <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition group-hover:bg-brand-100 group-hover:text-brand-700">
                                 <i class="fas fa-arrow-left"></i>
                             </span>
                             <span class="min-w-0">
-                                <span class="mb-1 block text-sm font-semibold text-gray-500">上一篇</span>
+                                <span class="mb-1 block text-sm font-semibold text-gray-500"><?= h(block('ui_post_detail', 'label_e1407260', '上一篇')) ?></span>
                                 <span class="line-clamp-2 text-base font-bold text-gray-900 transition group-hover:text-brand-700"><?= h($previousPost['title']) ?></span>
                             </span>
                         </a>
@@ -81,10 +80,10 @@ $recommendedPosts = $recommended_posts ?? [];
                     <?php endif; ?>
 
                     <?php if ($nextPost): ?>
-                        <a href="<?= url('/blog/' . $nextPost['slug']) ?>"
+                        <a href="<?= h(url('/blog/' . $nextPost['slug'])) ?>"
                            class="group flex min-h-28 items-center justify-end gap-4 rounded-xl border border-gray-100 bg-white p-5 text-right shadow-sm transition hover:border-brand-200 hover:shadow-md">
                             <span class="min-w-0">
-                                <span class="mb-1 block text-sm font-semibold text-gray-500">下一篇</span>
+                                <span class="mb-1 block text-sm font-semibold text-gray-500"><?= h(block('ui_post_detail', 'label_aee2653b', '下一篇')) ?></span>
                                 <span class="line-clamp-2 text-base font-bold text-gray-900 transition group-hover:text-brand-700"><?= h($nextPost['title']) ?></span>
                             </span>
                             <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition group-hover:bg-brand-100 group-hover:text-brand-700">
@@ -98,7 +97,7 @@ $recommendedPosts = $recommended_posts ?? [];
             <!-- Category Tag -->
             <?php if ($category): ?>
                 <div class="mb-8">
-                    <span class="text-gray-500 mr-2">Category:</span>
+                    <span class="text-gray-500 mr-2"><?= h(block('ui_post_detail', 'label_43328c31', 'Category:')) ?></span>
                     <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"
                        class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-full font-medium hover:bg-brand-200 transition-colors">
                         <i class="fas fa-folder mr-2"></i>
@@ -114,19 +113,19 @@ $recommendedPosts = $recommended_posts ?? [];
                         <a href="<?= url('/blog') ?>?category=<?= (int)$category['id'] ?>"
                            class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
                             <i class="fas fa-folder mr-2"></i>
-                            More in this category
+                            <?= h(block('ui_post_detail', 'label_a89aac2f', 'More in this category')) ?>
                         </a>
                     <?php endif; ?>
-                    <a href="<?= url('/blog') ?>"
+                    <a href="<?= h(url('/blog')) ?>"
                        class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-lg font-medium hover:bg-brand-200 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Blog List
+                        <?= h(block('ui_post_detail', 'label_2f1e2487', 'Back to Blog List')) ?>
                     </a>
                 </div>
-                <a href="<?= url('/contact') ?>"
+                <a href="<?= h(url('/contact')) ?>"
                    class="inline-flex w-full items-center justify-center px-6 py-2 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md sm:w-auto">
                     <i class="fas fa-envelope mr-2"></i>
-                    Contact
+                    <?= h(block('ui_post_detail', 'label_73ac94c3', 'Contact')) ?>
                 </a>
             </div>
 
@@ -135,11 +134,11 @@ $recommendedPosts = $recommended_posts ?? [];
                 <section class="mt-10 border-t border-gray-200 pt-10" aria-labelledby="recommended-articles">
                     <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brand-600">Recommended</p>
-                            <h2 id="recommended-articles" class="text-2xl font-bold text-gray-900">You might also like</h2>
+                            <p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brand-600"><?= h(block('ui_post_detail', 'label_7865024c', 'Recommended')) ?></p>
+                            <h2 id="recommended-articles" class="text-2xl font-bold text-gray-900"><?= h(block('ui_post_detail', 'label_a9bef445', 'You might also like')) ?></h2>
                         </div>
-                        <a href="<?= url('/blog') ?>" class="inline-flex items-center text-sm font-semibold text-brand-600 hover:text-brand-700">
-                            View all articles
+                        <a href="<?= h(url('/blog')) ?>" class="inline-flex items-center text-sm font-semibold text-brand-600 hover:text-brand-700">
+                            <?= h(block('ui_post_detail', 'label_79166812', 'View all articles')) ?>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </a>
                     </div>
@@ -147,8 +146,7 @@ $recommendedPosts = $recommended_posts ?? [];
                         <?php foreach ($recommendedPosts as $post): ?>
                             <article class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                                 <a href="<?= h($post['url']) ?>" class="block aspect-[4/3] bg-gray-100">
-                                    <img src="<?= h(get_image_url($post['cover'] ?? null, 600, 400, (string)($post['title'] ?? 'Article'))) ?>"
-                                         alt="<?= h($post['title']) ?>"
+                                    <img src="<?= h(get_image_url($post['cover'] ?? null, 600, 400, (string)($post['title'] ?? 'Article'))) ?>" alt="<?= h($post['title']) ?>"
                                          class="h-full w-full object-cover"
                                          loading="lazy"
                                          decoding="async">

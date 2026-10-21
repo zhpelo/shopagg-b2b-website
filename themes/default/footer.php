@@ -164,8 +164,7 @@ $renderFooterMenuItems = function(array $items, int $level = 0) use (&$renderFoo
             <div class="site-float-contact__group">
                 <?php foreach ($floatingContacts as $item): ?>
                     <a
-                        href="<?= h($item['href']) ?>"
-                        class="site-float-contact__item site-float-contact__item--<?= h($item['theme']) ?>"
+                        href="<?= h($item['href']) ?>" class="site-float-contact__item site-float-contact__item--<?= h($item['theme']) ?>"
                         <?= str_starts_with($item['href'], 'http') ? 'target="_blank" rel="noopener noreferrer"' : '' ?>
                     >
                         <span class="site-float-contact__icon"><i class="<?= h($item['icon']) ?>"></i></span>
@@ -182,12 +181,7 @@ $renderFooterMenuItems = function(array $items, int $level = 0) use (&$renderFoo
             <div class="site-float-contact__social">
                 <?php foreach ($floatingSocialLinks as $item): ?>
                     <a
-                        href="<?= h($item['href']) ?>"
-                        class="site-float-contact__social-link site-float-contact__social-link--<?= h($item['theme']) ?>"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="<?= h($item['label']) ?>"
-                        title="<?= h($item['label']) ?>"
+                        href="<?= h($item['href']) ?>" class="site-float-contact__social-link site-float-contact__social-link--<?= h($item['theme']) ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= h($item['label']) ?>" title="<?= h($item['label']) ?>"
                     >
                         <span class="site-float-contact__social-icon"><i class="<?= h($item['icon']) ?>"></i></span>
                         <span class="site-float-contact__social-text"><?= h($item['label']) ?></span>
@@ -299,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <?php endif; ?>
                         </div>
                     </div>
-                    
+
                     <!-- Quick Links -->
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4"><?= h(block('footer', 'quick_links_title')) ?></h4>
@@ -319,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if ($customCopyright): ?>
                     <?= h($customCopyright) ?>
                 <?php else: ?>
-                    &copy; <?= date('Y') ?> <?= h($site['name']) ?>. All rights reserved.
+                    &copy; <?= date('Y') ?> <?= h($site['name']) ?><?= h(block('ui_footer', 'label_dfa246ff', '. All rights reserved.')) ?>
                 <?php endif; ?>
             </p>
         </div>

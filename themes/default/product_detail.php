@@ -30,6 +30,7 @@ if ($manualRelatedIds !== '') {
         return (int)($product['id'] ?? 0) !== $currentProductId;
     }));
 }
+$related_products = array_slice($related_products, 0, lighthouse_theme_limit('product_detail', 4, 8));
 ?>
 <?php if (!empty($images)): ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" integrity="sha384-gAPqlBuTCdtVcYt9ocMOYWrnBZ4XSL6q+4eXqwNycOr4iFczhNKtnYhF3NEXJM51" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -38,11 +39,11 @@ if ($manualRelatedIds !== '') {
 <section class="product-detail-page bg-slate-50 py-6 sm:py-8">
     <div class="container mx-auto px-4 lg:px-8">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="<?= h(block('ui_product_detail', 'label_d43fa44c', 'breadcrumb')) ?>">
             <ol class="flex min-w-max items-center space-x-2 text-slate-500">
-                <li><a href="<?= url('/') ?>" class="hover:text-brand-600">Home</a></li>
+                <li><a href="<?= h(url('/')) ?>" class="hover:text-brand-600"><?= h(block('ui_product_detail', 'label_52f50eae', 'Home')) ?></a></li>
                 <li><i class="fas fa-chevron-right text-xs text-slate-300"></i></li>
-                <li><a href="<?= url('/products') ?>" class="hover:text-brand-600">Products</a></li>
+                <li><a href="<?= h(url('/products')) ?>" class="hover:text-brand-600"><?= h(block('ui_product_detail', 'label_cb2c4cad', 'Products')) ?></a></li>
                 <?php if ($category): ?>
                     <li><i class="fas fa-chevron-right text-xs text-slate-300"></i></li>
                     <li><a href="<?= h(product_category_url($category)) ?>" class="hover:text-brand-600"><?= h($category['name']) ?></a></li>
@@ -62,18 +63,14 @@ if ($manualRelatedIds !== '') {
                             <div class="swiper-wrapper">
                                 <?php foreach ($images as $index => $img): ?>
                                     <div class="swiper-slide aspect-square">
-                                        <img src="<?= h(asset_url((string)$img)) ?>"
-                                             alt="<?= h($item['title']) ?>"
-                                             class="w-full h-full object-cover cursor-zoom-in"
-                                             loading="<?= $index === 0 ? 'eager' : 'lazy' ?>"
-                                             decoding="async"
+                                        <img src="<?= h(lighthouse_theme_media_url((string)$img)) ?>" alt="<?= h($item['title']) ?>" class="w-full h-full object-cover cursor-zoom-in" loading="<?= $index === 0 ? 'eager' : 'lazy' ?>" decoding="async"
                                              <?= $index === 0 ? 'fetchpriority="high"' : '' ?>>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                             <?php if ($hasGalleryNavigation): ?>
-                                <button type="button" class="swiper-button-next product-gallery__nav product-gallery__nav--next" aria-label="Next product image"></button>
-                                <button type="button" class="swiper-button-prev product-gallery__nav product-gallery__nav--prev" aria-label="Previous product image"></button>
+                                <button type="button" class="swiper-button-next product-gallery__nav product-gallery__nav--next" aria-label="<?= h(block('ui_product_detail', 'label_bb0536da', 'Next product image')) ?>"></button>
+                                <button type="button" class="swiper-button-prev product-gallery__nav product-gallery__nav--prev" aria-label="<?= h(block('ui_product_detail', 'label_ff5fa91a', 'Previous product image')) ?>"></button>
                             <?php endif; ?>
                         </div>
                         <!-- Thumbs Swiper -->
@@ -82,8 +79,7 @@ if ($manualRelatedIds !== '') {
                                 <div class="swiper-wrapper">
                                     <?php foreach ($images as $img): ?>
                                         <div class="swiper-slide product-gallery__thumb cursor-pointer overflow-hidden">
-                                            <img src="<?= h(asset_url((string)$img)) ?>"
-                                                 alt="<?= h($item['title']) ?>"
+                                            <img src="<?= h(lighthouse_theme_media_url((string)$img)) ?>" alt="<?= h($item['title']) ?>"
                                                  class="w-full h-full object-cover"
                                                  loading="lazy"
                                                  decoding="async">
@@ -128,16 +124,16 @@ if ($manualRelatedIds !== '') {
                             <table class="min-w-[440px] w-full text-left text-sm">
                                 <thead class="bg-slate-50 text-xs uppercase tracking-[0.12em] text-slate-500">
                                     <tr>
-                                        <th class="px-4 py-3 font-semibold">SKU</th>
-                                        <th class="px-4 py-3 font-semibold">MOQ</th>
-                                        <th class="px-4 py-3 text-right font-semibold">Price</th>
+                                        <th class="px-4 py-3 font-semibold"><?= h(block('ui_product_detail', 'label_1c05b93a', 'SKU')) ?></th>
+                                        <th class="px-4 py-3 font-semibold"><?= h(block('ui_product_detail', 'label_5753df2c', 'MOQ')) ?></th>
+                                        <th class="px-4 py-3 text-right font-semibold"><?= h(block('ui_product_detail', 'label_dd3ec7ca', 'Price')) ?></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <?php foreach ($productSkus as $sku): ?>
                                         <tr>
                                             <td class="px-4 py-3 font-semibold text-slate-950"><?= h((string)($sku['sku_name'] ?? '')) ?></td>
-                                            <td class="px-4 py-3 text-slate-500"><?= h(number_format((float)($sku['min_qty'] ?? 0))) ?>+ Pieces</td>
+                                            <td class="px-4 py-3 text-slate-500"><?= h(number_format((float)($sku['min_qty'] ?? 0))) ?><?= h(block('ui_product_detail', 'label_440bcd59', '+ Pieces')) ?></td>
                                             <td class="px-4 py-3 text-right font-bold text-slate-950"><?= h($sampleCurrency) ?> <?= h((string)($sku['price'] ?? '')) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -152,7 +148,7 @@ if ($manualRelatedIds !== '') {
                                         <?= h($sampleCurrency) ?> <?= h((string)$tier['price']) ?>
                                     </div>
                                     <div class="text-sm text-slate-500">
-                                        <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> Pieces
+                                        <?= number_format((float)$tier['min_qty']) ?><?php if (!empty($tier['max_qty'])): ?>-<?= number_format((float)$tier['max_qty']) ?><?php else: ?>+<?php endif; ?> <?= h(block('ui_product_detail', 'label_65b23062', 'Pieces')) ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -190,8 +186,7 @@ if ($manualRelatedIds !== '') {
                         $wa = $whatsapp ?? '';
                         $waDigits = preg_replace('/\D+/', '', $wa);
                         ?>
-                        <a href="<?= h(!empty($waDigits) ? 'https://wa.me/' . $waDigits : '#inquiry') ?>"
-                           target="<?= !empty($waDigits) ? '_blank' : '' ?>"
+                        <a href="<?= h(!empty($waDigits) ? 'https://wa.me/' . $waDigits : '#inquiry') ?>" target="<?= !empty($waDigits) ? '_blank' : '' ?>"
                            <?= !empty($waDigits) ? 'rel="noopener noreferrer"' : '' ?>
                            class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors inline-flex items-center justify-center gap-2 shadow-sm">
                             <i class="fab fa-whatsapp"></i>
@@ -207,7 +202,7 @@ if ($manualRelatedIds !== '') {
                         </div>
                     <?php else: ?>
                         <div class="text-sm text-slate-600 bg-slate-50 rounded-lg p-4">
-                            <?= h(block('product_detail', 'sample_text')) ?> <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?>/Pieces</span>!
+                            <?= h(block('product_detail', 'sample_text')) ?> <span class="font-semibold"><?= h($sampleCurrency) ?> <?= h($samplePrice) ?><?= h(block('ui_product_detail', 'label_323b57b9', '/Pieces')) ?></span>!
                             <a href="#inquiry" class="font-semibold underline text-slate-950 hover:text-brand-600"
                                onclick="document.getElementById('open-inquiry-modal').click(); return false;"><?= h(block('product_detail', 'sample_link_text')) ?></a>
                         </div>
@@ -249,8 +244,7 @@ if ($manualRelatedIds !== '') {
                 <a href="<?= h($product['url']) ?>" class="group">
                     <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden hover:border-brand-200 hover:shadow-md transition-all">
                         <div class="aspect-square overflow-hidden bg-slate-100">
-                            <img src="<?= h(get_image_url($product['cover'] ?? null, 400, 400, (string)($product['title'] ?? 'Product'))) ?>"
-                                 alt="<?= h($product['title']) ?>"
+                            <img src="<?= h(get_image_url($product['cover'] ?? null, 400, 400, (string)($product['title'] ?? 'Product'))) ?>" alt="<?= h($product['title']) ?>"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                  loading="lazy"
                                  decoding="async">
@@ -286,65 +280,65 @@ if ($manualRelatedIds !== '') {
                     <!-- Left Info -->
                     <div class="lg:col-span-4 hidden lg:block">
                         <h2 class="text-2xl font-bold text-slate-950 mb-3"><?= h(block('product_detail', 'inquiry_text')) ?></h2>
-                        <p class="text-slate-500 mb-6">Thank you for your interest. Our team will review your requirements.</p>
+                        <p class="text-slate-500 mb-6"><?= h(block('ui_product_detail', 'label_19950e3e', 'Thank you for your interest. Our team will review your requirements.')) ?></p>
                         <div class="space-y-3">
                             <div class="flex items-center text-slate-700">
                                 <i class="fas fa-check-circle text-brand-600 mr-3"></i>
-                                ISO Certified
+                                <?= h(block('ui_product_detail', 'label_c2137cef', 'ISO Certified')) ?>
                             </div>
                             <div class="flex items-center text-slate-700">
                                 <i class="fas fa-check-circle text-brand-600 mr-3"></i>
-                                OEM & ODM
+                                <?= h(block('ui_product_detail', 'label_81636f4', 'OEM & ODM')) ?>
                             </div>
                             <div class="flex items-center text-slate-700">
                                 <i class="fas fa-check-circle text-brand-600 mr-3"></i>
-                                Global Presence
+                                <?= h(block('ui_product_detail', 'label_5d5fd1ef', 'Global Presence')) ?>
                             </div>
                         </div>
                     </div>
 
                     <!-- Form -->
                     <div class="lg:col-span-8">
-                        <h2 class="text-2xl font-bold text-slate-950 mb-6 lg:hidden">Request Quote</h2>
+                        <h2 class="text-2xl font-bold text-slate-950 mb-6 lg:hidden"><?= h(block('ui_product_detail', 'label_46718cba', 'Request Quote')) ?></h2>
                         <form method="post" action="<?= url('/inquiry') ?>">
                             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
                             <input type="hidden" name="product_id" value="<?= h((string)$item['id']) ?>">
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Your Name *</label>
-                                    <input type="text" name="name" required placeholder="Full Name"
+                                    <label class="block text-sm font-medium text-slate-700 mb-1"><?= h(block('ui_product_detail', 'label_c6e20d97', 'Your Name *')) ?></label>
+                                    <input type="text" name="name" required placeholder="<?= h(block('ui_product_detail', 'label_fe2b40f', 'Full Name')) ?>"
                                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address *</label>
-                                    <input type="email" name="email" required placeholder="example@email.com"
+                                    <label class="block text-sm font-medium text-slate-700 mb-1"><?= h(block('ui_product_detail', 'label_1ac07b9', 'Email Address *')) ?></label>
+                                    <input type="email" name="email" required placeholder="<?= h(block('ui_product_detail', 'label_de23fd6', 'example@email.com')) ?>"
                                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Company</label>
-                                    <input type="text" name="company" placeholder="Company Ltd."
+                                    <label class="block text-sm font-medium text-slate-700 mb-1"><?= h(block('ui_product_detail', 'label_c1bf0f5c', 'Company')) ?></label>
+                                    <input type="text" name="company" placeholder="<?= h(block('ui_product_detail', 'label_9dffbda', 'Company Ltd.')) ?>"
                                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1">Quantity Needed</label>
-                                    <input type="text" name="quantity" placeholder="e.g. 500 units"
+                                    <label class="block text-sm font-medium text-slate-700 mb-1"><?= h(block('ui_product_detail', 'label_efa0b76d', 'Quantity Needed')) ?></label>
+                                    <input type="text" name="quantity" placeholder="<?= h(block('ui_product_detail', 'label_91f6996b', 'e.g. 500 units')) ?>"
                                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors">
                                 </div>
                             </div>
 
                             <div class="mb-6">
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Requirements</label>
-                                <textarea name="message" rows="4" placeholder="Project requirements, customization, etc."
+                                <label class="block text-sm font-medium text-slate-700 mb-1"><?= h(block('ui_product_detail', 'label_4e26fc61', 'Requirements')) ?></label>
+                                <textarea name="message" rows="4" placeholder="<?= h(block('ui_product_detail', 'label_303afb03', 'Project requirements, customization, etc.')) ?>"
                                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors resize-none"></textarea>
                             </div>
 
                             <button type="submit" class="w-full px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
                                 <i class="fas fa-paper-plane"></i>
-                                Send My Inquiry
+                                <?= h(block('ui_product_detail', 'label_cba8b492', 'Send My Inquiry')) ?>
                             </button>
                         </form>
                     </div>

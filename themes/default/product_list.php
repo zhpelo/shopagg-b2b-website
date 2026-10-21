@@ -16,9 +16,7 @@ if (!function_exists('renderProductCategoryList')) {
             $hasChildren = !empty($cat['children']);
             $paddingLeft = 1 + ($level * 1);
 ?>
-    <a href="<?= h(product_category_url($cat)) ?>"
-       class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-brand-50 text-brand-700 border-l-4 border-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>"
-       style="padding-left: <?= $paddingLeft ?>rem;">
+    <a href="<?= h(product_category_url($cat)) ?>" class="flex items-center px-4 py-3 text-sm transition-colors <?= $isActive ? 'bg-brand-50 text-brand-700 border-l-4 border-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>" style="padding-left: <?= $paddingLeft ?>rem;">
         <?php if ($level > 0): ?>
             <span class="text-gray-300 mr-2">└</span>
         <?php endif; ?>
@@ -38,18 +36,18 @@ if (!function_exists('renderProductCategoryList')) {
 <section class="bg-gradient-to-br from-brand-700 via-brand-600 to-slate-900 text-white">
     <div class="container mx-auto px-4 py-9 sm:py-12 lg:px-8">
         <!-- Breadcrumb -->
-        <nav class="mb-5 overflow-x-auto pb-1 text-sm" aria-label="breadcrumb">
+        <nav class="mb-5 overflow-x-auto pb-1 text-sm" aria-label="<?= h(block('ui_product_list', 'label_d43fa44c', 'breadcrumb')) ?>">
             <ol class="flex min-w-max items-center space-x-2">
-                <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
+                <li><a href="<?= h(url('/')) ?>" class="text-white/80 hover:text-white"><?= h(block('ui_product_list', 'label_52f50eae', 'Home')) ?></a></li>
                 <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
-                <li><a href="<?= url('/products') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>">Products</a></li>
+                <li><a href="<?= url('/products') ?>" class="<?= !$currentCategory ? 'text-white font-medium' : 'text-white/80 hover:text-white' ?>"><?= h(block('ui_product_list', 'label_cb2c4cad', 'Products')) ?></a></li>
                 <?php if ($currentCategory): ?>
                     <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
                     <li class="text-white font-medium"><?= h($currentCategory['name']) ?></li>
                 <?php endif; ?>
             </ol>
         </nav>
-        
+
         <h1 class="mb-3 text-3xl font-bold leading-tight lg:text-4xl"><?= h($title) ?></h1>
         <p class="max-w-2xl text-sm leading-6 text-white/90 sm:text-base">
             <?php if ($currentCategory && !empty($currentCategory['description'])): ?>
@@ -77,8 +75,7 @@ if (!function_exists('renderProductCategoryList')) {
                         <i class="fas fa-chevron-down text-xs lg:hidden"></i>
                     </summary>
                     <div class="max-h-72 overflow-y-auto lg:max-h-none lg:overflow-visible">
-                        <a href="<?= url('/products') ?>"
-                           class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-brand-50 text-brand-700 border-l-4 border-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
+                        <a href="<?= url('/products') ?>" class="flex items-center px-4 py-3 text-sm transition-colors <?= !$currentCategory ? 'bg-brand-50 text-brand-700 border-l-4 border-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50 border-l-4 border-transparent' ?>">
                             <i class="fas fa-th-large w-5 mr-2 <?= !$currentCategory ? 'text-brand-600' : 'text-gray-400' ?>"></i>
                             <?= h(block('product_list', 'all_text')) ?>
                         </a>
@@ -96,7 +93,7 @@ if (!function_exists('renderProductCategoryList')) {
                     <p class="text-white/90 text-sm mb-4">
                         <?= nl2br(h(block('product_list', 'quote_text'))) ?>
                     </p>
-                    <a href="<?= url('/contact') ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-slate-900 transition-colors">
+                    <a href="<?= h(url('/contact')) ?>" class="block w-full text-center px-4 py-2.5 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-slate-900 transition-colors">
                         <i class="fas fa-envelope mr-2"></i>
                         <?= h(block('product_list', 'quote_btn')) ?>
                     </a>
@@ -112,7 +109,7 @@ if (!function_exists('renderProductCategoryList')) {
                         </div>
                         <p class="text-gray-500 mb-4"><?= h(block('product_list', 'empty_text')) ?></p>
                         <?php if ($currentCategory): ?>
-                            <a href="<?= url('/products') ?>" class="inline-flex items-center px-6 py-2.5 bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors">
+                            <a href="<?= h(url('/products')) ?>" class="inline-flex items-center px-6 py-2.5 bg-brand-50 text-brand-700 font-medium rounded-lg hover:bg-brand-100 transition-colors">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 <?= h(block('product_list', 'all_text')) ?>
                             </a>
@@ -123,8 +120,7 @@ if (!function_exists('renderProductCategoryList')) {
                         <?php foreach ($items as $item): ?>
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
                                 <a href="<?= h($item['url']) ?>" class="block aspect-[4/3] overflow-hidden bg-gray-100 sm:aspect-square">
-                                    <img src="<?= h(get_image_url($item['cover'] ?? null, 400, 400, (string)($item['title'] ?? 'Product'))) ?>" 
-                                         alt="<?= h($item['title']) ?>" 
+                                    <img src="<?= h(get_image_url($item['cover'] ?? null, 400, 400, (string)($item['title'] ?? 'Product'))) ?>" alt="<?= h($item['title']) ?>"
                                          class="w-full h-full object-cover hover:scale-105 transition-transform"
                                          loading="lazy"
                                          decoding="async">
@@ -138,7 +134,7 @@ if (!function_exists('renderProductCategoryList')) {
                                             </a>
                                         <?php else: ?>
                                             <span class="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                                                Uncategorized
+                                                <?= h(block('ui_product_list', 'label_d7285d69', 'Uncategorized')) ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>

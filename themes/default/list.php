@@ -15,8 +15,7 @@
                 <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
                     <?php if (!empty($show_image)): ?>
                         <a href="<?= h($item['url']) ?>" class="block aspect-square overflow-hidden">
-                            <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 600, (string)($item['title'] ?? 'Cover'))) ?>"
-                                 alt="<?= h($item['title']) ?>"
+                            <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 600, (string)($item['title'] ?? 'Cover'))) ?>" alt="<?= h($item['title']) ?>"
                                  class="w-full h-full object-cover hover:scale-105 transition-transform">
                         </a>
                     <?php endif; ?>
@@ -34,7 +33,7 @@
                         <p class="text-gray-600 text-sm line-clamp-3 mb-4"><?= h($item['summary']) ?></p>
                         <a href="<?= h($item['url']) ?>"
                            class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 text-sm font-medium rounded-lg hover:bg-brand-200 transition-colors">
-                            Read More
+                            <?= h(block('ui_list', 'label_4f07e0ca', 'Read More')) ?>
                         </a>
                     </div>
                 </article>

@@ -5,7 +5,7 @@ declare(strict_types=1);
  * 默认主题 - 主题内辅助函数
  * 此文件在每次渲染主题时自动加载，可以在此定义可重用的模板函数
  * 可以访问数据库模型和助手函数
- * 
+ *
  * 核心功能函数现在通过 app/Helpers/Helpers.php 统一提供，包括:
  * - get_products()
  * - get_posts()
@@ -26,7 +26,7 @@ if (!function_exists('get_image_url')) {
     function get_image_url(?string $image, int $width = 800, int $height = 300, string $text = ''): string {
         $image = trim((string)$image);
         if ($image !== '') {
-            return asset_url($image);
+            return lighthouse_theme_media_url($image) ?: asset_url('assets/images/no-image.webp');
         }
 
         return default_theme_no_image_url();
@@ -383,11 +383,11 @@ if (!function_exists('get_slider_items')) {
         try {
             $sliderModel = new \App\Models\Slider();
             $slider = $sliderModel->getBySlugWithItems($sliderSlug);
-            
+
             if (!$slider || $slider['status'] !== 'active') {
                 return [];
             }
-            
+
             $items = [];
             foreach ($slider['items'] as $item) {
                 $items[] = [
@@ -399,7 +399,7 @@ if (!function_exists('get_slider_items')) {
                     'image' => $item['image'],
                 ];
             }
-            
+
             return $items;
         } catch (\Exception $e) {
             // 如果发生错误，返回空数组
@@ -416,22 +416,22 @@ if (!function_exists('get_slider_items')) {
 if (!function_exists('get_menu_items')) {
     function get_menu_items(string $menuSlug = 'main-nav'): array {
         static $cache = [];
-        
+
         if (isset($cache[$menuSlug])) {
             return $cache[$menuSlug];
         }
-        
+
         try {
             $menuModel = new \App\Models\Menu();
             $menu = $menuModel->getBySlugWithItems($menuSlug, true);
-            
+
             if (!$menu || $menu['status'] !== 'active') {
                 $cache[$menuSlug] = [];
                 return [];
             }
-            
+
             $items = $menu['items'] ?? [];
-            
+
             // 格式化菜单项
             $formatItems = function($items) use (&$formatItems) {
                 $result = [];
@@ -444,20 +444,20 @@ if (!function_exists('get_menu_items')) {
                         'css_class' => $item['css_class'] ?? '',
                         'children' => []
                     ];
-                    
+
                     if (!empty($item['children'])) {
                         $formatted['children'] = $formatItems($item['children']);
                     }
-                    
+
                     $result[] = $formatted;
                 }
                 return $result;
             };
-            
+
             $formattedItems = $formatItems($items);
             $cache[$menuSlug] = $formattedItems;
             return $formattedItems;
-            
+
         } catch (\Exception $e) {
             $cache[$menuSlug] = [];
             return [];
@@ -474,23 +474,23 @@ if (!function_exists('get_menu_items')) {
 if (!function_exists('render_menu_item')) {
     function render_menu_item(array $item, bool $isMobile = false): void {
         $hasChildren = !empty($item['children']);
-        $baseClass = $isMobile 
+        $baseClass = $isMobile
             ? 'block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-brand-600 font-medium rounded-lg transition-colors'
             : 'px-4 py-2 text-gray-700 hover:text-brand-600 font-medium transition-colors';
-        
+
         if (!empty($item['css_class'])) {
             $baseClass .= ' ' . $item['css_class'];
         }
-        
+
         $target = $item['target'] ?? '_self';
         $targetAttr = $target === '_blank' ? ' target="_blank" rel="noopener noreferrer"' : '';
-        
+
         // 处理 URL
         $url = $item['url'];
         if (!str_starts_with($url, 'http') && !str_starts_with($url, '#') && !str_starts_with($url, 'mailto:')) {
             $url = url($url);
         }
-        
+
         if ($hasChildren && !$isMobile) {
             // 桌面端下拉菜单
             ?>
@@ -502,7 +502,7 @@ if (!function_exists('render_menu_item')) {
                 <div class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <div class="py-2">
                         <?php foreach ($item['children'] as $child): ?>
-                            <?php 
+                            <?php
                             $childUrl = $child['url'];
                             if (!str_starts_with($childUrl, 'http') && !str_starts_with($childUrl, '#') && !str_starts_with($childUrl, 'mailto:')) {
                                 $childUrl = url($childUrl);
@@ -525,7 +525,7 @@ if (!function_exists('render_menu_item')) {
                 <div class="px-4 py-2 text-gray-700 font-medium"><?= h($item['title']) ?></div>
                 <div class="pl-4 space-y-1">
                     <?php foreach ($item['children'] as $child): ?>
-                        <?php 
+                        <?php
                         $childUrl = $child['url'];
                         if (!str_starts_with($childUrl, 'http') && !str_starts_with($childUrl, '#') && !str_starts_with($childUrl, 'mailto:')) {
                             $childUrl = url($childUrl);
@@ -560,7 +560,7 @@ if (!function_exists('render_menu_item')) {
 if (!function_exists('render_menu')) {
     function render_menu(string $menuSlug = 'main-nav', bool $isMobile = false): void {
         $items = get_menu_items($menuSlug);
-        
+
         if (empty($items)) {
             // 使用默认菜单
             $defaultItems = [
@@ -573,9 +573,11 @@ if (!function_exists('render_menu')) {
             ];
             $items = $defaultItems;
         }
-        
+
         foreach ($items as $item) {
             render_menu_item($item, $isMobile);
         }
     }
 }
+
+require_once __DIR__ . '/theme-support.php';

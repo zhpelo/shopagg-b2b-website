@@ -9,16 +9,16 @@
 <section class="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
     <div class="container mx-auto px-4 lg:px-8 py-12">
         <!-- Breadcrumb -->
-        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="breadcrumb">
+        <nav class="text-sm mb-6 overflow-x-auto pb-1" aria-label="<?= h(block('ui_case_list', 'label_d43fa44c', 'breadcrumb')) ?>">
             <ol class="flex min-w-max items-center space-x-2">
-                <li><a href="<?= url('/') ?>" class="text-white/80 hover:text-white">Home</a></li>
+                <li><a href="<?= h(url('/')) ?>" class="text-white/80 hover:text-white"><?= h(block('ui_case_list', 'label_52f50eae', 'Home')) ?></a></li>
                 <li><i class="fas fa-chevron-right text-xs text-white/60"></i></li>
-                <li class="text-white font-medium">Cases</li>
+                <li class="text-white font-medium"><?= h(block('ui_case_list', 'label_a353cb06', 'Cases')) ?></li>
             </ol>
         </nav>
 
         <h1 class="text-3xl lg:text-4xl font-bold mb-3"><?= h($title) ?></h1>
-        <p class="text-white/90 max-w-2xl">If you are interested in this solution or have similar needs, please contact our expert team.</p>
+        <p class="text-white/90 max-w-2xl"><?= h(block('ui_case_list', 'label_cde963bc', 'If you are interested in this solution or have similar needs, please contact our expert team.')) ?></p>
     </div>
 </section>
 
@@ -28,8 +28,7 @@
             <?php foreach ($items as $item): ?>
                 <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
                     <a href="<?= h($item['url']) ?>" class="block aspect-video overflow-hidden">
-                        <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Case'))) ?>"
-                             alt="<?= h($item['title']) ?>"
+                        <img src="<?= h(get_image_url($item['cover'] ?? null, 600, 400, (string)($item['title'] ?? 'Case'))) ?>" alt="<?= h($item['title']) ?>"
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                              loading="lazy"
                              decoding="async">
@@ -45,7 +44,7 @@
                         </p>
                         <a href="<?= h($item['url']) ?>"
                            class="inline-flex items-center px-4 py-2 bg-brand-100 text-brand-700 rounded-lg font-medium hover:bg-brand-200 transition-colors">
-                            Read More →
+                            <?= h(block('ui_case_list', 'label_17736424', 'Read More →')) ?>
                         </a>
                     </div>
                 </article>
