@@ -60,7 +60,7 @@ $refreshQuery = http_build_query(array_filter([
     <?php if ($items === []): ?>
         <div class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"><i class="fas fa-search text-2xl text-slate-300"></i><h2 class="mt-3 font-bold text-slate-800">没有找到匹配应用</h2><p class="mt-1 text-sm text-slate-500">请更换关键词或清除筛选条件。</p></div>
     <?php else: ?>
-        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             <?php foreach ($items as $item): ?>
                 <article class="min-w-0 overflow-hidden border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
                     <a class="group flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600" href="<?= url($item['detail_url']) ?>">
@@ -74,7 +74,7 @@ $refreshQuery = http_build_query(array_filter([
                                 </div>
                             <?php endif; ?>
                             <div class="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] flex-wrap items-start gap-2">
-                                <span class="bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 shadow-sm"><?= $item['type'] === 'plugin' ? '插件' : '网站主题' ?></span>
+                                <span class="bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 shadow-sm"><?= $item['type'] === 'plugin' ? '插件' : '主题' ?></span>
                                 <span class="px-3 py-1.5 text-sm font-semibold text-white shadow-sm <?= $item['is_free'] ? 'bg-emerald-500' : 'bg-indigo-600' ?>"><?= h($item['price_text']) ?></span>
                             </div>
                         </div>

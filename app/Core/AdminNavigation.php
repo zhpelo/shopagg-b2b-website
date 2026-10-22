@@ -158,7 +158,7 @@ final class AdminNavigation {
             ['id' => 'appearance-blocks', 'section' => 'appearance', 'label' => '模板区块', 'url' => '/admin/appearance/blocks', 'icon' => 'layer-group', 'order' => 10, 'admin_only' => true],
             ['id' => 'appearance-menus', 'section' => 'appearance', 'label' => '菜单管理', 'url' => '/admin/appearance/menus', 'icon' => 'bars', 'order' => 20, 'admin_only' => true],
             ['id' => 'appearance-sliders', 'section' => 'appearance', 'label' => '轮播图', 'url' => '/admin/appearance/sliders', 'icon' => 'images', 'order' => 30, 'admin_only' => true],
-            ['id' => 'themes', 'section' => 'appearance', 'label' => '网站模板', 'url' => '/admin/app-store/themes', 'icon' => 'palette', 'order' => 40, 'admin_only' => true],
+            ['id' => 'themes', 'section' => 'appearance', 'label' => '网站主题', 'url' => '/admin/app-store/themes', 'icon' => 'palette', 'order' => 40, 'admin_only' => true],
 
             ['id' => 'app-store', 'section' => 'extensions', 'label' => '应用商店', 'url' => '/admin/app-store', 'icon' => 'store', 'order' => 10, 'admin_only' => true, 'active_patterns' => ['/admin/app-store']],
             ['id' => 'plugins', 'section' => 'extensions', 'label' => '插件管理', 'url' => '/admin/app-store/plugins', 'icon' => 'plug', 'order' => 20, 'admin_only' => true, 'active_patterns' => ['/admin/app-store/plugins*']],
