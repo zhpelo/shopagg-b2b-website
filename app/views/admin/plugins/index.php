@@ -2,7 +2,7 @@
 <div class="space-y-5">
     <header class="rounded-xl border border-slate-200 bg-white px-5 py-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div><p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">应用商店</p><h1 class="mt-1 text-2xl font-bold text-slate-900">插件管理</h1><p class="mt-1 text-sm text-slate-500">启停插件、修改设置或安装 ZIP 插件包。</p></div>
+            <div><p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">应用商店</p><h1 class="mt-1 text-2xl font-bold text-slate-900">插件管理</h1><p class="mt-1 text-sm text-slate-500">自动扫描 storage/plugins/ 目录；新插件校验后显示为未启用，也可上传 ZIP 安装或更新。</p></div>
             <div class="flex flex-col gap-2 sm:flex-row"><a class="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store?type=plugin') ?>">浏览插件</a><a class="rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700" href="<?= url('/admin/app-store/plugins/upload') ?>"><i class="fas fa-upload mr-2"></i>上传 ZIP</a></div>
         </div>
         <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-slate-100 pt-4 text-sm text-slate-500"><span><strong class="text-slate-900"><?= count($plugins) ?></strong> 个已安装</span><span><strong class="text-slate-900"><?= count(array_filter($plugins, static fn(array $plugin): bool => ($plugin['status'] ?? '') === 'enabled')) ?></strong> 个已启用</span><span>Plugin API 1.0</span></div>
@@ -10,6 +10,8 @@
 
     <?php if ($success): ?><div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"><?= h($success) ?></div><?php endif; ?>
     <?php if ($error): ?><div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><?= h($error) ?></div><?php endif; ?>
+    <?php if (!empty($discovery['registered'])): ?><div role="status" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">已从本地目录发现 <?= count($discovery['registered']) ?> 个插件：<?= h(implode('、', $discovery['registered'])) ?>。尚未启用，请确认后手动启用。</div><?php endif; ?>
+    <?php if (!empty($discovery['issues'])): ?><section class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"><h2 class="font-semibold">本地插件扫描提示</h2><ul class="mt-2 space-y-1"><?php foreach ($discovery['issues'] as $issue): ?><li><?= h($issue['directory']) ?>：<?= h($issue['message']) ?></li><?php endforeach; ?></ul></section><?php endif; ?>
 
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div class="space-y-3">

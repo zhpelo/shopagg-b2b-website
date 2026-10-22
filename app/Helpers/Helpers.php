@@ -349,7 +349,9 @@ function save_uploaded_image(array $file): array {
     if (!move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) {
         return [false, '保存失败'];
     }
-    
+
+    plugin_event('media.uploaded', ['path' => $subDir . '/' . $filename, 'type' => 'image', 'source' => 'save_uploaded_image']);
+
     return [true, $subDir . '/' . $filename];
 }
 

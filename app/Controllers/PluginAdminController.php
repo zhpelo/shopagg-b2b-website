@@ -30,6 +30,7 @@ final class PluginAdminController extends Controller {
     }
 
     public function index(): void {
+        $discovery = $this->manager->discoverLocal();
         $plugins = $this->manager->all();
         $jobs = [];
         $result = $this->db->query('SELECT * FROM plugin_jobs ORDER BY id DESC LIMIT 50');
@@ -37,6 +38,7 @@ final class PluginAdminController extends Controller {
         $cronToken = (new Setting())->get('plugin_cron_token', '');
         $this->renderAdmin('插件中心', 'admin/plugins/index', [
             'plugins' => $plugins,
+            'discovery' => $discovery,
             'diagnostics' => $this->manager->diagnostics(),
             'logs' => $this->registry->logs('', 50),
             'jobs' => $jobs,
@@ -157,7 +159,8 @@ final class PluginAdminController extends Controller {
         if (!$plugin) $this->redirect('/admin/app-store/plugins?error=' . urlencode('插件不存在'));
         $values = [];
         foreach (($plugin['manifest']['settings'] ?? []) as $key => $field) $values[$key] = $this->registry->option($id, (string)$key, $field['default'] ?? null);
-        $this->renderAdmin('插件设置 - ' . $plugin['name'], 'admin/plugins/settings', ['plugin' => $plugin, 'values' => $values]);
+        $customSettings = PluginRuntime::instance()->slots()->render('admin.plugin.settings', ['plugin_id' => $id]);
+        $this->renderAdmin('插件设置 - ' . $plugin['name'], 'admin/plugins/settings', ['plugin' => $plugin, 'values' => $values, 'customSettings' => $customSettings]);
     }
 
     public function saveSettings(): void {

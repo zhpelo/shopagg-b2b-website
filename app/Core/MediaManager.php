@@ -709,6 +709,15 @@ class MediaManager
             return [false, '保存失败'];
         }
 
+        // Run image processors before indexing so file size/dimensions stay accurate.
+        if (function_exists('plugin_event')) {
+            \plugin_event('media.uploaded', [
+                'path' => '/uploads/' . ($directory !== '' ? $directory . '/' : '') . $filename,
+                'type' => $detected['type'],
+                'source' => 'media_manager',
+            ]);
+        }
+
         clearstatcache(true, $targetPath);
         $metadata = $this->buildMediaMetadata($targetPath, $directory, [
             'original_name' => $originalName,

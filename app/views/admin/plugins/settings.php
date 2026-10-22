@@ -1,9 +1,13 @@
 <?php $schema = $plugin['manifest']['settings'] ?? []; ?>
 <div class="mx-auto max-w-3xl space-y-4">
     <header class="rounded-xl border border-slate-200 bg-white p-5"><a class="text-sm font-semibold text-indigo-600" href="<?= url('/admin/app-store/plugins') ?>">← 返回插件管理</a><h1 class="mt-3 text-2xl font-bold text-slate-900"><?= h($plugin['name']) ?>设置</h1><p class="mt-1 text-sm text-slate-500">修改后保存即可生效。</p></header>
-    <section class="rounded-xl border border-slate-200 bg-white p-5">
     <?php if (!empty($_GET['success'])): ?><div class="mb-4 rounded-xl bg-emerald-50 p-3 text-emerald-700"><?= h($_GET['success']) ?></div><?php endif; ?>
     <?php if (!empty($_GET['error'])): ?><div class="mb-4 rounded-xl bg-rose-50 p-3 text-rose-700"><?= h($_GET['error']) ?></div><?php endif; ?>
+    <?php if (($customSettings ?? '') !== ''): ?>
+        <?= $customSettings ?>
+    <?php else: ?>
+    <section class="rounded-xl border border-slate-200 bg-white p-5">
+    <?php if (($plugin['status'] ?? '') !== 'enabled'): ?><p class="mb-4 text-sm text-slate-500">插件尚未启用，可先保存基本设置；启用后可使用插件提供的扩展工具。</p><?php endif; ?>
     <form class="space-y-5" action="<?= url('/admin/app-store/plugins/settings') ?>" method="post"><input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>"><input type="hidden" name="plugin_id" value="<?= h($plugin['plugin_id']) ?>">
         <?php foreach ($schema as $key => $field): $type = $field['type'] ?? 'text'; $value = $values[$key] ?? ''; ?>
             <label class="block"><span class="mb-2 block text-sm font-semibold text-slate-700"><?= h($field['label'] ?? $key) ?></span>
@@ -17,4 +21,5 @@
         <button class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white" type="submit">保存设置</button>
     </form>
     </section>
+    <?php endif; ?>
 </div>
