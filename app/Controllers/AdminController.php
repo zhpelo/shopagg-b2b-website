@@ -888,6 +888,9 @@ class AdminController extends Controller {
             $files = $this->collectUploadedFiles($_FILES);
             $result = $this->mediaManager->uploadFiles($files, $directory, false);
             $message = '成功上传 ' . count($result['uploaded']) . ' 个文件';
+            if (!empty($result['processing_messages'])) {
+                $message .= '；' . implode('；', $result['processing_messages']);
+            }
             if ($result['messages'] !== []) {
                 $message .= '，部分文件失败';
             }

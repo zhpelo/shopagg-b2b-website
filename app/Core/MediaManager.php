@@ -177,6 +177,7 @@ class MediaManager
 
         $uploaded = [];
         $messages = [];
+        $processingMessages = [];
 
         foreach ($files as $file) {
             if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
@@ -186,6 +187,9 @@ class MediaManager
             [$ok, $result] = $this->storeUploadedFile($file, $absoluteDirectory, $directory, $imagesOnly);
             if ($ok) {
                 $uploaded[] = $result;
+                foreach (($result['processing_messages'] ?? []) as $notice) {
+                    if (is_string($notice)) $processingMessages[] = ($result['original_name'] ?? $result['storage_name']) . '：' . $notice;
+                }
             } else {
                 $messages[] = $result;
             }
@@ -200,6 +204,7 @@ class MediaManager
         return [
             'uploaded' => $uploaded,
             'messages' => $messages,
+            'processing_messages' => $processingMessages,
             'directory' => $directory,
         ];
     }
@@ -457,7 +462,7 @@ class MediaManager
             'path' => $directory === '' ? '/' : '/' . trim($directory, '/') . '/',
             'files' => array_map(static fn(array $item): string => $item['storage_name'], $uploadResult['uploaded']),
             'newfilename' => $first['storage_name'],
-            'messages' => empty($uploadResult['messages']) ? ['上传成功'] : $uploadResult['messages'],
+            'messages' => array_merge(empty($uploadResult['messages']) ? ['上传成功'] : $uploadResult['messages'], $uploadResult['processing_messages'] ?? []),
         ]);
     }
 
@@ -729,7 +734,9 @@ class MediaManager
         ]);
         $this->upsertMediaRecord($metadata);
 
-        return [true, $this->hydrateMediaRecord($metadata)];
+        $item = $this->hydrateMediaRecord($metadata);
+        if (function_exists('plugin_filter')) $item = \plugin_filter('media.upload_result', $item, ['path' => $metadata['public_path']]);
+        return [true, $item];
     }
 
     private function detectUploadType(array $file): ?array

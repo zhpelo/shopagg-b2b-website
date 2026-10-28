@@ -1666,7 +1666,7 @@ ${iconHtml}
                 formData.append('csrf', window.ADMIN_CSRF_TOKEN || '');
                 formData.append('response_format', 'json');
 
-                await new Promise((resolve, reject) => {
+                const uploadPayload = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', (window.APP_BASE_PATH || '') + '/admin/media/upload', true);
                     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -1701,8 +1701,8 @@ ${iconHtml}
                 });
 
                 progressContainer?.classList.add('hidden');
-                renderLibraryStatus('媒体上传成功', 'success');
-                fetchMediaLibrary();
+                await fetchMediaLibrary();
+                renderLibraryStatus((uploadPayload?.data?.messages || ['媒体上传成功']).join('；'), 'info');
             } catch (error) {
                 progressContainer?.classList.add('hidden');
                 renderLibraryStatus(error.message || '上传失败', 'danger');
