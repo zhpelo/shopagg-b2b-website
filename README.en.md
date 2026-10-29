@@ -1,10 +1,10 @@
 <div align="center">
 
 <a href="https://shopagg.org/">
-  <img src="https://shopagg.org/assets/images/lighthouse-logo.png" width="96" height="96" alt="Lighthouse CMS Logo">
+  <img src="assets/admin/images/shopagg-icon.webp" width="96" height="96" alt="SHOPAGG CMS Logo">
 </a>
 
-# Lighthouse CMS
+# SHOPAGG CMS
 
 **An open-source B2B website system for Chinese manufacturers and trading companies**
 
@@ -26,13 +26,13 @@ Pure PHP + SQLite · Self-hosted · Extensible · MIT licensed
 
 ## Overview
 
-Lighthouse CMS is an open-source website system built for B2B export businesses. It brings product presentation, content operations, customer inquiries, themes, and plugin extensions into one lightweight application. The core runs on PHP 8.1+ and SQLite3 with no Composer packages required at runtime, making it suitable for shared hosting, VPS deployments, and company-owned servers.
+SHOPAGG CMS is an open-source website system built for B2B export businesses. It brings product presentation, content operations, customer inquiries, themes, and plugin extensions into one lightweight application. The core runs on PHP 8.1+ and SQLite3 with no Composer packages required at runtime, making it suitable for shared hosting, VPS deployments, and company-owned servers.
 
-The project was formerly named **SHOPAGG B2B Website**. Its product name is now **Lighthouse CMS** (**灯塔 CMS** in Chinese), while the GitHub repository URL and the `shopagg` plugin CLI retain their existing names.
+**SHOPAGG** (Chinese name: 思普艾格) is the main brand. The open-source application is named **SHOPAGG CMS**, or **SHOPAGG** for short. Self-host it or deploy it through the [SHOPAGG website building platform](https://www.shopagg.com/).
 
 Start with these official resources:
 
-- [Lighthouse CMS website](https://shopagg.org/)
+- [SHOPAGG CMS website](https://shopagg.org/)
 - [Complete product capability catalog](https://shopagg.org/capabilities)
 - [Live demo](https://demo.shopagg.org/)
 - [Current stable release and downloads](https://shopagg.org/releases)
@@ -59,17 +59,17 @@ Visit [demo.shopagg.org](https://demo.shopagg.org/) to explore the public site. 
 
 ### Frontend
 
-<img alt="Lighthouse CMS frontend" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
+<img alt="SHOPAGG CMS frontend" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
 
 ### Admin panel
 
 | Dashboard | Product management |
 |:---:|:---:|
-| <img alt="Lighthouse CMS dashboard" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="Lighthouse CMS product management" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
+| <img alt="SHOPAGG CMS dashboard" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="SHOPAGG CMS product management" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
 
 | Media library | Settings |
 |:---:|:---:|
-| <img alt="Lighthouse CMS media library" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="Lighthouse CMS settings" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
+| <img alt="SHOPAGG CMS media library" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="SHOPAGG CMS settings" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
 
 ## Quick start
 
@@ -92,7 +92,7 @@ cd shopagg-b2b-website
 chmod -R 755 storage uploads
 ```
 
-Point the site document root at the project directory, then open the site in a browser. Lighthouse CMS creates the SQLite database and runs pending migrations automatically.
+Point the site document root at the project directory, then open the site in a browser. SHOPAGG CMS creates the SQLite database and runs pending migrations automatically.
 
 The default admin entry point is `/admin/login`. Initial installations commonly use `admin` / `admin123`; change the password immediately after the first login.
 
@@ -217,7 +217,7 @@ Before contributing, read the [developer documentation](https://shopagg.org/deve
 
 <div align="center">
 
-Visit the **[Lighthouse CMS website](https://shopagg.org/)** to explore the product, read the documentation, or download the latest release.
+Visit the **[SHOPAGG CMS website](https://shopagg.org/)** to explore the product, read the documentation, or download the latest release.
 
 </div>
 EOF

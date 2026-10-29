@@ -1,12 +1,12 @@
 <div align="center">
 
 <a href="https://shopagg.org/">
-  <img src="https://shopagg.org/assets/images/lighthouse-logo.png" width="96" height="96" alt="灯塔 CMS Logo">
+  <img src="assets/admin/images/shopagg-icon.webp" width="96" height="96" alt="SHOPAGG CMS Logo">
 </a>
 
-# 灯塔 CMS
+# SHOPAGG CMS
 
-**Lighthouse CMS · 面向中国工厂与外贸公司的开源 B2B 官网系统**
+**面向中国工厂与外贸公司的开源 B2B 官网系统**
 
 纯 PHP + SQLite · 自托管 · 可扩展 · MIT 开源
 
@@ -26,13 +26,13 @@
 
 ## 项目简介
 
-灯塔 CMS 是一套面向 B2B 外贸业务的开源官网系统，将产品展示、内容运营、客户询盘、主题外观和插件扩展整合在一个轻量应用中。核心程序使用 PHP 8.1+ 与 SQLite3，不依赖 Composer 包，适合部署到普通虚拟主机、VPS 或企业自有服务器。
+SHOPAGG CMS 是一套面向 B2B 外贸业务的开源官网系统，将产品展示、内容运营、客户询盘、主题外观和插件扩展整合在一个轻量应用中。核心程序使用 PHP 8.1+ 与 SQLite3，不依赖 Composer 包，适合部署到普通虚拟主机、VPS 或企业自有服务器。
 
-项目原名 **SHOPAGG B2B Website**。品牌现已更名为 **灯塔 CMS（Lighthouse CMS）**，GitHub 仓库地址和 `shopagg` 插件 CLI 名称继续沿用。
+SHOPAGG（中文名：思普艾格）是主品牌，开源程序正式名称为 **SHOPAGG CMS**，日常简称 **SHOPAGG**。可自行部署，也可通过 [SHOPAGG 建站平台](https://www.shopagg.com/) 自动部署。
 
 想先了解产品定位和完整能力，请访问：
 
-- [灯塔 CMS 官网](https://shopagg.org/)
+- [SHOPAGG CMS 官网](https://shopagg.org/)
 - [32 项产品能力清单](https://shopagg.org/capabilities)
 - [在线演示站](https://demo.shopagg.org/)
 - [当前稳定版与下载信息](https://shopagg.org/releases)
@@ -46,7 +46,7 @@
 | 询盘与线索 | 联系留言、产品询盘、处理状态、CSV 导出 | [询盘与日常运营](https://shopagg.org/usage/inquiries) |
 | 主题与外观 | 主题切换、可配置区块、菜单、轮播图 | [主题开发文档](https://shopagg.org/developer/themes) |
 | 插件与扩展 | 路由、事件、过滤器、服务、任务、后台页面 | [插件开发文档](https://shopagg.org/developer/plugins) |
-| 应用商店 | 浏览、安装和升级插件及 B2B 网站主题 | [设置与扩展](https://shopagg.org/usage/settings-and-extensions) |
+| 应用商店 | 浏览、安装和升级插件及主题 | [设置与扩展](https://shopagg.org/usage/settings-and-extensions) |
 | 运维与更新 | GitHub Release 更新、更新前备份、迁移、日志 | [运维文档](https://shopagg.org/developer/operations) |
 | 权限与安全 | Staff 权限、CSRF、上传校验、安全响应头 | [安全边界](https://shopagg.org/developer/security) |
 | SEO 与国际化 | SEO 字段、Sitemap、Open Graph、249 种在线翻译语言 | [完整能力清单](https://shopagg.org/capabilities) |
@@ -59,17 +59,17 @@
 
 ### 前台
 
-<img alt="灯塔 CMS 前台页面" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
+<img alt="SHOPAGG CMS 前台页面" src="https://github.com/user-attachments/assets/2f9f289a-3ccf-48b5-a959-aaa3699cc9ce">
 
 ### 后台
 
 | 仪表盘 | 产品管理 |
 |:---:|:---:|
-| <img alt="灯塔 CMS 仪表盘" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="灯塔 CMS 产品管理" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
+| <img alt="SHOPAGG CMS 仪表盘" src="https://github.com/user-attachments/assets/b6400b0b-f345-4321-9c90-5925c1e6b790"> | <img alt="SHOPAGG CMS 产品管理" src="https://github.com/user-attachments/assets/86918ca6-dd59-4fde-bacf-eef4dc668460"> |
 
 | 媒体库 | 系统设置 |
 |:---:|:---:|
-| <img alt="灯塔 CMS 媒体库" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="灯塔 CMS 系统设置" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
+| <img alt="SHOPAGG CMS 媒体库" src="https://github.com/user-attachments/assets/18a252ad-de48-4a3f-8fee5833cc6e"> | <img alt="SHOPAGG CMS 系统设置" src="https://github.com/user-attachments/assets/21f24c46-7716-47df-bdeb-0cf2228ba5fd"> |
 
 ## 快速开始
 
@@ -223,6 +223,6 @@ php tests/plugin_installation_smoke.php
 
 <div align="center">
 
-了解产品、阅读文档或获取最新版本，请访问 **[灯塔 CMS 官网](https://shopagg.org/)**。
+了解产品、阅读文档或获取最新版本，请访问 **[SHOPAGG CMS 官网](https://shopagg.org/)**。
 
 </div>

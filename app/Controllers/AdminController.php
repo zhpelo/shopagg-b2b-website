@@ -1949,7 +1949,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * App Store B2B 网站主题详情
+     * App Store SHOPAGG CMS主题详情
      */
     public function themeAppStoreDetail(string $id): void {
         $resourceId = (int)$id;

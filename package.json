@@ -1,5 +1,5 @@
 {
-  "name": "lighthouse-cms-admin-assets",
+  "name": "shopagg-cms-admin-assets",
   "private": true,
   "scripts": {
     "build:admin-css": "npm run build:admin-tailwind && npm run build:admin-style",

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= h($title) ?> - Lighthouse CMS 管理后台</title>
+    <title><?= h($title) ?> - SHOPAGG CMS 管理后台</title>
     <script src="<?= url('/assets/admin/base.js').'?v='.APP_VERSION ?>"></script>
     <link rel="stylesheet" href="<?= url('/assets/admin/tailwind.min.css').'?v='.APP_VERSION ?>">
     <link rel="stylesheet" href="<?= url('/assets/admin/vendor/fontawesome/css/all.min.css').'?v=6.4.0' ?>">
@@ -42,7 +42,7 @@
     ?>
         <aside class="admin-sidebar" id="adminSidebar" aria-label="后台导航" data-admin-sidebar>
             <div class="admin-sidebar-header">
-                <a class="admin-sidebar-brand" href="<?= url('/admin') ?>" aria-label="返回仪表盘">
+                <a class="admin-sidebar-brand" href="<?= url('/admin') ?>" aria-label="SHOPAGG CMS · 返回仪表盘">
                     <img class="admin-sidebar-brand-logo" src="<?= url('/assets/admin/images/shopagg-logo.webp') ?>" alt="" aria-hidden="true">
                     <img class="admin-sidebar-brand-icon" src="<?= url('/assets/admin/images/shopagg-icon.webp') ?>" alt="" aria-hidden="true">
                 </a>
@@ -83,7 +83,7 @@
             </nav>
 
             <div class="admin-sidebar-footer">
-                <span class="admin-sidebar-version">Lighthouse CMS · v<?= h(APP_VERSION) ?></span>
+                <span class="admin-sidebar-version">SHOPAGG CMS · v<?= h(APP_VERSION) ?></span>
             </div>
         </aside>
         <a href="#" class="admin-sidebar-backdrop" aria-label="关闭导航" data-sidebar-dismiss></a>
@@ -94,7 +94,7 @@
                     <i class="fas fa-bars" aria-hidden="true"></i>
                 </a>
                 <div class="admin-topbar-title">
-                    <span>灯塔CMS 管理后台</span>
+                    <span>SHOPAGG CMS 管理后台</span>
                     <strong><?= h($title) ?></strong>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 # 主题更新说明
 
-本次按 [灯塔 CMS 主题开发规范](https://shopagg.org/developer/themes)（适用版本 1.3.4，规则更新于 2026-10-12）进行兼容更新。
+本次按 [SHOPAGG CMS 主题开发规范](https://shopagg.org/developer/themes)（适用版本 1.3.4，规则更新于 2026-10-12）进行兼容更新。
 
 ## 后台维护
 

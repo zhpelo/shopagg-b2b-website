@@ -157,7 +157,7 @@ final class AppStoreClient {
             return [
                 'ok' => false,
                 'resource' => null,
-                'message' => '该资源不是 B2B 网站主题',
+                'message' => '该资源不是 SHOPAGG CMS 主题',
                 'status' => $response['status'],
             ];
         }

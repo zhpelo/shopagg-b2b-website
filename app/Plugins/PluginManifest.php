@@ -133,7 +133,7 @@ final class PluginManifest {
         }
         $shopagg = (string)($requires['shopagg'] ?? '>=1.0.0');
         if (defined('APP_VERSION') && !self::satisfies((string)APP_VERSION, $shopagg)) {
-            $errors[] = 'ShopAgg ' . APP_VERSION . " 不满足 {$shopagg}";
+            $errors[] = 'SHOPAGG ' . APP_VERSION . " 不满足 {$shopagg}";
         }
         foreach (($requires['extensions'] ?? []) as $extension) {
             if (!extension_loaded((string)$extension)) {

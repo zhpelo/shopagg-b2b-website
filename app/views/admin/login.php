@@ -4,8 +4,8 @@
             <div class="icon-wrap">
                 <i class="fas fa-rocket"></i>
             </div>
-            <h1>灯塔 CMS</h1>
-            <p>Lighthouse CMS · 简洁易用的外贸网站管理系统</p>
+            <h1>SHOPAGG CMS</h1>
+            <p>思普艾格 · 开源外贸建站系统</p>
         </div>
 
         <form method="post" action="<?= url('/admin/login'); ?>" class="login-form">

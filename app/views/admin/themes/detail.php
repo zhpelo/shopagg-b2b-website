@@ -99,7 +99,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
         <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <p class="font-semibold">微信支付订单已创建：<?= h($appStore['wechat_pay']['resource_name'] ?? 'B2B 网站主题') ?></p>
+                    <p class="font-semibold">微信支付订单已创建：<?= h($appStore['wechat_pay']['resource_name'] ?? 'SHOPAGG CMS主题') ?></p>
                     <p class="mt-1 text-emerald-700">订单号：<?= h($appStore['wechat_pay']['order_id'] ?? '') ?>。支付完成后刷新详情页，再点击下载安装。</p>
                 </div>
                 <a href="<?= h($appStore['wechat_pay']['code_url'] ?? '#') ?>" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 font-semibold text-white transition hover:bg-emerald-700">
