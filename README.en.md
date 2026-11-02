@@ -132,23 +132,39 @@ shopagg-b2b-website/
 ├── plugin-assets/          # Published plugin assets
 ├── storage/                # Database, cache, backups, and logs
 ├── uploads/                # User uploads
-└── shopagg                 # Plugin development CLI
+└── shopagg                 # CMS CLI (development and automation)
 ```
 
 ## Plugin and theme development
 
-Use the Plugin API for standalone business features instead of modifying core files. The CLI can scaffold, validate, test, and package plugins:
+Use the Plugin API for standalone business features instead of modifying core files.
+
+The SHOPAGG CMS command-line tool is for plugin developers and hosting automation. Site owners can manage plugins in the admin panel without using the CLI. Run `php shopagg help` from the CMS root for commands. This is a separate tool from the host manager's `shopagg` command.
+
+Plugin development workflow:
 
 ```bash
 php shopagg plugin:make my-plugin
 php shopagg plugin:validate plugin-dev/my-plugin
-php shopagg plugin:test plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
+`plugin:validate` checks package structure, PHP syntax, and class contracts when environment requirements are met. It does not test plugin business behavior. `plugin:test` remains a compatibility alias for the same validation command. Inspect `warnings`: a valid result does not guarantee that class-contract checks ran.
+
+Hosting automation and maintenance can use the following commands. Run them as the site owner to avoid creating files the site cannot write:
+
+```bash
+php shopagg plugin:install /path/to/plugin.zip
+php shopagg plugin:enable my-plugin
+php shopagg plugin:disable my-plugin
+php shopagg plugin:jobs 10
+```
+
+Use `plugin:jobs` with a system scheduler to run due plugin jobs independently of site visits. CLI debugging is disabled by default. The CLI reads its application version from the web entry point, `index.php`, so upgrades do not require a separate CLI version edit.
+
 Plugins install into a fixed `storage/plugins/{plugin-id}/` directory. Versions remain in `plugin.json` and the database. Installing an existing plugin replaces its files and preserves its activation state; new plugins require manual activation. Same-version reinstalls are also allowed; the site does not retain historical installations for version switching. Published assets also use fixed directories with a `?ver=` cache parameter.
 
-Temporary code, asset, and database backups are removed after a successful operation or recovery. Failed recovery retains its workspace and reports its path. Active updates run new migrations and synchronize scheduled jobs without invoking `activate()` again. Recovery covers exceptions during the operation, not every runtime error after installation. Run `plugin:test` in a separate CLI process for full class-contract validation.
+Temporary code, asset, and database backups are removed after a successful operation or recovery. Failed recovery retains its workspace and reports its path. Active updates run new migrations and synchronize scheduled jobs without invoking `activate()` again. Recovery covers exceptions during the operation, not every runtime error after installation. Run `plugin:validate` in a separate CLI process to check class contracts when plugin environment requirements are met.
 
 An automatic migration converts legacy version trees, retaining the running version of active plugins and the installed version of inactive plugins. Obsolete version trees are removed only after migration succeeds. Back up `storage/site.db`, `storage/plugins/`, and `assets/plugins/` before upgrading. Existing historical database backups are left intact. Run `php tests/plugin_installation_smoke.php` to verify installation, updates, and recovery in an isolated temporary directory.
 

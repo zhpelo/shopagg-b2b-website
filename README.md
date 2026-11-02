@@ -132,23 +132,39 @@ shopagg-b2b-website/
 ├── plugin-assets/          # 已发布的插件静态资源
 ├── storage/                # 数据库、缓存、备份和日志
 ├── uploads/                # 用户上传文件
-└── shopagg                 # 插件开发 CLI
+└── shopagg                 # CMS 命令行工具（开发与自动化）
 ```
 
 ## 插件与主题开发
 
-业务扩展优先使用 Plugin API，避免直接修改核心文件。插件 CLI 支持创建、校验、测试和打包：
+业务扩展优先使用 Plugin API，避免直接修改核心文件。
+
+SHOPAGG CMS 命令行工具面向插件开发者与托管自动化。普通用户通过后台管理插件即可，无需使用命令行。在 CMS 根目录运行 `php shopagg help` 查看命令；它与主机管理面板的 `shopagg` 命令是两个不同的工具。
+
+插件开发流程：
 
 ```bash
 php shopagg plugin:make my-plugin
 php shopagg plugin:validate plugin-dev/my-plugin
-php shopagg plugin:test plugin-dev/my-plugin
 php shopagg plugin:pack plugin-dev/my-plugin
 ```
 
+`plugin:validate` 检查插件结构、PHP 语法，并在环境满足要求时加载插件类校验接口契约；不会执行插件业务功能测试。`plugin:test` 保留为同一校验命令的兼容别名。请检查输出中的 `warnings`：校验通过不代表类契约检查一定已执行。
+
+托管自动化和运维可使用以下命令。请以站点所属用户运行，避免生成站点无法写入的文件：
+
+```bash
+php shopagg plugin:install /path/to/plugin.zip
+php shopagg plugin:enable my-plugin
+php shopagg plugin:disable my-plugin
+php shopagg plugin:jobs 10
+```
+
+`plugin:jobs` 可接入系统定时任务，执行已到期的插件任务，无需依赖网站访问触发。CLI 默认关闭调试，与网页入口 `index.php` 共用版本信息；升级程序时无需单独修改 CLI 版本号。
+
 插件使用固定安装目录 `storage/plugins/{plugin-id}/`，版本号保存在 `plugin.json` 和数据库中。上传 ZIP 或使用 `plugin:install` 会直接替换已有插件并保留启停状态；新插件需手动启用。同版本也可重装，站点不保留可切换的历史安装版本。更新会完整替换代码和发布资源，移除新包不再包含的旧文件；静态资源通过 `?ver=` 刷新缓存。
 
-安装、更新和启用时的代码、资源与数据库恢复文件只保留在本次操作的临时目录中；操作成功或恢复成功后清理。恢复失败时保留目录并报告路径。已启用插件更新会执行新增迁移和同步定时任务，不会重复调用 `activate()`。恢复只覆盖操作中捕获的异常，不保证发现更新后页面上的所有运行错误。安装前可在独立 CLI 进程运行 `plugin:test` 完成类契约校验。
+安装、更新和启用时的代码、资源与数据库恢复文件只保留在本次操作的临时目录中；操作成功或恢复成功后清理。恢复失败时保留目录并报告路径。已启用插件更新会执行新增迁移和同步定时任务，不会重复调用 `activate()`。恢复只覆盖操作中捕获的异常，不保证发现更新后页面上的所有运行错误。安装前可在独立 CLI 进程运行 `plugin:validate` 检查类契约（需满足插件环境要求）。
 
 升级到此布局时，系统自动将旧的版本目录迁移为固定目录：已启用插件保留实际运行版本，其他插件保留已安装版本；迁移成功后移除旧版本树。升级前请备份 `storage/site.db`、`storage/plugins/` 和 `assets/plugins/`。已有历史数据库备份不会自动删除。
 
