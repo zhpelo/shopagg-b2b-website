@@ -73,22 +73,38 @@ $refreshQuery = http_build_query(array_filter([
                                     <span class="text-lg font-bold tracking-wide">SHOPAGG</span>
                                 </div>
                             <?php endif; ?>
-                            <div class="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] flex-wrap items-start gap-2">
-                                <span class="bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 shadow-sm"><?= $item['type'] === 'plugin' ? '插件' : '主题' ?></span>
-                                <span class="px-3 py-1.5 text-sm font-semibold text-white shadow-sm <?= $item['is_free'] ? 'bg-emerald-500' : 'bg-indigo-600' ?>"><?= h($item['price_text']) ?></span>
-                            </div>
+                            
                         </div>
                         <div class="flex flex-1 flex-col px-6 pb-6 pt-7">
                             <h3 class="line-clamp-2 text-xl font-bold leading-snug text-slate-900 group-hover:text-blue-600" title="<?= h($item['name']) ?>"><?= h($item['name']) ?></h3>
                             <p class="mt-2 text-sm text-slate-400"><?php if ($item['version']): ?>v<?= h($item['version']) ?> · <?php endif; ?><?= h($item['vendor']) ?></p>
                             <div class="mt-5 max-h-[112px] flex-1">
-                                <p class="line-clamp-4 text-base leading-7 text-slate-600"><?= h($item['description'] ?: '暂无应用介绍') ?></p>
-                                <?php if ($item['installed']): ?><p class="mt-3 text-xs font-semibold <?= $item['needs_update'] ? 'text-amber-700' : 'text-emerald-700' ?>"><?= $item['needs_update'] ? '有可用更新' : '已安装' ?><?php if ($item['installed_version']): ?> · v<?= h($item['installed_version']) ?><?php endif; ?></p><?php endif; ?>
+                                <p class="line-clamp-4 text-base leading-7 text-slate-600">
+                                    <?= h($item['description'] ?: '暂无应用介绍') ?></p>
                             </div>
                             <div class="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-slate-200 pt-4 text-sm">
-                                <span class="inline-flex items-center gap-2 text-slate-500"><i class="fas fa-download" aria-hidden="true"></i><?= number_format($item['installs_count']) ?> 次安装</span>
-                                <span class="font-semibold text-blue-600"><?= $item['version'] !== '' ? '最新版本 v' . h($item['version']) : '版本未标注' ?></span>
+                                
+                            <span class="inline-flex items-center gap-2 text-slate-500">
+                                    <?php if ($item['installed']): ?>
+                                        <p class="text-xs font-semibold <?= $item['needs_update'] ? 'text-amber-700' : 'text-emerald-700' ?>">
+                                            
+                                            <?= $item['needs_update'] ? '有可用更新' : '已安装' ?>
+                                            
+                                            <?php if ($item['installed_version']): ?> 
+                                                · v<?= h($item['installed_version']) ?>
+                                            <?php endif; ?>
+                                        </p>
+                                    <?php else: ?>
+                                        <i class="fas fa-download" aria-hidden="true"></i>
+                                        <?= number_format($item['installs_count']) ?> 次安装
+                                    <?php endif; ?>
+                                </span>
+
+                                <span class="font-semibold text-blue-600">
+                                    <?= h($item['price_text']) ?>
+                                </span>
                             </div>
+
                         </div>
                     </a>
                 </article>
