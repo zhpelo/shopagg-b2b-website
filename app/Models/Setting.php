@@ -14,7 +14,9 @@ class Setting extends BaseModel {
             ON CONFLICT(key) DO UPDATE SET value = excluded.value");
         $stmt->bindValue(':k', $key);
         $stmt->bindValue(':v', $value);
-        $stmt->execute();
+        if ($stmt->execute() === false) {
+            throw new \RuntimeException('保存设置失败：' . $this->db->lastErrorMsg());
+        }
     }
 
     public function getAll(): array {

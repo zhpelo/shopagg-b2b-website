@@ -283,7 +283,9 @@ class Product extends BaseModel {
     public function savePrices(int $productId, array $tiers): void {
         $delete = $this->db->prepare("DELETE FROM product_prices WHERE product_id = :pid");
         $delete->bindValue(':pid', $productId);
-        $delete->execute();
+        if ($delete->execute() === false) {
+            throw new \RuntimeException('无法清除阶梯价格：' . $this->db->lastErrorMsg());
+        }
 
         foreach ($tiers as $tier) {
             $stmt = $this->db->prepare("INSERT INTO product_prices (product_id, min_qty, max_qty, price, currency, created_at)
@@ -294,7 +296,9 @@ class Product extends BaseModel {
             $stmt->bindValue(':p', (float)$tier['price']);
             $stmt->bindValue(':c', 'USD');
             $stmt->bindValue(':t', gmdate('c'));
-            $stmt->execute();
+            if ($stmt->execute() === false) {
+                throw new \RuntimeException('无法保存阶梯价格：' . $this->db->lastErrorMsg());
+            }
         }
     }
 
@@ -319,7 +323,9 @@ class Product extends BaseModel {
     }
 
     public function saveSkus(int $productId, array $skus): void {
-        if (!$this->db->exec('BEGIN IMMEDIATE')) {
+        // A savepoint also works inside an enclosing product/price transaction.
+        $savepoint = 'product_skus_' . bin2hex(random_bytes(6));
+        if (!$this->db->exec('SAVEPOINT ' . $savepoint)) {
             throw new \RuntimeException('无法开始保存 SKU：' . $this->db->lastErrorMsg());
         }
 
@@ -378,11 +384,12 @@ class Product extends BaseModel {
                 }
             }
 
-            if (!$this->db->exec('COMMIT')) {
+            if (!$this->db->exec('RELEASE SAVEPOINT ' . $savepoint)) {
                 throw new \RuntimeException('无法完成 SKU 保存：' . $this->db->lastErrorMsg());
             }
         } catch (\Throwable $e) {
-            $this->db->exec('ROLLBACK');
+            $this->db->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+            $this->db->exec('RELEASE SAVEPOINT ' . $savepoint);
             throw $e;
         }
     }

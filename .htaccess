@@ -1,3 +1,6 @@
+# Pass Bearer authentication through Apache to PHP-FPM/CGI.
+CGIPassAuth On
+
 # 禁止访问敏感目录和文件
 <IfModule mod_rewrite.c>
   RewriteEngine On
