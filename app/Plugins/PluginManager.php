@@ -26,29 +26,27 @@ final class PluginManager {
 
     public function all(): array { return $this->registry->all(); }
 
-    /** Discover dropped-in packages without loading PHP, running migrations or enabling them. */
+    /** Reconcile missing packages and discover local packages without executing plugin PHP. */
     public function discoverLocal(): array {
         $root = APP_ROOT . '/storage/plugins';
-        $report = ['registered' => [], 'issues' => []];
-        if (!is_dir($root)) return $report;
+        $report = ['registered' => [], 'updated' => [], 'disabled' => [], 'issues' => []];
         if (is_link($root)) {
             $report['issues'][] = ['directory' => 'storage/plugins', 'message' => '插件根目录不能是符号链接'];
             return $report;
         }
         // Serialize with ZIP installation/removal and concurrent visits to the list.
         return PluginOperationLock::exclusive(function () use ($root, $report): array {
-            $entries = scandir($root);
+            $entries = is_dir($root) ? @scandir($root) : [];
             if ($entries === false) {
                 $report['issues'][] = ['directory' => 'storage/plugins', 'message' => '无法读取插件目录'];
                 return $report;
             }
+            $report = $this->disableUnavailableLocalPlugins($root, $entries, $report);
             foreach ($entries as $name) {
                 if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', $name) || strlen($name) > 64) continue;
                 $directory = $root . '/' . $name;
                 if (!is_dir($directory) && !is_link($directory)) continue;
                 $row = $this->registry->find($name);
-                // Directory discovery is not an implicit update of installed/active code.
-                if ($row !== null && $row['status'] !== 'removed') continue;
                 if (!file_exists($directory . '/plugin.json') && !is_link($directory)) continue;
                 try {
                     if (is_link($directory)) throw new \RuntimeException('插件目录不能是符号链接');
@@ -68,26 +66,154 @@ final class PluginManager {
                     if (!$validation['valid']) throw new \RuntimeException(implode('；', array_column($validation['errors'], 'message')));
                     $manifest = $validation['manifest'];
                     if ($manifest['id'] !== $name) throw new \RuntimeException('目录名必须与 plugin.json 的 id 一致');
+                    $this->assertLocalLifecycleFile($directory, $manifest);
+                    $existing = $row !== null && $row['status'] !== 'removed';
+                    if ($existing && $row['manifest'] == $manifest && $row['installed_version'] === $manifest['version']
+                        && $row['name'] === $manifest['name'] && $row['vendor'] === $manifest['vendor'] && $row['description'] === $manifest['description']
+                        && ($row['status'] !== 'enabled' || (($row['active_manifest'] ?? null) == $manifest && $row['active_version'] === $manifest['version']))) continue;
                     $this->db->exec('BEGIN IMMEDIATE');
                     try {
-                        $this->registry->save($manifest, 'local', 'installed');
-                        $this->registry->setStatus($name, 'installed');
-                        $this->registry->log($name, 'info', '从本地插件目录自动发现，尚未启用');
+                        $this->registry->save($manifest, $existing ? $row['source'] : 'local', $existing ? $row['status'] : 'installed');
+                        if (!$existing) {
+                            $this->registry->setStatus($name, 'installed');
+                        } elseif ($row['status'] === 'enabled') {
+                            $this->registry->setStatus($name, 'enabled', $manifest['version']);
+                        }
+                        $this->registry->log($name, 'info', $existing ? '已从 plugin.json 同步插件注册信息（未执行迁移或生命周期）' : '从本地插件目录自动发现，尚未启用');
                         $this->db->exec('COMMIT');
                     } catch (\Throwable $e) {
                         $this->db->exec('ROLLBACK');
                         throw $e;
                     }
-                    $report['registered'][] = $name;
+                    $report[$existing ? 'updated' : 'registered'][] = $name;
                     foreach ($validation['warnings'] ?? [] as $warning) {
                         if ($warning['code'] === 'environment.unsatisfied') $report['issues'][] = ['directory' => $name, 'message' => $warning['message'] . '（已登记，满足环境要求后才能启用）'];
                     }
                 } catch (\Throwable $e) {
                     $report['issues'][] = ['directory' => $name, 'message' => $e->getMessage()];
+                    if ($row !== null && $row['status'] === 'enabled') {
+                        $this->setUnavailableStatus($name, '本地插件校验失败，已自动停用：' . $e->getMessage());
+                        $report['disabled'][] = $name;
+                    }
                 }
+            }
+            if ($report['updated'] !== [] || $report['disabled'] !== []) {
+                // Check after all manifests are synchronized, independent of directory order.
+                do {
+                    $disabled = false;
+                    $enabled = $this->registry->enabled();
+                    usort($enabled, static fn(array $a, array $b): int => (int)!in_array($a['plugin_id'], $report['updated'], true) <=> (int)!in_array($b['plugin_id'], $report['updated'], true));
+                    foreach ($enabled as $plugin) {
+                        try {
+                            $this->assertCanEnable($plugin['plugin_id'], $plugin['manifest']);
+                            $this->assertLocalDependencyGraph($plugin['plugin_id']);
+                        } catch (\Throwable $error) {
+                            $reason = '同步后插件环境或依赖校验失败，已自动停用：' . $error->getMessage();
+                            $this->setUnavailableStatus($plugin['plugin_id'], $reason);
+                            $report['disabled'][] = $plugin['plugin_id'];
+                            $report['issues'][] = ['directory' => $plugin['plugin_id'], 'message' => $reason];
+                            $disabled = true;
+                        }
+                    }
+                } while ($disabled);
+                $this->rebuildCache();
             }
             return $report;
         });
+    }
+
+    /** Verify the configured lifecycle file without autoloading the class. */
+    private function assertLocalLifecycleFile(string $directory, array $manifest): void {
+        $class = (string)($manifest['lifecycle'] ?? '');
+        if ($class === '') return;
+        foreach ($manifest['autoload']['psr4'] as $prefix => $path) {
+            if (!str_starts_with($class, $prefix)) continue;
+            $relative = str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+            if (!PluginManifest::safeRelativePath($relative)) continue;
+            $file = $directory . '/' . trim($path, '/') . '/' . $relative;
+            if (is_file($file) && !is_link($file)) return;
+        }
+        throw new \RuntimeException('插件生命周期入口文件不存在或不属于插件自动加载目录：' . $class);
+    }
+
+    private function assertLocalDependencyGraph(string $id): void {
+        $plugins = [];
+        foreach ($this->registry->enabled() as $row) $plugins[$row['plugin_id']] = $row['manifest'];
+        $visiting = [];
+        $visited = [];
+        $visit = function (string $current) use (&$visit, &$visiting, &$visited, $plugins): void {
+            if (isset($visited[$current]) || !isset($plugins[$current])) return;
+            if (isset($visiting[$current])) throw new \RuntimeException('插件依赖形成循环：' . $current);
+            $visiting[$current] = true;
+            foreach ($plugins[$current]['dependencies'] ?? [] as $dependency) {
+                $visit(is_array($dependency) ? (string)($dependency['id'] ?? '') : (string)$dependency);
+            }
+            unset($visiting[$current]);
+            $visited[$current] = true;
+        };
+        $visit($id);
+    }
+
+    /** Missing code cannot run deactivate hooks; retain settings, jobs and business data. */
+    private function disableUnavailableLocalPlugins(string $root, array $entries, array $report): array {
+        $directories = array_fill_keys($entries, true);
+        $changed = false;
+        $this->db->exec('BEGIN IMMEDIATE');
+        try {
+            foreach ($this->registry->all() as $row) {
+                if ($row['status'] === 'removed') continue;
+                $id = (string)$row['plugin_id'];
+                $directory = $root . '/' . $id;
+                $reason = null;
+                if (!isset($directories[$id]) || !is_dir($directory)) {
+                    $reason = '插件目录不存在，已自动停用。恢复目录后请手动启用。';
+                } elseif (is_link($directory)) {
+                    $reason = '插件目录不能是符号链接，已自动停用。';
+                } elseif (!is_file($directory . '/plugin.json') || is_link($directory . '/plugin.json')) {
+                    $reason = '插件清单 plugin.json 缺失或为符号链接，已自动停用。';
+                }
+                if ($reason === null) continue;
+                $report['issues'][] = ['directory' => $id, 'message' => $reason];
+                if ($row['status'] === 'disabled' && ($row['last_error'] ?? '') === $reason) continue;
+                $this->setUnavailableStatus($id, $reason);
+                $report['disabled'][] = $id;
+                $changed = true;
+            }
+            // Required dependencies/services can become unavailable transitively.
+            if ($changed) {
+                do {
+                    $dependentDisabled = false;
+                    foreach ($this->registry->enabled() as $row) {
+                        $id = (string)$row['plugin_id'];
+                        try {
+                            $this->assertDependencies($id, $row['manifest']);
+                            $this->assertRequiredServices($id, $row['manifest']);
+                        } catch (\RuntimeException $error) {
+                            $reason = '插件依赖不可用，已自动停用：' . $error->getMessage();
+                            $this->setUnavailableStatus($id, $reason);
+                            $report['disabled'][] = $id;
+                            $report['issues'][] = ['directory' => $id, 'message' => $reason];
+                            $dependentDisabled = true;
+                        }
+                    }
+                } while ($dependentDisabled);
+            }
+            $this->db->exec('COMMIT');
+        } catch (\Throwable $error) {
+            $this->db->exec('ROLLBACK');
+            throw $error;
+        }
+        if ($changed) $this->rebuildCache();
+        return $report;
+    }
+
+    private function setUnavailableStatus(string $id, string $reason): void {
+        $stmt = $this->db->prepare("UPDATE plugins SET status='disabled',active_version=NULL,last_error=:reason,updated_at=:now WHERE plugin_id=:id");
+        $stmt->bindValue(':reason', $reason, SQLITE3_TEXT);
+        $stmt->bindValue(':now', gmdate('c'), SQLITE3_TEXT);
+        $stmt->bindValue(':id', $id, SQLITE3_TEXT);
+        $stmt->execute();
+        $this->registry->log($id, 'warning', $reason);
     }
 
     public function installZip(string $zipPath, string $source = 'private'): array {
