@@ -90,9 +90,9 @@ class SiteController extends BaseController {
         $productModel = new Product();
         $categoryId = $currentCategory ? (int)$currentCategory['id'] : 0;
 
-        // 获取产品列表
+        // 分类页同时显示当前分类及所有后代分类中的已上架产品
         if ($categoryId > 0) {
-            $items = $productModel->getByCategory($categoryId);
+            $items = $productModel->getByCategory($categoryId, 0, true);
         } else {
             $items = $productModel->getList(0, true);  // 只获取已上架产品
         }

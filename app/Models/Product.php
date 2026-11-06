@@ -396,11 +396,25 @@ class Product extends BaseModel {
         $stmt->bindValue($name, (float)$value, SQLITE3_FLOAT);
     }
 
-    public function getByCategory(int $categoryId, int $limit = 0): array {
+    public function getByCategory(int $categoryId, int $limit = 0, bool $includeDescendants = false): array {
+        $categoryFilter = 'products.category_id = :cid';
+        if ($includeDescendants) {
+            $categoryFilter = "products.category_id IN (
+                WITH RECURSIVE category_tree(id) AS (
+                    SELECT id FROM product_categories WHERE id = :cid AND type = 'product'
+                    UNION
+                    SELECT child.id FROM product_categories AS child
+                    INNER JOIN category_tree ON child.parent_id = category_tree.id
+                    WHERE child.type = 'product'
+                )
+                SELECT id FROM category_tree
+            )";
+        }
+
         $query = "SELECT products.*, product_categories.name AS category_name, product_categories.slug AS category_slug
             FROM products
             LEFT JOIN product_categories ON product_categories.id = products.category_id
-            WHERE products.category_id = :cid AND products.status = 'active' AND products.deleted_at IS NULL
+            WHERE $categoryFilter AND products.status = 'active' AND products.deleted_at IS NULL
             ORDER BY products.id DESC";
         if ($limit > 0) $query .= " LIMIT $limit";
         $items = $this->fetchAll($query, [':cid' => $categoryId]);
