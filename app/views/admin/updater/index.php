@@ -2,7 +2,7 @@
 /**
  * 程序更新页面
  * @var array $checkResult 更新检查结果
- * @var array $releases 版本列表
+ * @var array $releases GitHub 上的版本列表
  * @var array $history 本地更新历史
  * @var array $backups 备份列表
  * @var array $migrationStatus 迁移状态
@@ -11,8 +11,6 @@ $hasUpdate = $checkResult['has_update'] ?? false;
 $currentVersion = $checkResult['current_version'] ?? '1.0.0';
 $latestVersion = $checkResult['latest_version'] ?? $currentVersion;
 $releaseInfo = $checkResult['release_info'] ?? null;
-$updateSource = $checkResult['source'] ?? ($releaseInfo['source'] ?? 'shopagg');
-$sodiumAvailable = $checkResult['sodium_available'] ?? extension_loaded('sodium');
 
 // 获取迁移状态
 $migrationStatus = $migrationStatus ?? ['status' => ['total' => 0, 'executed' => 0, 'pending' => 0], 'pending' => [], 'executed' => []];
@@ -71,13 +69,13 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex items-center gap-3">
             <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                <i class="fas <?= $updateSource === 'github' ? 'fa-code-branch' : 'fa-shield-alt' ?> text-xl"></i>
+                <i class="fab fa-github text-xl"></i>
             </div>
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">当前更新源</p>
-                <p class="text-sm font-semibold <?= $updateSource === 'github' ? 'text-amber-700' : 'text-emerald-700' ?>">
-                    <?= $updateSource === 'github' ? 'GitHub 备用源' : 'SHOPAGG 更新服务' ?>
-                </p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">GitHub 仓库</p>
+                <a href="https://github.com/zhpelo/shopagg-b2b-website" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">
+                    查看仓库 <i class="fas fa-external-link-alt text-xs"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -99,12 +97,6 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
         </div>
     </div>
 </div>
-
-<?php if (!$sodiumAvailable): ?>
-<div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-800">
-    <div class="flex items-start gap-3"><i class="fas fa-shield-alt mt-1"></i><div><strong>当前 PHP 未启用 Sodium 扩展</strong><p class="mt-1 text-sm">仍可检查版本，但为防止安装未验证的软件包，自动下载和安装已禁用。请启用 Sodium 后重试。</p></div></div>
-</div>
-<?php endif; ?>
 
 <!-- 更新提示 -->
 <?php if ($hasUpdate && $releaseInfo): ?>
@@ -204,8 +196,8 @@ $migrationStats = $migrationStatus['status'] ?? ['total' => 0, 'executed' => 0, 
     <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 px-5 py-4">
             <h2 class="flex items-center gap-2 text-base font-bold text-slate-900">
-                <i class="fas fa-history text-slate-400"></i>
-                SHOPAGG CMS 版本发布记录
+                <i class="fab fa-github text-slate-400"></i>
+                GitHub 版本发布记录
             </h2>
         </div>
         <?php if (empty($releases)): ?>
