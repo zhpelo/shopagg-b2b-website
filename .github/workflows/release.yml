@@ -1,0 +1,57 @@
+name: Build signed SHOPAGG CMS release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: curl, sqlite3, sodium, zip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Validate PHP
+        run: find app scripts -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Run smoke test
+        run: php scripts/release-smoke-test.php
+
+      - name: Build admin assets
+        run: npm ci && npm run build:admin-css
+
+      - name: Build and sign immutable package
+        env:
+          SHOPAGG_RELEASE_SIGNING_KEY: ${{ secrets.SHOPAGG_RELEASE_SIGNING_KEY }}
+          RELEASE_NOTES: SHOPAGG CMS ${{ github.ref_name }}
+        run: php scripts/build-release.php "${GITHUB_REF_NAME#v}" dist
+
+      - name: Verify signed package with the CMS public key
+        run: php scripts/verify-release.php dist/manifest.json
+
+      - name: Publish GitHub Release after assets are ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release already exists; refusing to overwrite immutable assets."
+            exit 1
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/shopagg-cms-*.zip dist/manifest.json dist/SHA256SUMS \
+            --draft --verify-tag --generate-notes --title "SHOPAGG CMS $GITHUB_REF_NAME"
+          gh release edit "$GITHUB_REF_NAME" --draft=false

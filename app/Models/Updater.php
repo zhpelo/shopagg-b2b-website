@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Core\Migrator;
+use App\Services\Updates\GithubReleaseProvider;
+use App\Services\Updates\ReleaseProvider;
+use App\Services\Updates\ShopaggUpdateProvider;
+use App\Services\Updates\UpdateEventReporter;
+use App\Services\Updates\UpdateProviderUnavailable;
+use App\Services\Updates\UpdateSecurityException;
 
 /**
  * 程序更新管理器
  * 
- * 处理从 GitHub 获取最新版本、下载更新包、执行更新等操作
+ * 处理 SHOPAGG 官方更新源、GitHub 备用源、下载校验和安全安装。
  */
 class Updater {
-    
-    /** GitHub API 基础地址 */
-    private const GITHUB_API_BASE = 'https://api.github.com/repos/zhpelo/shopagg-b2b-website';
-    
-    /** GitHub 仓库页面 */
-    private const GITHUB_REPO_URL = 'https://github.com/zhpelo/shopagg-b2b-website';
     
     /** 当前版本号兜底值（正常由 APP_VERSION 常量提供） */
     private const CURRENT_VERSION = '1.3.0';
@@ -28,13 +28,14 @@ class Updater {
     private const MAX_ARCHIVE_TOTAL_BYTES = 536870912; // 512 MB
     private const MAX_COMPRESSION_RATIO = 200;
 
-    /** 更新器只允许访问这些 GitHub 下载域名 */
+    /** 更新器只允许访问官方更新服务和 GitHub 下载域名 */
     private const ALLOWED_DOWNLOAD_HOSTS = [
         'github.com',
         'api.github.com',
         'codeload.github.com',
         'objects.githubusercontent.com',
         'github-releases.githubusercontent.com',
+        'update.shopagg.org',
     ];
     
     /** 更新包下载目录 */
@@ -48,12 +49,21 @@ class Updater {
     
     /** 迁移管理器 */
     private Migrator $migrator;
+
+    private ReleaseProvider $officialProvider;
+    private ReleaseProvider $githubProvider;
+    private UpdateEventReporter $eventReporter;
+    private string $activeSource = 'shopagg';
+    private string $lastProviderError = '';
     
     public function __construct() {
         $this->downloadDir = APP_ROOT . '/storage/updates';
         $this->backupDir = APP_ROOT . '/storage/backups';
         $this->logFile = APP_ROOT . '/storage/update.log';
         $this->migrator = new Migrator();
+        $this->officialProvider = new ShopaggUpdateProvider();
+        $this->githubProvider = new GithubReleaseProvider();
+        $this->eventReporter = new UpdateEventReporter();
         
         // 确保目录存在
         if (!is_dir($this->downloadDir)) {
@@ -62,23 +72,6 @@ class Updater {
         if (!is_dir($this->backupDir)) {
             mkdir($this->backupDir, 0755, true);
         }
-    }
-    
-    /**
-     * 从 name 和 tag_name 中提取版本号
-     * 优先使用 name（如 v1.0.0），如果不符合版本格式则使用 tag_name
-     */
-    private function extractVersion(string $name, string $tagName): string {
-        // 尝试从 name 中提取版本号（如 "v1.0.0" -> "1.0.0"）
-        if (preg_match('/v?(\d+\.\d+(?:\.\d+)?)/', $name, $matches)) {
-            return $matches[1];
-        }
-        // 尝试从 tag_name 中提取版本号
-        if (preg_match('/v?(\d+\.\d+(?:\.\d+)?)/', $tagName, $matches)) {
-            return $matches[1];
-        }
-        // 如果都不匹配，返回 tag_name（去掉 v 前缀）
-        return ltrim($tagName, 'v') ?: '0.0.0';
     }
     
     /**
@@ -93,36 +86,29 @@ class Updater {
     }
     
     /**
-     * 获取 GitHub 最新 Release 信息
+     * 获取最新的已签名 Release 信息
      * 
      * @return array|null 返回最新版本信息，失败返回 null
      */
     public function getLatestRelease(): ?array {
-        $url = self::GITHUB_API_BASE . '/releases/latest';
-        $response = $this->httpGet($url);
-        
-        if ($response === null) {
+        $this->lastProviderError = '';
+        try {
+            $release = $this->officialProvider->latest();
+            $this->activeSource = 'shopagg';
+            return $release;
+        } catch (UpdateProviderUnavailable $officialError) {
+            try {
+                $release = $this->githubProvider->latest();
+                $this->activeSource = 'github';
+                return $release;
+            } catch (\Throwable $githubError) {
+                $this->lastProviderError = $githubError->getMessage();
+                return null;
+            }
+        } catch (UpdateSecurityException $securityError) {
+            $this->lastProviderError = $securityError->getMessage();
             return null;
         }
-        
-        $data = json_decode($response, true);
-        if (!$data || !isset($data['tag_name'])) {
-            return null;
-        }
-        
-        // 尝试从 name 或 tag_name 中提取版本号
-        $version = $this->extractVersion($data['name'] ?? '', $data['tag_name'] ?? '');
-        
-        return [
-            'version' => $version,
-            'name' => $data['name'] ?? $data['tag_name'] ?? 'Unknown',
-            'body' => $data['body'] ?? '',
-            'published_at' => $data['published_at'] ?? '',
-            'html_url' => $data['html_url'] ?? '',
-            'assets' => $data['assets'] ?? [],
-            'is_prerelease' => $data['prerelease'] ?? false,
-            'is_draft' => $data['draft'] ?? false,
-        ];
     }
     
     /**
@@ -133,35 +119,17 @@ class Updater {
      * @return array 返回版本列表
      */
     public function getReleases(int $page = 1, int $perPage = 10): array {
-        $url = self::GITHUB_API_BASE . '/releases?page=' . $page . '&per_page=' . $perPage;
-        $response = $this->httpGet($url);
-        
-        if ($response === null) {
+        try {
+            return $this->officialProvider->releases($page, $perPage);
+        } catch (UpdateProviderUnavailable) {
+            try {
+                return $this->githubProvider->releases($page, $perPage);
+            } catch (\Throwable) {
+                return [];
+            }
+        } catch (UpdateSecurityException) {
             return [];
         }
-        
-        $data = json_decode($response, true);
-        if (!is_array($data)) {
-            return [];
-        }
-        
-        $releases = [];
-        foreach ($data as $release) {
-            $version = $this->extractVersion($release['name'] ?? '', $release['tag_name'] ?? '');
-            $releases[] = [
-                'version' => $version,
-                'name' => $release['name'] ?? $release['tag_name'] ?? 'Unknown',
-                'body' => $release['body'] ?? '',
-                'published_at' => $release['published_at'] ?? '',
-                'html_url' => $release['html_url'] ?? '',
-                'author' => $release['author']['login'] ?? 'unknown',
-                'is_prerelease' => $release['prerelease'] ?? false,
-                'is_draft' => $release['draft'] ?? false,
-                'assets_count' => count($release['assets'] ?? []),
-            ];
-        }
-        
-        return $releases;
     }
     
     /**
@@ -176,21 +144,25 @@ class Updater {
         if ($latestRelease === null) {
             return [
                 'success' => false,
-                'message' => '无法获取最新版本信息，请检查网络连接或稍后重试',
+                'message' => $this->lastProviderError !== '' ? $this->lastProviderError : '无法获取最新版本信息，请检查网络连接或稍后重试',
                 'current_version' => $currentVersion,
                 'latest_version' => null,
                 'has_update' => false,
+                'source' => $this->activeSource,
             ];
         }
         
         $latestVersion = $latestRelease['version'];
         $hasUpdate = version_compare($latestVersion, $currentVersion, '>');
         
+        $this->eventReporter->report('update_check', $currentVersion, $latestVersion, $this->activeSource);
         return [
             'success' => true,
             'current_version' => $currentVersion,
             'latest_version' => $latestVersion,
             'has_update' => $hasUpdate,
+            'source' => $this->activeSource,
+            'sodium_available' => extension_loaded('sodium'),
             'release_info' => $latestRelease,
             'message' => $hasUpdate ? '发现新版本：' . $latestVersion : '当前已是最新版本',
         ];
@@ -203,7 +175,7 @@ class Updater {
      * @param string $downloadUrl 下载地址
      * @return array 返回下载结果
      */
-    public function downloadUpdate(string $version, string $downloadUrl): array {
+    public function downloadUpdate(string $version, string $downloadUrl, ?string $expectedHash = null, ?int $expectedSize = null, string $source = 'shopagg'): array {
         if (!$this->isValidVersion($version) || !$this->isAllowedDownloadUrl($downloadUrl)) {
             return [
                 'success' => false,
@@ -215,9 +187,12 @@ class Updater {
         $filename = 'update-' . $version . '.zip';
         $filepath = $this->downloadDir . '/' . $filename;
         $hashFile = $filepath . '.sha256';
+        $metadataFile = $filepath . '.json';
         
         // 缓存包也必须通过下载时记录的哈希校验。
-        if ($this->verifyPackageHash($filepath, $hashFile)) {
+        if ($this->verifyPackageHash($filepath, $hashFile)
+            && ($expectedHash === null || hash_equals(strtolower($expectedHash), strtolower((string)hash_file('sha256', $filepath))))
+            && ($expectedSize === null || filesize($filepath) === $expectedSize)) {
             return [
                 'success' => true,
                 'message' => '更新包已存在并通过完整性校验',
@@ -227,11 +202,15 @@ class Updater {
 
         @unlink($filepath);
         @unlink($hashFile);
-        
+        @unlink($metadataFile);
+        $startedAt = microtime(true);
+        $this->eventReporter->report('download_started', $this->getCurrentVersion(), $version, $source);
+
         // 下载文件
         $result = $this->downloadFile($downloadUrl, $filepath);
         
         if (!$result) {
+            $this->eventReporter->report('download_failed', $this->getCurrentVersion(), $version, $source, ['error_code' => 'network_error']);
             return [
                 'success' => false,
                 'message' => '下载更新包失败',
@@ -239,8 +218,17 @@ class Updater {
             ];
         }
 
-        $hash = hash_file('sha256', $filepath);
-        if ($hash === false || file_put_contents($hashFile, $hash . "\n", LOCK_EX) === false) {
+        $hash = is_array($result) ? ($result['sha256'] ?? false) : false;
+        $size = filesize($filepath);
+        if (!is_string($hash)
+            || ($expectedHash !== null && !hash_equals(strtolower($expectedHash), strtolower($hash)))
+            || ($expectedSize !== null && $size !== $expectedSize)) {
+            @unlink($filepath);
+            @unlink($hashFile);
+            $this->eventReporter->report('download_failed', $this->getCurrentVersion(), $version, $source, ['error_code' => 'integrity_mismatch']);
+            return ['success' => false, 'message' => '更新包大小或 SHA-256 与签名清单不一致', 'filename' => null];
+        }
+        if (file_put_contents($hashFile, $hash . "\n", LOCK_EX) === false) {
             @unlink($filepath);
             @unlink($hashFile);
             return [
@@ -249,7 +237,12 @@ class Updater {
                 'filename' => null,
             ];
         }
+        file_put_contents($metadataFile, json_encode(['source' => $source], JSON_UNESCAPED_SLASHES), LOCK_EX);
         
+        $this->eventReporter->report('download_completed', $this->getCurrentVersion(), $version, $source, [
+            'bytes' => (int)$size,
+            'duration_ms' => (int)round((microtime(true) - $startedAt) * 1000),
+        ]);
         return [
             'success' => true,
             'message' => '下载成功并已完成 SHA-256 完整性校验',
@@ -267,44 +260,32 @@ class Updater {
         if (!$this->isValidVersion($version)) {
             return ['success' => false, 'message' => '版本号格式无效'];
         }
-
-        // 先获取 release 信息以获取正确的 tag_name
-        $latest = $this->getLatestRelease();
-        if ($latest !== null && $latest['version'] === $version) {
-            // 使用 API 返回的 zipball_url 或通过 tag_name 构建 URL
-            $tagName = $this->getTagNameByVersion($version);
-            $url = 'https://github.com/zhpelo/shopagg-b2b-website/archive/refs/tags/' . $tagName . '.zip';
-        } else {
-            // 默认尝试 v 前缀
-            $url = 'https://github.com/zhpelo/shopagg-b2b-website/archive/refs/tags/v' . $version . '.zip';
-        }
-        return $this->downloadUpdate($version, $url);
-    }
-    
-    /**
-     * 根据版本号获取对应的 tag_name
-     */
-    private function getTagNameByVersion(string $version): string {
-        $url = self::GITHUB_API_BASE . '/releases';
-        $response = $this->httpGet($url);
-        
-        if ($response === null) {
-            return 'v' . $version;
-        }
-        
-        $data = json_decode($response, true);
-        if (!is_array($data)) {
-            return 'v' . $version;
-        }
-        
-        foreach ($data as $release) {
-            $releaseVersion = $this->extractVersion($release['name'] ?? '', $release['tag_name'] ?? '');
-            if ($releaseVersion === $version) {
-                return $release['tag_name'];
+        try {
+            try {
+                $release = $this->officialProvider->release($version);
+                $this->activeSource = 'shopagg';
+            } catch (UpdateProviderUnavailable) {
+                $release = $this->githubProvider->release($version);
+                $this->activeSource = 'github';
             }
+            if ($release === null) return ['success' => false, 'message' => '未找到此版本'];
+            if (empty($release['automatic_install_allowed'])) {
+                return ['success' => false, 'message' => '当前 PHP 环境缺少 Sodium 扩展，可检查版本但不能自动安装签名更新包'];
+            }
+            $compatibility = $this->validateCompatibility((array)($release['compatibility'] ?? []));
+            if ($compatibility !== null) return ['success' => false, 'message' => $compatibility];
+            return $this->downloadUpdate(
+                $version,
+                (string)$release['download_url'],
+                (string)$release['sha256'],
+                (int)$release['size'],
+                $this->activeSource
+            );
+        } catch (UpdateSecurityException $error) {
+            return ['success' => false, 'message' => $error->getMessage()];
+        } catch (\Throwable $error) {
+            return ['success' => false, 'message' => '更新源暂时不可用：' . $error->getMessage()];
         }
-        
-        return 'v' . $version;
     }
     
     /**
@@ -314,6 +295,30 @@ class Updater {
      * @return array 返回安装结果
      */
     public function installUpdate(string $version): array {
+        $metadataFile = $this->downloadDir . '/update-' . $version . '.zip.json';
+        if (is_file($metadataFile)) {
+            $metadata = json_decode((string)file_get_contents($metadataFile), true);
+            if (is_array($metadata) && in_array($metadata['source'] ?? '', ['shopagg', 'github'], true)) {
+                $this->activeSource = $metadata['source'];
+            }
+        }
+        $startedAt = microtime(true);
+        $this->eventReporter->report('install_started', $this->getCurrentVersion(), $version, $this->activeSource);
+        $result = $this->performInstallUpdate($version);
+        $this->eventReporter->report(
+            !empty($result['success']) ? 'install_succeeded' : 'install_failed',
+            $this->getCurrentVersion(),
+            $version,
+            $this->activeSource,
+            [
+                'error_code' => !empty($result['success']) ? null : 'install_error',
+                'duration_ms' => (int)round((microtime(true) - $startedAt) * 1000),
+            ]
+        );
+        return $result;
+    }
+
+    private function performInstallUpdate(string $version): array {
         if (!$this->isValidVersion($version)) {
             return [
                 'success' => false,
@@ -509,6 +514,29 @@ class Updater {
         return preg_match('/^\d+\.\d+(?:\.\d+)?(?:[-+][0-9A-Za-z.-]+)?$/D', $version) === 1;
     }
 
+    private function validateCompatibility(array $compatibility): ?string {
+        $phpRequirement = (string)($compatibility['php'] ?? '');
+        if (preg_match('/>=\s*(\d+(?:\.\d+){1,2})/', $phpRequirement, $matches) === 1
+            && version_compare(PHP_VERSION, $matches[1], '<')) {
+            return '此版本要求 PHP ' . $phpRequirement . '，当前为 ' . PHP_VERSION;
+        }
+
+        $sqliteRequirement = (string)($compatibility['sqlite'] ?? '');
+        if (class_exists(\SQLite3::class) && preg_match('/>=\s*(\d+(?:\.\d+){1,2})/', $sqliteRequirement, $matches) === 1) {
+            $sqliteVersion = (string)(\SQLite3::version()['versionString'] ?? '0.0.0');
+            if (version_compare($sqliteVersion, $matches[1], '<')) {
+                return '此版本要求 SQLite ' . $sqliteRequirement . '，当前为 ' . $sqliteVersion;
+            }
+        }
+
+        $sourceRequirement = (string)($compatibility['source_version'] ?? '');
+        if (preg_match('/>=\s*(\d+(?:\.\d+){1,2})/', $sourceRequirement, $matches) === 1
+            && version_compare($this->getCurrentVersion(), $matches[1], '<')) {
+            return '当前版本过旧，自动升级要求来源版本 ' . $sourceRequirement;
+        }
+        return null;
+    }
+
     private function isAllowedDownloadUrl(string $url): bool {
         $parts = parse_url($url);
         if (!is_array($parts) || strtolower((string)($parts['scheme'] ?? '')) !== 'https') {
@@ -662,60 +690,41 @@ class Updater {
     }
     
     /**
-     * HTTP GET 请求
-     */
-    private function httpGet(string $url): ?string {
-        if (!$this->isAllowedDownloadUrl($url)) {
-            return null;
-        }
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
-            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_USERAGENT => 'shopagg-b2b-updater/1.0',
-            CURLOPT_HTTPHEADER => [
-                'Accept: application/vnd.github+json',
-                'X-GitHub-Api-Version: 2022-11-28',
-            ],
-        ]);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $effectiveUrl = (string)curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        curl_close($ch);
-        
-        if ($response === false || $httpCode !== 200 || !$this->isAllowedDownloadUrl($effectiveUrl)) {
-            return null;
-        }
-        
-        return $response;
-    }
-    
-    /**
      * 下载文件
      */
-    private function downloadFile(string $url, string $filepath): bool {
+    private function downloadFile(string $url, string $filepath, bool $allowResume = true): array|false {
         if (!$this->isAllowedDownloadUrl($url)) {
             return false;
         }
 
         $temporaryPath = $filepath . '.part';
-        @unlink($temporaryPath);
+        $resumeSize = $allowResume && is_file($temporaryPath) ? (int)filesize($temporaryPath) : 0;
+        if ($resumeSize < 0 || $resumeSize >= self::MAX_DOWNLOAD_BYTES) {
+            @unlink($temporaryPath);
+            $resumeSize = 0;
+        }
         $ch = curl_init($url);
-        $fp = fopen($temporaryPath, 'xb');
+        $fp = fopen($temporaryPath, $resumeSize > 0 ? 'ab' : 'xb');
         if ($fp === false) {
             return false;
         }
-        
+        $hashContext = hash_init('sha256');
+        if ($resumeSize > 0 && !hash_update_file($hashContext, $temporaryPath)) {
+            fclose($fp);
+            @unlink($temporaryPath);
+            return false;
+        }
+        $contentRange = '';
         curl_setopt_array($ch, [
-            CURLOPT_FILE => $fp,
+            CURLOPT_WRITEFUNCTION => static function ($handle, string $chunk) use ($fp, $hashContext): int {
+                hash_update($hashContext, $chunk);
+                $written = fwrite($fp, $chunk);
+                return $written === false ? 0 : $written;
+            },
+            CURLOPT_HEADERFUNCTION => static function ($handle, string $header) use (&$contentRange): int {
+                if (stripos($header, 'Content-Range:') === 0) $contentRange = trim(substr($header, strlen('Content-Range:')));
+                return strlen($header);
+            },
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_SSL_VERIFYPEER => true,
@@ -725,10 +734,11 @@ class Updater {
             CURLOPT_TIMEOUT => 300,
             CURLOPT_USERAGENT => 'shopagg-b2b-updater/1.0',
             CURLOPT_NOPROGRESS => false,
-            CURLOPT_XFERINFOFUNCTION => static function ($handle, float $downloadTotal, float $downloaded): int {
-                return $downloaded > self::MAX_DOWNLOAD_BYTES ? 1 : 0;
+            CURLOPT_XFERINFOFUNCTION => static function ($handle, float $downloadTotal, float $downloaded) use ($resumeSize): int {
+                return ($resumeSize + $downloaded) > self::MAX_DOWNLOAD_BYTES ? 1 : 0;
             },
         ]);
+        if ($resumeSize > 0) curl_setopt($ch, CURLOPT_RESUME_FROM_LARGE, $resumeSize);
         
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -736,14 +746,23 @@ class Updater {
         curl_close($ch);
         fclose($fp);
         
-        if (!$result || $httpCode !== 200 || !$this->isAllowedDownloadUrl($effectiveUrl)
+        if ($resumeSize > 0 && $httpCode === 200) {
+            @unlink($temporaryPath);
+            return $this->downloadFile($url, $filepath, false);
+        }
+
+        if (!$result || !in_array($httpCode, [200, 206], true) || !$this->isAllowedDownloadUrl($effectiveUrl)
+            || ($resumeSize > 0 && ($httpCode !== 206 || !str_starts_with($contentRange, 'bytes ' . $resumeSize . '-')))
             || !is_file($temporaryPath) || filesize($temporaryPath) <= 0
             || filesize($temporaryPath) > self::MAX_DOWNLOAD_BYTES) {
-            @unlink($temporaryPath);
+            if ($httpCode > 0 && !in_array($httpCode, [200, 206], true)) @unlink($temporaryPath);
             return false;
         }
 
-        return rename($temporaryPath, $filepath);
+        $hash = hash_final($hashContext);
+        $size = (int)filesize($temporaryPath);
+        if (!rename($temporaryPath, $filepath)) return false;
+        return ['sha256' => $hash, 'size' => $size];
     }
     
     /**
