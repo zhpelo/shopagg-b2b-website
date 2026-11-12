@@ -3,13 +3,29 @@
     <header class="rounded-xl border border-slate-200 bg-white px-5 py-5">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div><p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">应用商店</p><h1 class="mt-1 text-2xl font-bold text-slate-900">插件管理</h1><p class="mt-1 text-sm text-slate-500">进入本页自动从 plugin.json 同步插件名称、版本、描述和入口等信息，无需重新上传 ZIP。新插件保持未启用；目录缺失或校验失败时自动停用并保留数据。</p></div>
-            <div class="flex flex-col gap-2 sm:flex-row"><a class="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store?type=plugin') ?>">浏览插件</a><a class="rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700" href="<?= url('/admin/app-store/plugins/upload') ?>"><i class="fas fa-upload mr-2"></i>上传 ZIP</a></div>
+            <div class="flex flex-col gap-2 sm:flex-row">
+                <?php if ($plugins !== []): ?>
+                    <a class="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= h(url('/admin/app-store/plugins?refresh=1')) ?>">检查更新</a>
+                <?php endif; ?>
+                <a class="rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store?type=plugin') ?>">浏览插件</a>
+                <a class="rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700" href="<?= url('/admin/app-store/plugins/upload') ?>"><i class="fas fa-upload mr-2"></i>上传 ZIP</a>
+            </div>
         </div>
-        <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-slate-100 pt-4 text-sm text-slate-500"><span><strong class="text-slate-900"><?= count($plugins) ?></strong> 个已安装</span><span><strong class="text-slate-900"><?= count(array_filter($plugins, static fn(array $plugin): bool => ($plugin['status'] ?? '') === 'enabled')) ?></strong> 个已启用</span><span>Plugin API 1.0</span></div>
+        <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-slate-100 pt-4 text-sm text-slate-500">
+            <span><strong class="text-slate-900"><?= count($plugins) ?></strong> 个已安装</span>
+            <span><strong class="text-slate-900"><?= count(array_filter($plugins, static fn(array $plugin): bool => ($plugin['status'] ?? '') === 'enabled')) ?></strong> 个已启用</span>
+            <?php if ($pluginUpdates !== [] || ($plugins !== [] && $updateNotice === '')): ?>
+                <span><strong class="<?= $pluginUpdates !== [] ? 'text-amber-700' : 'text-slate-900' ?>"><?= count($pluginUpdates) ?></strong> 个可更新</span>
+            <?php endif; ?>
+            <span>Plugin API 1.0</span>
+        </div>
     </header>
 
     <?php if ($success): ?><div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"><?= h($success) ?></div><?php endif; ?>
     <?php if ($error): ?><div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><?= h($error) ?></div><?php endif; ?>
+    <?php if ($updateNotice !== ''): ?>
+        <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"><?= h($updateNotice) ?></div>
+    <?php endif; ?>
     <?php if (!empty($discovery['registered'])): ?><div role="status" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">已从本地目录发现 <?= count($discovery['registered']) ?> 个插件：<?= h(implode('、', $discovery['registered'])) ?>。尚未启用，请确认后手动启用。</div><?php endif; ?>
     <?php if (!empty($discovery['updated'])): ?><div role="status" class="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">已从 plugin.json 同步插件信息：<?= h(implode('、', $discovery['updated'])) ?>。设置和数据已保留；扫描未执行迁移或生命周期。</div><?php endif; ?>
     <?php if (!empty($discovery['disabled'])): ?><div role="status" class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">已自动停用不可用的插件或其依赖插件：<?= h(implode('、', $discovery['disabled'])) ?>。设置、任务和业务数据已保留。</div><?php endif; ?>
@@ -18,12 +34,21 @@
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div class="space-y-3">
             <?php if ($plugins === []): ?><div class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center"><i class="fas fa-plug text-2xl text-slate-300"></i><h2 class="mt-3 font-bold text-slate-800">尚未安装插件</h2><p class="mt-1 text-sm text-slate-500">从应用商店选择插件，或上传 ZIP 插件包。</p></div><?php endif; ?>
-            <?php foreach ($plugins as $plugin): $manifest = $plugin['manifest']; ?>
+            <?php foreach ($plugins as $plugin):
+                $manifest = $plugin['manifest'];
+                $update = $pluginUpdates[$plugin['plugin_id']] ?? null;
+            ?>
                 <article class="rounded-xl border border-slate-200 bg-white p-4">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h2 class="font-bold text-slate-900"><?= h($plugin['name']) ?></h2><span class="rounded-md px-2 py-1 text-xs font-semibold <?= $plugin['status'] === 'enabled' ? 'bg-emerald-50 text-emerald-700' : ($plugin['status'] === 'error' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-600') ?>"><?= h($plugin['status']) ?></span></div><p class="mt-1 text-xs text-slate-500"><?= h($plugin['plugin_id']) ?> · v<?= h($plugin['installed_version']) ?> · <?= h($plugin['vendor']) ?></p><p class="mt-2 text-sm leading-5 text-slate-600"><?= h($plugin['description']) ?></p></div>
+                        <div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h2 class="font-bold text-slate-900"><?= h($plugin['name']) ?></h2><span class="rounded-md px-2 py-1 text-xs font-semibold <?= $plugin['status'] === 'enabled' ? 'bg-emerald-50 text-emerald-700' : ($plugin['status'] === 'error' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-600') ?>"><?= h($plugin['status']) ?></span></div><p class="mt-1 text-xs text-slate-500"><?= h($plugin['plugin_id']) ?><?php if ($update === null): ?> · v<?= h($plugin['installed_version']) ?><?php endif; ?> · <?= h($plugin['vendor']) ?></p><p class="mt-2 text-sm leading-5 text-slate-600"><?= h($plugin['description']) ?></p></div>
                         <div class="flex shrink-0 gap-2"><?php if (($manifest['settings'] ?? []) !== []): ?><a class="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="<?= url('/admin/app-store/plugins/settings?id=' . rawurlencode($plugin['plugin_id'])) ?>">设置</a><?php endif; ?><form action="<?= url('/admin/app-store/plugins/action') ?>" method="post"><input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>"><input type="hidden" name="plugin_id" value="<?= h($plugin['plugin_id']) ?>"><input type="hidden" name="action" value="<?= $plugin['status'] === 'enabled' ? 'disable' : 'enable' ?>"><button class="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700" type="submit"><?= $plugin['status'] === 'enabled' ? '停用' : '启用' ?></button></form></div>
                     </div>
+                    <?php if ($update !== null): ?>
+                        <a class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800 hover:bg-amber-100" href="<?= h(url('/admin/app-store/plugins/' . $update['resource_id'])) ?>">
+                            <span>当前版本 v<?= h($plugin['installed_version']) ?> · 可更新至 v<?= h($update['version']) ?></span>
+                            <span>查看更新 <span aria-hidden="true">→</span></span>
+                        </a>
+                    <?php endif; ?>
                     <div class="mt-3 flex flex-wrap gap-x-5 gap-y-1 border-t border-slate-100 pt-3 text-xs text-slate-500"><span>路由 <?= count($manifest['routes'] ?? []) ?></span><span>事件/过滤器 <?= count($manifest['events'] ?? []) + count($manifest['filters'] ?? []) ?></span><span>服务 <?= count($manifest['services'] ?? []) ?></span><span>任务 <?= count($manifest['jobs'] ?? []) ?></span></div>
                     <?php if ($plugin['last_error']): ?><pre class="mt-3 overflow-auto rounded-lg bg-rose-50 p-3 text-xs text-rose-700"><?= h($plugin['last_error']) ?></pre><?php endif; ?>
                     <details class="mt-3 border-t border-slate-100 pt-3 text-sm"><summary class="cursor-pointer font-semibold text-slate-600">更多操作与技术信息</summary><div class="mt-3 space-y-3">

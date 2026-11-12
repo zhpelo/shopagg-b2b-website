@@ -8,11 +8,11 @@ use App\Core\Controller;
 use App\Models\AppStoreThemeInstall;
 use App\Models\Setting;
 use App\Plugins\PluginManager;
+use App\Services\AppStoreCatalog;
 use App\Services\AppStoreClient;
 
 final class AppStoreController extends Controller {
-    private const CATALOG_CACHE_KEY = 'app_store_catalog_cache_v1';
-    private const CATALOG_CACHE_TTL = 300;
+    private const PAGE_SIZE = 12;
 
     public function __construct() {
         if (!AuthManager::isAuthenticated()) $this->redirect('/admin/login');
@@ -27,7 +27,7 @@ final class AppStoreController extends Controller {
 
         $settings = new Setting();
         $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $settings->get('app_store_api_token', ''));
-        $catalog = $this->loadCatalog($client, $settings, (string)($_GET['refresh'] ?? '') === '1');
+        $catalog = (new AppStoreCatalog($client, $settings))->load(($_GET['refresh'] ?? '') === '1');
         $themeResponse = $catalog['themes'];
         $pluginResponse = $catalog['plugins'];
         $items = array_merge(
@@ -50,13 +50,21 @@ final class AppStoreController extends Controller {
             if ($price === 'free' && !$item['is_free']) return false;
             if ($price === 'paid' && $item['is_free']) return false;
             if ($query === '') return true;
-            $haystack = mb_strtolower(implode(' ', [$item['name'], $item['slug'], $item['vendor'], $item['description'], implode(' ', $item['tags'])]));
+            $haystack = mb_strtolower(implode(' ', [$item['name'], $item['slug'], $item['plugin_id'] ?? '', $item['vendor'], $item['description'], implode(' ', $item['tags'])]));
             return str_contains($haystack, mb_strtolower($query));
         }));
-        usort($items, static fn(array $a, array $b): int => [$a['type'], mb_strtolower($a['name'])] <=> [$b['type'], mb_strtolower($b['name'])]);
+        usort($items, static fn(array $a, array $b): int =>
+            [$a['type'], mb_strtolower($a['name']), $a['id']] <=> [$b['type'], mb_strtolower($b['name']), $b['id']]
+        );
+
+        $total = count($items);
+        $totalPages = max(1, (int)ceil($total / self::PAGE_SIZE));
+        $requestedPage = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $page = min($requestedPage ?: 1, $totalPages);
 
         $this->renderAdmin('应用商店', 'admin/app-store/index', [
-            'items' => $items,
+            'items' => array_slice($items, ($page - 1) * self::PAGE_SIZE, self::PAGE_SIZE),
+            'pagination' => compact('page', 'totalPages', 'total'),
             'counts' => $counts,
             'filters' => compact('query', 'type', 'status', 'price'),
             'hasToken' => $client->hasToken(),
@@ -73,64 +81,6 @@ final class AppStoreController extends Controller {
         ]);
     }
 
-    private function loadCatalog(AppStoreClient $client, Setting $settings, bool $forceRefresh): array {
-        $cached = json_decode($settings->get(self::CATALOG_CACHE_KEY, ''), true);
-        $hasCache = is_array($cached)
-            && is_array($cached['themes'] ?? null)
-            && is_array($cached['plugins'] ?? null)
-            && (int)($cached['fetched_at'] ?? 0) > 0;
-        $cacheAge = $hasCache ? time() - (int)$cached['fetched_at'] : PHP_INT_MAX;
-
-        if (!$forceRefresh && $hasCache && $cacheAge < self::CATALOG_CACHE_TTL) {
-            return [
-                'themes' => $cached['themes'],
-                'plugins' => $cached['plugins'],
-                'source' => 'cache',
-                'fetched_at' => (int)$cached['fetched_at'],
-                'notice' => '',
-            ];
-        }
-
-        $remote = $client->listCatalog();
-        $themes = $remote['themes'];
-        $plugins = $remote['plugins'];
-        if (($themes['ok'] ?? false) && ($plugins['ok'] ?? false)) {
-            $fetchedAt = time();
-            $settings->set(self::CATALOG_CACHE_KEY, json_encode([
-                'fetched_at' => $fetchedAt,
-                'themes' => $themes,
-                'plugins' => $plugins,
-            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
-            return [
-                'themes' => $themes,
-                'plugins' => $plugins,
-                'source' => 'remote',
-                'fetched_at' => $fetchedAt,
-                'notice' => '',
-            ];
-        }
-
-        if ($hasCache) {
-            if (!($themes['ok'] ?? false)) $themes = $cached['themes'];
-            if (!($plugins['ok'] ?? false)) $plugins = $cached['plugins'];
-            return [
-                'themes' => $themes,
-                'plugins' => $plugins,
-                'source' => 'stale-cache',
-                'fetched_at' => (int)$cached['fetched_at'],
-                'notice' => '远程目录暂时不可用，当前显示上次成功更新的数据。',
-            ];
-        }
-
-        return [
-            'themes' => $themes,
-            'plugins' => $plugins,
-            'source' => 'remote-error',
-            'fetched_at' => 0,
-            'notice' => '',
-        ];
-    }
-
     public function legacyPlugins(): void { $this->redirectWithQuery('/admin/app-store/plugins'); }
     public function legacyPluginMarket(): void { $this->redirectWithQuery('/admin/app-store?type=plugin'); }
     public function legacyPluginSettings(): void { $this->redirectWithQuery('/admin/app-store/plugins/settings'); }
@@ -144,16 +94,15 @@ final class AppStoreController extends Controller {
         $items = [];
         foreach ($resources as $resource) {
             if (!is_array($resource)) continue;
-            $metadata = is_array($resource['metadata'] ?? null) ? $resource['metadata'] : [];
-            $slug = sanitize_slug_input((string)($resource['plugin_id'] ?? $metadata['plugin_id'] ?? $resource['slug'] ?? ''));
-            $local = $installed[$slug] ?? null;
-            $remoteVersion = (string)($resource['version'] ?? '');
+            $pluginId = AppStoreCatalog::pluginId($resource);
+            $local = $installed[$pluginId] ?? null;
             $localVersion = (string)($local['installed_version'] ?? '');
             $items[] = $this->normalizeResource($resource, 'plugin', [
-                'slug' => $slug,
+                'slug' => sanitize_slug_input((string)($resource['slug'] ?? $pluginId)),
+                'plugin_id' => $pluginId,
                 'installed' => $local !== null,
                 'installed_version' => $localVersion,
-                'needs_update' => $local !== null && $remoteVersion !== '' && $localVersion !== '' && version_compare($remoteVersion, $localVersion, '>'),
+                'needs_update' => AppStoreCatalog::pluginUpdateVersion($resource, $local) !== null,
                 'manage_url' => '/admin/app-store/plugins',
                 'detail_url' => '/admin/app-store/plugins/' . (int)($resource['id'] ?? 0),
             ]);

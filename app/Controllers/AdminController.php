@@ -18,6 +18,7 @@ use App\Models\Updater;
 use App\Models\Slider;
 use App\Models\Menu;
 use App\Models\AppStoreThemeInstall;
+use App\Services\AppStoreCatalog;
 use App\Services\AppStoreClient;
 use SQLite3;
 
@@ -1900,11 +1901,20 @@ class AdminController extends Controller {
      */
     public function themeList(): void {
         $themes = $this->getInstalledThemes();
-        $client = $this->makeAppStoreClient();
+        $themeUpdates = [];
+        $updateNotice = '';
+        if ($themes !== []) {
+            $catalog = new AppStoreCatalog($this->makeAppStoreClient(), $this->settingModel);
+            $directory = $catalog->load(($_GET['refresh'] ?? '') === '1');
+            $themeResponse = $directory['themes'];
+            $themeUpdates = $this->getAppStoreThemeUpdates($themes, $themeResponse['themes'] ?? []);
+            $updateNotice = ($themeResponse['ok'] ?? false)
+                ? $directory['notice']
+                : '暂时无法检查主题更新，请稍后重试。';
+        }
         $appStore = [
-            'has_token' => $client->hasToken(),
-            'masked_token' => $client->maskedToken(),
-            'site_domain' => $this->appStoreLicenseDomain(),
+            'theme_updates' => $themeUpdates,
+            'update_notice' => $updateNotice,
             'wechat_pay' => $this->appStoreWechatPayState(),
         ];
         $currentTheme = $this->settingModel->get('theme', 'default');
@@ -2236,46 +2246,27 @@ class AdminController extends Controller {
         }
     }
 
-    private function buildAppStoreThemeState(array $installedThemes): array {
-        $client = $this->makeAppStoreClient();
+    private function getAppStoreThemeUpdates(array $installedThemes, array $resources): array {
         $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
         $installedBySlug = $this->indexInstalledThemesBySlug($installedThemes);
-
-        $state = [
-            'has_token' => $client->hasToken(),
-            'masked_token' => $client->maskedToken(),
-            'site_domain' => $this->appStoreLicenseDomain(),
-            'account' => null,
-            'account_error' => '',
-            'themes' => [],
-            'error' => '',
-            'wechat_pay' => $this->appStoreWechatPayState(),
-        ];
-
-        if ($client->hasToken()) {
-            $accountResponse = $client->me();
-            if ($accountResponse['ok'] && is_array($accountResponse['data'] ?? null)) {
-                $state['account'] = $accountResponse['data'];
-            } else {
-                $state['account_error'] = $this->appStoreResponseMessage($accountResponse);
-            }
-        }
-
-        $response = $client->listB2BThemes();
-        if (!$response['ok']) {
-            $state['error'] = $response['message'] ?: '无法获取 App Store B2B 网站主题';
-            return $state;
-        }
-
-        foreach ($response['themes'] as $resource) {
+        $updates = [];
+        foreach ($resources as $resource) {
             if (!is_array($resource)) {
                 continue;
             }
 
-            $state['themes'][] = $this->enrichAppStoreThemeResource($resource, $installRecords, $installedBySlug);
+            $resourceId = (int)($resource['id'] ?? 0);
+            $resource = $this->enrichAppStoreThemeResource($resource, $installRecords, $installedBySlug);
+            if ($resourceId > 0 && $resource['_needs_update']) {
+                $updates[$resource['_installed_slug']] = [
+                    'resource_id' => $resourceId,
+                    'installed_version' => $resource['_installed_version'],
+                    'version' => ltrim(trim((string)$resource['version']), 'vV'),
+                ];
+            }
         }
 
-        return $state;
+        return $updates;
     }
 
     private function enrichAppStoreThemeResource(array $resource, array $installRecords, array $installedBySlug): array {
@@ -2284,11 +2275,15 @@ class AdminController extends Controller {
         $record = $resourceId > 0 ? ($installRecords[$resourceId] ?? null) : null;
         $knownSlug = (string)($record['theme_slug'] ?? $resourceSlug);
         $localTheme = $installedBySlug[$knownSlug] ?? ($installedBySlug[$resourceSlug] ?? null);
-        $installedVersion = (string)($record['version'] ?? ($localTheme['version'] ?? ''));
-        $remoteVersion = (string)($resource['version'] ?? '');
+        $installedVersion = trim((string)($record['version'] ?? ''));
+        if ($installedVersion === '') {
+            $installedVersion = (string)($localTheme['version'] ?? '');
+        }
+        $installedVersion = ltrim($installedVersion, 'vV');
+        $remoteVersion = ltrim(trim((string)($resource['version'] ?? '')), 'vV');
         $needsUpdate = $localTheme !== null
-            && $installedVersion !== ''
-            && $remoteVersion !== ''
+            && preg_match('/^\d/', $installedVersion) === 1
+            && preg_match('/^\d/', $remoteVersion) === 1
             && version_compare($remoteVersion, $installedVersion, '>');
 
         $resource['_install_record'] = $record;
@@ -2544,7 +2539,7 @@ class AdminController extends Controller {
 
         $metadata = $this->emptyThemeMetadata();
         foreach (self::THEME_METADATA_FIELDS as $label => $key) {
-            if (preg_match('/^[ \t\/*#@]*' . preg_quote($label, '/') . ':\s*(.+)$/mi', $content, $matches) === 1) {
+            if (preg_match('/^[ \t\/*#@]*' . preg_quote($label, '/') . ':[ \t]*([^\r\n]*)/mi', $content, $matches) === 1) {
                 $metadata[$key] = trim((string)$matches[1]);
             }
         }

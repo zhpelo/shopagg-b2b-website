@@ -3,16 +3,24 @@ $query = (string)($filters['query'] ?? '');
 $type = (string)($filters['type'] ?? 'all');
 $status = (string)($filters['status'] ?? 'all');
 $price = (string)($filters['price'] ?? 'all');
+$page = $pagination['page'];
+$totalPages = $pagination['totalPages'];
 $fetchedAt = (int)($catalogStatus['fetched_at'] ?? 0);
 $age = $fetchedAt > 0 ? max(0, time() - $fetchedAt) : 0;
 $updatedText = $fetchedAt <= 0 ? '尚未取得远程目录' : ($age < 60 ? '刚刚更新' : (int)floor($age / 60) . ' 分钟前更新');
-$refreshQuery = http_build_query(array_filter([
+$filterParams = array_filter([
     'q' => $query,
     'type' => $type !== 'all' ? $type : null,
     'status' => $status !== 'all' ? $status : null,
     'price' => $price !== 'all' ? $price : null,
-    'refresh' => 1,
-], static fn($value): bool => $value !== null && $value !== ''));
+], static fn($value): bool => $value !== null && $value !== '');
+$pageUrl = static function (int $pageNumber, bool $refresh = false) use ($filterParams): string {
+    $params = $filterParams;
+    if ($pageNumber > 1) $params['page'] = $pageNumber;
+    if ($refresh) $params['refresh'] = 1;
+    $queryString = http_build_query($params);
+    return url('/admin/app-store' . ($queryString === '' ? '' : '?' . $queryString));
+};
 ?>
 <div class="space-y-5">
     <header class="rounded-xl border border-slate-200 bg-white px-5 py-5">
@@ -32,7 +40,7 @@ $refreshQuery = http_build_query(array_filter([
             <span><strong class="text-slate-900"><?= (int)$counts['plugin'] ?></strong> 个插件</span>
             <span><strong class="text-slate-900"><?= (int)$counts['theme'] ?></strong> 个主题</span>
             <span><strong class="text-slate-900"><?= (int)$counts['installed'] ?></strong> 个已安装</span>
-            <span class="ml-auto text-xs"><?= h($updatedText) ?> · <a class="font-semibold text-indigo-600" href="<?= url('/admin/app-store?' . $refreshQuery) ?>">刷新目录</a></span>
+            <span class="ml-auto text-xs"><?= h($updatedText) ?> · <a class="font-semibold text-indigo-600" href="<?= h($pageUrl($page, true)) ?>">刷新目录</a></span>
         </div>
     </header>
 
@@ -55,7 +63,7 @@ $refreshQuery = http_build_query(array_filter([
         </div>
     </form>
 
-    <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-slate-900">应用与主题</h2><p class="mt-0.5 text-sm text-slate-500"><?= count($items) ?> 个结果</p></div></div>
+    <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold text-slate-900">应用与主题</h2><p class="mt-0.5 text-sm text-slate-500">共 <?= (int)$pagination['total'] ?> 个结果</p></div></div>
 
     <?php if ($items === []): ?>
         <div class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"><i class="fas fa-search text-2xl text-slate-300"></i><h2 class="mt-3 font-bold text-slate-800">没有找到匹配应用</h2><p class="mt-1 text-sm text-slate-500">请更换关键词或清除筛选条件。</p></div>
@@ -110,5 +118,21 @@ $refreshQuery = http_build_query(array_filter([
                 </article>
             <?php endforeach; ?>
         </div>
+    <?php endif; ?>
+
+    <?php if ($totalPages > 1): ?>
+        <nav aria-label="应用商店分页" class="flex flex-wrap items-center justify-center gap-3 text-sm">
+            <?php if ($page > 1): ?>
+                <a rel="prev" href="<?= h($pageUrl($page - 1)) ?>" class="rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50">上一页</a>
+            <?php else: ?>
+                <span aria-disabled="true" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-400">上一页</span>
+            <?php endif; ?>
+            <span class="text-slate-500">第 <?= $page ?> / <?= $totalPages ?> 页</span>
+            <?php if ($page < $totalPages): ?>
+                <a rel="next" href="<?= h($pageUrl($page + 1)) ?>" class="rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50">下一页</a>
+            <?php else: ?>
+                <span aria-disabled="true" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-400">下一页</span>
+            <?php endif; ?>
+        </nav>
     <?php endif; ?>
 </div>

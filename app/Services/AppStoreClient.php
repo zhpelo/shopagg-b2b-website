@@ -37,23 +37,16 @@ final class AppStoreClient {
     }
 
     public function listB2BThemes(): array {
-        return $this->formatResourceList(
-            $this->request('GET', '/resources', ['type' => self::TYPE_B2B_THEME], false, true),
-            'themes'
-        );
+        return $this->listResources('themes', self::TYPE_B2B_THEME);
     }
 
     public function listB2BPlugins(): array {
-        return $this->formatResourceList(
-            $this->request('GET', '/resources', ['type' => self::TYPE_B2B_PLUGIN], false, true),
-            'plugins'
-        );
+        return $this->listResources('plugins', self::TYPE_B2B_PLUGIN);
     }
 
     /**
-     * Fetch both public catalogs concurrently so a slow endpoint does not block
-     * the other one. The short timeout is intentional: callers keep a local
-     * stale cache for shared-hosting environments with unreliable outbound HTTP.
+     * Fetch the first page of both public catalogs concurrently. Keep requests
+     * short so callers can fall back to their local cache on connection errors.
      */
     public function listCatalog(): array {
         if (!function_exists('curl_multi_init') || $this->baseUrl === '') {
@@ -114,10 +107,11 @@ final class AppStoreClient {
         }
         curl_multi_close($multi);
 
-        return [
-            'themes' => $this->formatResourceList($responses['themes'], 'themes'),
-            'plugins' => $this->formatResourceList($responses['plugins'], 'plugins'),
-        ];
+        $catalog = [];
+        foreach ($requests as $key => $type) {
+            $catalog[$key] = $this->listResources($key, $type, $responses[$key]);
+        }
+        return $catalog;
     }
 
     public function getB2BPlugin(int $resourceId): array {
@@ -319,23 +313,27 @@ final class AppStoreClient {
         ];
     }
 
-    private function formatResourceList(array $response, string $key): array {
-        if (!$response['ok']) {
-            return [
-                'ok' => false,
-                $key => [],
-                'message' => $this->messageFromResponse($response),
-                'status' => $response['status'],
-            ];
-        }
+    private function listResources(string $key, string $type, ?array $firstPage = null): array {
+        $items = [];
+        for ($page = 1; ; $page++) {
+            // Build each URL with the original type; the API's next-page URL omits it.
+            $response = ($page === 1 ? $firstPage : null)
+                ?? $this->request('GET', '/resources', ['type' => $type, 'page' => $page], false, true);
+            if (!$response['ok']) {
+                return ['ok' => false, $key => [], 'message' => $this->messageFromResponse($response), 'status' => $response['status']];
+            }
 
-        $payload = is_array($response['data']) ? $response['data'] : [];
-        return [
-            'ok' => true,
-            $key => is_array($payload['data'] ?? null) ? $payload['data'] : [],
-            'message' => '',
-            'status' => $response['status'],
-        ];
+            $payload = $response['data'];
+            $resources = $payload['data'] ?? null;
+            if (!is_array($resources) || !array_is_list($resources) || (int)($payload['current_page'] ?? 1) !== $page) {
+                return ['ok' => false, $key => [], 'message' => 'App Store 返回了无效的目录分页数据', 'status' => $response['status']];
+            }
+
+            foreach ($resources as $resource) $items[] = $resource;
+            if ($page >= (int)($payload['last_page'] ?? 1)) {
+                return ['ok' => true, $key => $items, 'message' => '', 'status' => $response['status']];
+            }
+        }
     }
 
     private function normalizeBaseUrl(string $baseUrl): string {

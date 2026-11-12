@@ -11,6 +11,7 @@ use App\Plugins\PluginManager;
 use App\Plugins\PluginRegistry;
 use App\Plugins\PluginRuntime;
 use App\Models\Setting;
+use App\Services\AppStoreCatalog;
 use App\Services\AppStoreClient;
 use SQLite3;
 
@@ -30,14 +31,35 @@ final class PluginAdminController extends Controller {
     }
 
     public function index(): void {
+        $settings = new Setting();
+        $directory = null;
+        $hasPlugins = (bool)$this->db->querySingle("SELECT EXISTS(SELECT 1 FROM plugins WHERE status <> 'removed')")
+            || !empty(glob(APP_ROOT . '/storage/plugins/*/plugin.json'));
+        if ($hasPlugins) {
+            // 先读取商店目录，避免本地扫描持有插件写锁时等待网络。
+            $catalog = new AppStoreCatalog($this->makeAppStoreClient($settings), $settings);
+            $directory = $catalog->load(($_GET['refresh'] ?? '') === '1');
+        }
+
         $discovery = $this->manager->discoverLocal();
         $plugins = $this->manager->all();
+        $pluginUpdates = [];
+        $updateNotice = '';
+        if ($plugins !== [] && $directory !== null) {
+            $pluginResponse = $directory['plugins'];
+            $pluginUpdates = $this->getAppStorePluginUpdates($plugins, $pluginResponse['plugins'] ?? []);
+            $updateNotice = ($pluginResponse['ok'] ?? false)
+                ? $directory['notice']
+                : '暂时无法检查插件更新，请稍后重试。';
+        }
         $jobs = [];
         $result = $this->db->query('SELECT * FROM plugin_jobs ORDER BY id DESC LIMIT 50');
         while ($result && ($row = $result->fetchArray(SQLITE3_ASSOC))) $jobs[] = $row;
-        $cronToken = (new Setting())->get('plugin_cron_token', '');
+        $cronToken = $settings->get('plugin_cron_token', '');
         $this->renderAdmin('插件中心', 'admin/plugins/index', [
             'plugins' => $plugins,
+            'pluginUpdates' => $pluginUpdates,
+            'updateNotice' => $updateNotice,
             'discovery' => $discovery,
             'diagnostics' => $this->manager->diagnostics(),
             'logs' => $this->registry->logs('', 50),
@@ -79,24 +101,20 @@ final class PluginAdminController extends Controller {
             $this->redirect('/admin/app-store?type=plugin&error=' . urlencode('插件 ID 无效'));
         }
 
-        $settings = new Setting();
-        $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $settings->get('app_store_api_token', ''));
+        $client = $this->makeAppStoreClient(new Setting());
         $response = $client->getB2BPlugin($resourceId);
         if (!($response['ok'] ?? false) || !is_array($response['resource'] ?? null)) {
             $this->redirect('/admin/app-store?type=plugin&error=' . urlencode((string)($response['message'] ?? '无法获取插件详情')));
         }
 
         $plugin = $response['resource'];
-        $metadata = is_array($plugin['metadata'] ?? null) ? $plugin['metadata'] : [];
-        $slug = sanitize_slug_input((string)($plugin['plugin_id'] ?? $metadata['plugin_id'] ?? $plugin['slug'] ?? ''));
-        $installedPlugin = $slug !== '' ? $this->registry->find($slug) : null;
-        $remoteVersion = (string)($plugin['version'] ?? '');
-        $installedVersion = (string)($installedPlugin['installed_version'] ?? '');
+        $pluginId = AppStoreCatalog::pluginId($plugin);
+        $installedPlugin = $pluginId !== '' ? $this->registry->find($pluginId) : null;
 
         $this->renderAdmin('插件详情 - ' . (string)($plugin['name'] ?? 'App Store 插件'), 'admin/plugins/detail', [
             'plugin' => $plugin,
             'installedPlugin' => $installedPlugin,
-            'needsUpdate' => $installedPlugin !== null && $remoteVersion !== '' && $installedVersion !== '' && version_compare($remoteVersion, $installedVersion, '>'),
+            'needsUpdate' => AppStoreCatalog::pluginUpdateVersion($plugin, $installedPlugin) !== null,
             'hasToken' => $client->hasToken(),
         ]);
     }
@@ -107,8 +125,7 @@ final class PluginAdminController extends Controller {
         $errorReturn = !empty($_POST['from_detail']) && $resourceId > 0
             ? '/admin/app-store/plugins/' . $resourceId
             : '/admin/app-store?type=plugin';
-        $setting = new Setting();
-        $client = new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $setting->get('app_store_api_token', ''));
+        $client = $this->makeAppStoreClient(new Setting());
         $directory = APP_ROOT . '/storage/tmp/plugins';
         if (!is_dir($directory)) mkdir($directory, 0755, true);
         $zip = $directory . '/market-' . bin2hex(random_bytes(8)) . '.zip';
@@ -195,6 +212,27 @@ final class PluginAdminController extends Controller {
         } catch (\Throwable $e) {
             $this->redirect('/admin/app-store/plugins?error=' . urlencode($e->getMessage()));
         }
+    }
+
+    private function getAppStorePluginUpdates(array $plugins, array $resources): array {
+        $installedById = array_column($plugins, null, 'plugin_id');
+        $updates = [];
+        foreach ($resources as $resource) {
+            if (!is_array($resource) || (int)($resource['id'] ?? 0) <= 0) {
+                continue;
+            }
+
+            $pluginId = AppStoreCatalog::pluginId($resource);
+            $version = AppStoreCatalog::pluginUpdateVersion($resource, $installedById[$pluginId] ?? null);
+            if ($version !== null) {
+                $updates[$pluginId] = ['resource_id' => (int)$resource['id'], 'version' => $version];
+            }
+        }
+        return $updates;
+    }
+
+    private function makeAppStoreClient(Setting $settings): AppStoreClient {
+        return new AppStoreClient('https://www.shopagg.com/api/shopagg-app-store', $settings->get('app_store_api_token', ''));
     }
 
     private function renderAdmin(string $title, string $view, array $data): void {
