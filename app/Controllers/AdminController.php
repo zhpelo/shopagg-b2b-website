@@ -7,6 +7,7 @@ use App\Core\Controller;
 use App\Core\Database;
 use App\Core\AuthManager;
 use App\Core\MediaManager;
+use App\Core\ThemeMetadata;
 use App\Models\Setting;
 use App\Models\Product;
 use App\Models\Category;
@@ -66,18 +67,6 @@ class AdminController extends Controller {
         'functions.php',
         'blocks.php',
         'style.css',
-    ];
-
-    private const THEME_METADATA_FIELDS = [
-        'Theme Name' => 'name',
-        'Theme URI' => 'theme_uri',
-        'Author' => 'author',
-        'Author URI' => 'author_uri',
-        'Description' => 'description',
-        'Version' => 'version',
-        'License' => 'license',
-        'Language' => 'language',
-        'Text Direction' => 'text_direction',
     ];
 
     /**
@@ -1974,10 +1963,8 @@ class AdminController extends Controller {
         }
 
         $themes = $this->getInstalledThemes();
-        $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
         $resource = $this->enrichAppStoreThemeResource(
             $response['resource'],
-            $installRecords,
             $this->indexInstalledThemesBySlug($themes)
         );
 
@@ -2282,7 +2269,6 @@ class AdminController extends Controller {
     }
 
     private function getAppStoreThemeUpdates(array $installedThemes, array $resources): array {
-        $installRecords = $this->appStoreThemeInstallModel->allIndexedByResourceId();
         $installedBySlug = $this->indexInstalledThemesBySlug($installedThemes);
         $updates = [];
         foreach ($resources as $resource) {
@@ -2291,12 +2277,12 @@ class AdminController extends Controller {
             }
 
             $resourceId = (int)($resource['id'] ?? 0);
-            $resource = $this->enrichAppStoreThemeResource($resource, $installRecords, $installedBySlug);
-            if ($resourceId > 0 && $resource['_needs_update']) {
+            $resource = $this->enrichAppStoreThemeResource($resource, $installedBySlug);
+            if ($resourceId > 0 && $resource['_update_version'] !== null) {
                 $updates[$resource['_installed_slug']] = [
                     'resource_id' => $resourceId,
                     'installed_version' => $resource['_installed_version'],
-                    'version' => ltrim(trim((string)$resource['version']), 'vV'),
+                    'version' => $resource['_update_version'],
                 ];
             }
         }
@@ -2304,29 +2290,18 @@ class AdminController extends Controller {
         return $updates;
     }
 
-    private function enrichAppStoreThemeResource(array $resource, array $installRecords, array $installedBySlug): array {
-        $resourceId = (int)($resource['id'] ?? 0);
-        $resourceSlug = sanitize_slug_input((string)($resource['slug'] ?? ''));
-        $record = $resourceId > 0 ? ($installRecords[$resourceId] ?? null) : null;
-        $knownSlug = (string)($record['theme_slug'] ?? $resourceSlug);
-        $localTheme = $installedBySlug[$knownSlug] ?? ($installedBySlug[$resourceSlug] ?? null);
-        $installedVersion = trim((string)($record['version'] ?? ''));
-        if ($installedVersion === '') {
-            $installedVersion = (string)($localTheme['version'] ?? '');
-        }
-        $installedVersion = ltrim($installedVersion, 'vV');
-        $remoteVersion = ltrim(trim((string)($resource['version'] ?? '')), 'vV');
-        $needsUpdate = $localTheme !== null
-            && preg_match('/^\d/', $installedVersion) === 1
-            && preg_match('/^\d/', $remoteVersion) === 1
-            && version_compare($remoteVersion, $installedVersion, '>');
+    private function enrichAppStoreThemeResource(array $resource, array $installedBySlug): array {
+        $slug = AppStoreCatalog::resourceSlug($resource, 'b2b_theme');
+        $localTheme = $installedBySlug[$slug] ?? null;
+        $installedVersion = ltrim((string)($localTheme['version'] ?? ''), 'vV');
+        $updateVersion = AppStoreCatalog::updateVersion((string)($resource['version'] ?? ''), $installedVersion);
 
-        $resource['_install_record'] = $record;
         $resource['_local_theme'] = $localTheme;
         $resource['_installed'] = $localTheme !== null;
-        $resource['_installed_slug'] = (string)($localTheme['slug'] ?? $knownSlug);
+        $resource['_installed_slug'] = $slug;
         $resource['_installed_version'] = $installedVersion;
-        $resource['_needs_update'] = $needsUpdate;
+        $resource['_needs_update'] = $updateVersion !== null;
+        $resource['_update_version'] = $updateVersion;
 
         return $resource;
     }
@@ -2536,10 +2511,7 @@ class AdminController extends Controller {
             }
         }
 
-        $styleFile = $themePath . '/style.css';
-        $metadata = is_file($styleFile)
-            ? $this->parseThemeMetadataFromFile($styleFile)
-            : $this->emptyThemeMetadata();
+        $metadata = ThemeMetadata::read($themePath . '/style.css');
 
         $metadataErrors = [];
         if (($metadata['name'] ?? '') === '') {
@@ -2560,42 +2532,6 @@ class AdminController extends Controller {
             'metadata_errors' => $metadataErrors,
             'errors' => $errors,
             'metadata' => $metadata,
-        ];
-    }
-
-    /**
-     * 解析 style.css 顶部主题元数据
-     */
-    private function parseThemeMetadataFromFile(string $styleFile): array {
-        $content = file_get_contents($styleFile, false, null, 0, 8192);
-        if ($content === false) {
-            return $this->emptyThemeMetadata();
-        }
-
-        $metadata = $this->emptyThemeMetadata();
-        foreach (self::THEME_METADATA_FIELDS as $label => $key) {
-            if (preg_match('/^[ \t\/*#@]*' . preg_quote($label, '/') . ':[ \t]*([^\r\n]*)/mi', $content, $matches) === 1) {
-                $metadata[$key] = trim((string)$matches[1]);
-            }
-        }
-
-        return $metadata;
-    }
-
-    /**
-     * 返回空主题元数据结构
-     */
-    private function emptyThemeMetadata(): array {
-        return [
-            'name' => '',
-            'theme_uri' => '',
-            'author' => '',
-            'author_uri' => '',
-            'description' => '',
-            'version' => '',
-            'license' => '',
-            'language' => '',
-            'text_direction' => '',
         ];
     }
 

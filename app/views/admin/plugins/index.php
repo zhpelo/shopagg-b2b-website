@@ -45,7 +45,7 @@
                     </div>
                     <?php if ($update !== null): ?>
                         <a class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800 hover:bg-amber-100" href="<?= h(url('/admin/app-store/plugins/' . $update['resource_id'])) ?>">
-                            <span>当前版本 v<?= h($plugin['installed_version']) ?> · 可更新至 v<?= h($update['version']) ?></span>
+                            <span>当前版本 v<?= h($update['installed_version']) ?> · 可更新至 v<?= h($update['version']) ?></span>
                             <span>查看更新 <span aria-hidden="true">→</span></span>
                         </a>
                     <?php endif; ?>

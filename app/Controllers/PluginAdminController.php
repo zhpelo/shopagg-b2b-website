@@ -108,13 +108,13 @@ final class PluginAdminController extends Controller {
         }
 
         $plugin = $response['resource'];
-        $pluginId = AppStoreCatalog::pluginId($plugin);
-        $installedPlugin = $pluginId !== '' ? $this->registry->find($pluginId) : null;
+        $slug = AppStoreCatalog::resourceSlug($plugin, 'b2b_plugin');
+        $localVersion = AppStoreCatalog::installedPluginVersion($slug);
 
         $this->renderAdmin('插件详情 - ' . (string)($plugin['name'] ?? 'App Store 插件'), 'admin/plugins/detail', [
             'plugin' => $plugin,
-            'installedPlugin' => $installedPlugin,
-            'needsUpdate' => AppStoreCatalog::pluginUpdateVersion($plugin, $installedPlugin) !== null,
+            'installedPlugin' => $localVersion === null ? null : ['installed_version' => $localVersion],
+            'needsUpdate' => AppStoreCatalog::updateVersion((string)($plugin['version'] ?? ''), $localVersion ?? '') !== null,
             'hasToken' => $client->hasToken(),
         ]);
     }
@@ -222,10 +222,18 @@ final class PluginAdminController extends Controller {
                 continue;
             }
 
-            $pluginId = AppStoreCatalog::pluginId($resource);
-            $version = AppStoreCatalog::pluginUpdateVersion($resource, $installedById[$pluginId] ?? null);
+            $slug = AppStoreCatalog::resourceSlug($resource, 'b2b_plugin');
+            if (!isset($installedById[$slug]) || $installedById[$slug]['status'] === 'removed') {
+                continue;
+            }
+            $localVersion = AppStoreCatalog::installedPluginVersion($slug);
+            $version = AppStoreCatalog::updateVersion((string)($resource['version'] ?? ''), $localVersion ?? '');
             if ($version !== null) {
-                $updates[$pluginId] = ['resource_id' => (int)$resource['id'], 'version' => $version];
+                $updates[$slug] = [
+                    'resource_id' => (int)$resource['id'],
+                    'installed_version' => $localVersion,
+                    'version' => $version,
+                ];
             }
         }
         return $updates;

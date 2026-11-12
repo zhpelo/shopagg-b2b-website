@@ -5,9 +5,8 @@ namespace App\Controllers;
 
 use App\Core\AuthManager;
 use App\Core\Controller;
-use App\Models\AppStoreThemeInstall;
+use App\Core\ThemeMetadata;
 use App\Models\Setting;
-use App\Plugins\PluginManager;
 use App\Services\AppStoreCatalog;
 use App\Services\AppStoreClient;
 
@@ -50,7 +49,7 @@ final class AppStoreController extends Controller {
             if ($price === 'free' && !$item['is_free']) return false;
             if ($price === 'paid' && $item['is_free']) return false;
             if ($query === '') return true;
-            $haystack = mb_strtolower(implode(' ', [$item['name'], $item['slug'], $item['plugin_id'] ?? '', $item['vendor'], $item['description'], implode(' ', $item['tags'])]));
+            $haystack = mb_strtolower(implode(' ', [$item['name'], $item['slug'], $item['vendor'], $item['description'], implode(' ', $item['tags'])]));
             return str_contains($haystack, mb_strtolower($query));
         }));
         usort($items, static fn(array $a, array $b): int =>
@@ -89,20 +88,16 @@ final class AppStoreController extends Controller {
     public function legacyThemeDetail(string $id): void { $this->redirectWithQuery('/admin/app-store/themes/' . rawurlencode($id)); }
 
     private function normalizePlugins(array $resources): array {
-        $installed = [];
-        foreach ((new PluginManager())->all() as $plugin) $installed[(string)$plugin['plugin_id']] = $plugin;
         $items = [];
         foreach ($resources as $resource) {
             if (!is_array($resource)) continue;
-            $pluginId = AppStoreCatalog::pluginId($resource);
-            $local = $installed[$pluginId] ?? null;
-            $localVersion = (string)($local['installed_version'] ?? '');
+            $slug = AppStoreCatalog::resourceSlug($resource, 'b2b_plugin');
+            $localVersion = AppStoreCatalog::installedPluginVersion($slug);
             $items[] = $this->normalizeResource($resource, 'plugin', [
-                'slug' => sanitize_slug_input((string)($resource['slug'] ?? $pluginId)),
-                'plugin_id' => $pluginId,
-                'installed' => $local !== null,
-                'installed_version' => $localVersion,
-                'needs_update' => AppStoreCatalog::pluginUpdateVersion($resource, $local) !== null,
+                'slug' => $slug,
+                'installed' => $localVersion !== null,
+                'installed_version' => $localVersion ?? '',
+                'needs_update' => AppStoreCatalog::updateVersion((string)($resource['version'] ?? ''), $localVersion ?? '') !== null,
                 'manage_url' => '/admin/app-store/plugins',
                 'detail_url' => '/admin/app-store/plugins/' . (int)($resource['id'] ?? 0),
             ]);
@@ -111,22 +106,20 @@ final class AppStoreController extends Controller {
     }
 
     private function normalizeThemes(array $resources): array {
-        $records = (new AppStoreThemeInstall())->allIndexedByResourceId();
+        $directories = glob(APP_ROOT . '/themes/*', GLOB_ONLYDIR) ?: [];
+        $installed = array_fill_keys(array_map('basename', $directories), true);
         $items = [];
         foreach ($resources as $resource) {
             if (!is_array($resource)) continue;
             $id = (int)($resource['id'] ?? 0);
-            $slug = sanitize_slug_input((string)($resource['slug'] ?? ''));
-            $record = $records[$id] ?? null;
-            $localSlug = (string)($record['theme_slug'] ?? $slug);
-            $isInstalled = $localSlug !== '' && is_dir(APP_ROOT . '/themes/' . $localSlug);
-            $remoteVersion = (string)($resource['version'] ?? '');
-            $localVersion = (string)($record['version'] ?? '');
+            $slug = AppStoreCatalog::resourceSlug($resource, 'b2b_theme');
+            $isInstalled = isset($installed[$slug]);
+            $localVersion = $isInstalled ? ThemeMetadata::read(APP_ROOT . '/themes/' . $slug . '/style.css')['version'] : '';
             $items[] = $this->normalizeResource($resource, 'theme', [
                 'slug' => $slug,
                 'installed' => $isInstalled,
                 'installed_version' => $localVersion,
-                'needs_update' => $isInstalled && $remoteVersion !== '' && $localVersion !== '' && version_compare($remoteVersion, $localVersion, '>'),
+                'needs_update' => AppStoreCatalog::updateVersion((string)($resource['version'] ?? ''), $localVersion) !== null,
                 'manage_url' => '/admin/app-store/themes',
                 'detail_url' => $id > 0 ? '/admin/app-store/themes/' . $id : '',
             ]);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Plugins\PluginFiles;
+use App\Plugins\PluginManifest;
 
 final class AppStoreCatalog {
     private const CATALOG_CACHE_KEY = 'app_store_catalog_cache_v1';
@@ -11,26 +13,33 @@ final class AppStoreCatalog {
 
     public function __construct(private AppStoreClient $client, private Setting $settings) {}
 
-    public static function pluginId(array $resource): string {
-        $metadata = is_array($resource['metadata'] ?? null) ? $resource['metadata'] : [];
-        $pluginId = sanitize_slug_input((string)($resource['plugin_id'] ?? ''))
-            ?: sanitize_slug_input((string)($metadata['plugin_id'] ?? ''));
-        if ($pluginId !== '') {
-            return $pluginId;
+    public static function resourceSlug(array $resource, string $type): string {
+        $slug = $resource['slug'] ?? '';
+        if (($resource['type'] ?? '') !== $type || !is_string($slug) || preg_match('/^[a-z0-9][a-z0-9_-]*$/D', $slug) !== 1) {
+            return '';
         }
-
-        $slug = sanitize_slug_input((string)($resource['slug'] ?? ''));
-        // AI Deployer was published under a different slug from its plugin.json ID.
-        return $slug === 'shopagg-cms-ai-deployer' ? 'shopagg-ai-deployer' : $slug;
+        return $slug;
     }
 
-    public static function pluginUpdateVersion(array $resource, ?array $installedPlugin): ?string {
-        if ($installedPlugin === null || ($installedPlugin['status'] ?? '') === 'removed') {
+    public static function installedPluginVersion(string $slug): ?string {
+        if (strlen($slug) > 64 || sanitize_slug_input($slug) !== $slug || $slug === '') {
             return null;
         }
 
-        $remoteVersion = ltrim(trim((string)($resource['version'] ?? '')), 'vV');
-        $installedVersion = ltrim(trim((string)($installedPlugin['installed_version'] ?? '')), 'vV');
+        $directory = PluginFiles::code($slug);
+        $manifestFile = $directory . '/plugin.json';
+        $directories = glob(dirname($directory) . '/*', GLOB_ONLYDIR) ?: [];
+        if (!in_array($directory, $directories, true) || is_link($directory)
+            || !is_file($manifestFile) || is_link($manifestFile) || !is_readable($manifestFile)) {
+            return null;
+        }
+        $manifest = PluginManifest::validateFile($manifestFile);
+        return $manifest['valid'] && $manifest['manifest']['id'] === $slug ? $manifest['manifest']['version'] : null;
+    }
+
+    public static function updateVersion(string $remoteVersion, string $installedVersion): ?string {
+        $remoteVersion = ltrim(trim($remoteVersion), 'vV');
+        $installedVersion = ltrim(trim($installedVersion), 'vV');
         if (preg_match('/^\d/', $remoteVersion) !== 1 || preg_match('/^\d/', $installedVersion) !== 1) {
             return null;
         }
