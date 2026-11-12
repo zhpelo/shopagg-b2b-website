@@ -168,6 +168,11 @@ final class AppStoreClient {
         return $this->request('GET', '/me', [], true);
     }
 
+    public function verifyResourceLicense(int $resourceId): array {
+        // Omitting the domain checks ownership without binding the license.
+        return $this->request('POST', '/licenses/verify', ['resource_id' => $resourceId], true, true);
+    }
+
     public function downloadResource(int $resourceId, string $domain): array {
         return $this->request('GET', '/download/' . $resourceId, ['domain' => $domain], true);
     }

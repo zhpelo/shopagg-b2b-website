@@ -59,9 +59,12 @@ foreach ((array)($theme['screenshots'] ?? []) as $screenshot) {
 
 $updateHistory = is_array($theme['update_history'] ?? null) ? $theme['update_history'] : [];
 $isFree = !empty($theme['is_free']);
-$hasLicense = !empty($theme['has_license']);
-$canDownload = !empty($theme['can_download']);
-$licenseRequired = !empty($theme['license_required']);
+$access = $appStore['theme_access']['status'] ?? 'token_required';
+$boundDomain = (string)($appStore['theme_access']['bound_domain'] ?? '');
+$licenseSite = $isFree ? '无需授权' : ($boundDomain !== '' ? $boundDomain : '未验证');
+if (!$isFree && $boundDomain === '' && in_array($access, ['purchase', 'download'], true)) {
+    $licenseSite = '未绑定';
+}
 $isInstalled = !empty($theme['_installed']);
 $localTheme = is_array($theme['_local_theme'] ?? null) ? $theme['_local_theme'] : null;
 $installedSlug = (string)($theme['_installed_slug'] ?? $slug);
@@ -150,9 +153,9 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                         <?php endif; ?>
                         <?php if ($isActive): ?>
                             <span class="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">当前启用</span>
-                        <?php elseif ($hasLicense): ?>
+                        <?php elseif ($access === 'download'): ?>
                             <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">已授权</span>
-                        <?php elseif ($licenseRequired): ?>
+                        <?php elseif ($access === 'purchase'): ?>
                             <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">需授权</span>
                         <?php endif; ?>
                     </div>
@@ -173,7 +176,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                     </div>
                     <div class="rounded-xl bg-slate-50 px-3 py-3">
                         <p class="text-xs text-slate-400">授权站点</p>
-                        <p class="mt-1 truncate font-semibold text-slate-800"><?= h((string)($theme['bound_domain'] ?? $appStore['site_domain'] ?? '未绑定')) ?></p>
+                        <p class="mt-1 truncate font-semibold text-slate-800"><?= h($licenseSite) ?></p>
                     </div>
                 </div>
             </div>
@@ -284,10 +287,19 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                 </div>
 
                 <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-                    <?php if (!$appStore['has_token']): ?>
+                    <?php if ($access === 'token_required'): ?>
                         <p class="font-semibold text-amber-700">当前站点还未绑定 API Token。</p>
                         <p class="mt-2">请先前往 App Store 账户设置页面绑定 SHOPAGG 账户，再安装或购买主题。</p>
-                    <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
+                    <?php elseif ($access === 'invalid_token'): ?>
+                        <p class="font-semibold text-amber-700">当前 API Token 无效或已失效。</p>
+                        <p class="mt-2">请使用拥有该主题授权的 SHOPAGG 账户生成新 Token，并重新绑定。</p>
+                    <?php elseif ($access === 'domain_mismatch'): ?>
+                        <p class="font-semibold text-amber-700">主题授权已绑定到其他站点。</p>
+                        <p class="mt-2">已绑定 <?= h($boundDomain) ?>，当前站点为 <?= h($appStore['site_domain'] ?? base_url()) ?>。</p>
+                    <?php elseif ($access === 'check_failed'): ?>
+                        <p class="font-semibold text-amber-700">暂时无法验证主题授权。</p>
+                        <p class="mt-2">请刷新页面后重试。</p>
+                    <?php elseif ($access === 'purchase'): ?>
                         <p class="font-semibold text-amber-700">此主题需要购买授权。</p>
                         <p class="mt-2">授权会按当前站点域名绑定：<?= h($appStore['site_domain'] ?? base_url()) ?></p>
                     <?php elseif ($isInstalled): ?>
@@ -302,12 +314,12 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                 </div>
 
                 <div class="space-y-3">
-                    <?php if (!$appStore['has_token']): ?>
+                    <?php if (in_array($access, ['token_required', 'invalid_token'], true)): ?>
                         <a href="<?= url('/admin/app-store/settings') ?>" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800">
                             <i class="fas fa-link"></i>
-                            配置 API Token
+                            <?= $access === 'invalid_token' ? '重新绑定账户' : '配置 API Token' ?>
                         </a>
-                    <?php elseif ($licenseRequired && !$hasLicense && !$canDownload): ?>
+                    <?php elseif ($access === 'purchase'): ?>
                         <form action="<?= url('/admin/app-store/themes/purchase') ?>" method="post" class="space-y-3">
                             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
                             <input type="hidden" name="resource_id" value="<?= $themeId ?>">
@@ -321,7 +333,7 @@ $lastUpdated = format_date((string)($theme['last_updated'] ?? ''), 'Y-m-d');
                                 购买授权
                             </button>
                         </form>
-                    <?php else: ?>
+                    <?php elseif ($access === 'download'): ?>
                         <form action="<?= url('/admin/app-store/themes/install') ?>" method="post">
                             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
                             <input type="hidden" name="resource_id" value="<?= $themeId ?>">

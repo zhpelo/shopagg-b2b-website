@@ -1981,10 +1981,11 @@ class AdminController extends Controller {
             $this->indexInstalledThemesBySlug($themes)
         );
 
+        $siteDomain = $this->appStoreLicenseDomain();
         $appStore = [
-            'has_token' => $client->hasToken(),
             'masked_token' => $client->maskedToken(),
-            'site_domain' => $this->appStoreLicenseDomain(),
+            'site_domain' => $siteDomain,
+            'theme_access' => $this->resolveAppStoreThemeAccess($client, $resourceId, $resource, $siteDomain),
             'wechat_pay' => $this->appStoreWechatPayState(),
         ];
 
@@ -1993,6 +1994,40 @@ class AdminController extends Controller {
             'theme' => $resource,
             'appStore' => $appStore,
         ]));
+    }
+
+    private function resolveAppStoreThemeAccess(AppStoreClient $client, int $resourceId, array $resource, string $siteDomain): array {
+        if (!$client->hasToken()) {
+            return ['status' => 'token_required'];
+        }
+
+        $requiresLicense = $resource['license_required'] ?? (empty($resource['is_free']) && (float)($resource['price'] ?? 0) > 0);
+        if (!$requiresLicense) {
+            return ['status' => 'download'];
+        }
+
+        $response = $client->verifyResourceLicense($resourceId);
+        $license = $response['data'] ?? [];
+        if ($response['status'] === 401) {
+            return ['status' => 'invalid_token'];
+        }
+        if ($response['status'] === 403 && ($license['valid'] ?? null) === false) {
+            return ['status' => 'purchase'];
+        }
+        if (!$response['ok'] || ($license['valid'] ?? null) !== true) {
+            return ['status' => 'check_failed'];
+        }
+
+        // Match the host and subdirectory normalization used by the download API.
+        $host = strtolower((string)parse_url($siteDomain, PHP_URL_HOST));
+        $path = trim((string)parse_url($siteDomain, PHP_URL_PATH), '/');
+        $currentDomain = $path === '' ? $host : $host . '/' . $path;
+        $boundDomain = (string)($license['bound_domain'] ?? '');
+
+        return [
+            'status' => $boundDomain === '' || $boundDomain === $currentDomain ? 'download' : 'domain_mismatch',
+            'bound_domain' => $boundDomain,
+        ];
     }
 
     /**
